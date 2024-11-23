@@ -1,0 +1,3 @@
+enum StoragesKey {
+  accessToken,
+}
