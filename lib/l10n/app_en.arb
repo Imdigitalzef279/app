@@ -1,3 +1,6 @@
 {
-  "helloWorld": "Hello World!"
+  "home": "Home",
+  "maintenance": "Maintenance",
+  "device": "Devices",
+  "me": "Me"
 }
