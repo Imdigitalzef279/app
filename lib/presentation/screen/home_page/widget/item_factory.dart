@@ -1,0 +1,114 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:solar_energy/application/constants/app_color.dart';
+import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/gen/assets.gen.dart';
+import 'package:solar_energy/presentation/common_widgets/app_network_image.dart';
+
+class ItemFactory extends StatelessWidget {
+  const ItemFactory({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    String title =
+        "Việt Nam Hà Nội, Hà Nội Trần Ph 11708, Vệt Nam, 40 Ngõ 80 Khuyến Lương";
+    return InkWell(
+      borderRadius: BorderRadius.circular(12.r),
+      onTap: (){
+
+      },
+      child: Ink(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Row(
+          children: [
+            AppNetworkImage(
+              "https://combohome.vn/wp-content/uploads/2024/08/Smart-homes-scaled-1.jpg",
+              width: 1.sw / 4,
+              height: 1.sw / 5.5,
+              radius: 8.r,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                children: [
+                  // project name - status
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Thien Son",
+                        style: AppTextStyle.textSm.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                        decoration: BoxDecoration(
+                          color: AppColors.green50.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        child: Text(
+                          "Bình thường",
+                          style: AppTextStyle.textXs
+                              .copyWith(color: AppColors.green50,fontSize: 8.sp
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Text(
+                    "$title \n",
+                    style: AppTextStyle.textSm
+                        .copyWith(color: AppColors.textPrimary, fontSize: 10.sp),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.justify,
+                  ),
+                  Row(
+                    children: [
+                      rowItem(
+                          iconSolar: Assets.icons.solarPanelSun.svg(
+                              width: 12.w,
+                              color: AppColors.grey73.withOpacity(0.5)),
+                          solarPower: "0,000 kWp"),
+                      SizedBox(
+                        width: 12.w,
+                      ),
+                      rowItem(
+                          iconSolar: Assets.icons.thunderstormSun6854078.svg(
+                              width: 12.w,
+                              color: AppColors.grey73.withOpacity(0.5)),
+                          solarPower: "3,40 MWh"),
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget rowItem({required String solarPower, required Widget iconSolar}) {
+    return Row(
+      children: [
+        iconSolar,
+        SizedBox(
+          width: 4.w,
+        ),
+        Text(
+          solarPower,
+          style: AppTextStyle.textSm
+              .copyWith(color: AppColors.grey73, fontSize: 10.sp),
+        )
+      ],
+    );
+  }
+}

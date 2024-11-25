@@ -140,10 +140,10 @@ class _CustomLabelTextFieldState extends State<CustomLabelTextField> {
                   borderRadius: BorderRadius.circular(_radius)),
               enabledBorder: OutlineInputBorder(
                   borderSide:
-                      BorderSide(color: widget.errorMessage?.isNotEmpty == false ? (widget.colorBorder ?? AppColors.grey) : Colors.red),
+                      BorderSide(color: widget.colorBorder ?? AppColors.grey),
                   borderRadius: BorderRadius.circular(_radius)),
               focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: widget.errorMessage?.isNotEmpty == false ? AppColors.grey73 : Colors.red),
+                  borderSide: BorderSide(color: widget.errorMessage?.isNotEmpty != false ? AppColors.grey73 : Colors.red),
                   borderRadius: BorderRadius.circular(_radius)),
               hintText: widget.hintText,
 

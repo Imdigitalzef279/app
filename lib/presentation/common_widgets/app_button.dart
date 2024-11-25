@@ -38,14 +38,13 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Opacity(
       opacity: isEnable ? 1 : 0.6,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(radius ?? 100.w),
+      child: GestureDetector(
         onTap: () {
           AppUtils.dismissKeyboard();
           if (!isEnable) return;
           onPressed?.call();
         },
-        child: Ink(
+        child: Container(
           // width: width ?? 300.w,
           // height: height ?? 50.h,
           width: width ?? double.infinity,

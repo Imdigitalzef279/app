@@ -2,5 +2,12 @@
   "home": "Trang chủ",
   "maintenance": "Bảo trì",
   "device": "Thiết bị",
-  "me": "Tôi"
+  "me": "Tôi",
+  "factory": "Nhà máy",
+  "statistical" : "Thống kê",
+  "input_factory_name": "Nhập tên nhà máy.",
+  "all": "Tất cả",
+  "normal": "Bình thường",
+  "error": "Bị lỗi",
+  "offline": "Ngoại tuyến"
 }

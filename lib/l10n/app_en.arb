@@ -2,5 +2,12 @@
   "home": "Home",
   "maintenance": "Maintenance",
   "device": "Devices",
-  "me": "Me"
+  "me": "Me",
+  "factory": "Factory",
+  "statistical" : "Statistical",
+  "input_factory_name": "Enter factory name.",
+  "all": "Tất cả",
+  "normal": "Bình thường",
+  "error": "Bị lỗi",
+  "offline": "Ngoại tuyến"
 }
