@@ -159,3 +159,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_gen:
+  integrations:
+    flutter_svg: true
+
+lint_staged:
+  'lib/**.dart': dart format -l 120 && dart analyze --fatal-infos --fatal-warnings
