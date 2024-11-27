@@ -28,6 +28,27 @@ class $EnvGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/auto-reply.svg
+  SvgGenImage get autoReply => const SvgGenImage('assets/icons/auto-reply.svg');
+
+  /// File path: assets/icons/chatbot-speech-bubble.svg
+  SvgGenImage get chatbotSpeechBubble =>
+      const SvgGenImage('assets/icons/chatbot-speech-bubble.svg');
+
+  /// File path: assets/icons/guide-alt.svg
+  SvgGenImage get guideAlt => const SvgGenImage('assets/icons/guide-alt.svg');
+
+  /// File path: assets/icons/messages-question.svg
+  SvgGenImage get messagesQuestion =>
+      const SvgGenImage('assets/icons/messages-question.svg');
+
+  /// File path: assets/icons/phone-call.svg
+  SvgGenImage get phoneCall => const SvgGenImage('assets/icons/phone-call.svg');
+
+  /// File path: assets/icons/screen-play.svg
+  SvgGenImage get screenPlay =>
+      const SvgGenImage('assets/icons/screen-play.svg');
+
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
 
@@ -40,8 +61,17 @@ class $AssetsIconsGen {
       const SvgGenImage('assets/icons/thunderstorm-sun_6854078.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values =>
-      [search, solarPanelSun, thunderstormSun6854078];
+  List<SvgGenImage> get values => [
+        autoReply,
+        chatbotSpeechBubble,
+        guideAlt,
+        messagesQuestion,
+        phoneCall,
+        screenPlay,
+        search,
+        solarPanelSun,
+        thunderstormSun6854078
+      ];
 }
 
 class $AssetsImagesGen {
