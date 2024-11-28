@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
+import 'package:solar_energy/presentation/screen/account_information/account_screen.dart';
 import 'package:solar_energy/presentation/screen/home_page/home_page_widget.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -80,11 +81,7 @@ class _HomeWidgetState extends State<HomeWidget> {
           ),
         );
       case 3:
-        return Center(
-            child: Text(
-          LocalizationsUtils.localizations.me,
-          style: AppTextStyle.textXl,
-        ));
+        return const AccountScreen();
       default:
         return Center(
             child: Text(

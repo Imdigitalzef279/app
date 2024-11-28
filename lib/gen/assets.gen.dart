@@ -28,8 +28,28 @@ class $EnvGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/building.svg
+  SvgGenImage get building => const SvgGenImage('assets/icons/building.svg');
+
+  /// File path: assets/icons/comment-alt.svg
+  SvgGenImage get commentAlt =>
+      const SvgGenImage('assets/icons/comment-alt.svg');
+
+  /// File path: assets/icons/info.svg
+  SvgGenImage get info => const SvgGenImage('assets/icons/info.svg');
+
+  /// File path: assets/icons/module.svg
+  SvgGenImage get module => const SvgGenImage('assets/icons/module.svg');
+
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
+
+  /// File path: assets/icons/settings.svg
+  SvgGenImage get settings => const SvgGenImage('assets/icons/settings.svg');
+
+  /// File path: assets/icons/sign-out-alt.svg
+  SvgGenImage get signOutAlt =>
+      const SvgGenImage('assets/icons/sign-out-alt.svg');
 
   /// File path: assets/icons/solar-panel-sun.svg
   SvgGenImage get solarPanelSun =>
@@ -39,9 +59,22 @@ class $AssetsIconsGen {
   SvgGenImage get thunderstormSun6854078 =>
       const SvgGenImage('assets/icons/thunderstorm-sun_6854078.svg');
 
+  /// File path: assets/icons/users-alt.svg
+  SvgGenImage get usersAlt => const SvgGenImage('assets/icons/users-alt.svg');
+
   /// List of all assets
-  List<SvgGenImage> get values =>
-      [search, solarPanelSun, thunderstormSun6854078];
+  List<SvgGenImage> get values => [
+        building,
+        commentAlt,
+        info,
+        module,
+        search,
+        settings,
+        signOutAlt,
+        solarPanelSun,
+        thunderstormSun6854078,
+        usersAlt
+      ];
 }
 
 class $AssetsImagesGen {
