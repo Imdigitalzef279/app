@@ -34,6 +34,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/auto-reply.svg
   SvgGenImage get autoReply => const SvgGenImage('assets/icons/auto-reply.svg');
 
+  /// File path: assets/icons/building.svg
+  SvgGenImage get building => const SvgGenImage('assets/icons/building.svg');
+
   /// File path: assets/icons/chatbot-speech-bubble.svg
   SvgGenImage get chatbotSpeechBubble =>
       const SvgGenImage('assets/icons/chatbot-speech-bubble.svg');
@@ -41,12 +44,22 @@ class $AssetsIconsGen {
   /// File path: assets/icons/clouds.svg
   SvgGenImage get clouds => const SvgGenImage('assets/icons/clouds.svg');
 
+  /// File path: assets/icons/comment-alt.svg
+  SvgGenImage get commentAlt =>
+      const SvgGenImage('assets/icons/comment-alt.svg');
+
   /// File path: assets/icons/guide-alt.svg
   SvgGenImage get guideAlt => const SvgGenImage('assets/icons/guide-alt.svg');
+
+  /// File path: assets/icons/info.svg
+  SvgGenImage get info => const SvgGenImage('assets/icons/info.svg');
 
   /// File path: assets/icons/messages-question.svg
   SvgGenImage get messagesQuestion =>
       const SvgGenImage('assets/icons/messages-question.svg');
+
+  /// File path: assets/icons/module.svg
+  SvgGenImage get module => const SvgGenImage('assets/icons/module.svg');
 
   /// File path: assets/icons/phone-call.svg
   SvgGenImage get phoneCall => const SvgGenImage('assets/icons/phone-call.svg');
@@ -61,6 +74,13 @@ class $AssetsIconsGen {
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
 
+  /// File path: assets/icons/settings.svg
+  SvgGenImage get settings => const SvgGenImage('assets/icons/settings.svg');
+
+  /// File path: assets/icons/sign-out-alt.svg
+  SvgGenImage get signOutAlt =>
+      const SvgGenImage('assets/icons/sign-out-alt.svg');
+
   /// File path: assets/icons/solar-panel-sun.svg
   SvgGenImage get solarPanelSun =>
       const SvgGenImage('assets/icons/solar-panel-sun.svg');
@@ -72,21 +92,31 @@ class $AssetsIconsGen {
   SvgGenImage get thunderstormSun6854078 =>
       const SvgGenImage('assets/icons/thunderstorm-sun_6854078.svg');
 
+  /// File path: assets/icons/users-alt.svg
+  SvgGenImage get usersAlt => const SvgGenImage('assets/icons/users-alt.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
         apps,
         autoReply,
+        building,
         chatbotSpeechBubble,
         clouds,
+        commentAlt,
         guideAlt,
+        info,
         messagesQuestion,
+        module,
         phoneCall,
         revenue,
         screenPlay,
         search,
+        settings,
+        signOutAlt,
         solarPanelSun,
         square,
-        thunderstormSun6854078
+        thunderstormSun6854078,
+        usersAlt
       ];
 }
 
