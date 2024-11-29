@@ -3,6 +3,7 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/home_page/home_page_widget.dart';
+import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -66,12 +67,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       case 0:
         return const HomePageWidget();
       case 1:
-        return Center(
-          child: Text(
-            LocalizationsUtils.localizations.maintenance,
-            style: AppTextStyle.textXl,
-          ),
-        );
+        return const OverViewScreen();
       case 2:
         return Center(
           child: Text(
