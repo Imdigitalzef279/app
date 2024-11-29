@@ -28,15 +28,6 @@ class $EnvGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
-  /// File path: assets/icons/apps.svg
-  SvgGenImage get apps => const SvgGenImage('assets/icons/apps.svg');
-
-  /// File path: assets/icons/clouds.svg
-  SvgGenImage get clouds => const SvgGenImage('assets/icons/clouds.svg');
-
-  /// File path: assets/icons/revenue.svg
-  SvgGenImage get revenue => const SvgGenImage('assets/icons/revenue.svg');
-
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
 
@@ -44,49 +35,24 @@ class $AssetsIconsGen {
   SvgGenImage get solarPanelSun =>
       const SvgGenImage('assets/icons/solar-panel-sun.svg');
 
-  /// File path: assets/icons/square.svg
-  SvgGenImage get square => const SvgGenImage('assets/icons/square.svg');
-
   /// File path: assets/icons/thunderstorm-sun_6854078.svg
   SvgGenImage get thunderstormSun6854078 =>
       const SvgGenImage('assets/icons/thunderstorm-sun_6854078.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values => [
-        apps,
-        clouds,
-        revenue,
-        search,
-        solarPanelSun,
-        square,
-        thunderstormSun6854078
-      ];
+  List<SvgGenImage> get values =>
+      [search, solarPanelSun, thunderstormSun6854078];
 }
 
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// File path: assets/images/cotdien.png
-  AssetGenImage get cotdien => const AssetGenImage('assets/images/cotdien.png');
-
-  /// File path: assets/images/electric-pole.png
-  AssetGenImage get electricPole =>
-      const AssetGenImage('assets/images/electric-pole.png');
-
   /// File path: assets/images/exclamation.png
   AssetGenImage get exclamation =>
       const AssetGenImage('assets/images/exclamation.png');
 
-  /// File path: assets/images/factory.png
-  AssetGenImage get factory => const AssetGenImage('assets/images/factory.png');
-
-  /// File path: assets/images/solar-panel.png
-  AssetGenImage get solarPanel =>
-      const AssetGenImage('assets/images/solar-panel.png');
-
   /// List of all assets
-  List<AssetGenImage> get values =>
-      [cotdien, electricPole, exclamation, factory, solarPanel];
+  List<AssetGenImage> get values => [exclamation];
 }
 
 class Assets {

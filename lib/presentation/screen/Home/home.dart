@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
+import 'package:solar_energy/presentation/screen/Maintenance/maintenance_screen.dart';
 import 'package:solar_energy/presentation/screen/home_page/home_page_widget.dart';
+import 'package:solar_energy/presentation/screen/service_solar/widget/service_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -67,14 +69,9 @@ class _HomeWidgetState extends State<HomeWidget> {
       case 0:
         return const HomePageWidget();
       case 1:
-        return const OverViewScreen();
+        return const MaintenanceScreen();
       case 2:
-        return Center(
-          child: Text(
-            LocalizationsUtils.localizations.device,
-            style: AppTextStyle.textXl,
-          ),
-        );
+        return const ServiceScreen();
       case 3:
         return Center(
             child: Text(
