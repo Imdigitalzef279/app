@@ -21,15 +21,9 @@ class _OverViewScreenState extends State<OverViewScreen> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: AppColors.blueFB,
-        leading: InkWell(
-          child: Icon(
-            Icons.arrow_back_ios,
-            size: 20.r,
-          ),
-        ),
         title: Text(
           "Thien son",
-          style: AppTextStyle.textBase,
+          style: AppTextStyle.textBase.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(

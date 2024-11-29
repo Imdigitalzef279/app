@@ -42,17 +42,17 @@ class _HomeWidgetState extends State<HomeWidget> {
         destinations: [
           NavigationDestination(
             selectedIcon: const Icon(Icons.home_rounded, color: Colors.blue),
-            icon: const Icon(Icons.home_outlined),
+            icon: const Icon(Icons.home_outlined, color: AppColors.grey73,),
             label: LocalizationsUtils.localizations.home,
           ),
           NavigationDestination(
             selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
-            icon: const Icon(Icons.developer_board),
+            icon: const Icon(Icons.developer_board, color: AppColors.grey73,),
             label: LocalizationsUtils.localizations.device,
           ),
           NavigationDestination(
             selectedIcon: const Icon(Icons.account_circle, color: Colors.blue),
-            icon: const Icon(Icons.account_circle_outlined),
+            icon: const Icon(Icons.account_circle_outlined, color: AppColors.grey73),
             label: LocalizationsUtils.localizations.me,
           ),
         ],
