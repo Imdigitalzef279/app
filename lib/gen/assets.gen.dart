@@ -28,18 +28,48 @@ class $EnvGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/apps.svg
+  SvgGenImage get apps => const SvgGenImage('assets/icons/apps.svg');
+
+  /// File path: assets/icons/auto-reply.svg
+  SvgGenImage get autoReply => const SvgGenImage('assets/icons/auto-reply.svg');
+
   /// File path: assets/icons/building.svg
   SvgGenImage get building => const SvgGenImage('assets/icons/building.svg');
+
+  /// File path: assets/icons/chatbot-speech-bubble.svg
+  SvgGenImage get chatbotSpeechBubble =>
+      const SvgGenImage('assets/icons/chatbot-speech-bubble.svg');
+
+  /// File path: assets/icons/clouds.svg
+  SvgGenImage get clouds => const SvgGenImage('assets/icons/clouds.svg');
 
   /// File path: assets/icons/comment-alt.svg
   SvgGenImage get commentAlt =>
       const SvgGenImage('assets/icons/comment-alt.svg');
 
+  /// File path: assets/icons/guide-alt.svg
+  SvgGenImage get guideAlt => const SvgGenImage('assets/icons/guide-alt.svg');
+
   /// File path: assets/icons/info.svg
   SvgGenImage get info => const SvgGenImage('assets/icons/info.svg');
 
+  /// File path: assets/icons/messages-question.svg
+  SvgGenImage get messagesQuestion =>
+      const SvgGenImage('assets/icons/messages-question.svg');
+
   /// File path: assets/icons/module.svg
   SvgGenImage get module => const SvgGenImage('assets/icons/module.svg');
+
+  /// File path: assets/icons/phone-call.svg
+  SvgGenImage get phoneCall => const SvgGenImage('assets/icons/phone-call.svg');
+
+  /// File path: assets/icons/revenue.svg
+  SvgGenImage get revenue => const SvgGenImage('assets/icons/revenue.svg');
+
+  /// File path: assets/icons/screen-play.svg
+  SvgGenImage get screenPlay =>
+      const SvgGenImage('assets/icons/screen-play.svg');
 
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
@@ -55,6 +85,9 @@ class $AssetsIconsGen {
   SvgGenImage get solarPanelSun =>
       const SvgGenImage('assets/icons/solar-panel-sun.svg');
 
+  /// File path: assets/icons/square.svg
+  SvgGenImage get square => const SvgGenImage('assets/icons/square.svg');
+
   /// File path: assets/icons/thunderstorm-sun_6854078.svg
   SvgGenImage get thunderstormSun6854078 =>
       const SvgGenImage('assets/icons/thunderstorm-sun_6854078.svg');
@@ -64,14 +97,24 @@ class $AssetsIconsGen {
 
   /// List of all assets
   List<SvgGenImage> get values => [
+        apps,
+        autoReply,
         building,
+        chatbotSpeechBubble,
+        clouds,
         commentAlt,
+        guideAlt,
         info,
+        messagesQuestion,
         module,
+        phoneCall,
+        revenue,
+        screenPlay,
         search,
         settings,
         signOutAlt,
         solarPanelSun,
+        square,
         thunderstormSun6854078,
         usersAlt
       ];
@@ -80,12 +123,27 @@ class $AssetsIconsGen {
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/cotdien.png
+  AssetGenImage get cotdien => const AssetGenImage('assets/images/cotdien.png');
+
+  /// File path: assets/images/electric-pole.png
+  AssetGenImage get electricPole =>
+      const AssetGenImage('assets/images/electric-pole.png');
+
   /// File path: assets/images/exclamation.png
   AssetGenImage get exclamation =>
       const AssetGenImage('assets/images/exclamation.png');
 
+  /// File path: assets/images/factory.png
+  AssetGenImage get factory => const AssetGenImage('assets/images/factory.png');
+
+  /// File path: assets/images/solar-panel.png
+  AssetGenImage get solarPanel =>
+      const AssetGenImage('assets/images/solar-panel.png');
+
   /// List of all assets
-  List<AssetGenImage> get values => [exclamation];
+  List<AssetGenImage> get values =>
+      [cotdien, electricPole, exclamation, factory, solarPanel];
 }
 
 class Assets {

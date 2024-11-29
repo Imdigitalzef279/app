@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-
-
 import '../../application/utils/app_utils.dart';
 import '../../application/utils/navigation_utils.dart';
 import '../routes/routes.dart';
@@ -27,11 +24,12 @@ class _MyAppState extends State<MyApp> {
         navigatorObservers: [NavigatorUtils.navigatorObserver],
         navigatorKey: NavigatorUtils.navigatorKey,
         locale: const Locale('vi'),
-        localeResolutionCallback: (locale, supportedLocales) => const Locale("vi"),
+        localeResolutionCallback: (locale, supportedLocales) =>
+            const Locale("vi"),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-
-        builder: (BuildContext context, Widget? child) => ResponsiveBreakpoints.builder(
+        builder: (BuildContext context, Widget? child) =>
+            ResponsiveBreakpoints.builder(
           child: GestureDetector(
             onTap: () {
               AppUtils.dismissKeyboard();
