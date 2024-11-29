@@ -4,6 +4,7 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/common_widgets/app_network_image.dart';
+import 'package:solar_energy/presentation/routes/route_name.dart';
 
 class ItemFactory extends StatelessWidget {
   const ItemFactory({super.key});
@@ -15,7 +16,7 @@ class ItemFactory extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(12.r),
       onTap: (){
-
+        Navigator.pushNamed(context, RouteName.statistical);
       },
       child: Ink(
         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),

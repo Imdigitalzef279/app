@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
+import 'package:solar_energy/presentation/screen/detail_factory/detail_factory.dart';
 
 
 class AppRouter {
@@ -11,8 +12,8 @@ class AppRouter {
     final arguments = routeSettings.arguments;
 
     switch (routeSettings.name) {
-      case RouteName.test_app:
-        routeWidget = const HomeWidget();
+      case RouteName.statistical:
+        routeWidget = const DetailFactoryScreen();
         break;
       default:
         routeWidget = initialWidget;

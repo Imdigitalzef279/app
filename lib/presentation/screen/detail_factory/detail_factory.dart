@@ -1,0 +1,96 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:solar_energy/application/constants/app_color.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
+import 'package:solar_energy/gen/assets.gen.dart';
+import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
+
+class DetailFactoryScreen extends StatefulWidget {
+  const DetailFactoryScreen({super.key});
+
+  @override
+  State<DetailFactoryScreen> createState() => _DetailFactoryScreenState();
+}
+
+class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
+  late int indexPage;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    indexPage = (0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _buildBody(),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (index) {
+          setState(() {
+            indexPage = index;
+          });
+        },
+        selectedIndex: indexPage,
+        backgroundColor: Colors.white,
+        indicatorColor: Colors.blue.withOpacity(0.2),
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        destinations: [
+          NavigationDestination(
+            selectedIcon: Assets.icons.overview.svg(
+                width: 16.w,
+                height: 16.w,
+                colorFilter:
+                    const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
+            icon: Assets.icons.overviewLine.svg(
+                width: 16.w,
+                height: 16.w,
+                colorFilter:
+                    const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+            label: "Tổng quan",
+          ),
+          NavigationDestination(
+            selectedIcon: Assets.icons.chartArea.svg(
+                width: 16.w,
+                height: 16.w,
+                colorFilter:
+                    const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
+            icon: Assets.icons.chartAreaLine.svg(
+                width: 16.w,
+                height: 16.w,
+                colorFilter:
+                const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+            label: "Thống kê",
+          ),
+          NavigationDestination(
+            selectedIcon: Assets.icons.computerSpeaker.svg(
+                width: 16.w,
+                height: 16.w,
+                colorFilter:
+                    const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
+            icon: Assets.icons.computerSpeakerLine.svg(
+                width: 16.w,
+                height: 16.w,
+                colorFilter:
+                const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+            label: "Thiết bị",
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    switch (indexPage) {
+      case 0:
+        return const OverViewScreen();
+      case 1:
+        return Container();
+      case 2:
+        return Container();
+      default:
+        return const OverViewScreen();
+    }
+  }
+}

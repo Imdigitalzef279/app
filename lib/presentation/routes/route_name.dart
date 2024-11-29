@@ -1,4 +1,4 @@
 class RouteName {
   static const root = '/';
-  static const test_app = '/test-app';
+  static const statistical = '/detail_factory';
 }
