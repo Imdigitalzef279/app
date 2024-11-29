@@ -14,7 +14,6 @@ class AppColors {
   // Blue
   static const blue = Color(0xFF155EEF);
   static const blueEA = Color(0xFF005BEA);
-  static const blueFB = Color(0xFF00C6FB);
   static const blue44 = Color(0xFF001744);
   static const blueF8 = Color(0xFF0057f8);
   static const blueFF = Color(0xff54a0ff);
@@ -45,5 +44,6 @@ class AppColors {
 
   // Red
   static const red14 = Color(0xffF21414);
+  static const blueFB = Color(0xffc8e2fb);
 
 }
