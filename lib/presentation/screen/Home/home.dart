@@ -45,11 +45,6 @@ class _HomeWidgetState extends State<HomeWidget> {
             label: LocalizationsUtils.localizations.home,
           ),
           NavigationDestination(
-            selectedIcon: const Icon(Icons.build_circle, color: Colors.blue),
-            icon: const Icon(Icons.build_circle_outlined),
-            label: LocalizationsUtils.localizations.maintenance,
-          ),
-          NavigationDestination(
             selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
             icon: const Icon(Icons.developer_board),
             label: LocalizationsUtils.localizations.device,
@@ -69,10 +64,8 @@ class _HomeWidgetState extends State<HomeWidget> {
       case 0:
         return const HomePageWidget();
       case 1:
-        return const MaintenanceScreen();
-      case 2:
         return const ServiceScreen();
-      case 3:
+      case 2:
         return Center(
             child: Text(
           LocalizationsUtils.localizations.me,
