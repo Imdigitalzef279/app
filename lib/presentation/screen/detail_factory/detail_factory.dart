@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
+import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
+import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
 class DetailFactoryScreen extends StatefulWidget {
   const DetailFactoryScreen({super.key});
@@ -86,9 +88,9 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
       case 0:
         return const OverViewScreen();
       case 1:
-        return Container();
+        return const StatisticalScreen();
       case 2:
-        return Container();
+        return const DevicesScreen();
       default:
         return const OverViewScreen();
     }

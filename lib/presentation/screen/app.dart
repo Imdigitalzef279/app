@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
             const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
           ],
         ),
-        title: "WareHouse",
+        title: "solar power",
         onGenerateRoute: AppRouter().onGenerateRoute,
       ),
     );
