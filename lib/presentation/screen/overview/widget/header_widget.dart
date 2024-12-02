@@ -19,7 +19,11 @@ class HeaderWidget extends StatelessWidget {
               colors: [AppColors.blueFB, AppColors.greyFB])),
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
-        children: [weather(), Gap(32.h), electricity()],
+        children: [
+          weather(),
+          Gap(20.h),
+          electricity(),
+        ],
       ),
     );
   }
@@ -28,19 +32,22 @@ class HeaderWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
-            Icon(
+            const Icon(
               Icons.cloud,
               color: AppColors.blueFF,
             ),
-            Text("18°C-20°C")
+            Gap(4.w),
+            Text("18°C-20°C",
+                style:
+                    AppTextStyle.textXs.copyWith(color: AppColors.textPrimary))
           ],
         ),
-        Gap(12.h),
+        Gap(8.h),
         Text(
           "Bình thường",
-          style: AppTextStyle.textSm.copyWith(color: AppColors.green50),
+          style: AppTextStyle.textXs.copyWith(color: AppColors.green50),
         )
       ],
     );
@@ -51,11 +58,11 @@ class HeaderWidget extends StatelessWidget {
         alignment: Alignment.center,
         child: Stack(children: [
           Positioned(
-              right: 110.w,
+              right: 90.w,
               top: 120.h,
               child: Transform.rotate(
                   angle: 240 * 3.14159 / 180,
-                  child: AnimationWidget(width: 50.w, duration: 1500))),
+                  child: AnimationWidget(width: 100.w, duration: 1500))),
           Positioned(
               right: 0,
               left: 0,
@@ -64,11 +71,11 @@ class HeaderWidget extends StatelessWidget {
                   angle: 180 * 3.14159 / 180,
                   child: AnimationWidget(width: 100.w, duration: 1500))),
           Positioned(
-              left: 110.w,
+              left: 90.w,
               top: 120.h,
               child: Transform.rotate(
                   angle: 300 * 3.14159 / 180,
-                  child: AnimationWidget(width: 50.w, duration: 1500))),
+                  child: AnimationWidget(width: 100.w, duration: 1500))),
           Column(
             children: [
               Container(
@@ -134,10 +141,8 @@ class HeaderWidget extends StatelessWidget {
             height: size / 2,
             decoration: BoxDecoration(
               border: isRight
-                  ? const Border(
-                      right: BorderSide(color: AppColors.textPrimary))
-                  : const Border(
-                      left: BorderSide(color: AppColors.textPrimary)),
+                  ? const Border(right: BorderSide(color: AppColors.greyAE))
+                  : const Border(left: BorderSide(color: AppColors.greyAE)),
             ),
             margin: isRight
                 ? EdgeInsets.only(right: 30.w)
@@ -150,13 +155,14 @@ class HeaderWidget extends StatelessWidget {
                     text: TextSpan(children: [
                   TextSpan(
                       text: content,
-                      style: AppTextStyle.textBase.copyWith(
-                          color: Colors.black, fontWeight: FontWeight.w600)),
+                      style: AppTextStyle.textSm.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600)),
                   TextSpan(
                       text: ' KW',
                       style: AppTextStyle.textXs.copyWith(
                           fontSize: 10.sp,
-                          color: Colors.grey,
+                          color: AppColors.grey86,
                           fontWeight: FontWeight.w600)),
                 ])),
                 Text(
@@ -164,7 +170,7 @@ class HeaderWidget extends StatelessWidget {
                   style: AppTextStyle.textSm.copyWith(
                       fontSize: 10.sp,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.greyAE),
+                      color: AppColors.grey86),
                 )
               ],
             ),
