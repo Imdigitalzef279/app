@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/presentation/routes/route_name.dart';
 
 class ItemDevice extends StatelessWidget {
   const ItemDevice({super.key});
@@ -10,7 +11,7 @@ class ItemDevice extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-
+        Navigator.pushNamed(context, RouteName.detailDevice);
       },
       borderRadius: BorderRadius.circular(16.r),
       child: Ink(
