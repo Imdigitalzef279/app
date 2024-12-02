@@ -37,7 +37,7 @@ class CurrentlyWidget extends StatelessWidget {
             Gap(12.h),
             Wrap(
                 direction: Axis.horizontal,
-                runSpacing: 24.r,
+                runSpacing: 16.r,
                 spacing: 12.r,
                 children: [
                   item(context,
@@ -87,14 +87,14 @@ class CurrentlyWidget extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(10.r),
+              padding: EdgeInsets.all(8.r),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.r),
                   color: color.withOpacity(0.2)),
               child: SvgPicture.asset(
                 path,
-                width: 16.r,
-                height: 16.r,
+                width: 20.r,
+                height: 20.r,
                 colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
               ),
             ),
@@ -119,7 +119,7 @@ class CurrentlyWidget extends StatelessWidget {
                   ])),
                   Gap(4.h),
                   Text(
-                    "$title",
+                    title,
                     style: AppTextStyle.textXs
                         .copyWith(color: AppColors.grey73, fontSize: 10.sp),
                     maxLines: 1,
