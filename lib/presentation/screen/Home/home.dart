@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
+import 'package:solar_energy/presentation/screen/Maintenance/maintenance_screen.dart';
+import 'package:solar_energy/presentation/screen/account_information/account_screen.dart';
 import 'package:solar_energy/presentation/screen/home_page/home_page_widget.dart';
+import 'package:solar_energy/presentation/screen/service_solar/widget/service_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -39,22 +42,17 @@ class _HomeWidgetState extends State<HomeWidget> {
         destinations: [
           NavigationDestination(
             selectedIcon: const Icon(Icons.home_rounded, color: Colors.blue),
-            icon: const Icon(Icons.home_outlined),
+            icon: const Icon(Icons.home_outlined, color: AppColors.grey73,),
             label: LocalizationsUtils.localizations.home,
           ),
           NavigationDestination(
-            selectedIcon: const Icon(Icons.build_circle, color: Colors.blue),
-            icon: const Icon(Icons.build_circle_outlined),
-            label: LocalizationsUtils.localizations.maintenance,
-          ),
-          NavigationDestination(
             selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
-            icon: const Icon(Icons.developer_board),
+            icon: const Icon(Icons.developer_board, color: AppColors.grey73,),
             label: LocalizationsUtils.localizations.device,
           ),
           NavigationDestination(
             selectedIcon: const Icon(Icons.account_circle, color: Colors.blue),
-            icon: const Icon(Icons.account_circle_outlined),
+            icon: const Icon(Icons.account_circle_outlined, color: AppColors.grey73),
             label: LocalizationsUtils.localizations.me,
           ),
         ],
@@ -67,20 +65,9 @@ class _HomeWidgetState extends State<HomeWidget> {
       case 0:
         return const HomePageWidget();
       case 1:
-        return const OverViewScreen();
+        return const ServiceScreen();
       case 2:
-        return Center(
-          child: Text(
-            LocalizationsUtils.localizations.device,
-            style: AppTextStyle.textXl,
-          ),
-        );
-      case 3:
-        return Center(
-            child: Text(
-          LocalizationsUtils.localizations.me,
-          style: AppTextStyle.textXl,
-        ));
+        return const AccountScreen();
       default:
         return Center(
             child: Text(

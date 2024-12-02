@@ -31,14 +31,85 @@ class $AssetsIconsGen {
   /// File path: assets/icons/apps.svg
   SvgGenImage get apps => const SvgGenImage('assets/icons/apps.svg');
 
+  /// File path: assets/icons/auto-reply.svg
+  SvgGenImage get autoReply => const SvgGenImage('assets/icons/auto-reply.svg');
+
+  /// File path: assets/icons/building.svg
+  SvgGenImage get building => const SvgGenImage('assets/icons/building.svg');
+
+  /// File path: assets/icons/chart-area.svg
+  SvgGenImage get chartArea => const SvgGenImage('assets/icons/chart-area.svg');
+
+  /// File path: assets/icons/chart-area_line.svg
+  SvgGenImage get chartAreaLine =>
+      const SvgGenImage('assets/icons/chart-area_line.svg');
+
+  /// File path: assets/icons/chatbot-speech-bubble.svg
+  SvgGenImage get chatbotSpeechBubble =>
+      const SvgGenImage('assets/icons/chatbot-speech-bubble.svg');
+
   /// File path: assets/icons/clouds.svg
   SvgGenImage get clouds => const SvgGenImage('assets/icons/clouds.svg');
+
+  /// File path: assets/icons/comment-alt.svg
+  SvgGenImage get commentAlt =>
+      const SvgGenImage('assets/icons/comment-alt.svg');
+
+  /// File path: assets/icons/computer-speaker.svg
+  SvgGenImage get computerSpeaker =>
+      const SvgGenImage('assets/icons/computer-speaker.svg');
+
+  /// File path: assets/icons/computer-speaker_line.svg
+  SvgGenImage get computerSpeakerLine =>
+      const SvgGenImage('assets/icons/computer-speaker_line.svg');
+
+  /// File path: assets/icons/dashboard-panel.svg
+  SvgGenImage get dashboardPanel =>
+      const SvgGenImage('assets/icons/dashboard-panel.svg');
+
+  /// File path: assets/icons/dashboard-panel_line.svg
+  SvgGenImage get dashboardPanelLine =>
+      const SvgGenImage('assets/icons/dashboard-panel_line.svg');
+
+  /// File path: assets/icons/guide-alt.svg
+  SvgGenImage get guideAlt => const SvgGenImage('assets/icons/guide-alt.svg');
+
+  /// File path: assets/icons/info.svg
+  SvgGenImage get info => const SvgGenImage('assets/icons/info.svg');
+
+  /// File path: assets/icons/messages-question.svg
+  SvgGenImage get messagesQuestion =>
+      const SvgGenImage('assets/icons/messages-question.svg');
+
+  /// File path: assets/icons/module.svg
+  SvgGenImage get module => const SvgGenImage('assets/icons/module.svg');
+
+  /// File path: assets/icons/overview.svg
+  SvgGenImage get overview => const SvgGenImage('assets/icons/overview.svg');
+
+  /// File path: assets/icons/overview_line.svg
+  SvgGenImage get overviewLine =>
+      const SvgGenImage('assets/icons/overview_line.svg');
+
+  /// File path: assets/icons/phone-call.svg
+  SvgGenImage get phoneCall => const SvgGenImage('assets/icons/phone-call.svg');
 
   /// File path: assets/icons/revenue.svg
   SvgGenImage get revenue => const SvgGenImage('assets/icons/revenue.svg');
 
+  /// File path: assets/icons/screen-play.svg
+  SvgGenImage get screenPlay =>
+      const SvgGenImage('assets/icons/screen-play.svg');
+
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
+
+  /// File path: assets/icons/settings.svg
+  SvgGenImage get settings => const SvgGenImage('assets/icons/settings.svg');
+
+  /// File path: assets/icons/sign-out-alt.svg
+  SvgGenImage get signOutAlt =>
+      const SvgGenImage('assets/icons/sign-out-alt.svg');
 
   /// File path: assets/icons/solar-panel-sun.svg
   SvgGenImage get solarPanelSun =>
@@ -51,15 +122,39 @@ class $AssetsIconsGen {
   SvgGenImage get thunderstormSun6854078 =>
       const SvgGenImage('assets/icons/thunderstorm-sun_6854078.svg');
 
+  /// File path: assets/icons/users-alt.svg
+  SvgGenImage get usersAlt => const SvgGenImage('assets/icons/users-alt.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
         apps,
+        autoReply,
+        building,
+        chartArea,
+        chartAreaLine,
+        chatbotSpeechBubble,
         clouds,
+        commentAlt,
+        computerSpeaker,
+        computerSpeakerLine,
+        dashboardPanel,
+        dashboardPanelLine,
+        guideAlt,
+        info,
+        messagesQuestion,
+        module,
+        overview,
+        overviewLine,
+        phoneCall,
         revenue,
+        screenPlay,
         search,
+        settings,
+        signOutAlt,
         solarPanelSun,
         square,
-        thunderstormSun6854078
+        thunderstormSun6854078,
+        usersAlt
       ];
 }
 
