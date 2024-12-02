@@ -34,6 +34,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/auto-reply.svg
   SvgGenImage get autoReply => const SvgGenImage('assets/icons/auto-reply.svg');
 
+  /// File path: assets/icons/bell.svg
+  SvgGenImage get bell => const SvgGenImage('assets/icons/bell.svg');
+
+  /// File path: assets/icons/bell_line.svg
+  SvgGenImage get bellLine => const SvgGenImage('assets/icons/bell_line.svg');
+
   /// File path: assets/icons/building.svg
   SvgGenImage get building => const SvgGenImage('assets/icons/building.svg');
 
@@ -76,6 +82,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/info.svg
   SvgGenImage get info => const SvgGenImage('assets/icons/info.svg');
+
+  /// File path: assets/icons/info_line.svg
+  SvgGenImage get infoLine => const SvgGenImage('assets/icons/info_line.svg');
 
   /// File path: assets/icons/messages-question.svg
   SvgGenImage get messagesQuestion =>
@@ -129,6 +138,8 @@ class $AssetsIconsGen {
   List<SvgGenImage> get values => [
         apps,
         autoReply,
+        bell,
+        bellLine,
         building,
         chartArea,
         chartAreaLine,
@@ -141,6 +152,7 @@ class $AssetsIconsGen {
         dashboardPanelLine,
         guideAlt,
         info,
+        infoLine,
         messagesQuestion,
         module,
         overview,
@@ -168,6 +180,10 @@ class $AssetsImagesGen {
   AssetGenImage get electricPole =>
       const AssetGenImage('assets/images/electric-pole.png');
 
+  /// File path: assets/images/exclamation-mark.png
+  AssetGenImage get exclamationMark =>
+      const AssetGenImage('assets/images/exclamation-mark.png');
+
   /// File path: assets/images/exclamation.png
   AssetGenImage get exclamation =>
       const AssetGenImage('assets/images/exclamation.png');
@@ -180,8 +196,14 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/solar-panel.png');
 
   /// List of all assets
-  List<AssetGenImage> get values =>
-      [cotdien, electricPole, exclamation, factory, solarPanel];
+  List<AssetGenImage> get values => [
+        cotdien,
+        electricPole,
+        exclamationMark,
+        exclamation,
+        factory,
+        solarPanel
+      ];
 }
 
 class Assets {
