@@ -248,7 +248,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                 contentPadding: EdgeInsets.symmetric(vertical: 8.h),
               ),
               AppButton(
-                title: "Đặt Lại",
+                title: "OK",
                 color: AppColors.blueEA,
                 fontSize: 12.sp,
                 textColor: AppColors.white,
