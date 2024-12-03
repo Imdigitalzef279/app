@@ -37,22 +37,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           style: AppTextStyle.textBase.copyWith(fontWeight: FontWeight.w600),
         ),
         elevation: 0,
-        actions: [
-          InkWell(
-              borderRadius: BorderRadius.circular(99.r),
-              onTap: () {},
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                margin: EdgeInsets.symmetric(horizontal: 8.w),
-                decoration: BoxDecoration(
-                    color: AppColors.blueFB.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(99.r)),
-                child: Text(
-                  LocalizationsUtils.localizations.statistical,
-                  style: AppTextStyle.textXs.copyWith(color: AppColors.blueEA),
-                ),
-              ))
-        ],
       ),
       body: SafeArea(
           child: Padding(

@@ -24,7 +24,6 @@ class TabSelectWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(99.r),
       onTap: () {
         callBack.call(values);
-        print(values.toString());
       },
       child: AnimatedContainer(
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),

@@ -128,7 +128,10 @@ class _CustomLabelTextFieldState extends State<CustomLabelTextField> {
               counterText: "",
               contentPadding: widget.contentPadding ??
                   EdgeInsets.only(
-                      left: 15.w, right: 15.w, top: 15.h, bottom: 15.h),
+                      left: (widget.prefixIcon != null ? 40.w : 15.w),
+                      right: (widget.suffixIcon != null ? 40.w : 15.w),
+                      top: 15.h,
+                      bottom: 15.h),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(_radius),
                 borderSide: BorderSide(
@@ -143,7 +146,10 @@ class _CustomLabelTextFieldState extends State<CustomLabelTextField> {
                       BorderSide(color: widget.colorBorder ?? AppColors.grey),
                   borderRadius: BorderRadius.circular(_radius)),
               focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: widget.errorMessage?.isNotEmpty != false ? AppColors.grey73 : Colors.red),
+                  borderSide: BorderSide(
+                      color: widget.errorMessage?.isNotEmpty != false
+                          ? AppColors.grey73
+                          : Colors.red),
                   borderRadius: BorderRadius.circular(_radius)),
               hintText: widget.hintText,
 

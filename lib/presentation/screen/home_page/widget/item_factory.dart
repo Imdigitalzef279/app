@@ -27,7 +27,7 @@ class ItemFactory extends StatelessWidget {
         child: Row(
           children: [
             AppNetworkImage(
-              "https://combohome.vn/wp-content/uploads/2024/08/Smart-homes-scaled-1.jpg",
+              "https://i0.wp.com/mcnaircustomhomes.com/wp-content/uploads/2023/06/luxury-smart-home.jpg?resize=1536%2C1024&ssl=1",
               width: 1.sw / 4,
               height: 1.sw / 5.5,
               radius: 8.r,
