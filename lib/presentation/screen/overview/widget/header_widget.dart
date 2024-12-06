@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
-import 'package:solar_energy/presentation/screen/overview/widget/animation_widget.dart';
 
 class HeaderWidget extends StatelessWidget {
   const HeaderWidget({super.key});
@@ -58,35 +58,49 @@ class HeaderWidget extends StatelessWidget {
         alignment: Alignment.center,
         child: Stack(children: [
           Positioned(
-              right: 90.w,
+              right: 80.w,
               top: 120.h,
               child: Transform.rotate(
-                  angle: 240 * 3.14159 / 180,
-                  child: AnimationWidget(width: 100.w, duration: 1500))),
+                angle: 155 * 3.14159 / 180,
+                child: Lottie.asset(
+                  'assets/images/animation.json',
+                  width: 90.r,
+                  height: 90.r,
+                  onLoaded: (composition) {},
+                ),
+              )),
           Positioned(
-              right: 0,
-              left: 0,
+              left: 80.w,
+              top: 120.h,
+              child: Transform.rotate(
+                angle: 200 * 3.14159 / 180,
+                child: Lottie.asset(
+                  'assets/images/animation.json',
+                  width: 90.r,
+                  height: 90.r,
+                  onLoaded: (composition) {},
+                ),
+              )),
+          Positioned(
+              left: (1.sw / 2) - 75.w,
               top: 180.h,
               child: Transform.rotate(
-                  angle: 180 * 3.14159 / 180,
-                  child: AnimationWidget(width: 100.w, duration: 1500))),
-          Positioned(
-              left: 90.w,
-              top: 120.h,
-              child: Transform.rotate(
-                  angle: 300 * 3.14159 / 180,
-                  child: AnimationWidget(width: 100.w, duration: 1500))),
+                angle: 90 * 3.14159 / 180,
+                child: Lottie.asset(
+                  'assets/images/animation.json',
+                  width: 90.r,
+                  height: 90.r,
+                  onLoaded: (composition) {},
+                ),
+              )),
           Column(
             children: [
-              Container(
-                margin: EdgeInsets.only(right: 50.w),
-                child: item(
-                    img: Assets.images.factory.path,
-                    content: '680.670',
-                    size: 110.r,
-                    sizeIcon: 80.r,
-                    type: "Mức sử dụng"),
-              ),
+              item(
+                  img: Assets.images.factory.path,
+                  content: '680.670',
+                  size: 150.r,
+                  sizeIcon: 110.r,
+                  type: "Mức sử dụng"),
               Gap(10.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,18 +108,18 @@ class HeaderWidget extends StatelessWidget {
                   item(
                       img: Assets.images.electricPole.path,
                       content: '218.114',
-                      size: 100.r,
-                      sizeIcon: 60.r,
+                      size: 150.r,
+                      sizeIcon: 130.r,
                       type: "Lưới điện"),
                   item(
-                      img: Assets.images.solarPanel.path,
+                      img: Assets.images.solarEnergy.path,
                       content: '462.584',
-                      size: 100.r,
-                      sizeIcon: 60.r,
+                      size: 130.r,
+                      sizeIcon: 120.r,
                       type: "PV",
                       isRight: false),
                 ],
-              )
+              ),
             ],
           ),
         ]));
@@ -122,13 +136,12 @@ class HeaderWidget extends StatelessWidget {
       height: size,
       color: Colors.transparent,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           Positioned(
             bottom: 0,
-            right: isRight ? 0 : null,
-            left: isRight ? null : 0,
             child: Container(
-              width: sizeIcon,
+              width: isRight ? sizeIcon + 30.w : sizeIcon,
               height: sizeIcon,
               color: Colors.transparent,
               child: Image.asset(
@@ -144,10 +157,10 @@ class HeaderWidget extends StatelessWidget {
                   ? const Border(right: BorderSide(color: AppColors.greyAE))
                   : const Border(left: BorderSide(color: AppColors.greyAE)),
             ),
-            margin: isRight
-                ? EdgeInsets.only(right: 30.w)
-                : EdgeInsets.only(left: 30.w),
-            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            padding: isRight
+                ? EdgeInsets.only(right: 12.w)
+                : EdgeInsets.only(left: 12.w),
+            margin: isRight ? null : EdgeInsets.only(left: 12.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
