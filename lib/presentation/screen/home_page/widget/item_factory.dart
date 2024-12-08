@@ -16,7 +16,7 @@ class ItemFactory extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(12.r),
       onTap: (){
-        Navigator.pushNamed(context, RouteName.statistical);
+        Navigator.pushNamed(context, RouteName.generalDevice);
       },
       child: Ink(
         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),

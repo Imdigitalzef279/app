@@ -35,13 +35,13 @@ android {
         dev {
             dimension "default"
             applicationId "com.example.solar_energy.dev"
-            resValue "string", "app_name", "Solar Energy"
+            resValue "string", "app_name", "Kra Power Dev"
         }
 
         prod {
             dimension "default"
             applicationId "com.example.solar_energy"
-            resValue "string", "app_name", "Solar Energy"
+            resValue "string", "app_name", "Kra Power"
         }
     }
 

@@ -276,87 +276,90 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                         color: AppColors.white),
                     child: Column(
                       children: [
-                        SfCartesianChart(
-                            // Enable legend
-                            legend: const Legend(isVisible: false),
-                            primaryXAxis: CategoryAxis(
-                              labelStyle: AppTextStyle.textXs
-                                  .copyWith(color: AppColors.textPrimary),
-                            ),
-                            primaryYAxis: NumericAxis(
-                              axisLabelFormatter: (AxisLabelRenderDetails details) {
-                                return ChartAxisLabel(
-                                    '${details.value} kW',
-                                    AppTextStyle.textXs
-                                        .copyWith(color: AppColors.textPrimary));
-                              },
-                            ),
-                            // Enable tooltip
-                            //tooltipBehavior: TooltipBehavior(enable: true, shared: true),
-                            trackballBehavior: TrackballBehavior(
-                              enable: true,
-                              activationMode: ActivationMode.singleTap,
-                              hideDelay: 2500,
-                              tooltipAlignment: ChartAlignment.center,
-                              tooltipDisplayMode:
-                                  TrackballDisplayMode.groupAllPoints,
-                              // Hiển thị tất cả series
-                              tooltipSettings: InteractiveTooltip(
-                                enable: true,
-                                format: 'point.y kW',
-                                color: Colors.black.withOpacity(0.7),
-                                textStyle: const TextStyle(
-                                    color: Colors.white, fontSize: 12),
+                        SizedBox(
+                          height: 200.h,
+                          child: SfCartesianChart(
+                              // Enable legend
+                              legend: const Legend(isVisible: false),
+                              primaryXAxis: CategoryAxis(
+                                labelStyle: AppTextStyle.textXs
+                                    .copyWith(color: AppColors.textPrimary),
                               ),
-                              // tooltipSettings: const InteractiveTooltip(
-                              //   enable: true,
-                              //   format: 'point.y kW',
-                              // ),
-                            ),
-                            zoomPanBehavior: ZoomPanBehavior(
-                                enablePanning: true,
-                                enablePinching: true,
-                                enableDoubleTapZooming: true,
-                                zoomMode: ZoomMode.x),
-                            series: <CartesianSeries<_SalesData, String>>[
-                              if (selectPV)
-                                SplineSeries<_SalesData, String>(
-                                    dataSource: generateSalesData(),
-                                    xValueMapper: (_SalesData sales, _) =>
-                                        sales.year,
-                                    yValueMapper: (_SalesData sales, _) =>
-                                        sales.sales,
-                                    color: const Color(0xFF1dd1a1),
-                                    name: 'Công suất PV',
-                                    // Enable data label
-                                    dataLabelSettings:
-                                        const DataLabelSettings(isVisible: false)),
-                              if (selectNet)
-                                SplineSeries<_SalesData, String>(
-                                    dataSource: generateSalesData(),
-                                    xValueMapper: (_SalesData sales, _) =>
-                                        sales.year,
-                                    yValueMapper: (_SalesData sales, _) =>
-                                        sales.sales,
-                                    color: const Color(0xFF576574),
-                                    name: 'Nguồn điện từ lưới điện',
+                              primaryYAxis: NumericAxis(
+                                axisLabelFormatter: (AxisLabelRenderDetails details) {
+                                  return ChartAxisLabel(
+                                      '${details.value} kW',
+                                      AppTextStyle.textXs
+                                          .copyWith(color: AppColors.textPrimary));
+                                },
+                              ),
+                              // Enable tooltip
+                              //tooltipBehavior: TooltipBehavior(enable: true, shared: true),
+                              trackballBehavior: TrackballBehavior(
+                                enable: true,
+                                activationMode: ActivationMode.singleTap,
+                                hideDelay: 2500,
+                                tooltipAlignment: ChartAlignment.center,
+                                tooltipDisplayMode:
+                                    TrackballDisplayMode.groupAllPoints,
+                                // Hiển thị tất cả series
+                                tooltipSettings: InteractiveTooltip(
+                                  enable: true,
+                                  format: 'point.y kW',
+                                  color: Colors.black.withOpacity(0.7),
+                                  textStyle: const TextStyle(
+                                      color: Colors.white, fontSize: 12),
+                                ),
+                                // tooltipSettings: const InteractiveTooltip(
+                                //   enable: true,
+                                //   format: 'point.y kW',
+                                // ),
+                              ),
+                              zoomPanBehavior: ZoomPanBehavior(
+                                  enablePanning: true,
+                                  enablePinching: true,
+                                  enableDoubleTapZooming: true,
+                                  zoomMode: ZoomMode.x),
+                              series: <CartesianSeries<_SalesData, String>>[
+                                if (selectPV)
+                                  SplineSeries<_SalesData, String>(
+                                      dataSource: generateSalesData(),
+                                      xValueMapper: (_SalesData sales, _) =>
+                                          sales.year,
+                                      yValueMapper: (_SalesData sales, _) =>
+                                          sales.sales,
+                                      color: const Color(0xFF1dd1a1),
+                                      name: 'Công suất PV',
+                                      // Enable data label
+                                      dataLabelSettings:
+                                          const DataLabelSettings(isVisible: false)),
+                                if (selectNet)
+                                  SplineSeries<_SalesData, String>(
+                                      dataSource: generateSalesData(),
+                                      xValueMapper: (_SalesData sales, _) =>
+                                          sales.year,
+                                      yValueMapper: (_SalesData sales, _) =>
+                                          sales.sales,
+                                      color: const Color(0xFF576574),
+                                      name: 'Nguồn điện từ lưới điện',
 
-                                    // Enable data label
-                                    dataLabelSettings:
-                                        const DataLabelSettings(isVisible: false)),
-                              if (selectConsumer)
-                                SplineSeries<_SalesData, String>(
-                                    dataSource: generateSalesData(),
-                                    xValueMapper: (_SalesData sales, _) =>
-                                        sales.year,
-                                    yValueMapper: (_SalesData sales, _) =>
-                                        sales.sales,
-                                    color: const Color(0xFFff9f43),
-                                    name: 'Điện năng tiêu thụ',
-                                    // Enable data label
-                                    dataLabelSettings:
-                                        const DataLabelSettings(isVisible: false))
-                            ]),
+                                      // Enable data label
+                                      dataLabelSettings:
+                                          const DataLabelSettings(isVisible: false)),
+                                if (selectConsumer)
+                                  SplineSeries<_SalesData, String>(
+                                      dataSource: generateSalesData(),
+                                      xValueMapper: (_SalesData sales, _) =>
+                                          sales.year,
+                                      yValueMapper: (_SalesData sales, _) =>
+                                          sales.sales,
+                                      color: const Color(0xFFff9f43),
+                                      name: 'Điện năng tiêu thụ',
+                                      // Enable data label
+                                      dataLabelSettings:
+                                          const DataLabelSettings(isVisible: false))
+                              ]),
+                        ),
                         Wrap(
                           alignment: WrapAlignment.start,
                           runSpacing: 4.w,
