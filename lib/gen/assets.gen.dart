@@ -28,6 +28,9 @@ class $EnvGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/air.svg
+  SvgGenImage get air => const SvgGenImage('assets/icons/air.svg');
+
   /// File path: assets/icons/apps.svg
   SvgGenImage get apps => const SvgGenImage('assets/icons/apps.svg');
 
@@ -106,6 +109,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/revenue.svg
   SvgGenImage get revenue => const SvgGenImage('assets/icons/revenue.svg');
 
+  /// File path: assets/icons/saving_electric.svg
+  SvgGenImage get savingElectric =>
+      const SvgGenImage('assets/icons/saving_electric.svg');
+
   /// File path: assets/icons/screen-play.svg
   SvgGenImage get screenPlay =>
       const SvgGenImage('assets/icons/screen-play.svg');
@@ -134,8 +141,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/users-alt.svg
   SvgGenImage get usersAlt => const SvgGenImage('assets/icons/users-alt.svg');
 
+  /// File path: assets/icons/water.svg
+  SvgGenImage get water => const SvgGenImage('assets/icons/water.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
+        air,
         apps,
         autoReply,
         bell,
@@ -159,6 +170,7 @@ class $AssetsIconsGen {
         overviewLine,
         phoneCall,
         revenue,
+        savingElectric,
         screenPlay,
         search,
         settings,
@@ -166,7 +178,8 @@ class $AssetsIconsGen {
         solarPanelSun,
         square,
         thunderstormSun6854078,
-        usersAlt
+        usersAlt,
+        water
       ];
 }
 
