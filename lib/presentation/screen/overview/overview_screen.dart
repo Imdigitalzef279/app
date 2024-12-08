@@ -37,7 +37,6 @@ class _OverViewScreenState extends State<OverViewScreen> {
         child: Column(
           children: [
             const HeaderWidget(),
-            Gap(32.h),
             const CurrentlyWidget(),
             const BenefitsWidget()
           ],

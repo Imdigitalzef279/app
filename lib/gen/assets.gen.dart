@@ -189,12 +189,12 @@ class $AssetsImagesGen {
   /// File path: assets/images/AnimationLogin.json
   String get animationLogin => 'assets/images/AnimationLogin.json';
 
-  /// File path: assets/images/cotdien.png
-  AssetGenImage get cotdien => const AssetGenImage('assets/images/cotdien.png');
+  /// File path: assets/images/animation.json
+  String get animation => 'assets/images/animation.json';
 
-  /// File path: assets/images/electric-pole.png
+  /// File path: assets/images/electric_pole.png
   AssetGenImage get electricPole =>
-      const AssetGenImage('assets/images/electric-pole.png');
+      const AssetGenImage('assets/images/electric_pole.png');
 
   /// File path: assets/images/exclamation-mark.png
   AssetGenImage get exclamationMark =>
@@ -210,20 +210,20 @@ class $AssetsImagesGen {
   /// File path: assets/images/logo.png
   AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
 
-  /// File path: assets/images/solar-panel.png
-  AssetGenImage get solarPanel =>
-      const AssetGenImage('assets/images/solar-panel.png');
+  /// File path: assets/images/solar_energy.png
+  AssetGenImage get solarEnergy =>
+      const AssetGenImage('assets/images/solar_energy.png');
 
   /// List of all assets
   List<dynamic> get values => [
         animationLogin,
-        cotdien,
+        animation,
         electricPole,
         exclamationMark,
         exclamation,
         factory,
         logo,
-        solarPanel
+        solarEnergy
       ];
 }
 
