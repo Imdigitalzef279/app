@@ -23,7 +23,8 @@ class _OverViewScreenState extends State<OverViewScreen> {
         backgroundColor: AppColors.blueFB,
         title: Text(
           "Thien son",
-          style: AppTextStyle.textBase.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+          style: AppTextStyle.textBase.copyWith(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(
@@ -33,13 +34,9 @@ class _OverViewScreenState extends State<OverViewScreen> {
         ],
       ),
       backgroundColor: AppColors.greyFB,
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Column(
-          children: [
-            const HeaderWidget(),
-            const CurrentlyWidget(),
-            const BenefitsWidget()
-          ],
+          children: [HeaderWidget(), CurrentlyWidget()],
         ),
       ),
     );
