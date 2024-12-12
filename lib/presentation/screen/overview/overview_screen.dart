@@ -8,7 +8,9 @@ import 'package:solar_energy/presentation/screen/overview/widget/currently_widge
 import 'package:solar_energy/presentation/screen/overview/widget/header_widget.dart';
 
 class OverViewScreen extends StatefulWidget {
-  const OverViewScreen({super.key});
+  const OverViewScreen({super.key, this.check = false});
+
+  final bool check;
 
   @override
   State<OverViewScreen> createState() => _OverViewScreenState();
@@ -34,9 +36,12 @@ class _OverViewScreenState extends State<OverViewScreen> {
         ],
       ),
       backgroundColor: AppColors.greyFB,
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
-          children: [HeaderWidget(), CurrentlyWidget()],
+          children: [
+            HeaderWidget(check: widget.check),
+            CurrentlyWidget(),
+          ],
         ),
       ),
     );
