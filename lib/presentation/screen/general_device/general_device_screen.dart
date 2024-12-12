@@ -24,6 +24,13 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen> with TickerPr
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greyFB,
@@ -85,7 +92,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen> with TickerPr
                           onLoaded: (composition) {
                             _controller
                               ..duration = composition.duration
-                              ..forward();
+                              ..repeat(reverse: true);
                           },
                         ),
                       ),
@@ -113,7 +120,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen> with TickerPr
                       children: [
                         itemService(
                             onTap: () {
-                              Navigator.pushNamed(context, RouteName.factoryDetail);
+                              Navigator.pushNamed(context, RouteName.managerWater);
                             },
                             icon: Assets.icons.water.svg(
                                 width: 22.w,

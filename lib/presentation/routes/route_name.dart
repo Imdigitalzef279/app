@@ -10,5 +10,6 @@ class RouteName {
   static const statisticalScreen = '/statistical_Screen';
   static const deviceScreen = '/device_screen';
   static const factoryDetail = '/factory_detail';
-
+  static const managerWater = '/manager_water';
+  static const allAlarmWater = '/all_alarm_water';
 }
