@@ -8,7 +8,9 @@ import 'package:solar_energy/presentation/screen/overview/widget/currently_widge
 import 'package:solar_energy/presentation/screen/overview/widget/header_widget.dart';
 
 class OverViewScreen extends StatefulWidget {
-  const OverViewScreen({super.key});
+  const OverViewScreen({super.key, this.check = false});
+
+  final bool check;
 
   @override
   State<OverViewScreen> createState() => _OverViewScreenState();
@@ -23,7 +25,8 @@ class _OverViewScreenState extends State<OverViewScreen> {
         backgroundColor: AppColors.blueFB,
         title: Text(
           "Thien son",
-          style: AppTextStyle.textBase.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+          style: AppTextStyle.textBase.copyWith(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(
@@ -36,9 +39,8 @@ class _OverViewScreenState extends State<OverViewScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const HeaderWidget(),
-            const CurrentlyWidget(),
-            const BenefitsWidget()
+            HeaderWidget(check: widget.check),
+            CurrentlyWidget(),
           ],
         ),
       ),

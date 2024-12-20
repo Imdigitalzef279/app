@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
@@ -11,7 +10,6 @@ import 'package:solar_energy/presentation/screen/general_device/general_device_s
 import 'package:solar_energy/presentation/screen/manager_water/manager_water_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
-
 
 class AppRouter {
   Route onGenerateRoute(RouteSettings routeSettings) {
@@ -30,7 +28,11 @@ class AppRouter {
         routeWidget = const DetailFactoryScreen();
         break;
       case RouteName.overview:
-        routeWidget = const OverViewScreen();
+        routeWidget = arguments != null
+            ? OverViewScreen(
+                check: arguments as bool,
+              )
+            : const OverViewScreen();
         break;
       case RouteName.statisticalScreen:
         routeWidget = const StatisticalScreen();
@@ -60,5 +62,4 @@ class AppRouter {
     return MaterialPageRoute(
         builder: (_) => routeWidget, settings: routeSettings);
   }
-
 }
