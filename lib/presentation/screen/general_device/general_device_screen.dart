@@ -26,6 +26,13 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greyFB,
@@ -97,7 +104,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                           onLoaded: (composition) {
                             _controller
                               ..duration = composition.duration
-                              ..forward();
+                              ..repeat(reverse: true);
                           },
                         ),
                       ),
@@ -105,7 +112,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   ],
                 ),
               ),
+
               Gap(12.h),
+
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                 decoration: BoxDecoration(
@@ -128,8 +137,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       children: [
                         itemService(
                             onTap: () {
-                              Navigator.pushNamed(
-                                  context, RouteName.factoryDetail);
+                              Navigator.pushNamed(context, RouteName.managerWater);
                             },
                             icon: Assets.icons.water.svg(
                                 width: 22.w,
@@ -150,7 +158,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             name: "Tiết kiệm điện"),
                         itemService(
                             onTap: () {
-                              Navigator.pushNamed(context, RouteName.overview);
+                              Navigator.pushNamed(context, RouteName.factoryDetail);
                             },
                             icon: Assets.icons.solarPanelSun.svg(
                                 width: 22.w,

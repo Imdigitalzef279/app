@@ -24,6 +24,8 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
     indexPage = (0);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

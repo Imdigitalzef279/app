@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
+import 'package:solar_energy/presentation/screen/alarm_water/all_alarm_water_screen.dart';
 import 'package:solar_energy/presentation/screen/auth/login_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_device/detail_device.dart';
 import 'package:solar_energy/presentation/screen/detail_factory/detail_factory.dart';
 import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/general_device/general_device_screen.dart';
+import 'package:solar_energy/presentation/screen/manager_water/manager_water_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
@@ -35,11 +37,17 @@ class AppRouter {
       case RouteName.statisticalScreen:
         routeWidget = const StatisticalScreen();
         break;
+      case RouteName.allAlarmWater:
+        routeWidget = const AllAlarmWaterScreen();
+        break;
       case RouteName.deviceScreen:
         routeWidget = const DevicesScreen();
         break;
       case RouteName.factoryDetail:
         routeWidget = const DetailFactoryScreen();
+        break;
+      case RouteName.managerWater:
+        routeWidget = const ManagerWaterScreen();
         break;
       case RouteName.generalDevice:
         routeWidget = const GeneralDeviceScreen();

@@ -34,6 +34,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/apps.svg
   SvgGenImage get apps => const SvgGenImage('assets/icons/apps.svg');
 
+  /// File path: assets/icons/arrow-down-strenght.svg
+  SvgGenImage get arrowDownStrenght =>
+      const SvgGenImage('assets/icons/arrow-down-strenght.svg');
+
   /// File path: assets/icons/auto-reply.svg
   SvgGenImage get autoReply => const SvgGenImage('assets/icons/auto-reply.svg');
 
@@ -79,6 +83,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/dashboard-panel_line.svg
   SvgGenImage get dashboardPanelLine =>
       const SvgGenImage('assets/icons/dashboard-panel_line.svg');
+
+  /// File path: assets/icons/faucet.svg
+  SvgGenImage get faucet => const SvgGenImage('assets/icons/faucet.svg');
 
   /// File path: assets/icons/guide-alt.svg
   SvgGenImage get guideAlt => const SvgGenImage('assets/icons/guide-alt.svg');
@@ -138,6 +145,9 @@ class $AssetsIconsGen {
   SvgGenImage get thunderstormSun6854078 =>
       const SvgGenImage('assets/icons/thunderstorm-sun_6854078.svg');
 
+  /// File path: assets/icons/usd-circle.svg
+  SvgGenImage get usdCircle => const SvgGenImage('assets/icons/usd-circle.svg');
+
   /// File path: assets/icons/users-alt.svg
   SvgGenImage get usersAlt => const SvgGenImage('assets/icons/users-alt.svg');
 
@@ -148,6 +158,7 @@ class $AssetsIconsGen {
   List<SvgGenImage> get values => [
         air,
         apps,
+        arrowDownStrenght,
         autoReply,
         bell,
         bellLine,
@@ -161,6 +172,7 @@ class $AssetsIconsGen {
         computerSpeakerLine,
         dashboardPanel,
         dashboardPanelLine,
+        faucet,
         guideAlt,
         info,
         infoLine,
@@ -178,6 +190,7 @@ class $AssetsIconsGen {
         solarPanelSun,
         square,
         thunderstormSun6854078,
+        usdCircle,
         usersAlt,
         water
       ];
@@ -214,6 +227,9 @@ class $AssetsImagesGen {
   AssetGenImage get solarEnergy =>
       const AssetGenImage('assets/images/solar_energy.png');
 
+  /// File path: assets/images/water_lottie.json
+  String get waterLottie => 'assets/images/water_lottie.json';
+
   /// List of all assets
   List<dynamic> get values => [
         animationLogin,
@@ -223,7 +239,8 @@ class $AssetsImagesGen {
         exclamation,
         factory,
         logo,
-        solarEnergy
+        solarEnergy,
+        waterLottie
       ];
 }
 
