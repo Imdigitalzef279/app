@@ -4,6 +4,9 @@ import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/data/dto/auth/request/auth_request.dart';
+import 'package:solar_energy/data/repositories/auth/auth_repository.dart';
+import 'package:solar_energy/di.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/common_widgets/app_button.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
@@ -131,10 +134,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Column(
                     children: [
                       AppButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => const HomeWidget()),
+                            MaterialPageRoute(
+                                builder: (context) => const HomeWidget()),
                             (route) => false,
                           );
                         },

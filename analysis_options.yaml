@@ -9,6 +9,28 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+
+analyzer:
+  exclude:
+    - lib/**.g.dart
+    - lib/**.freezed.dart
+    - lib/**.gen.dart
+    - lib/generated/**
+  errors:
+#    # treat missing required parameters as a warning (not a hint)
+#    missing_required_param: warning
+#    # treat missing returns as a warning (not a hint)
+#    missing_return: warning
+#    native_function_body_in_non_sdk_code: ignore
+#    # allow having TODOs in the code
+#    todo: ignore
+#    # allow dart:ui to import dart:_internal
+#    import_internal_library: warning
+#    # Turned off until null-safe rollout is complete.
+#    unnecessary_null_comparison: warning
+    invalid_annotation_target: ignore
+
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
