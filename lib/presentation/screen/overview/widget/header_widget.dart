@@ -4,12 +4,13 @@ import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
 class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({super.key, this.check = false});
+  const HeaderWidget({super.key, required this.type});
 
-  final bool check;
+  final ElectricType type;
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +21,17 @@ class HeaderWidget extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [AppColors.blueFB, AppColors.greyFB])),
       padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: check
+      child: type == ElectricType.saveElectric
           ? Column(children: [
               weather(),
               Gap(20.h),
-              electricity(),
+              saveElectric(),
             ])
           : Column(
               children: [
-                weather2(),
+                weather(),
                 Gap(20.h),
-                electricity2(),
+                solarElectric(),
               ],
             ),
     );
@@ -61,7 +62,7 @@ class HeaderWidget extends StatelessWidget {
     );
   }
 
-  Widget electricity() {
+  Widget saveElectric() {
     return Container(
         alignment: Alignment.center,
         child: Stack(children: [
@@ -71,36 +72,12 @@ class HeaderWidget extends StatelessWidget {
               child: Transform.rotate(
                 angle: 270 * 3.14159 / 180,
                 child: Lottie.asset(
-                  'assets/images/animation.json',
+                  Assets.images.animation,
                   width: 90.r,
                   height: 90.r,
                   onLoaded: (composition) {},
                 ),
               )),
-          // Positioned(
-          //     right: 80.w,
-          //     top: 120.h,
-          //     child: Transform.rotate(
-          //       angle: 155 * 3.14159 / 180,
-          //       child: Lottie.asset(
-          //         'assets/images/animation.json',
-          //         width: 90.r,
-          //         height: 90.r,
-          //         onLoaded: (composition) {},
-          //       ),
-          //     )),
-          // Positioned(
-          //     left: (1.sw / 2) - 75.w,
-          //     top: 180.h,
-          //     child: Transform.rotate(
-          //       angle: 90 * 3.14159 / 180,
-          //       child: Lottie.asset(
-          //         'assets/images/animation.json',
-          //         width: 90.r,
-          //         height: 90.r,
-          //         onLoaded: (composition) {},
-          //       ),
-          //     )),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -117,112 +94,12 @@ class HeaderWidget extends StatelessWidget {
                   sizeIcon: 100.r,
                   type: "Mức sử dụng",
                   isRight: false),
-              // item(
-              //     img: Assets.images.solarEnergy.path,
-              //     content: '462.584',
-              //     size: 130.r,
-              //     sizeIcon: 120.r,
-              //     type: "PV",
-              //     isRight: false),
             ],
           ),
         ]));
   }
 
-  Widget item(
-      {required String img,
-      required double size,
-      required double sizeIcon,
-      required String content,
-      required String type,
-      bool isRight = true}) {
-    return Container(
-      height: size,
-      color: Colors.transparent,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            bottom: 0,
-            child: Container(
-              width: sizeIcon + 30.r,
-              height: sizeIcon,
-              color: Colors.transparent,
-              child: Image.asset(
-                img,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Container(
-            height: size / 2,
-            decoration: BoxDecoration(
-              border: isRight
-                  ? const Border(right: BorderSide(color: AppColors.greyAE))
-                  : const Border(left: BorderSide(color: AppColors.greyAE)),
-            ),
-            padding: isRight
-                ? EdgeInsets.only(right: 12.w)
-                : EdgeInsets.only(left: 12.w),
-            margin: isRight ? null : EdgeInsets.only(left: 40.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                    text: TextSpan(children: [
-                  TextSpan(
-                      text: content,
-                      style: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600)),
-                  TextSpan(
-                      text: ' KW',
-                      style: AppTextStyle.textXs.copyWith(
-                          fontSize: 10.sp,
-                          color: AppColors.grey86,
-                          fontWeight: FontWeight.w600)),
-                ])),
-                Text(
-                  type,
-                  style: AppTextStyle.textSm.copyWith(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.grey86),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget weather2() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(
-              Icons.cloud,
-              color: AppColors.blueFF,
-            ),
-            Gap(4.w),
-            Text("18°C-20°C",
-                style:
-                    AppTextStyle.textXs.copyWith(color: AppColors.textPrimary))
-          ],
-        ),
-        Gap(8.h),
-        Text(
-          "Bình thường",
-          style: AppTextStyle.textXs.copyWith(color: AppColors.green50),
-        )
-      ],
-    );
-  }
-
-  Widget electricity2() {
+  Widget solarElectric() {
     return Container(
         alignment: Alignment.center,
         child: Stack(children: [
@@ -232,7 +109,7 @@ class HeaderWidget extends StatelessWidget {
               child: Transform.rotate(
                 angle: 200 * 3.14159 / 180,
                 child: Lottie.asset(
-                  'assets/images/animation.json',
+                  Assets.images.animation,
                   width: 90.r,
                   height: 90.r,
                   onLoaded: (composition) {},
@@ -244,7 +121,7 @@ class HeaderWidget extends StatelessWidget {
               child: Transform.rotate(
                 angle: 155 * 3.14159 / 180,
                 child: Lottie.asset(
-                  'assets/images/animation.json',
+                  Assets.images.animation,
                   width: 90.r,
                   height: 90.r,
                   onLoaded: (composition) {},
@@ -256,7 +133,7 @@ class HeaderWidget extends StatelessWidget {
               child: Transform.rotate(
                 angle: 90 * 3.14159 / 180,
                 child: Lottie.asset(
-                  'assets/images/animation.json',
+                  Assets.images.animation,
                   width: 90.r,
                   height: 90.r,
                   onLoaded: (composition) {},
@@ -294,7 +171,7 @@ class HeaderWidget extends StatelessWidget {
         ]));
   }
 
-  Widget item2(
+  Widget item(
       {required String img,
       required double size,
       required double sizeIcon,

@@ -1,0 +1,1 @@
+enum ElectricType { solarElectric, saveElectric }

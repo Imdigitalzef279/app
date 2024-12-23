@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
-import 'package:solar_energy/application/constants/localizations.dart';
+import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
 class DetailFactoryScreen extends StatefulWidget {
-  const DetailFactoryScreen({super.key});
+  const DetailFactoryScreen({super.key, required this.type});
+
+  final ElectricType type;
 
   @override
   State<DetailFactoryScreen> createState() => _DetailFactoryScreenState();
@@ -19,12 +21,9 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     indexPage = (0);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +63,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
                 width: 16.w,
                 height: 16.w,
                 colorFilter:
-                const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+                    const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: "Thống kê",
           ),
           NavigationDestination(
@@ -77,7 +76,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
                 width: 16.w,
                 height: 16.w,
                 colorFilter:
-                const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+                    const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: "Thiết bị",
           ),
         ],
@@ -88,13 +87,13 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   Widget _buildBody() {
     switch (indexPage) {
       case 0:
-        return const OverViewScreen();
+        return OverViewScreen(type: widget.type);
       case 1:
         return const StatisticalScreen();
       case 2:
         return const DevicesScreen();
       default:
-        return const OverViewScreen();
+        return OverViewScreen(type: widget.type);
     }
   }
 }

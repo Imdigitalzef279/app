@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
-import 'package:solar_energy/presentation/screen/overview/widget/benefits_widget.dart';
+import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/presentation/screen/overview/widget/currently_widget.dart';
 import 'package:solar_energy/presentation/screen/overview/widget/header_widget.dart';
 
 class OverViewScreen extends StatefulWidget {
-  const OverViewScreen({super.key, this.check = false});
+  const OverViewScreen({super.key, required this.type});
 
-  final bool check;
+  final ElectricType type;
 
   @override
   State<OverViewScreen> createState() => _OverViewScreenState();
@@ -39,8 +38,8 @@ class _OverViewScreenState extends State<OverViewScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            HeaderWidget(check: widget.check),
-            CurrentlyWidget(),
+            HeaderWidget(type: widget.type),
+            const CurrentlyWidget(),
           ],
         ),
       ),
