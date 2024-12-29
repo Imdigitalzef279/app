@@ -7,6 +7,7 @@ import 'package:solar_energy/presentation/screen/alarm_water/all_alarm_water_scr
 import 'package:solar_energy/presentation/screen/auth/bloc/login_cubit.dart';
 import 'package:solar_energy/presentation/screen/auth/login_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_device/detail_device.dart';
+import 'package:solar_energy/presentation/screen/detail_factory/bloc/detail_factory_cubit.dart';
 import 'package:solar_energy/presentation/screen/detail_factory/detail_factory.dart';
 import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/general_device/general_device_screen.dart';
@@ -43,7 +44,9 @@ class AppRouter {
         routeWidget = const DevicesScreen();
         break;
       case RouteName.factoryDetail:
-        routeWidget = DetailFactoryScreen(type: arguments as ElectricType);
+        routeWidget = BlocProvider(
+            create: (context) => DetailFactoryCubit(),
+            child: DetailFactoryScreen(type: arguments as ElectricType));
         break;
       case RouteName.managerWater:
         routeWidget = const ManagerWaterScreen();

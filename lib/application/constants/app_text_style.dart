@@ -14,7 +14,7 @@ class AppTextStyle {
   );
   static final TextStyle textBase = TextStyle(
     fontFamily: 'BeVietNamPro',
-    height: 24.sp / 116.sp,
+    height: 24.sp / 16.sp,
     fontSize: 16.sp,
   );
   static final TextStyle textLg = TextStyle(

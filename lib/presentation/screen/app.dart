@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import '../../application/utils/app_utils.dart';
 import '../../application/utils/navigation_utils.dart';
 import '../routes/routes.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 
 class MyApp extends StatefulWidget {
@@ -43,9 +43,9 @@ class _MyAppState extends State<MyApp> {
           ),
           breakpoints: [
             const Breakpoint(start: 0, end: 450, name: MOBILE),
-            const Breakpoint(start: 451, end: 800, name: TABLET),
-            const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-            const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+            // const Breakpoint(start: 451, end: 800, name: TABLET),
+            // const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+            // const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
           ],
         ),
         title: "solar power",
