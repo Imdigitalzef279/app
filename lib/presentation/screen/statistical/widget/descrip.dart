@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
+import 'package:solar_energy/application/constants/app_text_style.dart';
 
-class DescripWidget extends StatelessWidget {
-  const DescripWidget(
+class DescriptionWidget extends StatelessWidget {
+  const DescriptionWidget(
       {super.key,
       required this.color,
       required this.name,
@@ -21,27 +24,23 @@ class DescripWidget extends StatelessWidget {
         callback.call();
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 4.sp),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color:
-                selection ? AppColors.greyFB : const Color(0xFFFFFFFF)
-        ),
+            borderRadius: BorderRadius.circular(8.r),
+            color: selection ? AppColors.greyEF : const Color(0xFFFFFFFF)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 8,
-              height: 8,
+              width: 8.sp,
+              height: 8.sp,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(99), color: color),
             ),
-            const SizedBox(
-              width: 8,
-            ),
+            Gap(8.sp),
             Text(
               name,
-              style: const TextStyle(fontSize: 12),
+              style: AppTextStyle.textXs.copyWith(fontWeight: FontWeight.w500),
             )
           ],
         ),

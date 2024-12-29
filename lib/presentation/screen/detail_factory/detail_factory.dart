@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
+import 'package:solar_energy/application/enums/search_type.dart';
+import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
+import 'package:solar_energy/presentation/screen/detail_factory/bloc/detail_factory_cubit.dart';
 import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
@@ -18,11 +22,17 @@ class DetailFactoryScreen extends StatefulWidget {
 
 class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   late int indexPage;
+  late DetailFactoryCubit cubit;
 
   @override
   void initState() {
     super.initState();
     indexPage = (0);
+    cubit = BlocProvider.of<DetailFactoryCubit>(context);
+    cubit.getSolarElectric(const SolarElectricRequest(
+        powerStationId: 21,
+        searchType: SearchType.hour,
+        searchValue: "29/12/2024"));
   }
 
   @override
@@ -51,7 +61,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
                 height: 16.w,
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
-            label: "Tổng quan",
+            label: "",
           ),
           NavigationDestination(
             selectedIcon: Assets.icons.chartArea.svg(
@@ -64,7 +74,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
                 height: 16.w,
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
-            label: "Thống kê",
+            label: "",
           ),
           NavigationDestination(
             selectedIcon: Assets.icons.computerSpeaker.svg(
@@ -77,7 +87,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
                 height: 16.w,
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
-            label: "Thiết bị",
+            label: "",
           ),
         ],
       ),

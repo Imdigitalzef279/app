@@ -22,6 +22,14 @@ class _OverViewScreenState extends State<OverViewScreen> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: AppColors.blueFB,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Padding(
+              padding: EdgeInsets.only(left: 4.sp),
+              child: Icon(Icons.arrow_back_ios, size: 16.sp)),
+        ),
         title: Text(
           "Thien son",
           style: AppTextStyle.textBase.copyWith(
@@ -30,7 +38,7 @@ class _OverViewScreenState extends State<OverViewScreen> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.menu, size: 20.r),
+            icon: Icon(Icons.menu, size: 16.sp),
           )
         ],
       ),

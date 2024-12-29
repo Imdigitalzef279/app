@@ -13,10 +13,10 @@ class CurrentlyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         width: double.infinity,
-        padding: EdgeInsets.all(12.r),
-        margin: EdgeInsets.all(12.r),
+        padding: EdgeInsets.all(12.sp),
+        margin: EdgeInsets.all(12.sp),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(16.sp),
             color: AppColors.white,
             boxShadow: [
               BoxShadow(
@@ -34,11 +34,11 @@ class CurrentlyWidget extends StatelessWidget {
               style: AppTextStyle.textSm.copyWith(
                   fontWeight: FontWeight.w600, color: AppColors.textPrimary),
             ),
-            Gap(12.h),
+            Gap(12.sp),
             Wrap(
                 direction: Axis.horizontal,
-                runSpacing: 16.r,
-                spacing: 12.r,
+                runSpacing: 16.sp,
+                spacing: 12.sp,
                 children: [
                   item(context,
                       path: Assets.icons.thunderstormSun6854078.path,
@@ -83,22 +83,22 @@ class CurrentlyWidget extends StatelessWidget {
       required String unit}) {
     return LayoutBuilder(
       builder: (context, constraints) => SizedBox(
-        width: (constraints.maxWidth - 12.r) / 2,
+        width: (constraints.maxWidth - 12.sp) / 2,
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(8.r),
+              padding: EdgeInsets.all(8.sp),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(8.sp),
                   color: color.withOpacity(0.2)),
               child: SvgPicture.asset(
                 path,
-                width: 20.r,
-                height: 20.r,
+                width: 20.sp,
+                height: 20.sp,
                 colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
               ),
             ),
-            Gap(8.w),
+            Gap(8.sp),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +107,7 @@ class CurrentlyWidget extends StatelessWidget {
                       text: TextSpan(children: [
                     TextSpan(
                         text: content,
-                        style: AppTextStyle.textBase.copyWith(
+                        style: AppTextStyle.textSm.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary)),
                     TextSpan(
@@ -117,7 +117,7 @@ class CurrentlyWidget extends StatelessWidget {
                             fontSize: 10.sp,
                             color: AppColors.grey4D)),
                   ])),
-                  Gap(4.h),
+                  Gap(4.sp),
                   Text(
                     title,
                     style: AppTextStyle.textXs
