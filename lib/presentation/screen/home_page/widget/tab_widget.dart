@@ -26,26 +26,34 @@ class TabSelectWidget extends StatelessWidget {
         callBack.call(values);
       },
       child: AnimatedContainer(
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+        width: (1.sw - 76.w) / 4,
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
         decoration: BoxDecoration(
-          color: values == selectValues
-              ? AppColors.blueFB.withOpacity(0.3)
-              : AppColors.white,
-          borderRadius: BorderRadius.circular(99.r),
+            color: values == selectValues
+                ? AppColors.blueFB.withOpacity(0.3)
+                : AppColors.greyFB,
+            borderRadius: BorderRadius.circular(4.r),
+            border: Border.all(color: values == selectValues ? Colors.blueAccent : AppColors.greyFB)
         ),
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        child: Row(
+        child: Column(
           children: [
             Text(
               title,
               style: AppTextStyle.textXs.copyWith(
-                  fontWeight: values == selectValues ? FontWeight.w500 : FontWeight.w300, color: AppColors.textPrimary),
+                  fontWeight: values == selectValues
+                      ? FontWeight.w500
+                      : FontWeight.w300,
+                  color: AppColors.textPrimary,
+                  fontSize: 10.sp),
             ),
             Text(
-              " (${quantity ?? 0})",
+              " ${quantity ?? 0}",
               style: AppTextStyle.textXs.copyWith(
-                  fontWeight: FontWeight.w300, color: AppColors.grey73),
+                  fontWeight: values == selectValues
+                      ? FontWeight.w500
+                      : FontWeight.w300, color: AppColors.grey73),
             )
           ],
         ),

@@ -238,21 +238,24 @@ class _FilterListWidgetState extends State<FilterListWidget> {
             height: 32.h,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppButton(
                 title: "Đặt Lại",
                 color: AppColors.white,
+                borderColor: AppColors.blueEA,
                 fontSize: 12.sp,
                 textColor: AppColors.blueEA,
-                width: (1.sw - 40) / 2,
+                width: (1.sw - 40.w) / 2,
                 contentPadding: EdgeInsets.symmetric(vertical: 8.h),
               ),
+
               AppButton(
                 title: "OK",
                 color: AppColors.blueEA,
                 fontSize: 12.sp,
                 textColor: AppColors.white,
-                width: (1.sw - 40) / 2,
+                width: (1.sw - 40.w) / 2,
                 contentPadding: EdgeInsets.symmetric(vertical: 8.h),
               )
             ],

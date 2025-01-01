@@ -5,6 +5,7 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/presentation/screen/overview/widget/currently_widget.dart';
 import 'package:solar_energy/presentation/screen/overview/widget/header_widget.dart';
+import 'package:solar_energy/presentation/screen/overview/widget/saving_energy.dart';
 
 class OverViewScreen extends StatefulWidget {
   const OverViewScreen({super.key, required this.type});
@@ -39,7 +40,8 @@ class _OverViewScreenState extends State<OverViewScreen> {
         child: Column(
           children: [
             HeaderWidget(type: widget.type),
-            const CurrentlyWidget(),
+            widget.type != ElectricType.saveElectric ? const CurrentlyWidget() : const SavingEnergy()
+
           ],
         ),
       ),

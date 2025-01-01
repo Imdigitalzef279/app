@@ -58,21 +58,18 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 ),
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: (1.sw / 5) * 2,
+                    Expanded(
+                      flex: 3,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("Chào mừng đến với nhà máy Thien Son",
+                          Text("Xem hướng dẫn sử dụng",
                               style: AppTextStyle.textSm.copyWith(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.w600)),
-                          Gap(4.h),
-                          Text("Xem hướng dẫn sử dụng",
-                              style: AppTextStyle.textXs.copyWith(
-                                  color:
-                                      AppColors.textPrimary.withOpacity(0.5))),
-                          Gap(32.h),
+                          12.verticalSpace,
                           GestureDetector(
                             onTap: () {},
                             child: Container(
@@ -93,9 +90,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       ),
                     ),
                     Gap(20.w),
-                    SizedBox(
-                      width: ((1.sw - 32) / 7) * 3,
-                      height: ((1.sw - 32) / 7) * 3,
+                    Expanded(
+                      flex: 2,
                       child: Center(
                         child: Lottie.asset(
                           Assets.images.animationLogin,
@@ -169,8 +165,26 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             name: "Điện mặt trời"),
                         itemService(
                             onTap: () {
-                              Navigator.pushNamed(
-                                  context, RouteName.deviceScreen);
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Center(
+                                    child:
+                                        Assets.images.exclamation.image(
+                                          width: 1.sw/3,
+                                          height: 1.sw/3
+                                        ),
+                                  ),
+                                  content: Text(
+                                    "Tính năng này đang trong quá trình phát triển",
+                                    style: AppTextStyle.textSm.copyWith(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.textPrimary,),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              );
                             },
                             icon: Assets.icons.air.svg(
                                 width: 22.w,

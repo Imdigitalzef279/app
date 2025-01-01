@@ -6,9 +6,8 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
-class CurrentlyWidget extends StatelessWidget {
-  const CurrentlyWidget({super.key});
-
+class SavingEnergy extends StatelessWidget {
+  const SavingEnergy({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +77,10 @@ class CurrentlyWidget extends StatelessWidget {
 
   Widget item(BuildContext context,
       {required String path,
-      required Color color,
-      required String title,
-      required String content,
-      required String unit}) {
+        required Color color,
+        required String title,
+        required String content,
+        required String unit}) {
     return LayoutBuilder(
       builder: (context, constraints) => SizedBox(
         width: (constraints.maxWidth - 12.r) / 2,
@@ -106,18 +105,18 @@ class CurrentlyWidget extends StatelessWidget {
                 children: [
                   RichText(
                       text: TextSpan(children: [
-                    TextSpan(
-                        text: content,
-                        style: AppTextStyle.textBase.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary)),
-                    TextSpan(
-                        text: ' $unit',
-                        style: AppTextStyle.textXs.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10.sp,
-                            color: AppColors.grey4D)),
-                  ])),
+                        TextSpan(
+                            text: content,
+                            style: AppTextStyle.textBase.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary)),
+                        TextSpan(
+                            text: ' $unit',
+                            style: AppTextStyle.textXs.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 10.sp,
+                                color: AppColors.grey4D)),
+                      ])),
                   Gap(4.h),
                   Text(
                     title,

@@ -46,12 +46,12 @@ class ItemFilterFactory extends StatelessWidget {
         selectItem.call(defaultValues);
       },
       child: Container(
-        width: 1.sw / 2 - 40.w,
+        width: (1.sw - 40.w) / 2,
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.r),
           color: defaultValues == valuesSelected
-              ? AppColors.blueFB.withOpacity(0.3)
+              ? AppColors.blueFB.withOpacity(0.7)
               : AppColors.greyFB,
         ),
         child: Text(

@@ -8,6 +8,7 @@ import 'package:solar_energy/presentation/common_widgets/app_bottom_sheet.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
 import 'package:solar_energy/presentation/screen/home_page/widget/fillter_list/fillter_list.dart';
 import 'package:solar_energy/presentation/screen/home_page/widget/item_factory.dart';
+import 'package:solar_energy/presentation/screen/home_page/widget/item_factory_hoz.dart';
 import 'package:solar_energy/presentation/screen/home_page/widget/tab_widget.dart';
 
 class HomePageWidget extends StatefulWidget {
@@ -31,6 +32,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: AppColors.white,
         title: Text(
           LocalizationsUtils.localizations.factory,
@@ -58,7 +60,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       children: [
                         TabSelectWidget(
                           title: "Tất cả",
-                          quantity: 1,
+                          quantity: 3,
                           values: "Tất cả",
                           selectValues: selectTab.value,
                           callBack: (value) {
@@ -72,7 +74,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                         ),
                         TabSelectWidget(
                           title: "Bình thường",
-                          quantity: 1,
+                          quantity: 3,
                           values: "Bình thường",
                           selectValues: selectTab.value,
                           callBack: (value) {
@@ -104,9 +106,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 4.h,
-                  ),
+                  8.verticalSpace,
                   Row(
                     children: [
                       Expanded(
@@ -129,7 +129,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(99.r),
                             onTap: () {
-                              AppBottomSheet.showBottomSheet(context, child: const FilterListWidget());
+                              AppBottomSheet.showBottomSheet(context,
+                                  child: const FilterListWidget());
                             },
                             child: Icon(
                               Icons.filter_list_outlined,
@@ -142,15 +143,30 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               ),
             ),
 
+            12.verticalSpace,
             // body include content
             Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.symmetric(vertical: 8.h),
-                  itemBuilder: (context, index) => const ItemFactory(),
-                  separatorBuilder: (context, index) => SizedBox(
-                        height: 8.h,
-                      ),
-                  itemCount: 4),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Wrap(
+                  spacing: 12.w,
+                  runSpacing: 12.h,
+                  children: List.generate(
+                      3,
+                      (index) {
+                        bool isLastOddItem = index == 3-1 && 3 % 2 != 0;
+                        if (isLastOddItem) {
+                          return const ItemFactoryHoz();
+                        } else {
+                          return SizedBox(
+                            width: (1.sw - 44.w) / 2,
+                            child: const ItemFactory(),
+                          );
+                        }
+                      },
+                  ),
+                ),
+              ),
             )
           ],
         ),

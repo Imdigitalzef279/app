@@ -44,11 +44,11 @@ class HeaderWidget extends StatelessWidget {
         Row(
           children: [
             const Icon(
-              Icons.cloud,
+              Icons.electric_meter,
               color: AppColors.blueFF,
             ),
             Gap(4.w),
-            Text("18°C-20°C",
+            Text("218 Kw",
                 style:
                     AppTextStyle.textXs.copyWith(color: AppColors.textPrimary))
           ],
