@@ -94,7 +94,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
               Container(
                 padding: EdgeInsets.all(12.sp),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16.r),
+                    borderRadius: BorderRadius.circular(12.sp),
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.greyDF.withOpacity(0.5),
@@ -123,12 +123,13 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                         ],
                         controller: _tabController,
                         labelStyle: AppTextStyle.textSm.copyWith(
+                            fontSize: 14.sp,
                             color: AppColors.blueEA,
                             fontWeight: FontWeight.w500),
                         indicatorColor: AppColors.blueFD,
                         unselectedLabelColor: AppColors.grey73,
                         indicator: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.r),
+                            borderRadius: BorderRadius.circular(8.sp),
                             color: AppColors.blueFD.withOpacity(0.8)),
                         indicatorSize: TabBarIndicatorSize.tab,
                         indicatorWeight: 0,
@@ -146,6 +147,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                         Text(
                           "25/11/2024",
                           style: AppTextStyle.textSm.copyWith(
+                              fontSize: 14.sp,
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w500),
                         ),
@@ -167,7 +169,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                     height: 200.sp,
                     padding: EdgeInsets.all(8.sp),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.r),
+                      borderRadius: BorderRadius.circular(12.sp),
                       color: AppColors.white,
                       boxShadow: [
                         BoxShadow(
@@ -182,6 +184,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                       title: ChartTitle(
                         text: "Sản Lượng",
                         textStyle: AppTextStyle.textXs.copyWith(
+                            fontSize: 12.sp,
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w600),
                         alignment: ChartAlignment.near,
@@ -199,6 +202,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                             child: Text(
                               '$legendText: ${value.toStringAsFixed(2)} kW',
                               style: AppTextStyle.textSm.copyWith(
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w500,
                                   color: legendText == "Xuất"
                                       ? Colors.grey
@@ -214,8 +218,10 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                             child: Text(
                               '${(chartData[0].y + chartData[1].y).toStringAsFixed(2)} kW',
                               // Hiển thị tổng giá trị
-                              style: AppTextStyle.textSm
-                                  .copyWith(color: AppColors.textPrimary),
+                              style: AppTextStyle.textSm.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14.sp),
                             ),
                           ),
                         ),
@@ -245,7 +251,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                     height: 200.sp,
                     padding: EdgeInsets.all(8.sp),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.r),
+                      borderRadius: BorderRadius.circular(12.sp),
                       color: AppColors.white,
                       boxShadow: [
                         BoxShadow(
@@ -260,6 +266,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                       title: ChartTitle(
                         text: "Mức sử dụng",
                         textStyle: AppTextStyle.textXs.copyWith(
+                            fontSize: 12.sp,
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w600),
                         alignment: ChartAlignment.near,
@@ -279,6 +286,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                               child: Text(
                                 '$legendText: ${value.toStringAsFixed(2)} kW',
                                 style: AppTextStyle.textSm.copyWith(
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w500,
                                   color: legendText == "Nhập"
                                       ? const Color(0xFFff9f43)
@@ -294,8 +302,10 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                             child: Text(
                               '${(chartData2[0].y + chartData2[1].y).toStringAsFixed(2)} kW',
                               // Hiển thị tổng giá trị
-                              style: AppTextStyle.textSm
-                                  .copyWith(color: AppColors.textPrimary),
+                              style: AppTextStyle.textSm.copyWith(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary),
                             ),
                           ),
                         ),
@@ -325,7 +335,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                     padding:
                         EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.r),
+                      borderRadius: BorderRadius.circular(12.sp),
                       color: AppColors.white,
                       boxShadow: [
                         BoxShadow(
@@ -344,7 +354,8 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                             primaryXAxis: CategoryAxis(
                               labelStyle: AppTextStyle.textXs.copyWith(
                                   color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w500),
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w400),
                             ),
                             primaryYAxis: NumericAxis(
                               axisLabelFormatter:
@@ -352,8 +363,9 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                                 return ChartAxisLabel(
                                     '${details.value} kW',
                                     AppTextStyle.textXs.copyWith(
+                                        fontSize: 12.sp,
                                         color: AppColors.textPrimary,
-                                        fontWeight: FontWeight.w500));
+                                        fontWeight: FontWeight.w400));
                               },
                             ),
                             // Enable tooltip
@@ -370,8 +382,10 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                                 enable: true,
                                 format: 'point.y kW',
                                 color: Colors.black.withOpacity(0.7),
-                                textStyle: const TextStyle(
-                                    color: Colors.white, fontSize: 12),
+                                textStyle: AppTextStyle.textXs.copyWith(
+                                    fontSize: 10.sp,
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.w400),
                               ),
                               // tooltipSettings: const InteractiveTooltip(
                               //   enable: true,

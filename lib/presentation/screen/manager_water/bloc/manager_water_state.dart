@@ -8,17 +8,17 @@ class ManagerWaterState with _$ManagerWaterState {
       @Default([]) List<WaterIndexModel> listWaterIndex}) = _ManagerWaterState;
 
   factory ManagerWaterState.init() =>
-      ManagerWaterState(isEdit: false, listWaterIndex: [], listSelected: [
+      ManagerWaterState(isEdit: false, listWaterIndex: [
         WaterIndexModel(
-            icon: Assets.icons.bacteria.path,
-            title: "Sinh học",
+            icon: Assets.icons.bacterium.path,
+            title: "Vi sinh vật",
             unit: "wH",
             value: 25,
             limit: 20,
             isConnected: true),
         WaterIndexModel(
             icon: Assets.icons.flask.path,
-            title: "Khí độc",
+            title: "hóa học",
             unit: "wH",
             value: 45.5,
             limit: 100,
@@ -37,5 +37,20 @@ class ManagerWaterState with _$ManagerWaterState {
             value: 5.23,
             limit: 20,
             isConnected: false),
+      ], listSelected: [
+        WaterIndexModel(
+            icon: Assets.icons.bacteria.path,
+            title: "Sinh học",
+            unit: "wH",
+            value: 25,
+            limit: 20,
+            isConnected: true),
+        WaterIndexModel(
+            icon: Assets.icons.air.path,
+            title: "Khí độc",
+            unit: "wH",
+            value: 45.5,
+            limit: 100,
+            isConnected: true),
       ]);
 }

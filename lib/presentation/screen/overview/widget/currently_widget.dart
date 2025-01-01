@@ -32,13 +32,15 @@ class CurrentlyWidget extends StatelessWidget {
             Text(
               'Dữ liệu hiện tại',
               style: AppTextStyle.textSm.copyWith(
-                  fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                  fontSize: 14.sp),
             ),
             Gap(12.sp),
             Wrap(
                 direction: Axis.horizontal,
-                runSpacing: 16.sp,
-                spacing: 12.sp,
+                runSpacing: 12.sp,
+                spacing: 8.sp,
                 children: [
                   item(context,
                       path: Assets.icons.thunderstormSun6854078.path,
@@ -108,20 +110,21 @@ class CurrentlyWidget extends StatelessWidget {
                     TextSpan(
                         text: content,
                         style: AppTextStyle.textSm.copyWith(
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary)),
                     TextSpan(
                         text: ' $unit',
                         style: AppTextStyle.textXs.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12.sp,
                             color: AppColors.grey4D)),
                   ])),
                   Gap(4.sp),
                   Text(
                     title,
                     style: AppTextStyle.textXs
-                        .copyWith(color: AppColors.grey73, fontSize: 10.sp),
+                        .copyWith(color: AppColors.grey73, fontSize: 12.sp),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   )

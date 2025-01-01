@@ -14,11 +14,11 @@ class ItemDevice extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, RouteName.detailDevice);
       },
-      borderRadius: BorderRadius.circular(16.r),
+      borderRadius: BorderRadius.circular(12.sp),
       child: Ink(
         padding: EdgeInsets.all(12.sp),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(12.sp),
             color: AppColors.white,
             boxShadow: [
               BoxShadow(
@@ -36,6 +36,7 @@ class ItemDevice extends StatelessWidget {
                 Text(
                   "100KTL-M2(COM1-12)",
                   style: AppTextStyle.textSm.copyWith(
+                      fontSize: 14.sp,
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600),
                 ),
@@ -44,13 +45,13 @@ class ItemDevice extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.r),
+                    borderRadius: BorderRadius.circular(4.sp),
                     color: const Color(0xFFff9f43).withOpacity(0.1),
                   ),
                   child: Text(
                     "Dừng",
-                    style: AppTextStyle.textXs
-                        .copyWith(color: const Color(0xFFff9f43)),
+                    style: AppTextStyle.textXs.copyWith(
+                        color: const Color(0xFFff9f43), fontSize: 12.sp),
                   ),
                 )
               ],
@@ -91,19 +92,19 @@ class ItemDevice extends StatelessWidget {
           flex: 2,
           child: Text(
             name,
-            style: AppTextStyle.textXs
-                .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
+            style: AppTextStyle.textXs.copyWith(
+                color: AppColors.textPrimary.withOpacity(0.5), fontSize: 12.sp),
           ),
         ),
-        SizedBox(
-          width: 16.sp,
-        ),
+        Gap(12.sp),
         Expanded(
           flex: 3,
           child: Text(
             content,
             style: AppTextStyle.textXs.copyWith(
-                color: AppColors.textPrimary, fontWeight: FontWeight.w400),
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w400,
+                fontSize: 12.sp),
           ),
         )
       ],

@@ -132,7 +132,9 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
           Text(
             "Tổng quan",
             style: AppTextStyle.textSm.copyWith(
-                fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary),
           ),
           Row(
             children: [
@@ -153,12 +155,13 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
                       child: Text(
                     "3,6 L",
                     style: AppTextStyle.textBase.copyWith(
+                        fontSize: 16.sp,
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w600),
                   )),
                 ],
               ),
-              Gap(12.w),
+              Gap(12.sp),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -166,47 +169,50 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Assets.icons.faucet.svg(
-                          width: 14.w,
+                          width: 14.sp,
                           colorFilter: const ColorFilter.mode(
                               AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(4.w),
+                      Gap(8.sp),
                       Text(
                         "Tiêu thụ: 27 Lít",
                         style: AppTextStyle.textXs.copyWith(
                             fontWeight: FontWeight.w500,
+                            fontSize: 12.sp,
                             color: AppColors.textPrimary),
                       ),
                     ],
                   ),
-                  Gap(4.h),
+                  Gap(8.sp),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Assets.icons.usdCircle.svg(
-                          width: 14.w,
+                          width: 14.sp,
                           colorFilter: const ColorFilter.mode(
                               AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(4.w),
+                      Gap(8.sp),
                       Text(
                         "Số tiền: 270,000,000 Đồng",
                         style: AppTextStyle.textXs.copyWith(
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textPrimary),
                       ),
                     ],
                   ),
-                  Gap(4.h),
+                  Gap(8.sp),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Assets.icons.arrowDownStrenght.svg(
-                          width: 14.w,
+                          width: 14.sp,
                           colorFilter: const ColorFilter.mode(
                               AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(4.w),
+                      Gap(8.sp),
                       Text(
                         "Áp suất: 9800 Pa",
                         style: AppTextStyle.textXs.copyWith(
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textPrimary),
                       ),
@@ -248,18 +254,18 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
                     style: AppTextStyle.textSm
                         .copyWith(fontWeight: FontWeight.w600, fontSize: 14.sp),
                   ),
-                  // InkWell(
-                  //   onTap: () {
-                  //     _openListWaterIndex();
-                  //   },
-                  //   child: Icon(
-                  //     state.isEdit ? Icons.done : Icons.settings,
-                  //     size: 20.sp,
-                  //   ),
-                  // )
+                  InkWell(
+                    onTap: () {
+                      _openListWaterIndex();
+                    },
+                    child: Icon(
+                      state.isEdit ? Icons.done : Icons.settings,
+                      size: 18.sp,
+                    ),
+                  )
                 ],
               ),
-              Gap(12.sp),
+              Gap(8.sp),
               Wrap(
                 runSpacing: 12.sp,
                 spacing: 8.sp,
@@ -281,7 +287,7 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
                         style: AppTextStyle.textSm.copyWith(
                             fontWeight: FontWeight.w600, fontSize: 14.sp),
                       ),
-                      Gap(12.sp),
+                      Gap(8.sp),
                       Wrap(
                         runSpacing: 12.sp,
                         spacing: 8.sp,
@@ -361,7 +367,7 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
           Positioned(
               right: 0,
               child: CircleAvatar(
-                radius: 10.sp,
+                radius: 8.sp,
                 backgroundColor: isAdd ? AppColors.green50 : AppColors.red14,
                 child: InkWell(
                   onTap: () {
@@ -380,7 +386,7 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
 
   Widget _warning() {
     return Container(
-      padding: EdgeInsets.all(12.sp),
+      padding: EdgeInsets.all(12.sp).copyWith(bottom: 4.sp),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.sp),
           color: AppColors.white,
@@ -400,7 +406,9 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
               Text(
                 "Cảnh báo gần nhất",
                 style: AppTextStyle.textSm.copyWith(
-                    fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary),
               ),
               GestureDetector(
                   onTap: () {
@@ -409,17 +417,19 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
                   child: Text(
                     "Xem thêm",
                     style: AppTextStyle.textXs.copyWith(
-                        fontWeight: FontWeight.w600, color: AppColors.blueF8),
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.blueF8),
                   ))
             ],
           ),
-          Gap(12.h),
           ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) => const ItemAlarmWater(),
               separatorBuilder: (context, index) => const Divider(
-                    color: AppColors.greyFB,
+                    color: AppColors.greyCC,
+                    height: 0,
                   ),
               itemCount: 3)
         ],
@@ -446,17 +456,21 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
           Text(
             "Số nước tiêu thụ",
             style: AppTextStyle.textSm.copyWith(
-                fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary),
           ),
-          Gap(12.h),
+          Gap(8.sp),
           SizedBox(
             height: 1.sw / 2,
             child: SfCartesianChart(
                 // Enable legend
                 legend: const Legend(isVisible: false),
                 primaryXAxis: CategoryAxis(
-                  labelStyle: AppTextStyle.textXs
-                      .copyWith(color: AppColors.textPrimary),
+                  labelStyle: AppTextStyle.textXs.copyWith(
+                      color: AppColors.textPrimary,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400),
                   desiredIntervals: 10,
                   labelRotation: 0,
                 ),
@@ -464,8 +478,10 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
                   axisLabelFormatter: (AxisLabelRenderDetails details) {
                     return ChartAxisLabel(
                         '${details.value} L',
-                        AppTextStyle.textXs
-                            .copyWith(color: AppColors.textPrimary));
+                        AppTextStyle.textXs.copyWith(
+                            fontSize: 12.sp,
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w400));
                   },
                 ),
                 // Enable tooltip
@@ -481,8 +497,10 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
                     enable: true,
                     format: 'point.y L',
                     color: Colors.black.withOpacity(0.7),
-                    textStyle:
-                        const TextStyle(color: Colors.white, fontSize: 12),
+                    textStyle: AppTextStyle.textXs.copyWith(
+                        fontSize: 10.sp,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w400),
                   ),
                   // tooltipSettings: const InteractiveTooltip(
                   //   enable: true,
