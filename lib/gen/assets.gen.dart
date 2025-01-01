@@ -41,6 +41,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/auto-reply.svg
   SvgGenImage get autoReply => const SvgGenImage('assets/icons/auto-reply.svg');
 
+  /// File path: assets/icons/bacteria.svg
+  SvgGenImage get bacteria => const SvgGenImage('assets/icons/bacteria.svg');
+
+  /// File path: assets/icons/bacterium.svg
+  SvgGenImage get bacterium => const SvgGenImage('assets/icons/bacterium.svg');
+
   /// File path: assets/icons/bell.svg
   SvgGenImage get bell => const SvgGenImage('assets/icons/bell.svg');
 
@@ -87,6 +93,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/faucet.svg
   SvgGenImage get faucet => const SvgGenImage('assets/icons/faucet.svg');
 
+  /// File path: assets/icons/flask-gear.svg
+  SvgGenImage get flaskGear => const SvgGenImage('assets/icons/flask-gear.svg');
+
+  /// File path: assets/icons/flask.svg
+  SvgGenImage get flask => const SvgGenImage('assets/icons/flask.svg');
+
   /// File path: assets/icons/guide-alt.svg
   SvgGenImage get guideAlt => const SvgGenImage('assets/icons/guide-alt.svg');
 
@@ -112,6 +124,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/phone-call.svg
   SvgGenImage get phoneCall => const SvgGenImage('assets/icons/phone-call.svg');
+
+  /// File path: assets/icons/physics.svg
+  SvgGenImage get physics => const SvgGenImage('assets/icons/physics.svg');
 
   /// File path: assets/icons/revenue.svg
   SvgGenImage get revenue => const SvgGenImage('assets/icons/revenue.svg');
@@ -154,12 +169,17 @@ class $AssetsIconsGen {
   /// File path: assets/icons/water.svg
   SvgGenImage get water => const SvgGenImage('assets/icons/water.svg');
 
+  /// File path: assets/icons/wind.svg
+  SvgGenImage get wind => const SvgGenImage('assets/icons/wind.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
         air,
         apps,
         arrowDownStrenght,
         autoReply,
+        bacteria,
+        bacterium,
         bell,
         bellLine,
         building,
@@ -173,6 +193,8 @@ class $AssetsIconsGen {
         dashboardPanel,
         dashboardPanelLine,
         faucet,
+        flaskGear,
+        flask,
         guideAlt,
         info,
         infoLine,
@@ -181,6 +203,7 @@ class $AssetsIconsGen {
         overview,
         overviewLine,
         phoneCall,
+        physics,
         revenue,
         savingElectric,
         screenPlay,
@@ -192,7 +215,8 @@ class $AssetsIconsGen {
         thunderstormSun6854078,
         usdCircle,
         usersAlt,
-        water
+        water,
+        wind
       ];
 }
 

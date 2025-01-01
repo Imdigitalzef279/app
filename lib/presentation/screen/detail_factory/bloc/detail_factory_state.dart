@@ -7,5 +7,5 @@ class DetailFactoryState with _$DetailFactoryState {
           resultSolar}) = _DetailFactoryState;
 
   factory DetailFactoryState.init() =>
-      const DetailFactoryState(resultSolar: Result());
+      DetailFactoryState(resultSolar: Result());
 }

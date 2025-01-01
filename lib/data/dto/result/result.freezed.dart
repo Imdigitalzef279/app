@@ -119,8 +119,7 @@ class __$$ResultImplCopyWithImpl<T, $Res>
 /// @nodoc
 
 class _$ResultImpl<T> extends _Result<T> {
-  const _$ResultImpl(
-      {this.data, this.status = LoadStatus.initial, this.error = ''})
+  _$ResultImpl({this.data, this.status = LoadStatus.initial, this.error = ''})
       : super._();
 
   @override
@@ -161,11 +160,11 @@ class _$ResultImpl<T> extends _Result<T> {
 }
 
 abstract class _Result<T> extends Result<T> {
-  const factory _Result(
+  factory _Result(
       {final T? data,
       final LoadStatus status,
       final String error}) = _$ResultImpl<T>;
-  const _Result._() : super._();
+  _Result._() : super._();
 
   @override
   T? get data;
