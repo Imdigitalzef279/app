@@ -27,13 +27,11 @@ class HeaderWidget extends StatelessWidget {
               Gap(20.sp),
               saveElectric(),
             ])
-          : Column(
-              children: [
-                weather(),
-                Gap(20.sp),
-                solarElectric(),
-              ],
-            ),
+          : Column(children: [
+              weather(),
+              Gap(20.sp),
+              solarElectric(),
+            ]),
     );
   }
 
@@ -43,20 +41,22 @@ class HeaderWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(
+            Icon(
               Icons.cloud,
               color: AppColors.blueFF,
+              size: 20.sp,
             ),
-            Gap(4.w),
+            Gap(8.sp),
             Text("18°C-20°C",
-                style:
-                    AppTextStyle.textXs.copyWith(color: AppColors.textPrimary))
+                style: AppTextStyle.textXs
+                    .copyWith(color: AppColors.textPrimary, fontSize: 12.sp))
           ],
         ),
-        Gap(8.h),
+        Gap(4.sp),
         Text(
           "Bình thường",
-          style: AppTextStyle.textXs.copyWith(color: AppColors.green50),
+          style: AppTextStyle.textXs
+              .copyWith(color: AppColors.green50, fontSize: 12.sp),
         )
       ],
     );
@@ -215,20 +215,21 @@ class HeaderWidget extends StatelessWidget {
                   TextSpan(
                       text: content,
                       style: AppTextStyle.textSm.copyWith(
+                          fontSize: 14.sp,
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600)),
                   TextSpan(
                       text: ' KW',
                       style: AppTextStyle.textXs.copyWith(
-                          fontSize: 10.sp,
+                          fontSize: 12.sp,
                           color: AppColors.grey86,
-                          fontWeight: FontWeight.w600)),
+                          fontWeight: FontWeight.w500)),
                 ])),
                 Text(
                   type,
                   style: AppTextStyle.textSm.copyWith(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
                       color: AppColors.grey86),
                 )
               ],

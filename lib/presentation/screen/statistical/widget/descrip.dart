@@ -40,7 +40,8 @@ class DescriptionWidget extends StatelessWidget {
             Gap(8.sp),
             Text(
               name,
-              style: AppTextStyle.textXs.copyWith(fontWeight: FontWeight.w500),
+              style: AppTextStyle.textXs
+                  .copyWith(fontWeight: FontWeight.w500, fontSize: 12.sp),
             )
           ],
         ),
