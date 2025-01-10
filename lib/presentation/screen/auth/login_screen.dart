@@ -204,23 +204,29 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget buttonLogin() {
     return BlocBuilder<LoginCubit, LoginState>(
         builder: (context, state) => AppButton(
-              isEnable: state.request.userName.isNotEmpty &&
-                  state.request.password.isNotEmpty,
+              // isEnable: state.request.userName.isNotEmpty &&
+              //     state.request.password.isNotEmpty,
               onPressed: () async {
-                if (cubit.login()) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeWidget()),
-                    (route) => false,
-                  );
-                  return;
-                }
-                showDialog(
-                    context: context,
-                    builder: (context) => const AlertDialog(
-                          title: Text('Thông báo'),
-                          content: Text('Tài khoản hoặc mật khẩu không đúng'),
-                        ));
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeWidget()),
+                      (route) => false,
+                );
+                return;
+                // if (cubit.login()) {
+                //   Navigator.pushAndRemoveUntil(
+                //     context,
+                //     MaterialPageRoute(builder: (context) => const HomeWidget()),
+                //     (route) => false,
+                //   );
+                //   return;
+                // }
+                // showDialog(
+                //     context: context,
+                //     builder: (context) => const AlertDialog(
+                //           title: Text('Thông báo'),
+                //           content: Text('Tài khoản hoặc mật khẩu không đúng'),
+                //         ));
               },
               title: "Đăng nhập",
               color: AppColors.blue,

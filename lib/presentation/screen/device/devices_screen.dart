@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/cubit/app_cubit.dart';
+import 'package:solar_energy/data/dto/device/request/device_request.dart';
+import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
+import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
 import 'package:solar_energy/presentation/screen/device/widget/item_device.dart';
 
 class DevicesScreen extends StatefulWidget {
@@ -13,6 +18,17 @@ class DevicesScreen extends StatefulWidget {
 }
 
 class _DevicesScreenState extends State<DevicesScreen> {
+  late final DeviceCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = BlocProvider.of<DeviceCubit>(context);
+    WidgetsBinding.instance.addPostFrameCallback((duration) {
+      _cubit.getDevices(const DeviceRequest(powerStationId: 21));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,11 +52,35 @@ class _DevicesScreenState extends State<DevicesScreen> {
       ),
       backgroundColor: AppColors.greyFB,
       body: SafeArea(
-        child: ListView.separated(
-            padding: EdgeInsets.all(12.sp),
-            itemBuilder: (context, index) => const ItemDevice(),
-            separatorBuilder: (context, index) => Gap(12.sp),
-            itemCount: 10),
+        child: BlocConsumer<DeviceCubit, DeviceState>(
+          listener: (context, state) {
+            state.resultDevices.when(
+                loading: () => BlocProvider.of<AppCubit>(context).showLoading(),
+                success: (data) =>
+                    BlocProvider.of<AppCubit>(context).hideShowLoading(),
+                error: (error) {
+                  BlocProvider.of<AppCubit>(context).hideShowLoading();
+                  AppToast.showToastError(context, title: error);
+                });
+          },
+          builder: (BuildContext context, DeviceState state) {
+            return state.resultDevices.data?.data != null &&
+                    state.resultDevices.data?.data != []
+                ? ListView.separated(
+                    padding: EdgeInsets.all(12.sp),
+                    itemBuilder: (context, index) => ItemDevice(
+                        device: state.resultDevices.data!.data[index]),
+                    separatorBuilder: (context, index) => Gap(12.sp),
+                    itemCount: state.resultDevices.data?.data.length ?? 0)
+                : Center(
+                    child: Text(
+                      'Không có dữ liệu',
+                      style: AppTextStyle.textXs.copyWith(
+                          fontSize: 12.sp, color: AppColors.textPrimary),
+                    ),
+                  );
+          },
+        ),
       ),
     );
   }

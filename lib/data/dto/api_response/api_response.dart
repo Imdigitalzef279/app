@@ -18,7 +18,7 @@ part 'api_response.g.dart';
 @Freezed(genericArgumentFactories: true)
 class PaginationResponse<T> with _$PaginationResponse<T> {
   const factory PaginationResponse({
-    @JsonKey(name: 'items') List<T>? data,
+    @JsonKey(name: 'items') @Default([]) List<T> data,
     @JsonKey(name: 'totalCount') @Default(0) int totalCount,
   }) = _PaginationResponse<T>;
 
@@ -26,4 +26,17 @@ class PaginationResponse<T> with _$PaginationResponse<T> {
       Map<String, dynamic> json,
       T Function(Object?) fromJsonT,
       ) => _$PaginationResponseFromJson(json, fromJsonT);
+}
+
+
+@Freezed(genericArgumentFactories: true)
+class ErrorResponse with _$ErrorResponse {
+  const factory ErrorResponse({
+    @JsonKey(name: 'code') int? code,
+    @JsonKey(name: 'message') @Default('') String message,
+  }) = _ErrorResponse;
+
+  factory ErrorResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$ErrorResponseFromJson(json);
 }

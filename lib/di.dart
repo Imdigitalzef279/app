@@ -1,7 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/repositories/auth/auth_repository.dart';
 import 'package:solar_energy/data/repositories/auth/auth_repository_impl.dart';
+import 'package:solar_energy/data/repositories/device/device_repository.dart';
+import 'package:solar_energy/data/repositories/device/device_repository_impl.dart';
 import 'package:solar_energy/data/repositories/solar_electric/solar_electric_repository.dart';
 import 'package:solar_energy/data/repositories/solar_electric/solar_electric_repository_impl.dart';
 
@@ -24,4 +27,5 @@ void configureDependencies() {
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
   getIt.registerLazySingleton<SolarElectricRepository>(
       () => SolarElectricRepositoryIml());
+  getIt.registerLazySingleton<DeviceRepository>(() => DeviceRepositoryImpl());
 }
