@@ -3,10 +3,24 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
 class ItemDevice extends StatelessWidget {
-  const ItemDevice({super.key});
+  const ItemDevice({super.key, required this.device});
+
+  final DeviceResponse device;
+
+  String getStatus(int status) {
+    switch (status) {
+      case 0:
+        return 'Dừng';
+      case 1:
+        return 'Hoạt động';
+      default:
+        return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +48,7 @@ class ItemDevice extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  "100KTL-M2(COM1-12)",
+                  device.name,
                   style: AppTextStyle.textSm.copyWith(
                       fontSize: 14.sp,
                       color: AppColors.textPrimary,
@@ -58,27 +72,23 @@ class ItemDevice extends StatelessWidget {
             ),
             Gap(8.sp),
             // body
-            rowItem(name: "Số sê-ri", content: "BN2461058455"),
+            rowItem(name: "Mã thiết bị", content: device.code),
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Loại thiết bị", content: "Bộ biến tần"),
+            rowItem(name: "Mô tả", content: device.description),
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Trạng thái bộ biến tần", content: "Dừng"),
+            rowItem(name: "Loại thiết bị", content: device.meterType.name),
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Công suất thuần", content: "0,000 kW"),
+            rowItem(name: "Trạng thái", content: getStatus(device.status)),
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Sản lượng hôm nay", content: "203,05 kWh"),
-            const Divider(
-              color: AppColors.greyFB,
-            ),
-            rowItem(name: "Ngày hết hạn bảo hành", content: "2029/09/23"),
+            rowItem(name: "Trạm điện", content: device.powerStation.name),
           ],
         ),
       ),

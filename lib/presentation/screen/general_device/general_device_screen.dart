@@ -169,8 +169,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             name: "Điện mặt trời"),
                         itemService(
                             onTap: () {
-                              Navigator.pushNamed(
-                                  context, RouteName.deviceScreen);
+                              // Navigator.pushNamed(
+                              //     context, RouteName.deviceScreen);
                             },
                             icon: Assets.icons.air.svg(
                                 width: 22.w,
