@@ -4,8 +4,8 @@ import 'package:solar_energy/application/enums/index_type.dart';
 import 'package:solar_energy/application/extentions/index_extension.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
-import '../../../application/constants/app_color.dart';
-import '../../../application/constants/app_text_style.dart';
+import '../../../../application/constants/app_color.dart';
+import '../../../../application/constants/app_text_style.dart';
 
 class IndexWarningScreen extends StatefulWidget {
   const IndexWarningScreen({super.key, required this.indexType});
@@ -54,7 +54,7 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
                   child: Column(
                     children: [
                       itemDevice(
-                          nameDevice: "100KTL - M2(COM1-12)",
+                          nameDevice: "100KTL - M2(COM1-12) - Đo đầu nguồn",
                           serialNumber: "mbl8320ML",
                           statusDevice: widget.indexType.title,
                           typeDevice: "Van nước",
@@ -107,11 +107,43 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
           const Divider(
             color: AppColors.greyFB,
           ),
-          rowItem(name: "Trạng thái", content: statusDevice ?? "Lỗi"),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  "Trạng thái",
+                  style: AppTextStyle.textXs.copyWith(
+                      color: AppColors.textPrimary.withOpacity(0.5)),
+                ),
+              ),
+              12.verticalSpace,
+              Flexible(
+                flex: 3,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                    decoration: BoxDecoration(
+                      color: AppColors.green50,
+                      borderRadius: BorderRadius.circular(4.r),
+                    ),
+                    child: Text(
+                      statusDevice ?? "Lỗi",
+                      style: AppTextStyle.textXs.copyWith(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           const Divider(
             color: AppColors.greyFB,
           ),
-          rowItem(name: "Ngày hết hạn bảo hành", content: "2029/09/23"),
+          rowItem(name: "Thời gian cập nhật", content: "2029/09/23"),
         ],
       ),
     );

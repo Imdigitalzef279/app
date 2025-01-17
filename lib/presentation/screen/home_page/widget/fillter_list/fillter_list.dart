@@ -71,196 +71,203 @@ class _FilterListWidgetState extends State<FilterListWidget> {
           color: AppColors.white,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16.r), topRight: Radius.circular(16.r))),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Bộ Lọc",
-            style: AppTextStyle.textBase.copyWith(fontWeight: FontWeight.w700),
-          ),
-          SizedBox(
-            height: 12.h,
-          ),
-          ValueListenableBuilder(
-            valueListenable: totalSelect,
-            builder: (context, value, child) => ItemFilterFactory(
-              listValues: factoryFilters,
-              valueSelected: totalSelect.value,
-              nameFilter: "Loại nhà máy",
-              selectItem: (value) {
-                totalSelect.value = value;
-              },
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Bộ Lọc",
+              style: AppTextStyle.textBase.copyWith(fontWeight: FontWeight.w700),
             ),
-          ),
-          SizedBox(
-            height: 12.h,
-          ),
-          ValueListenableBuilder(
-            valueListenable: equippedSelect,
-            builder: (context, value, child) => ItemFilterFactory(
-              listValues: totalCapac,
-              valueSelected: equippedSelect.value,
-              nameFilter: "Tổng công suất chuỗi",
-              selectItem: (value) {
-                equippedSelect.value = value;
-              },
+            SizedBox(
+              height: 12.h,
             ),
-          ),
-          SizedBox(
-            height: 12.h,
-          ),
-          ValueListenableBuilder(
-            valueListenable: factorySelect,
-            builder: (context, value, child) => ItemFilterFactory(
-              listValues: factoryEquipped,
-              valueSelected: factorySelect.value,
-              nameFilter: "Cấu hình nhà máy",
-              selectItem: (value) {
-                factorySelect.value = value;
-              },
-            ),
-          ),
-          SizedBox(
-            height: 12.h,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Thời gian kết nối",
-                style: AppTextStyle.textSm
-                    .copyWith(color: AppColors.textPrimary.withOpacity(0.3)),
+            ValueListenableBuilder(
+              valueListenable: totalSelect,
+              builder: (context, value, child) => ItemFilterFactory(
+                listValues: factoryFilters,
+                valueSelected: totalSelect.value,
+                nameFilter: "Loại nhà máy",
+                selectItem: (value) {
+                  totalSelect.value = value;
+                },
               ),
-              SizedBox(
-                height: 4.h,
+            ),
+            SizedBox(
+              height: 12.h,
+            ),
+            ValueListenableBuilder(
+              valueListenable: equippedSelect,
+              builder: (context, value, child) => ItemFilterFactory(
+                listValues: totalCapac,
+                valueSelected: equippedSelect.value,
+                nameFilter: "Tổng công suất chuỗi",
+                selectItem: (value) {
+                  equippedSelect.value = value;
+                },
               ),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      final DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(9999),
-                          initialDate: DateTime.now());
-                      if (pickedDate != null) {
-                        timeStart.value =
-                            DateFormat('MM/dd/yyyy').format(pickedDate);
-                      }
-                    },
-                    child: ValueListenableBuilder(
-                      valueListenable: timeStart,
-                      builder: (context, value, child) => Container(
-                        width: 1.sw / 2 - 40.w,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 4.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.r),
-                            color: AppColors.greyFB),
-                        child: Text(
-                          timeStart.value,
-                          style: AppTextStyle.textXs.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary.withOpacity(0.5),
+            ),
+            SizedBox(
+              height: 12.h,
+            ),
+            ValueListenableBuilder(
+              valueListenable: factorySelect,
+              builder: (context, value, child) => ItemFilterFactory(
+                listValues: factoryEquipped,
+                valueSelected: factorySelect.value,
+                nameFilter: "Cấu hình nhà máy",
+                selectItem: (value) {
+                  factorySelect.value = value;
+                },
+              ),
+            ),
+            SizedBox(
+              height: 12.h,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Thời gian kết nối",
+                  style: AppTextStyle.textSm
+                      .copyWith(color: AppColors.textPrimary.withOpacity(0.3)),
+                ),
+                SizedBox(
+                  height: 4.h,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(9999),
+                              initialDate: DateTime.now());
+                          if (pickedDate != null) {
+                            timeStart.value =
+                                DateFormat('MM/dd/yyyy').format(pickedDate);
+                          }
+                        },
+                        child: ValueListenableBuilder(
+                          valueListenable: timeStart,
+                          builder: (context, value, child) => Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 4.w, vertical: 4.h),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16.r),
+                                color: AppColors.greyFB),
+                            child: Text(
+                              timeStart.value,
+                              style: AppTextStyle.textXs.copyWith(
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textPrimary.withOpacity(0.5),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      final DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(9999),
-                          initialDate: DateTime.now());
-                      if (pickedDate != null) {
-                        timeEnd.value =
-                            DateFormat('MM/dd/yyyy').format(pickedDate);
-                      }
-                    },
-                    child: ValueListenableBuilder(
-                      valueListenable: timeEnd,
-                      builder: (context, value, child) => Container(
-                        width: 1.sw / 2 - 40.w,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 4.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.r),
-                            color: AppColors.greyFB),
-                        child: Text(
-                          timeEnd.value,
-                          style: AppTextStyle.textXs.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary.withOpacity(0.5),
+                    8.horizontalSpace,
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(9999),
+                              initialDate: DateTime.now());
+                          if (pickedDate != null) {
+                            timeEnd.value =
+                                DateFormat('MM/dd/yyyy').format(pickedDate);
+                          }
+                        },
+                        child: ValueListenableBuilder(
+                          valueListenable: timeEnd,
+                          builder: (context, value, child) => Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 4.w, vertical: 4.h),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16.r),
+                                color: AppColors.greyFB),
+                            child: Text(
+                              timeEnd.value,
+                              style: AppTextStyle.textXs.copyWith(
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textPrimary.withOpacity(0.5),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
+                  ],
+                )
+              ],
+            ),
+            SizedBox(
+              height: 12.h,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Khu Vực",
+                  style: AppTextStyle.textSm
+                      .copyWith(color: AppColors.textPrimary.withOpacity(0.3)),
+                ),
+                SizedBox(
+                  height: 4.h,
+                ),
+                CustomLabelTextField(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  radius: 99.r,
+                  backgroundColor: AppColors.greyFB,
+                  hintText: "Nhập tên khu vực.",
+                  textStyleHint: AppTextStyle.textSm
+                      .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
+                  textStyleInput:
+                      AppTextStyle.textSm.copyWith(color: AppColors.textPrimary),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 32.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: AppButton(
+                    title: "Đặt Lại",
+                    color: AppColors.white,
+                    borderColor: AppColors.blueEA,
+                    fontSize: 12.sp,
+                    textColor: AppColors.blueEA,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8.h),
                   ),
-                ],
-              )
-            ],
-          ),
-          SizedBox(
-            height: 12.h,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Khu Vực",
-                style: AppTextStyle.textSm
-                    .copyWith(color: AppColors.textPrimary.withOpacity(0.3)),
-              ),
-              SizedBox(
-                height: 4.h,
-              ),
-              CustomLabelTextField(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                radius: 99.r,
-                backgroundColor: AppColors.greyFB,
-                hintText: "Nhập tên khu vực.",
-                textStyleHint: AppTextStyle.textSm
-                    .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
-                textStyleInput:
-                    AppTextStyle.textSm.copyWith(color: AppColors.textPrimary),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 32.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AppButton(
-                title: "Đặt Lại",
-                color: AppColors.white,
-                borderColor: AppColors.blueEA,
-                fontSize: 12.sp,
-                textColor: AppColors.blueEA,
-                width: (1.sw - 40.w) / 2,
-                contentPadding: EdgeInsets.symmetric(vertical: 8.h),
-              ),
-
-              AppButton(
-                title: "OK",
-                color: AppColors.blueEA,
-                fontSize: 12.sp,
-                textColor: AppColors.white,
-                width: (1.sw - 40.w) / 2,
-                contentPadding: EdgeInsets.symmetric(vertical: 8.h),
-              )
-            ],
-          ),
-        ],
+                ),
+                8.horizontalSpace,
+                Expanded(
+                  child: AppButton(
+                    title: "OK",
+                    color: AppColors.blueEA,
+                    fontSize: 12.sp,
+                    textColor: AppColors.white,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

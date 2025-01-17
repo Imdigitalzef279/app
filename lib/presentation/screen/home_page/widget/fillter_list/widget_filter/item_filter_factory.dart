@@ -17,20 +17,22 @@ class ItemFilterFactory extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Loại nhà máy",
+          nameFilter,
           style: AppTextStyle.textSm
               .copyWith(color: AppColors.textPrimary.withOpacity(0.3)),
         ),
         SizedBox(height: 4.h,),
-        Wrap(
-          spacing: 8.w,
-          runSpacing: 8.h,
-          children: List.generate(
-            listValues.length,
-            (index) => filterValues(
-                name: listValues[index].name,
-                defaultValues: listValues[index].value,
-                valuesSelected: valueSelected),
+        Center(
+          child: Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children: List.generate(
+              listValues.length,
+              (index) => filterValues(
+                  name: listValues[index].name,
+                  defaultValues: listValues[index].value,
+                  valuesSelected: valueSelected),
+            ),
           ),
         )
       ],

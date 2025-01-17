@@ -31,6 +31,14 @@ class $AssetsIconsGen {
   /// File path: assets/icons/air.svg
   SvgGenImage get air => const SvgGenImage('assets/icons/air.svg');
 
+  /// File path: assets/icons/all_icon_bold.svg
+  SvgGenImage get allIconBold =>
+      const SvgGenImage('assets/icons/all_icon_bold.svg');
+
+  /// File path: assets/icons/all_icon_line.svg
+  SvgGenImage get allIconLine =>
+      const SvgGenImage('assets/icons/all_icon_line.svg');
+
   /// File path: assets/icons/apps.svg
   SvgGenImage get apps => const SvgGenImage('assets/icons/apps.svg');
 
@@ -67,6 +75,14 @@ class $AssetsIconsGen {
   SvgGenImage get chatbotSpeechBubble =>
       const SvgGenImage('assets/icons/chatbot-speech-bubble.svg');
 
+  /// File path: assets/icons/check-circle_bold.svg
+  SvgGenImage get checkCircleBold =>
+      const SvgGenImage('assets/icons/check-circle_bold.svg');
+
+  /// File path: assets/icons/check-circle_line.svg
+  SvgGenImage get checkCircleLine =>
+      const SvgGenImage('assets/icons/check-circle_line.svg');
+
   /// File path: assets/icons/clouds.svg
   SvgGenImage get clouds => const SvgGenImage('assets/icons/clouds.svg');
 
@@ -89,6 +105,14 @@ class $AssetsIconsGen {
   /// File path: assets/icons/dashboard-panel_line.svg
   SvgGenImage get dashboardPanelLine =>
       const SvgGenImage('assets/icons/dashboard-panel_line.svg');
+
+  /// File path: assets/icons/exclamation_bold.svg
+  SvgGenImage get exclamationBold =>
+      const SvgGenImage('assets/icons/exclamation_bold.svg');
+
+  /// File path: assets/icons/exclamation_line.svg
+  SvgGenImage get exclamationLine =>
+      const SvgGenImage('assets/icons/exclamation_line.svg');
 
   /// File path: assets/icons/faucet.svg
   SvgGenImage get faucet => const SvgGenImage('assets/icons/faucet.svg');
@@ -169,12 +193,17 @@ class $AssetsIconsGen {
   /// File path: assets/icons/water.svg
   SvgGenImage get water => const SvgGenImage('assets/icons/water.svg');
 
+  /// File path: assets/icons/wifi-xmark.svg
+  SvgGenImage get wifiXmark => const SvgGenImage('assets/icons/wifi-xmark.svg');
+
   /// File path: assets/icons/wind.svg
   SvgGenImage get wind => const SvgGenImage('assets/icons/wind.svg');
 
   /// List of all assets
   List<SvgGenImage> get values => [
         air,
+        allIconBold,
+        allIconLine,
         apps,
         arrowDownStrenght,
         autoReply,
@@ -186,12 +215,16 @@ class $AssetsIconsGen {
         chartArea,
         chartAreaLine,
         chatbotSpeechBubble,
+        checkCircleBold,
+        checkCircleLine,
         clouds,
         commentAlt,
         computerSpeaker,
         computerSpeakerLine,
         dashboardPanel,
         dashboardPanelLine,
+        exclamationBold,
+        exclamationLine,
         faucet,
         flaskGear,
         flask,
@@ -216,6 +249,7 @@ class $AssetsIconsGen {
         usdCircle,
         usersAlt,
         water,
+        wifiXmark,
         wind
       ];
 }

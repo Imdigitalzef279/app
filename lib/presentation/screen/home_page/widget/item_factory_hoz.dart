@@ -11,6 +11,7 @@ class ItemFactoryHoz extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
     String title =
         "Việt Nam Hà Nội, Hà Nội Trần Ph 11708, Vệt Nam, 40 Ngõ 80 Khuyến Lương";
     return InkWell(
@@ -27,7 +28,7 @@ class ItemFactoryHoz extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              flex: 2,
+              flex: isPortrait ? 2 : 1,
               child: AppNetworkImage(
                 "https://i0.wp.com/mcnaircustomhomes.com/wp-content/uploads/2023/06/luxury-smart-home.jpg?resize=1536%2C1024&ssl=1",
                 radius: 8.r,
@@ -38,6 +39,7 @@ class ItemFactoryHoz extends StatelessWidget {
             Expanded(
               flex: 4,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // project name - status
                   Row(
@@ -51,43 +53,61 @@ class ItemFactoryHoz extends StatelessWidget {
                       ),
                       Container(
                         padding:
-                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.w),
                         decoration: BoxDecoration(
                           color: AppColors.green50.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(4.r),
-                        ),
-                        child: Text(
-                          "Bình thường",
-                          style: AppTextStyle.textXs
-                              .copyWith(color: AppColors.green50,fontSize: 8.sp
-                          ),
+                          borderRadius: BorderRadius.circular(99.r),
                         ),
                       )
                     ],
                   ),
                   Text(
                     "$title \n",
-                    style: AppTextStyle.textSm
-                        .copyWith(color: AppColors.textPrimary, fontSize: 10.sp),
+                    style: AppTextStyle.tini
+                        .copyWith(color: AppColors.textPrimary),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.justify,
                   ),
-                  Column(
+                  Row(
                     children: [
-                      rowItem(
-                          iconSolar: Assets.icons.solarPanelSun.svg(
-                              width: 12.w,
-                              color: AppColors.grey73.withOpacity(0.5)),
-                          solarPower: "0,000 kWp"),
-                      SizedBox(
-                        width: 12.h,
+                      Column(
+                        children: [
+                          rowItem(
+                              iconSolar: Assets.icons.solarPanelSun.svg(
+                                  width: 12.w,
+                                  color: AppColors.grey73.withOpacity(0.5)),
+                              solarPower: "0,000 kWp"),
+                          SizedBox(
+                            width: 12.h,
+                          ),
+                          rowItem(
+                              iconSolar: Assets.icons.thunderstormSun6854078.svg(
+                                  width: 12.w,
+                                  color: AppColors.grey73.withOpacity(0.5)),
+                              solarPower: "3,40 MWh"),
+                        ],
                       ),
-                      rowItem(
-                          iconSolar: Assets.icons.thunderstormSun6854078.svg(
-                              width: 12.w,
-                              color: AppColors.grey73.withOpacity(0.5)),
-                          solarPower: "3,40 MWh"),
+
+                      8.horizontalSpace,
+
+                      Column(
+                        children: [
+                          rowItem(
+                              iconSolar: Assets.icons.solarPanelSun.svg(
+                                  width: 12.w,
+                                  color: AppColors.grey73.withOpacity(0.5)),
+                              solarPower: "0,000 kWp"),
+                          SizedBox(
+                            width: 12.h,
+                          ),
+                          rowItem(
+                              iconSolar: Assets.icons.thunderstormSun6854078.svg(
+                                  width: 12.w,
+                                  color: AppColors.grey73.withOpacity(0.5)),
+                              solarPower: "3,40 MWh"),
+                        ],
+                      )
                     ],
                   )
                 ],
@@ -108,8 +128,8 @@ class ItemFactoryHoz extends StatelessWidget {
         ),
         Text(
           solarPower,
-          style: AppTextStyle.textSm
-              .copyWith(color: AppColors.grey73, fontSize: 10.sp),
+          style: AppTextStyle.tini
+              .copyWith(color: AppColors.grey73),
         )
       ],
     );

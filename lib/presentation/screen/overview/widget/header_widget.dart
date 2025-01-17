@@ -42,8 +42,6 @@ class HeaderWidget extends StatelessWidget {
         Row(
           children: [
             Icon(
-              Icons.cloud,
-            const Icon(
               Icons.electric_meter,
               color: AppColors.blueFF,
               size: 20.sp,

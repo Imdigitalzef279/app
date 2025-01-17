@@ -6,6 +6,7 @@ import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/enums/search_type.dart';
 import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
+import 'package:solar_energy/presentation/screen/Electricity/electricity_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_factory/bloc/detail_factory_cubit.dart';
 import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
@@ -97,7 +98,9 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   Widget _buildBody() {
     switch (indexPage) {
       case 0:
-        return OverViewScreen(type: widget.type);
+        return widget.type == ElectricType.saveElectric
+            ? const ElectricityScreen()
+            : OverViewScreen(type: widget.type);
       case 1:
         return const StatisticalScreen();
       case 2:

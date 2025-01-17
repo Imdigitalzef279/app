@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     Text(
                       "Kra Power",
-                      style: AppTextStyle.text3Xl.copyWith(
+                      style: AppTextStyle.textBase.copyWith(
                         color: const Color(0xFFCA2E39),
                         fontWeight: FontWeight.w600,
                         shadows: [
@@ -77,10 +77,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
+                      textAlign: TextAlign.center,
                     )
                   ],
                 ),
               ),
+              12.verticalSpace,
               BlocBuilder<LoginCubit, LoginState>(
                 builder: (BuildContext context, state) {
                   return Column(children: [

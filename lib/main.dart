@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:solar_energy/presentation/screen/app.dart';
 
 import 'application/configs/env_configs.dart';

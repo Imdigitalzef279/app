@@ -66,7 +66,39 @@ class ItemDevice extends StatelessWidget {
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Trạng thái bộ biến tần", content: "Dừng"),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Trạng thái",
+                    style: AppTextStyle.textXs.copyWith(
+                        color: AppColors.textPrimary.withOpacity(0.5)),
+                  ),
+                ),
+                12.verticalSpace,
+                Flexible(
+                  flex: 3,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                      decoration: BoxDecoration(
+                        color: AppColors.green50,
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Text(
+                        "Dừng" ?? "Lỗi",
+                        style: AppTextStyle.textXs.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const Divider(
               color: AppColors.greyFB,
             ),

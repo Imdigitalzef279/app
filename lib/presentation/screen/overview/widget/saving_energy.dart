@@ -14,7 +14,6 @@ class SavingEnergy extends StatelessWidget {
     return Container(
         width: double.infinity,
         padding: EdgeInsets.all(12.r),
-        margin: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.r),
             color: AppColors.white,
@@ -64,12 +63,6 @@ class SavingEnergy extends StatelessWidget {
                       title: "Công suất suất định mức của bộ biến thế",
                       content: "100,372",
                       unit: "KW"),
-                  item(context,
-                      path: Assets.icons.solarPanelSun.path,
-                      color: AppColors.blue,
-                      title: "Cung cấp từ lưới điện hôm nay",
-                      content: "3,40",
-                      unit: "MWH"),
                 ])
           ],
         ));
