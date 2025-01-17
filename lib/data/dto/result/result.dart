@@ -8,7 +8,7 @@ part 'result.freezed.dart';
 class Result<T> with _$Result<T> {
   const Result._();
 
-  const factory Result(
+  factory Result(
       {T? data,
       @Default(LoadStatus.initial) LoadStatus status,
       @Default('') String error}) = _Result;

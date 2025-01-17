@@ -55,7 +55,6 @@ class _StatisticalScreenState extends State<StatisticalScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     selectPV = true;
     selectNet = true;
@@ -73,6 +72,14 @@ class _StatisticalScreenState extends State<StatisticalScreen>
         backgroundColor: AppColors.white,
         scrolledUnderElevation: 0,
         elevation: 0,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Padding(
+              padding: EdgeInsets.only(left: 4.sp),
+              child: Icon(Icons.arrow_back_ios, size: 16.sp)),
+        ),
         title: Text(
           "Thien son",
           style: AppTextStyle.textBase.copyWith(
@@ -81,83 +88,122 @@ class _StatisticalScreenState extends State<StatisticalScreen>
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          padding: EdgeInsets.all(12.sp),
           child: Column(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
+                padding: EdgeInsets.all(12.sp),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16.r),
+                    borderRadius: BorderRadius.circular(12.sp),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.greyDF.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      )
+                    ],
                     color: AppColors.white),
                 child: Column(
                   children: [
                     TabBar(
-                        tabs: const <Widget>[
+                        tabs: <Widget>[
                           Tab(
                             text: "Ngày",
+                            height: 35.sp,
                           ),
                           Tab(
                             text: "Tháng",
+                            height: 35.sp,
                           ),
                           Tab(
                             text: "Năm",
+                            height: 35.sp,
                           ),
                         ],
                         controller: _tabController,
-                        labelStyle:
-                            AppTextStyle.textSm.copyWith(color: AppColors.blueEA),
+                        labelStyle: AppTextStyle.textSm.copyWith(
+                            fontSize: 14.sp,
+                            color: AppColors.blueEA,
+                            fontWeight: FontWeight.w500),
                         indicatorColor: AppColors.blueFD,
                         unselectedLabelColor: AppColors.grey73,
                         indicator: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.r),
-                            color: AppColors.blueFD.withOpacity(0.5)),
+                            borderRadius: BorderRadius.circular(8.sp),
+                            color: AppColors.blueFD.withOpacity(0.8)),
                         indicatorSize: TabBarIndicatorSize.tab,
                         indicatorWeight: 0,
                         dividerColor: Colors.transparent),
-
+                    Gap(12.sp),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(onPressed: (){}, icon: Icon(Icons.chevron_left_rounded, size: 16.w,)),
-                        Text("25/11/2024", style: AppTextStyle.textSm.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),),
-                        IconButton(onPressed: (){}, icon: Icon(Icons.chevron_right_rounded, size: 16.w,))
+                        InkWell(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.chevron_left_rounded,
+                              size: 20.sp,
+                            )),
+                        Text(
+                          "25/11/2024",
+                          style: AppTextStyle.textSm.copyWith(
+                              fontSize: 14.sp,
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        InkWell(
+                            onTap: () {},
+                            child: Icon(
+                              Icons.chevron_right_rounded,
+                              size: 20.sp,
+                            ))
                       ],
                     )
                   ],
                 ),
               ),
-              Gap(8.h),
+              Gap(12.sp),
               Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    height: 200.sp,
+                    padding: EdgeInsets.all(8.sp),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.r),
-                        color: AppColors.white),
-                    height: 1.sw / 2,
+                      borderRadius: BorderRadius.circular(12.sp),
+                      color: AppColors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.greyDF.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        )
+                      ],
+                    ),
                     child: SfCircularChart(
                       title: ChartTitle(
                         text: "Sản Lượng",
-                        textStyle: AppTextStyle.textSm.copyWith(
+                        textStyle: AppTextStyle.textXs.copyWith(
+                            fontSize: 12.sp,
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w600),
                         alignment: ChartAlignment.near,
                       ),
                       legend: Legend(
                         isVisible: true,
-                        // Hiển thị chú thích
                         position: LegendPosition.right,
-                        // Đặt vị trí chú thích
                         legendItemBuilder:
                             (legendText, series, point, seriesIndex) {
                           double value = (series as DoughnutSeries)
                               .dataSource?[seriesIndex]
                               .y;
                           return Container(
-                            padding: const EdgeInsets.all(4),
+                            padding: EdgeInsets.symmetric(horizontal: 4.sp),
                             child: Text(
                               '$legendText: ${value.toStringAsFixed(2)} kW',
-                              style: AppTextStyle.textXs.copyWith(
+                              style: AppTextStyle.textSm.copyWith(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
                                   color: legendText == "Xuất"
                                       ? Colors.grey
                                       : Colors.green),
@@ -172,8 +218,10 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                             child: Text(
                               '${(chartData[0].y + chartData[1].y).toStringAsFixed(2)} kW',
                               // Hiển thị tổng giá trị
-                              style: AppTextStyle.textSm
-                                  .copyWith(color: AppColors.textPrimary),
+                              style: AppTextStyle.textSm.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14.sp),
                             ),
                           ),
                         ),
@@ -188,7 +236,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                           // Gán nhãn
                           yValueMapper: (_ChartData data, _) => data.y,
                           // Gán giá trị
-                          radius: '70%',
+                          radius: '100%',
                           innerRadius: '80%',
                           pointColorMapper: (_ChartData data, _) =>
                               data.x == 'Công suất tự dùng'
@@ -198,17 +246,27 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                       ],
                     ),
                   ),
-                  Gap(8.h),
+                  Gap(12.sp),
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    height: 200.sp,
+                    padding: EdgeInsets.all(8.sp),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.r),
-                        color: AppColors.white),
-                    height: 1.sw / 2,
+                      borderRadius: BorderRadius.circular(12.sp),
+                      color: AppColors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.greyDF.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        )
+                      ],
+                    ),
                     child: SfCircularChart(
                       title: ChartTitle(
                         text: "Mức sử dụng",
-                        textStyle: AppTextStyle.textSm.copyWith(
+                        textStyle: AppTextStyle.textXs.copyWith(
+                            fontSize: 12.sp,
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w600),
                         alignment: ChartAlignment.near,
@@ -224,10 +282,12 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                               .dataSource?[seriesIndex]
                               .y;
                           return Container(
-                              padding: const EdgeInsets.all(4),
+                              padding: EdgeInsets.symmetric(horizontal: 4.sp),
                               child: Text(
                                 '$legendText: ${value.toStringAsFixed(2)} kW',
-                                style: AppTextStyle.textXs.copyWith(
+                                style: AppTextStyle.textSm.copyWith(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
                                   color: legendText == "Nhập"
                                       ? const Color(0xFFff9f43)
                                       : const Color(0xFFfeca57),
@@ -242,8 +302,10 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                             child: Text(
                               '${(chartData2[0].y + chartData2[1].y).toStringAsFixed(2)} kW',
                               // Hiển thị tổng giá trị
-                              style: AppTextStyle.textSm
-                                  .copyWith(color: AppColors.textPrimary),
+                              style: AppTextStyle.textSm.copyWith(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary),
                             ),
                           ),
                         ),
@@ -258,7 +320,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                           // Gán nhãn
                           yValueMapper: (_ChartData data, _) => data.y,
                           // Gán giá trị
-                          radius: '70%',
+                          radius: '100%',
                           innerRadius: '80%',
                           pointColorMapper: (_ChartData data, _) =>
                               data.x == 'Nhập'
@@ -268,104 +330,117 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                       ],
                     ),
                   ),
-                  Gap(8.h),
+                  Gap(12.sp),
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.r),
-                        color: AppColors.white),
+                      borderRadius: BorderRadius.circular(12.sp),
+                      color: AppColors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.greyDF.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        )
+                      ],
+                    ),
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 200.h,
-                          child: SfCartesianChart(
-                              // Enable legend
-                              legend: const Legend(isVisible: false),
-                              primaryXAxis: CategoryAxis(
-                                labelStyle: AppTextStyle.textXs
-                                    .copyWith(color: AppColors.textPrimary),
-                              ),
-                              primaryYAxis: NumericAxis(
-                                axisLabelFormatter: (AxisLabelRenderDetails details) {
-                                  return ChartAxisLabel(
-                                      '${details.value} kW',
-                                      AppTextStyle.textXs
-                                          .copyWith(color: AppColors.textPrimary));
-                                },
-                              ),
-                              // Enable tooltip
-                              //tooltipBehavior: TooltipBehavior(enable: true, shared: true),
-                              trackballBehavior: TrackballBehavior(
+                        SfCartesianChart(
+                            // Enable legend
+                            legend: const Legend(isVisible: false),
+                            primaryXAxis: CategoryAxis(
+                              labelStyle: AppTextStyle.textXs.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            primaryYAxis: NumericAxis(
+                              axisLabelFormatter:
+                                  (AxisLabelRenderDetails details) {
+                                return ChartAxisLabel(
+                                    '${details.value} kW',
+                                    AppTextStyle.textXs.copyWith(
+                                        fontSize: 12.sp,
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w400));
+                              },
+                            ),
+                            // Enable tooltip
+                            //tooltipBehavior: TooltipBehavior(enable: true, shared: true),
+                            trackballBehavior: TrackballBehavior(
+                              enable: true,
+                              activationMode: ActivationMode.singleTap,
+                              hideDelay: 2500,
+                              tooltipAlignment: ChartAlignment.center,
+                              tooltipDisplayMode:
+                                  TrackballDisplayMode.groupAllPoints,
+                              // Hiển thị tất cả series
+                              tooltipSettings: InteractiveTooltip(
                                 enable: true,
-                                activationMode: ActivationMode.singleTap,
-                                hideDelay: 2500,
-                                tooltipAlignment: ChartAlignment.center,
-                                tooltipDisplayMode:
-                                    TrackballDisplayMode.groupAllPoints,
-                                // Hiển thị tất cả series
-                                tooltipSettings: InteractiveTooltip(
-                                  enable: true,
-                                  format: 'point.y kW',
-                                  color: Colors.black.withOpacity(0.7),
-                                  textStyle: const TextStyle(
-                                      color: Colors.white, fontSize: 12),
-                                ),
-                                // tooltipSettings: const InteractiveTooltip(
-                                //   enable: true,
-                                //   format: 'point.y kW',
-                                // ),
+                                format: 'point.y kW',
+                                color: Colors.black.withOpacity(0.7),
+                                textStyle: AppTextStyle.textXs.copyWith(
+                                    fontSize: 10.sp,
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.w400),
                               ),
-                              zoomPanBehavior: ZoomPanBehavior(
-                                  enablePanning: true,
-                                  enablePinching: true,
-                                  enableDoubleTapZooming: true,
-                                  zoomMode: ZoomMode.x),
-                              series: <CartesianSeries<_SalesData, String>>[
-                                if (selectPV)
-                                  SplineSeries<_SalesData, String>(
-                                      dataSource: generateSalesData(),
-                                      xValueMapper: (_SalesData sales, _) =>
-                                          sales.year,
-                                      yValueMapper: (_SalesData sales, _) =>
-                                          sales.sales,
-                                      color: const Color(0xFF1dd1a1),
-                                      name: 'Công suất PV',
-                                      // Enable data label
-                                      dataLabelSettings:
-                                          const DataLabelSettings(isVisible: false)),
-                                if (selectNet)
-                                  SplineSeries<_SalesData, String>(
-                                      dataSource: generateSalesData(),
-                                      xValueMapper: (_SalesData sales, _) =>
-                                          sales.year,
-                                      yValueMapper: (_SalesData sales, _) =>
-                                          sales.sales,
-                                      color: const Color(0xFF576574),
-                                      name: 'Nguồn điện từ lưới điện',
+                              // tooltipSettings: const InteractiveTooltip(
+                              //   enable: true,
+                              //   format: 'point.y kW',
+                              // ),
+                            ),
+                            zoomPanBehavior: ZoomPanBehavior(
+                                enablePanning: true,
+                                enablePinching: true,
+                                enableDoubleTapZooming: true,
+                                zoomMode: ZoomMode.x),
+                            series: <CartesianSeries<_SalesData, String>>[
+                              if (selectPV)
+                                SplineSeries<_SalesData, String>(
+                                    dataSource: generateSalesData(),
+                                    xValueMapper: (_SalesData sales, _) =>
+                                        sales.year,
+                                    yValueMapper: (_SalesData sales, _) =>
+                                        sales.sales,
+                                    color: const Color(0xFF1dd1a1),
+                                    name: 'Công suất PV',
+                                    // Enable data label
+                                    dataLabelSettings: const DataLabelSettings(
+                                        isVisible: false)),
+                              if (selectNet)
+                                SplineSeries<_SalesData, String>(
+                                    dataSource: generateSalesData(),
+                                    xValueMapper: (_SalesData sales, _) =>
+                                        sales.year,
+                                    yValueMapper: (_SalesData sales, _) =>
+                                        sales.sales,
+                                    color: const Color(0xFF576574),
+                                    name: 'Nguồn điện từ lưới điện',
 
-                                      // Enable data label
-                                      dataLabelSettings:
-                                          const DataLabelSettings(isVisible: false)),
-                                if (selectConsumer)
-                                  SplineSeries<_SalesData, String>(
-                                      dataSource: generateSalesData(),
-                                      xValueMapper: (_SalesData sales, _) =>
-                                          sales.year,
-                                      yValueMapper: (_SalesData sales, _) =>
-                                          sales.sales,
-                                      color: const Color(0xFFff9f43),
-                                      name: 'Điện năng tiêu thụ',
-                                      // Enable data label
-                                      dataLabelSettings:
-                                          const DataLabelSettings(isVisible: false))
-                              ]),
-                        ),
+                                    // Enable data label
+                                    dataLabelSettings: const DataLabelSettings(
+                                        isVisible: false)),
+                              if (selectConsumer)
+                                SplineSeries<_SalesData, String>(
+                                    dataSource: generateSalesData(),
+                                    xValueMapper: (_SalesData sales, _) =>
+                                        sales.year,
+                                    yValueMapper: (_SalesData sales, _) =>
+                                        sales.sales,
+                                    color: const Color(0xFFff9f43),
+                                    name: 'Điện năng tiêu thụ',
+                                    // Enable data label
+                                    dataLabelSettings: const DataLabelSettings(
+                                        isVisible: false))
+                            ]),
                         Wrap(
-                          alignment: WrapAlignment.start,
-                          runSpacing: 4.w,
-                          spacing: 12.w,
+                          runSpacing: 4.sp,
+                          spacing: 12.sp,
                           children: [
-                            DescripWidget(
+                            DescriptionWidget(
                               color: const Color(0xFF1dd1a1),
                               name: 'Công suất PV',
                               selection: selectPV,
@@ -375,9 +450,9 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                                 });
                               },
                             ),
-                            DescripWidget(
+                            DescriptionWidget(
                               color: const Color(0xFF576574),
-                              name: 'Nguồn điện từ lưới điện',
+                              name: 'Điện lưới',
                               callback: () {
                                 setState(() {
                                   selectNet = !selectNet;
@@ -385,9 +460,9 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                               },
                               selection: selectNet,
                             ),
-                            DescripWidget(
+                            DescriptionWidget(
                               color: const Color(0xFFff9f43),
-                              name: 'Điện năng tiêu thụ',
+                              name: 'Điện tiêu thụ',
                               callback: () => setState(() {
                                 selectConsumer = !selectConsumer;
                               }),
