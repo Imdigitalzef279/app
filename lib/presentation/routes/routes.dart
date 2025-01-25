@@ -7,16 +7,18 @@ import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/alarm_water/all_alarm_water_screen.dart';
 import 'package:solar_energy/presentation/screen/auth/bloc/login_cubit.dart';
 import 'package:solar_energy/presentation/screen/auth/login_screen.dart';
-import 'package:solar_energy/presentation/screen/detail_device/detail_device.dart';
+import 'package:solar_energy/presentation/screen/detail_device/detail_device_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_device_water/detail_device_water_screen.dart';
-import 'package:solar_energy/presentation/screen/detail_factory/bloc/detail_factory_cubit.dart';
 import 'package:solar_energy/presentation/screen/detail_factory/detail_factory.dart';
+import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
 import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/device_index/device_index_screen.dart';
 import 'package:solar_energy/presentation/screen/general_device/general_device_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_device_water/widget/index_warning_screen.dart';
 import 'package:solar_energy/presentation/screen/manager_water/bloc/manager_water_cubit.dart';
 import 'package:solar_energy/presentation/screen/manager_water/manager_water_screen.dart';
+import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
+import 'package:solar_energy/presentation/screen/statistical/bloc/statistical_cubit.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
 class AppRouter {
@@ -55,9 +57,13 @@ class AppRouter {
         routeWidget = const DetailDeviceWaterScreen();
         break;
       case RouteName.factoryDetail:
-        routeWidget = BlocProvider(
-            create: (context) => DetailFactoryCubit(),
-            child: DetailFactoryScreen(type: arguments as ElectricType));
+        routeWidget = MultiBlocProvider(providers: [
+          BlocProvider(create: (context) => OverviewCubit()),
+          BlocProvider(
+            create: (context) => DeviceCubit(),
+          )
+        ], child: DetailFactoryScreen(type: arguments as ElectricType));
+        routeWidget = DetailFactoryScreen(type: arguments);
         break;
       case RouteName.deviceIndex:
         routeWidget = BlocProvider(

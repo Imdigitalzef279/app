@@ -11,7 +11,8 @@ _$PaginationResponseImpl<T> _$$PaginationResponseImplFromJson<T>(
   T Function(Object? json) fromJsonT,
 ) =>
     _$PaginationResponseImpl<T>(
-      data: (json['items'] as List<dynamic>?)?.map(fromJsonT).toList(),
+      data: (json['items'] as List<dynamic>?)?.map(fromJsonT).toList() ??
+          const [],
       totalCount: (json['totalCount'] as num?)?.toInt() ?? 0,
     );
 
@@ -20,6 +21,18 @@ Map<String, dynamic> _$$PaginationResponseImplToJson<T>(
   Object? Function(T value) toJsonT,
 ) =>
     <String, dynamic>{
-      'items': instance.data?.map(toJsonT).toList(),
+      'items': instance.data.map(toJsonT).toList(),
       'totalCount': instance.totalCount,
+    };
+
+_$ErrorResponseImpl _$$ErrorResponseImplFromJson(Map<String, dynamic> json) =>
+    _$ErrorResponseImpl(
+      code: (json['code'] as num?)?.toInt(),
+      message: json['message'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$$ErrorResponseImplToJson(_$ErrorResponseImpl instance) =>
+    <String, dynamic>{
+      'code': instance.code,
+      'message': instance.message,
     };

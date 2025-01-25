@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/data/data_sources/api/api_client.dart';
 import 'package:solar_energy/data/dto/api_response/api_response.dart';
@@ -16,6 +17,11 @@ class BaseRepository {
       }
       return result.copyWith(status: LoadStatus.failure, error: "");
     } catch (e) {
+      if (e is DioException && e.error is ErrorResponse) {
+        final error = e.error as ErrorResponse;
+        return result.copyWith(
+            status: LoadStatus.failure, error: error.message);
+      }
       return result.copyWith(status: LoadStatus.failure, error: e.toString());
     }
   }
@@ -25,11 +31,13 @@ class BaseRepository {
     final result = Result<PaginationResponse<T>>();
     try {
       final PaginationResponse<T> data = await apiCallBack();
-      if (data.data != null) {
-        return result.copyWith(data: data, status: LoadStatus.success);
-      }
-      return result.copyWith(status: LoadStatus.failure, error: "");
+      return result.copyWith(data: data, status: LoadStatus.success);
     } catch (e) {
+      if (e is DioException && e.error is ErrorResponse) {
+        final error = e.error as ErrorResponse;
+        return result.copyWith(
+            status: LoadStatus.failure, error: error.message);
+      }
       return result.copyWith(status: LoadStatus.failure, error: e.toString());
     }
   }

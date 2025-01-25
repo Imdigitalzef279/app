@@ -7,7 +7,20 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
 class CurrentlyWidget extends StatelessWidget {
-  const CurrentlyWidget({super.key});
+  const CurrentlyWidget({
+    super.key,
+    required this.gridPower,
+    required this.loadPower,
+    required this.productionPower,
+    required this.maxGridPower,
+    required this.maxProductionPower,
+  });
+
+  final double gridPower;
+  final double productionPower;
+  final double loadPower;
+  final double maxGridPower;
+  final double maxProductionPower;
 
 
   @override
@@ -44,35 +57,41 @@ class CurrentlyWidget extends StatelessWidget {
                 spacing: 8.sp,
                 children: [
                   item(context,
-                      path: Assets.icons.thunderstormSun6854078.path,
-                      color: AppColors.blueFF,
-                      title: "Sản lượng hôm nay",
-                      content: "2,37",
-                      unit: "MWH"),
-                  item(context,
-                      path: Assets.icons.revenue.path,
-                      color: AppColors.orange43,
-                      title: "Doanh thu hôm nay",
-                      content: "12,43",
-                      unit: "CNV"),
-                  item(context,
                       path: Assets.icons.square.path,
                       color: AppColors.green50,
                       title: "Tổng sản lượng",
-                      content: "5,77",
+                      value: gridPower + productionPower,
+                      unit: "MWH"),
+                  item(context,
+                      path: Assets.icons.thunderstormSun6854078.path,
+                      color: AppColors.blueFF,
+                      title: "Cung cấp từ điện điên lưới",
+                      value: gridPower,
+                      unit: "MWH"),
+                  item(context,
+                      path: Assets.icons.solarPanelSun.path,
+                      color: AppColors.orange43,
+                      title: "Cung cấp từ điện mặt trời",
+                      value: productionPower,
                       unit: "MWH"),
                   item(context,
                       path: Assets.icons.thunderstormSun6854078.path,
                       color: AppColors.grey,
-                      title: "Công suất suất định mức của bộ biến thế",
-                      content: "100,372",
+                      title: "Công suất điện lưới tối đa",
+                      value: maxGridPower,
                       unit: "KW"),
                   item(context,
-                      path: Assets.icons.solarPanelSun.path,
-                      color: AppColors.blue,
-                      title: "Cung cấp từ lưới điện hôm nay",
-                      content: "3,40",
-                      unit: "MWH"),
+                      path: Assets.icons.thunderstormSun6854078.path,
+                      color: AppColors.grey,
+                      title: "Công suất điện măt trời tối đa",
+                      value: maxProductionPower,
+                      unit: "KW"),
+                  // item(context,
+                  //     path: Assets.icons.revenue.path,
+                  //     color: AppColors.orange43,
+                  //     title: "Doanh thu hôm nay",
+                  //     content: "12,43",
+                  //     unit: "CNV"),
                 ])
           ],
         ));
@@ -82,7 +101,7 @@ class CurrentlyWidget extends StatelessWidget {
       {required String path,
       required Color color,
       required String title,
-      required String content,
+      required double value,
       required String unit}) {
     return LayoutBuilder(
       builder: (context, constraints) => SizedBox(
@@ -109,7 +128,7 @@ class CurrentlyWidget extends StatelessWidget {
                   RichText(
                       text: TextSpan(children: [
                     TextSpan(
-                        text: content,
+                        text: value.toStringAsFixed(1),
                         style: AppTextStyle.textSm.copyWith(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,

@@ -24,6 +24,6 @@ Map<String, dynamic> _$$SolarElectricRequestImplToJson(
 
 const _$SearchTypeEnumMap = {
   SearchType.hour: 'HOUR',
+  SearchType.day: 'DAY',
   SearchType.month: 'MONTH',
-  SearchType.year: 'YEAR',
 };

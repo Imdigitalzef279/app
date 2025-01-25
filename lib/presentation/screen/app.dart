@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../application/utils/app_utils.dart';
-import '../../application/utils/navigation_utils.dart';
-import '../routes/routes.dart';
+import 'package:solar_energy/application/cubit/app_cubit.dart';
+import 'package:solar_energy/application/utils/app_utils.dart';
+import 'package:solar_energy/application/utils/navigation_utils.dart';
+import 'package:solar_energy/presentation/common_widgets/app_loading_indicator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-
+import 'package:solar_energy/presentation/routes/routes.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -17,39 +19,59 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      minTextAdapt: true,
-      designSize: const Size(375, 812),
-      builder: (_, child) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        navigatorObservers: [NavigatorUtils.navigatorObserver],
-        navigatorKey: NavigatorUtils.navigatorKey,
-        locale: const Locale('vi'),
-        localeResolutionCallback: (locale, supportedLocales) =>
-            const Locale("vi"),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        builder: (BuildContext context, Widget? child) =>
-            ResponsiveBreakpoints.builder(
-          child: GestureDetector(
-            onTap: () {
-              AppUtils.dismissKeyboard();
-            },
-            child: MediaQuery(
-              data: MediaQuery.of(context)
-                  .copyWith(textScaler: const TextScaler.linear(1.0)),
-              child: child!,
+    return BlocProvider(
+      create: (BuildContext context) => AppCubit(),
+      child: ScreenUtilInit(
+        minTextAdapt: true,
+        designSize: const Size(375, 812),
+        builder: (_, child) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          navigatorObservers: [NavigatorUtils.navigatorObserver],
+          navigatorKey: NavigatorUtils.navigatorKey,
+          locale: const Locale('vi'),
+          localeResolutionCallback: (locale, supportedLocales) =>
+              const Locale("vi"),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (BuildContext context, Widget? child) =>
+              ResponsiveBreakpoints.builder(
+            child: GestureDetector(
+              onTap: () {
+                AppUtils.dismissKeyboard();
+              },
+              child: Stack(
+                children: [
+                  MediaQuery(
+                    data: MediaQuery.of(context)
+                        .copyWith(textScaler: const TextScaler.linear(1.0)),
+                    child: child!,
+                  ),
+                  BlocBuilder<AppCubit, AppState>(
+                    builder: (BuildContext context, AppState state) {
+                      return Visibility(
+                        visible: state.isShowLoading,
+                        child: Container(
+                          width: 1.sw,
+                          height: 1.sh,
+                          color: Colors.black.withOpacity(0.5),
+                          child: const AppLoadingIndicator(),
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
             ),
+            breakpoints: [
+              const Breakpoint(start: 0, end: 450, name: MOBILE),
+              // const Breakpoint(start: 451, end: 800, name: TABLET),
+              // const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+              // const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+            ],
           ),
-          breakpoints: [
-            const Breakpoint(start: 0, end: 450, name: MOBILE),
-            // const Breakpoint(start: 451, end: 800, name: TABLET),
-            // const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-            // const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
-          ],
+          title: "solar power",
+          onGenerateRoute: AppRouter().onGenerateRoute,
         ),
-        title: "solar power",
-        onGenerateRoute: AppRouter().onGenerateRoute,
       ),
     );
   }

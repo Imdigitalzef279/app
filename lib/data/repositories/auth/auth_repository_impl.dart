@@ -7,6 +7,13 @@ import 'package:solar_energy/data/repositories/base_repository.dart';
 class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   @override
   Future<Result<AuthResponse>> signIn(AuthRequest request) async {
-    return await callApi(() => api.signIn(request));
+    return await callApi(() => api.signIn(
+      request.grantType,
+      request.clientId,
+      request.username,
+      request.password,
+      request.scope,
+    ));
   }
 }
+

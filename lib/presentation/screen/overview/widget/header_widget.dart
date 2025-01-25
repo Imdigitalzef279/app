@@ -8,31 +8,33 @@ import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
 class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({super.key, required this.type});
+  const HeaderWidget({
+    super.key,
+    required this.type,
+    required this.gridPower,
+    required this.loadPower,
+    required this.productionPower,
+  });
 
   final ElectricType type;
+  final double gridPower;
+  final double productionPower;
+  final double loadPower;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [AppColors.blueFB, AppColors.greyFB])),
-      padding: EdgeInsets.symmetric(horizontal: 24.sp),
-      child: type == ElectricType.saveElectric
-          ? Column(children: [
-              weather(),
-              Gap(20.sp),
-              saveElectric(),
-            ])
-          : Column(children: [
-              weather(),
-              Gap(20.sp),
-              solarElectric(),
-            ]),
-    );
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [AppColors.blueFB, AppColors.greyFB])),
+        padding: EdgeInsets.symmetric(horizontal: 24.sp),
+        child: Column(children: [
+          weather(),
+          Gap(20.sp),
+          type == ElectricType.saveElectric ? saveElectric() : solarElectric(),
+        ]));
   }
 
   Widget weather() {
@@ -83,13 +85,13 @@ class HeaderWidget extends StatelessWidget {
             children: [
               item(
                   img: Assets.images.electricPole.path,
-                  content: '218.114',
+                  value: gridPower,
                   size: 150.sp,
                   sizeIcon: 130.sp,
                   type: "Lưới điện"),
               item(
                   img: Assets.images.factory.path,
-                  content: '680.670',
+                  value: loadPower,
                   size: 140.sp,
                   sizeIcon: 100.sp,
                   type: "Mức sử dụng",
@@ -143,7 +145,7 @@ class HeaderWidget extends StatelessWidget {
             children: [
               item(
                   img: Assets.images.factory.path,
-                  content: '680.670',
+                  value: loadPower,
                   size: 140.sp,
                   sizeIcon: 100.sp,
                   type: "Mức sử dụng",
@@ -153,13 +155,13 @@ class HeaderWidget extends StatelessWidget {
                 children: [
                   item(
                       img: Assets.images.electricPole.path,
-                      content: '218.114',
+                      value: gridPower,
                       size: 150.sp,
                       sizeIcon: 130.sp,
                       type: "Lưới điện"),
                   item(
                       img: Assets.images.solarEnergy.path,
-                      content: '462.584',
+                      value: productionPower,
                       size: 130.sp,
                       sizeIcon: 120.sp,
                       type: "PV",
@@ -175,14 +177,15 @@ class HeaderWidget extends StatelessWidget {
       {required String img,
       required double size,
       required double sizeIcon,
-      required String content,
+      required double value,
       required String type,
       bool isRight = true}) {
     return Container(
+      width: size,
       height: size,
       color: Colors.transparent,
       child: Stack(
-        clipBehavior: Clip.none,
+        // clipBehavior: Clip.none,
         children: [
           Positioned(
             bottom: 0,
@@ -207,32 +210,36 @@ class HeaderWidget extends StatelessWidget {
                 ? EdgeInsets.only(right: 12.sp)
                 : EdgeInsets.only(left: 12.sp),
             margin: isRight ? null : EdgeInsets.only(left: 40.sp),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                    text: TextSpan(children: [
-                  TextSpan(
-                      text: content,
-                      style: AppTextStyle.textSm.copyWith(
-                          fontSize: 14.sp,
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600)),
-                  TextSpan(
-                      text: ' KW',
-                      style: AppTextStyle.textXs.copyWith(
-                          fontSize: 12.sp,
-                          color: AppColors.grey86,
-                          fontWeight: FontWeight.w500)),
-                ])),
-                Text(
-                  type,
-                  style: AppTextStyle.textSm.copyWith(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grey86),
-                )
-              ],
+            child: SizedBox(
+              child: Column(
+                crossAxisAlignment:
+                    isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                      textAlign: isRight ? TextAlign.right : TextAlign.left,
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: value.toStringAsFixed(1),
+                            style: AppTextStyle.textSm.copyWith(
+                                fontSize: 14.sp,
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600)),
+                        TextSpan(
+                            text: ' KW',
+                            style: AppTextStyle.textXs.copyWith(
+                                fontSize: 12.sp,
+                                color: AppColors.grey86,
+                                fontWeight: FontWeight.w500)),
+                      ])),
+                  Text(
+                    type,
+                    style: AppTextStyle.textSm.copyWith(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grey86),
+                  )
+                ],
+              ),
             ),
           ),
         ],

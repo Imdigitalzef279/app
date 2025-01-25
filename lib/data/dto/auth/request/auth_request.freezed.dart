@@ -20,11 +20,16 @@ AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$AuthRequest {
-  @JsonKey(name: 'userNameOrEmailAddress')
-  String get userName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'grant_type')
+  String get grantType => throw _privateConstructorUsedError;
+  @JsonKey(name: 'client_id')
+  String get clientId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'username')
+  String get username => throw _privateConstructorUsedError;
   @JsonKey(name: 'password')
   String get password => throw _privateConstructorUsedError;
-  bool get rememberMe => throw _privateConstructorUsedError;
+  @JsonKey(name: 'scope')
+  String get scope => throw _privateConstructorUsedError;
 
   /// Serializes this AuthRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -43,9 +48,11 @@ abstract class $AuthRequestCopyWith<$Res> {
       _$AuthRequestCopyWithImpl<$Res, AuthRequest>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'userNameOrEmailAddress') String userName,
+      {@JsonKey(name: 'grant_type') String grantType,
+      @JsonKey(name: 'client_id') String clientId,
+      @JsonKey(name: 'username') String username,
       @JsonKey(name: 'password') String password,
-      bool rememberMe});
+      @JsonKey(name: 'scope') String scope});
 }
 
 /// @nodoc
@@ -63,23 +70,33 @@ class _$AuthRequestCopyWithImpl<$Res, $Val extends AuthRequest>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? userName = null,
+    Object? grantType = null,
+    Object? clientId = null,
+    Object? username = null,
     Object? password = null,
-    Object? rememberMe = null,
+    Object? scope = null,
   }) {
     return _then(_value.copyWith(
-      userName: null == userName
-          ? _value.userName
-          : userName // ignore: cast_nullable_to_non_nullable
+      grantType: null == grantType
+          ? _value.grantType
+          : grantType // ignore: cast_nullable_to_non_nullable
+              as String,
+      clientId: null == clientId
+          ? _value.clientId
+          : clientId // ignore: cast_nullable_to_non_nullable
+              as String,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
               as String,
       password: null == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
               as String,
-      rememberMe: null == rememberMe
-          ? _value.rememberMe
-          : rememberMe // ignore: cast_nullable_to_non_nullable
-              as bool,
+      scope: null == scope
+          ? _value.scope
+          : scope // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -93,9 +110,11 @@ abstract class _$$AuthRequestImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'userNameOrEmailAddress') String userName,
+      {@JsonKey(name: 'grant_type') String grantType,
+      @JsonKey(name: 'client_id') String clientId,
+      @JsonKey(name: 'username') String username,
       @JsonKey(name: 'password') String password,
-      bool rememberMe});
+      @JsonKey(name: 'scope') String scope});
 }
 
 /// @nodoc
@@ -111,23 +130,33 @@ class __$$AuthRequestImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? userName = null,
+    Object? grantType = null,
+    Object? clientId = null,
+    Object? username = null,
     Object? password = null,
-    Object? rememberMe = null,
+    Object? scope = null,
   }) {
     return _then(_$AuthRequestImpl(
-      userName: null == userName
-          ? _value.userName
-          : userName // ignore: cast_nullable_to_non_nullable
+      grantType: null == grantType
+          ? _value.grantType
+          : grantType // ignore: cast_nullable_to_non_nullable
+              as String,
+      clientId: null == clientId
+          ? _value.clientId
+          : clientId // ignore: cast_nullable_to_non_nullable
+              as String,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
               as String,
       password: null == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
               as String,
-      rememberMe: null == rememberMe
-          ? _value.rememberMe
-          : rememberMe // ignore: cast_nullable_to_non_nullable
-              as bool,
+      scope: null == scope
+          ? _value.scope
+          : scope // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -136,26 +165,34 @@ class __$$AuthRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$AuthRequestImpl implements _AuthRequest {
   const _$AuthRequestImpl(
-      {@JsonKey(name: 'userNameOrEmailAddress') required this.userName,
+      {@JsonKey(name: 'grant_type') required this.grantType,
+      @JsonKey(name: 'client_id') required this.clientId,
+      @JsonKey(name: 'username') required this.username,
       @JsonKey(name: 'password') required this.password,
-      this.rememberMe = false});
+      @JsonKey(name: 'scope') required this.scope});
 
   factory _$AuthRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$AuthRequestImplFromJson(json);
 
   @override
-  @JsonKey(name: 'userNameOrEmailAddress')
-  final String userName;
+  @JsonKey(name: 'grant_type')
+  final String grantType;
+  @override
+  @JsonKey(name: 'client_id')
+  final String clientId;
+  @override
+  @JsonKey(name: 'username')
+  final String username;
   @override
   @JsonKey(name: 'password')
   final String password;
   @override
-  @JsonKey()
-  final bool rememberMe;
+  @JsonKey(name: 'scope')
+  final String scope;
 
   @override
   String toString() {
-    return 'AuthRequest(userName: $userName, password: $password, rememberMe: $rememberMe)';
+    return 'AuthRequest(grantType: $grantType, clientId: $clientId, username: $username, password: $password, scope: $scope)';
   }
 
   @override
@@ -163,17 +200,21 @@ class _$AuthRequestImpl implements _AuthRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AuthRequestImpl &&
-            (identical(other.userName, userName) ||
-                other.userName == userName) &&
+            (identical(other.grantType, grantType) ||
+                other.grantType == grantType) &&
+            (identical(other.clientId, clientId) ||
+                other.clientId == clientId) &&
+            (identical(other.username, username) ||
+                other.username == username) &&
             (identical(other.password, password) ||
                 other.password == password) &&
-            (identical(other.rememberMe, rememberMe) ||
-                other.rememberMe == rememberMe));
+            (identical(other.scope, scope) || other.scope == scope));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, userName, password, rememberMe);
+  int get hashCode =>
+      Object.hash(runtimeType, grantType, clientId, username, password, scope);
 
   /// Create a copy of AuthRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -193,21 +234,30 @@ class _$AuthRequestImpl implements _AuthRequest {
 
 abstract class _AuthRequest implements AuthRequest {
   const factory _AuthRequest(
-      {@JsonKey(name: 'userNameOrEmailAddress') required final String userName,
+      {@JsonKey(name: 'grant_type') required final String grantType,
+      @JsonKey(name: 'client_id') required final String clientId,
+      @JsonKey(name: 'username') required final String username,
       @JsonKey(name: 'password') required final String password,
-      final bool rememberMe}) = _$AuthRequestImpl;
+      @JsonKey(name: 'scope') required final String scope}) = _$AuthRequestImpl;
 
   factory _AuthRequest.fromJson(Map<String, dynamic> json) =
       _$AuthRequestImpl.fromJson;
 
   @override
-  @JsonKey(name: 'userNameOrEmailAddress')
-  String get userName;
+  @JsonKey(name: 'grant_type')
+  String get grantType;
+  @override
+  @JsonKey(name: 'client_id')
+  String get clientId;
+  @override
+  @JsonKey(name: 'username')
+  String get username;
   @override
   @JsonKey(name: 'password')
   String get password;
   @override
-  bool get rememberMe;
+  @JsonKey(name: 'scope')
+  String get scope;
 
   /// Create a copy of AuthRequest
   /// with the given fields replaced by the non-null parameter values.

@@ -165,8 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
               textStyleHint: AppTextStyle.textSm
                   .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
               onChanged: (value) =>
-                  cubit.changeRequest(state.request.copyWith(userName: value)),
-              defaultValue: state.request.userName,
+                  cubit.changeRequest(state.request.copyWith(username: value)),
+              defaultValue: state.request.username,
               textStyleInput: AppTextStyle.textSm.copyWith(
                   color: AppColors.textPrimary, fontWeight: FontWeight.w600),
             ));
@@ -206,10 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget buttonLogin() {
     return BlocBuilder<LoginCubit, LoginState>(
         builder: (context, state) => AppButton(
-              isEnable: state.request.userName.isNotEmpty &&
-                  state.request.password.isNotEmpty,
+              // isEnable: state.request.userName.isNotEmpty &&
+              //     state.request.password.isNotEmpty,
               onPressed: () async {
-                if (cubit.login()) {
+                if (await cubit.login()) {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeWidget()),
@@ -217,12 +217,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                   return;
                 }
-                showDialog(
-                    context: context,
-                    builder: (context) => const AlertDialog(
-                          title: Text('Thông báo'),
-                          content: Text('Tài khoản hoặc mật khẩu không đúng'),
-                        ));
               },
               title: "Đăng nhập",
               color: AppColors.blue,

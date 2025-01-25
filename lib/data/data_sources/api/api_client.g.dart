@@ -22,20 +22,32 @@ class _ApiClient implements ApiClient {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<AuthResponse> signIn(AuthRequest request) async {
+  Future<AuthResponse> signIn(
+    String grantType,
+    String clientId,
+    String username,
+    String password,
+    String scope,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
+    final _data = {
+      'grant_type': grantType,
+      'client_id': clientId,
+      'username': username,
+      'password': password,
+      'scope': scope,
+    };
     final _options = _setStreamType<AuthResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
     )
         .compose(
           _dio.options,
-          '/account/login',
+          'connect/token',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -71,7 +83,7 @@ class _ApiClient implements ApiClient {
     )
             .compose(
               _dio.options,
-              '/app/power-station/solar-power-chart',
+              'api/app/power-station/solar-power-chart',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -86,6 +98,44 @@ class _ApiClient implements ApiClient {
       _value = PaginationResponse<SolarElectricResponse>.fromJson(
         _result.data!,
         (json) => SolarElectricResponse.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PaginationResponse<DeviceResponse>> getDevices(
+      DeviceRequest request) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(request.toJson());
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<PaginationResponse<DeviceResponse>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'api/app/meter/with-log',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PaginationResponse<DeviceResponse> _value;
+    try {
+      _value = PaginationResponse<DeviceResponse>.fromJson(
+        _result.data!,
+        (json) => DeviceResponse.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);

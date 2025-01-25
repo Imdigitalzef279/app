@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
+import 'package:solar_energy/application/utils/toast_utils.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
 part 'manager_water_state.dart';
@@ -36,6 +37,10 @@ class ManagerWaterCubit extends Cubit<ManagerWaterState> {
     List<WaterIndexModel> listWaterIndex = [...state.listWaterIndex];
     List<WaterIndexModel> listSelected = [...state.listSelected];
     if (isAdd) {
+      if (listSelected.length >= 4) {
+        ToastUtils.show('Hiển thị tối đa 4 chỉ số');
+        return;
+      }
       listWaterIndex.remove(waterIndex);
       listSelected.add(waterIndex);
     } else {

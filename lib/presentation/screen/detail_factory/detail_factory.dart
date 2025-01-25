@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
-import 'package:solar_energy/application/enums/search_type.dart';
-import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/screen/Electricity/electricity_screen.dart';
-import 'package:solar_energy/presentation/screen/detail_factory/bloc/detail_factory_cubit.dart';
 import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
+
+import '../device/bloc/device_cubit.dart';
+import '../overview/bloc/overview_cubit.dart';
 
 class DetailFactoryScreen extends StatefulWidget {
   const DetailFactoryScreen({super.key, required this.type});
@@ -23,17 +23,11 @@ class DetailFactoryScreen extends StatefulWidget {
 
 class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   late int indexPage;
-  late DetailFactoryCubit cubit;
 
   @override
   void initState() {
     super.initState();
     indexPage = (0);
-    cubit = BlocProvider.of<DetailFactoryCubit>(context);
-    cubit.getSolarElectric(const SolarElectricRequest(
-        powerStationId: 21,
-        searchType: SearchType.hour,
-        searchValue: "29/12/2024"));
   }
 
   @override
@@ -100,13 +94,15 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
       case 0:
         return widget.type == ElectricType.saveElectric
             ? const ElectricityScreen()
-            : OverViewScreen(type: widget.type);
+            : BlocProvider(create: (context) => OverviewCubit(),
+            child: OverViewScreen(type: widget.type));
       case 1:
         return const StatisticalScreen();
       case 2:
-        return const DevicesScreen();
+        return BlocProvider(create: (context) => DeviceCubit(),
+        child: const DevicesScreen());
       default:
-        return OverViewScreen(type: widget.type);
+        return const SizedBox();
     }
   }
 }

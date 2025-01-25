@@ -8,14 +8,18 @@ part of 'auth_request.dart';
 
 _$AuthRequestImpl _$$AuthRequestImplFromJson(Map<String, dynamic> json) =>
     _$AuthRequestImpl(
-      userName: json['userNameOrEmailAddress'] as String,
+      grantType: json['grant_type'] as String,
+      clientId: json['client_id'] as String,
+      username: json['username'] as String,
       password: json['password'] as String,
-      rememberMe: json['rememberMe'] as bool? ?? false,
+      scope: json['scope'] as String,
     );
 
 Map<String, dynamic> _$$AuthRequestImplToJson(_$AuthRequestImpl instance) =>
     <String, dynamic>{
-      'userNameOrEmailAddress': instance.userName,
+      'grant_type': instance.grantType,
+      'client_id': instance.clientId,
+      'username': instance.username,
       'password': instance.password,
-      'rememberMe': instance.rememberMe,
+      'scope': instance.scope,
     };
