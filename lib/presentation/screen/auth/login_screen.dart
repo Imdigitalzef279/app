@@ -165,8 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
               textStyleHint: AppTextStyle.textSm
                   .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
               onChanged: (value) =>
-                  cubit.changeRequest(state.request.copyWith(username: value)),
-              defaultValue: state.request.username,
+                  cubit.changeRequest(state.request.data!.copyWith(username: value)),
+              defaultValue: state.request.data!.username,
               textStyleInput: AppTextStyle.textSm.copyWith(
                   color: AppColors.textPrimary, fontWeight: FontWeight.w600),
             ));
@@ -193,9 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
               backgroundColor: AppColors.greyFB,
               contentPadding: EdgeInsets.symmetric(vertical: 16.h),
               onChanged: (value) =>
-                  cubit.changeRequest(state.request.copyWith(password: value)),
+                  cubit.changeRequest(state.request.data!.copyWith(password: value)),
               hintText: "Mật Khẩu",
-              defaultValue: state.request.password,
+              defaultValue: state.request.data?.password,
               textStyleHint: AppTextStyle.textSm
                   .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
               textStyleInput: AppTextStyle.textSm.copyWith(

@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$LoginState {
-  AuthRequest get request => throw _privateConstructorUsedError;
+  Result<AuthRequest> get request => throw _privateConstructorUsedError;
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -31,9 +31,9 @@ abstract class $LoginStateCopyWith<$Res> {
           LoginState value, $Res Function(LoginState) then) =
       _$LoginStateCopyWithImpl<$Res, LoginState>;
   @useResult
-  $Res call({AuthRequest request});
+  $Res call({Result<AuthRequest> request});
 
-  $AuthRequestCopyWith<$Res> get request;
+  $ResultCopyWith<AuthRequest, $Res> get request;
 }
 
 /// @nodoc
@@ -57,7 +57,7 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
       request: null == request
           ? _value.request
           : request // ignore: cast_nullable_to_non_nullable
-              as AuthRequest,
+              as Result<AuthRequest>,
     ) as $Val);
   }
 
@@ -65,8 +65,8 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $AuthRequestCopyWith<$Res> get request {
-    return $AuthRequestCopyWith<$Res>(_value.request, (value) {
+  $ResultCopyWith<AuthRequest, $Res> get request {
+    return $ResultCopyWith<AuthRequest, $Res>(_value.request, (value) {
       return _then(_value.copyWith(request: value) as $Val);
     });
   }
@@ -80,10 +80,10 @@ abstract class _$$LoginStateImplCopyWith<$Res>
       __$$LoginStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AuthRequest request});
+  $Res call({Result<AuthRequest> request});
 
   @override
-  $AuthRequestCopyWith<$Res> get request;
+  $ResultCopyWith<AuthRequest, $Res> get request;
 }
 
 /// @nodoc
@@ -105,7 +105,7 @@ class __$$LoginStateImplCopyWithImpl<$Res>
       request: null == request
           ? _value.request
           : request // ignore: cast_nullable_to_non_nullable
-              as AuthRequest,
+              as Result<AuthRequest>,
     ));
   }
 }
@@ -116,7 +116,7 @@ class _$LoginStateImpl implements _LoginState {
   const _$LoginStateImpl({required this.request});
 
   @override
-  final AuthRequest request;
+  final Result<AuthRequest> request;
 
   @override
   String toString() {
@@ -144,11 +144,11 @@ class _$LoginStateImpl implements _LoginState {
 }
 
 abstract class _LoginState implements LoginState {
-  const factory _LoginState({required final AuthRequest request}) =
+  const factory _LoginState({required final Result<AuthRequest> request}) =
       _$LoginStateImpl;
 
   @override
-  AuthRequest get request;
+  Result<AuthRequest> get request;
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
