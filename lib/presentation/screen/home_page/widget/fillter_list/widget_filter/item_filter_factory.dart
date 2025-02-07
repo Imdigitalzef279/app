@@ -17,20 +17,22 @@ class ItemFilterFactory extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Loại nhà máy",
+          nameFilter,
           style: AppTextStyle.textSm
               .copyWith(color: AppColors.textPrimary.withOpacity(0.3)),
         ),
         SizedBox(height: 4.h,),
-        Wrap(
-          spacing: 8.w,
-          runSpacing: 8.h,
-          children: List.generate(
-            listValues.length,
-            (index) => filterValues(
-                name: listValues[index].name,
-                defaultValues: listValues[index].value,
-                valuesSelected: valueSelected),
+        Center(
+          child: Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children: List.generate(
+              listValues.length,
+              (index) => filterValues(
+                  name: listValues[index].name,
+                  defaultValues: listValues[index].value,
+                  valuesSelected: valueSelected),
+            ),
           ),
         )
       ],
@@ -46,12 +48,12 @@ class ItemFilterFactory extends StatelessWidget {
         selectItem.call(defaultValues);
       },
       child: Container(
-        width: 1.sw / 2 - 40.w,
+        width: (1.sw - 40.w) / 2,
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.r),
           color: defaultValues == valuesSelected
-              ? AppColors.blueFB.withOpacity(0.3)
+              ? AppColors.blueFB.withOpacity(0.7)
               : AppColors.greyFB,
         ),
         child: Text(

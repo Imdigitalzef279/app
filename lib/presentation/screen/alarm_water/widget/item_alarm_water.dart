@@ -30,7 +30,7 @@ class ItemAlarmWater extends StatelessWidget {
                 Gap(8.sp),
                 Expanded(
                     child: Text(
-                  "Cảnh báo rò rỉ nước",
+                  "Cảnh báo rò rỉ nước - Van 1",
                   style: AppTextStyle.textSm.copyWith(
                       fontSize: 14.sp,
                       color: AppColors.textPrimary,

@@ -2,6 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppTextStyle {
+  static final TextStyle tini = TextStyle(
+    fontFamily: 'BeVietNamPro',
+    height: 16.sp / 10.sp,
+    fontSize: 10.sp,
+  );
   static final TextStyle textXs = TextStyle(
     fontFamily: 'BeVietNamPro',
     height: 16.sp / 12.sp,

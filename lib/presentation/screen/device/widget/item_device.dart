@@ -76,19 +76,51 @@ class ItemDevice extends StatelessWidget {
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Mô tả", content: device.description),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "Trạng thái",
+                    style: AppTextStyle.textXs.copyWith(
+                        color: AppColors.textPrimary.withOpacity(0.5)),
+                  ),
+                ),
+                12.verticalSpace,
+                Flexible(
+                  flex: 3,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                      decoration: BoxDecoration(
+                        color: AppColors.green50,
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Text(
+                        "Dừng" ?? "Lỗi",
+                        style: AppTextStyle.textXs.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Loại thiết bị", content: device.meterType.name),
+            rowItem(name: "Công suất thuần", content: "0,000 kW"),
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Trạng thái", content: getStatus(device.status)),
+            rowItem(name: "Sản lượng hôm nay", content: "203,05 kWh"),
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Trạm điện", content: device.powerStation.name),
+            rowItem(name: "Ngày hết hạn bảo hành", content: "2029/09/23"),
           ],
         ),
       ),

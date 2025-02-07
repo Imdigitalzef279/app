@@ -8,10 +8,16 @@ part of 'auth_response.dart';
 
 _$AuthResponseImpl _$$AuthResponseImplFromJson(Map<String, dynamic> json) =>
     _$AuthResponseImpl(
-      result: (json['result'] as num?)?.toInt() ?? 0,
+      accessToken: json['access_token'] as String,
+      tokenType: json['token_type'] as String,
+      expiresIn: (json['expires_in'] as num).toInt(),
+      refreshToken: json['refresh_token'] as String,
     );
 
 Map<String, dynamic> _$$AuthResponseImplToJson(_$AuthResponseImpl instance) =>
     <String, dynamic>{
-      'result': instance.result,
+      'access_token': instance.accessToken,
+      'token_type': instance.tokenType,
+      'expires_in': instance.expiresIn,
+      'refresh_token': instance.refreshToken,
     };

@@ -22,6 +22,7 @@ class CurrentlyWidget extends StatelessWidget {
   final double maxGridPower;
   final double maxProductionPower;
 
+
   @override
   Widget build(BuildContext context) {
     return Container(

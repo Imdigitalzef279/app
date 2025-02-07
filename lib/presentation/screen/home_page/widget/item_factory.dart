@@ -19,77 +19,76 @@ class ItemFactory extends StatelessWidget {
         Navigator.pushNamed(context, RouteName.generalDevice);
       },
       child: Ink(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(12.r),
         ),
-        child: Row(
+        child: Column(
           children: [
             AppNetworkImage(
               "https://i0.wp.com/mcnaircustomhomes.com/wp-content/uploads/2023/06/luxury-smart-home.jpg?resize=1536%2C1024&ssl=1",
-              width: 1.sw / 4,
               height: 1.sw / 5.5,
+              width: (1.sw - 60) / 2,
               radius: 8.r,
               fit: BoxFit.cover,
             ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                children: [
-                  // project name - status
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Thien Son",
-                        style: AppTextStyle.textSm.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w400),
+            8.verticalSpace,
+            Column(
+              children: [
+                // project name - status
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Thien Son",
+                      style: AppTextStyle.textSm.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w400),
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color: AppColors.green50.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(4.r),
                       ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
-                        decoration: BoxDecoration(
-                          color: AppColors.green50.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(4.r),
+                      child: Text(
+                        "Bình thường",
+                        style: AppTextStyle.textXs
+                            .copyWith(color: AppColors.green50,fontSize: 8.sp
                         ),
-                        child: Text(
-                          "Bình thường",
-                          style: AppTextStyle.textXs
-                              .copyWith(color: AppColors.green50,fontSize: 8.sp
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  Text(
-                    "$title \n",
-                    style: AppTextStyle.textSm
-                        .copyWith(color: AppColors.textPrimary, fontSize: 10.sp),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.justify,
-                  ),
-                  Row(
-                    children: [
-                      rowItem(
-                          iconSolar: Assets.icons.solarPanelSun.svg(
-                              width: 12.w,
-                              color: AppColors.grey73.withOpacity(0.5)),
-                          solarPower: "0,000 kWp"),
-                      SizedBox(
-                        width: 12.w,
                       ),
-                      rowItem(
-                          iconSolar: Assets.icons.thunderstormSun6854078.svg(
-                              width: 12.w,
-                              color: AppColors.grey73.withOpacity(0.5)),
-                          solarPower: "3,40 MWh"),
-                    ],
-                  )
-                ],
-              ),
+                    )
+                  ],
+                ),
+                Text(
+                  "$title \n",
+                  style: AppTextStyle.textSm
+                      .copyWith(color: AppColors.textPrimary, fontSize: 10.sp),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.justify,
+                ),
+                8.verticalSpace,
+                Column(
+                  children: [
+                    rowItem(
+                        iconSolar: Assets.icons.solarPanelSun.svg(
+                            width: 12.w,
+                            color: AppColors.grey73.withOpacity(0.5)),
+                        solarPower: "0,000 kWp"),
+                    SizedBox(
+                      width: 12.h,
+                    ),
+                    rowItem(
+                        iconSolar: Assets.icons.thunderstormSun6854078.svg(
+                            width: 12.w,
+                            color: AppColors.grey73.withOpacity(0.5)),
+                        solarPower: "3,40 MWh"),
+                  ],
+                )
+              ],
             )
           ],
         ),

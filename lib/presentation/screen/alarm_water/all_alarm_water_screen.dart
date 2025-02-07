@@ -22,7 +22,7 @@ class _AllAlarmWaterScreenState extends State<AllAlarmWaterScreen> {
         scrolledUnderElevation: 0,
         elevation: 0,
         title: Text(
-          "Quản lý nước",
+          "Tất cả các cảnh báo",
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),

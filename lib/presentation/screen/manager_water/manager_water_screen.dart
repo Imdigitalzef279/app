@@ -7,10 +7,13 @@ import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/enums/index_type.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/alarm_water/widget/item_alarm_water.dart';
+import 'package:solar_energy/presentation/screen/device_water/device_water_screen.dart';
 import 'package:solar_energy/presentation/screen/manager_water/bloc/manager_water_cubit.dart';
+import 'package:solar_energy/presentation/screen/manager_water/widget/overview_water.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ManagerWaterScreen extends StatefulWidget {
@@ -41,6 +44,8 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
       curve: Curves.easeIn,
     );
     _cubit = BlocProvider.of<ManagerWaterCubit>(context);
+
+    indexPage = (0);
   }
 
   void _openListWaterIndex() {
@@ -79,6 +84,8 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
     return data;
   }
 
+  late int indexPage;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,21 +100,29 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(12.sp),
-          child: Column(
-            children: [
-              _overview(),
-              Gap(12.sp),
-              _waterIndex(),
-              Gap(12.sp),
-              _warning(),
-              Gap(12.sp),
-              _waterConsumption()
-            ],
+      body: _buildBody(),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (index) {
+          setState(() {
+            indexPage = index;
+          });
+        },
+        selectedIndex: indexPage,
+        backgroundColor: Colors.white,
+        indicatorColor: Colors.blue.withOpacity(0.2),
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        destinations: [
+          NavigationDestination(
+            selectedIcon: const Icon(Icons.home_rounded, color: Colors.blue),
+            icon: const Icon(Icons.home_outlined, color: AppColors.grey73,),
+            label: "Tổng quan",
           ),
-        ),
+          NavigationDestination(
+            selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
+            icon: const Icon(Icons.developer_board_outlined, color: AppColors.grey73),
+            label: "Thiết bị",
+          ),
+        ],
       ),
     );
   }
@@ -527,6 +542,104 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
         ],
       ),
     );
+  }
+
+  Widget _waterIndexWarning() {
+    return Container(
+      padding: EdgeInsets.all(12.sp),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.sp),
+          color: AppColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.greyDF.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            )
+          ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Cảnh báo",
+            style: AppTextStyle.textSm.copyWith(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary),
+          ),
+          8.verticalSpace,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                  child: warningWidget(
+                name: "1",
+                colors: AppColors.greyAE.withOpacity(0.7),
+                onPress: () =>
+                    Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.normal),
+              )),
+              4.horizontalSpace,
+              Expanded(
+                  child: warningWidget(
+                name: "1",
+                colors: AppColors.green50.withOpacity(0.3),
+                onPress: () =>
+                    Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.good),
+              )),
+              4.horizontalSpace,
+              Expanded(
+                  child: warningWidget(
+                    name: "1",
+                    colors: AppColors.yellow57.withOpacity(0.7),
+                    onPress: () =>
+                        Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.high),
+                  )),
+              4.horizontalSpace,
+              Expanded(
+                  child: warningWidget(
+                    name: "1",
+                    colors: AppColors.red14.withOpacity(0.7),
+                    onPress: () =>
+                        Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.very_hight),
+                  )),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget warningWidget(
+      {required String name, VoidCallback? onPress, Color? colors}) {
+    return GestureDetector(
+      onTap: () {
+        onPress?.call();
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.sp),
+          color: colors ?? AppColors.white,
+        ),
+        child: Text(
+          name,
+          style: AppTextStyle.textSm.copyWith(color: AppColors.white),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    switch (indexPage) {
+      case 0:
+        return const OverviewWater();
+      case 1:
+        return const DeviceWaterScreen();
+      default:
+        return const SizedBox();
+    }
   }
 }
 
