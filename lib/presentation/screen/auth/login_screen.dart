@@ -4,9 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/common_widgets/app_button.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
+import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/auth/bloc/login_cubit.dart';
 
@@ -40,75 +42,99 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: AppColors.blueF8,
       ),
       backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // header
-              SizedBox(
-                height: 1.sh / 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Center(
-                          child: SizedBox(
-                            height: 100.h,
-                            width: 1.sw,
-                            child: Assets.images.logo.image(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "Kra Power",
-                      style: AppTextStyle.textBase.copyWith(
-                        color: const Color(0xFFCA2E39),
-                        fontWeight: FontWeight.w600,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withOpacity(0.3),
-                            offset: const Offset(2, 2),
-                            blurRadius: 4,
+      body: BlocListener<LoginCubit, LoginState>(
+        listener: (context, state) async {
+          if(await cubit.checkToken()){
+            AppToast.showToastSuccess(context, title: "Đăng nhập thành công");
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeWidget()),
+                  (route) => false,
+            );
+          }
+
+          if(state.request.status == LoadStatus.loading){
+            print("loading");
+          }
+          if(state.request.status == LoadStatus.failure){
+            print("failure");
+          }
+          if(state.request.status == LoadStatus.success){
+            AppToast.showToastSuccess(context, title: "Đăng nhập thành công");
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeWidget()),
+                  (route) => false,
+            );
+          }
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // header
+                SizedBox(
+                  height: 1.sh / 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Center(
+                            child: SizedBox(
+                              height: 100.h,
+                              width: 1.sw,
+                              child: Assets.images.logo.image(),
+                            ),
                           ),
                         ],
                       ),
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-              ),
-              12.verticalSpace,
-              BlocBuilder<LoginCubit, LoginState>(
-                builder: (BuildContext context, state) {
-                  return Column(children: [
-                    username(),
-                    Gap(12.h),
-                    password(),
-                    Gap(32.h),
-                    Column(
-                      children: [
-                        buttonLogin(),
-                        Gap(32.h),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 42.w),
-                          child: const Divider(color: AppColors.greyE5),
+                      Text(
+                        "Kra Power",
+                        style: AppTextStyle.textBase.copyWith(
+                          color: const Color(0xFFCA2E39),
+                          fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.3),
+                              offset: const Offset(2, 2),
+                              blurRadius: 4,
+                            ),
+                          ],
                         ),
-                        Gap(32.h),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            ValueListenableBuilder(
-                              valueListenable: check,
-                              builder: (context, value, child) => Checkbox(
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                ),
+                12.verticalSpace,
+                BlocBuilder<LoginCubit, LoginState>(
+                  builder: (BuildContext context, state) {
+                    return Column(children: [
+                      username(),
+                      Gap(12.h),
+                      password(),
+                      Gap(32.h),
+                      Column(
+                        children: [
+                          buttonLogin(),
+                          Gap(32.h),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 42.w),
+                            child: const Divider(color: AppColors.greyE5),
+                          ),
+                          Gap(32.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              BlocBuilder<LoginCubit, LoginState>(builder: (context, state) => Checkbox(
                                 shape: const CircleBorder(),
                                 checkColor: Colors.white,
                                 fillColor: MaterialStateProperty.resolveWith(
-                                  (states) {
+                                      (states) {
                                     if (states
                                         .contains(MaterialState.disabled)) {
                                       return Colors
@@ -122,27 +148,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                     return Colors.white; // Default color
                                   },
                                 ),
-                                value: check.value,
-                                onChanged: (value) {
-                                  check.value = !check.value;
+                                value: state.clause,
+                                onChanged: (value) => {
+                                  cubit.changeDataQuery(clause: !state.clause),
                                 },
-                              ),
-                            ),
-                            Expanded(
-                                child: Text(
-                              "Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật của Kra Power",
-                              style: AppTextStyle.textXs.copyWith(
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w400),
-                            ))
-                          ],
-                        )
-                      ],
-                    )
-                  ]);
-                },
-              ),
-            ],
+                              ),),
+                              Expanded(
+                                  child: Text(
+                                "Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật của Kra Power",
+                                style: AppTextStyle.textXs.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w400),
+                              ))
+                            ],
+                          )
+                        ],
+                      )
+                    ]);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -165,8 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
               textStyleHint: AppTextStyle.textSm
                   .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
               onChanged: (value) =>
-                  cubit.changeRequest(state.request.data!.copyWith(username: value)),
-              defaultValue: state.request.data!.username,
+                  cubit.changeDataQuery(userName: value),
+              defaultValue: state.userName,
               textStyleInput: AppTextStyle.textSm.copyWith(
                   color: AppColors.textPrimary, fontWeight: FontWeight.w600),
             ));
@@ -193,9 +219,9 @@ class _LoginScreenState extends State<LoginScreen> {
               backgroundColor: AppColors.greyFB,
               contentPadding: EdgeInsets.symmetric(vertical: 16.h),
               onChanged: (value) =>
-                  cubit.changeRequest(state.request.data!.copyWith(password: value)),
+                  cubit.changeDataQuery(password: value),
               hintText: "Mật Khẩu",
-              defaultValue: state.request.data?.password,
+              defaultValue: state.password,
               textStyleHint: AppTextStyle.textSm
                   .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
               textStyleInput: AppTextStyle.textSm.copyWith(
@@ -209,14 +235,8 @@ class _LoginScreenState extends State<LoginScreen> {
               // isEnable: state.request.userName.isNotEmpty &&
               //     state.request.password.isNotEmpty,
               onPressed: () async {
-                if (await cubit.login()) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeWidget()),
-                    (route) => false,
-                  );
-                  return;
-                }
+                print("object");
+                await cubit.login();
               },
               title: "Đăng nhập",
               color: AppColors.blue,

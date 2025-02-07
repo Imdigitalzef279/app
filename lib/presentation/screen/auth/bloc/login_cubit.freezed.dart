@@ -17,6 +17,12 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$LoginState {
   Result<AuthRequest> get request => throw _privateConstructorUsedError;
+  String get userName => throw _privateConstructorUsedError;
+  String get password => throw _privateConstructorUsedError;
+  bool get clause => throw _privateConstructorUsedError;
+  String get errorUserName => throw _privateConstructorUsedError;
+  String get errorPassword => throw _privateConstructorUsedError;
+  String get error => throw _privateConstructorUsedError;
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -31,7 +37,14 @@ abstract class $LoginStateCopyWith<$Res> {
           LoginState value, $Res Function(LoginState) then) =
       _$LoginStateCopyWithImpl<$Res, LoginState>;
   @useResult
-  $Res call({Result<AuthRequest> request});
+  $Res call(
+      {Result<AuthRequest> request,
+      String userName,
+      String password,
+      bool clause,
+      String errorUserName,
+      String errorPassword,
+      String error});
 
   $ResultCopyWith<AuthRequest, $Res> get request;
 }
@@ -52,12 +65,42 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
   @override
   $Res call({
     Object? request = null,
+    Object? userName = null,
+    Object? password = null,
+    Object? clause = null,
+    Object? errorUserName = null,
+    Object? errorPassword = null,
+    Object? error = null,
   }) {
     return _then(_value.copyWith(
       request: null == request
           ? _value.request
           : request // ignore: cast_nullable_to_non_nullable
               as Result<AuthRequest>,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      password: null == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String,
+      clause: null == clause
+          ? _value.clause
+          : clause // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errorUserName: null == errorUserName
+          ? _value.errorUserName
+          : errorUserName // ignore: cast_nullable_to_non_nullable
+              as String,
+      errorPassword: null == errorPassword
+          ? _value.errorPassword
+          : errorPassword // ignore: cast_nullable_to_non_nullable
+              as String,
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 
@@ -80,7 +123,14 @@ abstract class _$$LoginStateImplCopyWith<$Res>
       __$$LoginStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Result<AuthRequest> request});
+  $Res call(
+      {Result<AuthRequest> request,
+      String userName,
+      String password,
+      bool clause,
+      String errorUserName,
+      String errorPassword,
+      String error});
 
   @override
   $ResultCopyWith<AuthRequest, $Res> get request;
@@ -100,12 +150,42 @@ class __$$LoginStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? request = null,
+    Object? userName = null,
+    Object? password = null,
+    Object? clause = null,
+    Object? errorUserName = null,
+    Object? errorPassword = null,
+    Object? error = null,
   }) {
     return _then(_$LoginStateImpl(
       request: null == request
           ? _value.request
           : request // ignore: cast_nullable_to_non_nullable
               as Result<AuthRequest>,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      password: null == password
+          ? _value.password
+          : password // ignore: cast_nullable_to_non_nullable
+              as String,
+      clause: null == clause
+          ? _value.clause
+          : clause // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errorUserName: null == errorUserName
+          ? _value.errorUserName
+          : errorUserName // ignore: cast_nullable_to_non_nullable
+              as String,
+      errorPassword: null == errorPassword
+          ? _value.errorPassword
+          : errorPassword // ignore: cast_nullable_to_non_nullable
+              as String,
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -113,14 +193,39 @@ class __$$LoginStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$LoginStateImpl implements _LoginState {
-  const _$LoginStateImpl({required this.request});
+  const _$LoginStateImpl(
+      {required this.request,
+      this.userName = "",
+      this.password = "",
+      this.clause = false,
+      this.errorUserName = "",
+      this.errorPassword = "",
+      this.error = ""});
 
   @override
   final Result<AuthRequest> request;
+  @override
+  @JsonKey()
+  final String userName;
+  @override
+  @JsonKey()
+  final String password;
+  @override
+  @JsonKey()
+  final bool clause;
+  @override
+  @JsonKey()
+  final String errorUserName;
+  @override
+  @JsonKey()
+  final String errorPassword;
+  @override
+  @JsonKey()
+  final String error;
 
   @override
   String toString() {
-    return 'LoginState(request: $request)';
+    return 'LoginState(request: $request, userName: $userName, password: $password, clause: $clause, errorUserName: $errorUserName, errorPassword: $errorPassword, error: $error)';
   }
 
   @override
@@ -128,11 +233,22 @@ class _$LoginStateImpl implements _LoginState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LoginStateImpl &&
-            (identical(other.request, request) || other.request == request));
+            (identical(other.request, request) || other.request == request) &&
+            (identical(other.userName, userName) ||
+                other.userName == userName) &&
+            (identical(other.password, password) ||
+                other.password == password) &&
+            (identical(other.clause, clause) || other.clause == clause) &&
+            (identical(other.errorUserName, errorUserName) ||
+                other.errorUserName == errorUserName) &&
+            (identical(other.errorPassword, errorPassword) ||
+                other.errorPassword == errorPassword) &&
+            (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, request);
+  int get hashCode => Object.hash(runtimeType, request, userName, password,
+      clause, errorUserName, errorPassword, error);
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -144,11 +260,29 @@ class _$LoginStateImpl implements _LoginState {
 }
 
 abstract class _LoginState implements LoginState {
-  const factory _LoginState({required final Result<AuthRequest> request}) =
-      _$LoginStateImpl;
+  const factory _LoginState(
+      {required final Result<AuthRequest> request,
+      final String userName,
+      final String password,
+      final bool clause,
+      final String errorUserName,
+      final String errorPassword,
+      final String error}) = _$LoginStateImpl;
 
   @override
   Result<AuthRequest> get request;
+  @override
+  String get userName;
+  @override
+  String get password;
+  @override
+  bool get clause;
+  @override
+  String get errorUserName;
+  @override
+  String get errorPassword;
+  @override
+  String get error;
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.

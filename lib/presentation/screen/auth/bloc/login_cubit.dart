@@ -18,24 +18,74 @@ class LoginCubit extends Cubit<LoginState> {
   final authRepository = GetIt.instance<AuthRepository>();
   final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
 
-  void changeRequest(AuthRequest request) {
-    emit(state.copyWith(request: Result(data: request)));
+  void changeRequest() {
+    emit(state.copyWith(
+        request: Result(
+            data: state.request.data?.copyWith(
+                password: state.password, username: state.userName))));
   }
 
-  Future<bool> login() async {
-    try{
-      emit(state.copyWith(request: Result(status: LoadStatus.loading)));
-      final response = await authRepository.signIn(state.request.data!);
-      if(response.isSuccess){
-        if(response.data?.accessToken != null){
-          sharedPreferences.setAccessToken(response.data!.accessToken);
-          return true;
-        }
-        return false;
-      }
-      return false;
-    }catch (e){
+  void changeDataQuery({String? userName, String? password, bool? clause}) {
+    emit(state.copyWith(
+        userName: userName ?? state.userName,
+        password: password ?? state.password,
+        clause: clause ?? state.clause));
+  }
+
+  bool checkClause(){
+    return state.clause;
+  }
+
+  bool checkUserName(){
+    if(state.userName == ""){
+      emit(state.copyWith(errorUserName: "Không được để trống"));
       return false;
     }
+    return true;
+  }
+
+  bool checkPassword(){
+    if(state.password == ""){
+      emit(state.copyWith(errorPassword: "Không được để trống"));
+    return false;
+  }
+    return true;
+  }
+
+  bool checkLogin(){
+    return checkClause() && checkPassword() && checkUserName();
+  }
+
+  Future<void> login() async {
+    if(checkLogin()){
+      try {
+        emit(state.copyWith(request: Result(status: LoadStatus.loading)));
+        changeRequest();
+        final response = await authRepository.signIn(AuthRequest(
+            username: state.userName,
+            password: state.password,
+            grantType: 'password',
+            clientId: 'MonitorSystem_App',
+            scope: 'MonitorSystem offline_access'));
+        if (response.isSuccess) {
+          if (response.data?.accessToken != null) {
+            sharedPreferences.setAccessToken(response.data!.accessToken);
+            emit(state.copyWith(request: Result(status: LoadStatus.success)));
+            return;
+          }
+          emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+          return;
+        }
+        return;
+      } catch (e) {
+        emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+        return;
+      }
+    }
+  }
+
+  Future<bool> checkToken() async{
+    final token = await sharedPreferences.getAccessToken();
+    return token.isNotEmpty;
   }
 }
