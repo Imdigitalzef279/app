@@ -5,6 +5,8 @@ import 'package:solar_energy/data/repositories/auth/auth_repository.dart';
 import 'package:solar_energy/data/repositories/auth/auth_repository_impl.dart';
 import 'package:solar_energy/data/repositories/device/device_repository.dart';
 import 'package:solar_energy/data/repositories/device/device_repository_impl.dart';
+import 'package:solar_energy/data/repositories/project/project_repository.dart';
+import 'package:solar_energy/data/repositories/project/project_repository_impl.dart';
 import 'package:solar_energy/data/repositories/solar_electric/solar_electric_repository.dart';
 import 'package:solar_energy/data/repositories/solar_electric/solar_electric_repository_impl.dart';
 
@@ -28,4 +30,5 @@ void configureDependencies() {
   getIt.registerLazySingleton<SolarElectricRepository>(
       () => SolarElectricRepositoryIml());
   getIt.registerLazySingleton<DeviceRepository>(() => DeviceRepositoryImpl());
+  getIt.registerLazySingleton<ProjectRepository>(() => ProjectRepositoryImpl());
 }
