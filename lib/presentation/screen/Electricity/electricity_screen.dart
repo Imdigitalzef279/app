@@ -14,10 +14,10 @@ class ElectricityScreen extends StatefulWidget {
 }
 
 class _ElectricityScreenState extends State<ElectricityScreen> {
-
   @override
   Widget build(BuildContext context) {
-    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
       appBar: AppBar(
@@ -67,6 +67,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                   ),
                   8.verticalSpace,
                   Container(
+                    padding: EdgeInsets.only(bottom: 8.h),
                     height: 150,
                     child: Row(
                       children: [
@@ -80,30 +81,31 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                               endAngle: isPortrait ? 302 : 360,
                               showLastLabel: false,
                               showLabels: true,
-                              axisLabelStyle: const GaugeTextStyle(
-                                color: AppColors.textPrimary,
-                                fontFamily: 'BeVietNamPro',
-                                fontSize: 9
-                              ),
                               minimum: 0,
                               maximum: 600,
+                              interval: 250,
+                              minorTicksPerInterval: 5,
                               axisLineStyle: const AxisLineStyle(
                                 thickness: 0,
                                 color: Colors.transparent,
                               ),
+                              majorTickStyle: const MajorTickStyle(
+                                length: 5,
+                                thickness: 1,
+                                color: Colors.black,
+                              ),
+                              minorTickStyle: const MinorTickStyle(
+                                length: 3,
+                                thickness: 1,
+                                color: Colors.black,
+                              ),
                               ranges: <GaugeRange>[
                                 GaugeRange(
                                     startValue: 0,
-                                    endValue: 350,
-                                    endWidth: 5,
-                                    startWidth: 5,
-                                    color: Colors.green),
-                                GaugeRange(
-                                    startValue: 350,
                                     endValue: 600,
-                                    endWidth: 5,
-                                    startWidth: 5,
-                                    color: Colors.red),
+                                    endWidth: 2,
+                                    startWidth: 2,
+                                    color: Colors.black),
                               ],
                               pointers: const <GaugePointer>[
                                 NeedlePointer(
@@ -112,14 +114,6 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                   enableAnimation: true,
                                   needleLength: 0.4,
                                 )
-                                // MarkerPointer(
-                                //   value: -220,
-                                //   enableAnimation: true,
-                                //   elevation: 2,
-                                //   markerHeight: 10,
-                                //   markerOffset: -9,
-                                //   color: AppColors.blueF8,
-                                // )
                               ],
                               annotations: <GaugeAnnotation>[
                                 GaugeAnnotation(
@@ -127,13 +121,11 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 4.r, vertical: 2.r),
                                       decoration: BoxDecoration(
-                                          color:
-                                              AppColors.blueF8.withOpacity(0.5),
                                           borderRadius:
                                               BorderRadius.circular(4.r)),
                                       child: Text('300 V',
                                           style: AppTextStyle.tini.copyWith(
-                                              color: AppColors.white)),
+                                              color: AppColors.textPrimary)),
                                     ),
                                     angle: isPortrait ? 125 : 90,
                                     positionFactor: isPortrait ? 0.4 : 0.3)
@@ -155,6 +147,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                 endAngle: 360,
                                 radiusFactor: 1.5,
                                 interval: 200,
+                                minorTicksPerInterval: 5,
                                 axisLineStyle: const AxisLineStyle(
                                   thickness: 0,
                                   color: Colors.transparent,
@@ -162,26 +155,23 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                 ),
                                 minimum: 0,
                                 maximum: 1000,
+                                majorTickStyle: const MajorTickStyle(
+                                  length: 5,
+                                  thickness: 1,
+                                  color: Colors.black,
+                                ),
+                                minorTickStyle: const MinorTickStyle(
+                                  length: 3,
+                                  thickness: 1,
+                                  color: Colors.black,
+                                ),
                                 ranges: <GaugeRange>[
                                   GaugeRange(
-                                    startValue: 0,
-                                    endValue: 300,
-                                    endWidth: 5,
-                                    startWidth: 5,
-                                    color: Colors.green,
-                                  ),
-                                  GaugeRange(
-                                      startValue: 300,
-                                      endValue: 600,
-                                      endWidth: 5,
-                                      startWidth: 5,
-                                      color: Colors.orange),
-                                  GaugeRange(
-                                      startValue: 600,
+                                      startValue: 0,
                                       endValue: 1000,
-                                      endWidth: 5,
-                                      startWidth: 5,
-                                      color: Colors.red)
+                                      endWidth: 3,
+                                      startWidth: 3,
+                                      color: Colors.black),
                                 ],
                                 pointers: const <GaugePointer>[
                                   NeedlePointer(
@@ -196,33 +186,34 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 4.r, vertical: 2.r),
                                           decoration: BoxDecoration(
-                                              color: AppColors.blueF8
-                                                  .withOpacity(0.5),
                                               borderRadius:
                                                   BorderRadius.circular(4.r)),
                                           child: Text('90.0 Am',
-                                              style: AppTextStyle.tini
-                                                  .copyWith(
-                                                      color: AppColors.white,
-                                                      fontWeight:
-                                                          FontWeight.w700))),
+                                              style: AppTextStyle.tini.copyWith(
+                                                  color: AppColors.textPrimary,
+                                                  fontWeight:
+                                                      FontWeight.w700))),
                                       angle: 90,
                                       positionFactor: isPortrait ? 0.3 : 0.2)
                                 ])
                           ]),
                         ),
+
+                        // cos phi
                         Expanded(
                           child: SfRadialGauge(axes: <RadialAxis>[
                             RadialAxis(
                               canScaleToFit: true,
                               startAngle: isPortrait ? 238 : 180,
                               endAngle: 360,
-                              showLastLabel: false,
-                              showFirstLabel: false,
+                              showLastLabel: true,
+                              showFirstLabel: true,
                               showAxisLine: true,
                               interval: 0.5,
                               minimum: -1,
                               maximum: 1,
+                              labelOffset: 10,
+                              // Mặc định cho các số bên trong
                               axisLineStyle: const AxisLineStyle(
                                 thickness: 0,
                                 color: Colors.transparent,
@@ -230,23 +221,12 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                               ),
                               ranges: <GaugeRange>[
                                 GaugeRange(
-                                    startValue: -5,
-                                    endValue: -1,
-                                    endWidth: 5,
-                                    startWidth: 5,
-                                    color: Colors.red),
-                                GaugeRange(
-                                    startValue: -1,
-                                    endValue: 1,
-                                    endWidth: 5,
-                                    startWidth: 5,
-                                    color: Colors.orange),
-                                GaugeRange(
-                                    startValue: 1,
-                                    endValue: 5,
-                                    endWidth: 5,
-                                    startWidth: 5,
-                                    color: Colors.green),
+                                  startValue: -1,
+                                  endValue: 1,
+                                  endWidth: 2,
+                                  startWidth: 2,
+                                  color: Colors.black,
+                                ),
                               ],
                               pointers: const <GaugePointer>[
                                 NeedlePointer(
@@ -254,34 +234,59 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                   needleEndWidth: 1,
                                   enableAnimation: true,
                                   needleLength: 0.4,
-                                )
+                                ),
                               ],
+                              majorTickStyle: const MajorTickStyle(
+                                length: 5,
+                                thickness: 1,
+                                color: Colors.black,
+                              ),
+                              minorTickStyle: const MinorTickStyle(
+                                length: 3,
+                                thickness: 1,
+                                color: Colors.black,
+                              ),
                               annotations: <GaugeAnnotation>[
                                 GaugeAnnotation(
-                                    widget: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 4.r, vertical: 2.r),
-                                      decoration: BoxDecoration(
-                                          color:
-                                              AppColors.blueF8.withOpacity(0.5),
-                                          borderRadius:
-                                              BorderRadius.circular(4.r)),
-                                      child: Text(
-                                        '1 Cosφ',
-                                        style: AppTextStyle.tini
-                                            .copyWith(color: AppColors.white),
-                                      ),
-                                    ),
-                                    angle: isPortrait ? 55 : 90,
-                                    positionFactor: isPortrait ? 0.4 : 0.3)
+                                  widget: Text(
+                                    '1 Cosφ',
+                                    style: AppTextStyle.tini
+                                        .copyWith(color: AppColors.textPrimary),
+                                  ),
+                                  angle: isPortrait ? 55 : 90,
+                                  positionFactor: isPortrait ? 0.4 : 0.3,
+                                ),
+                                GaugeAnnotation(
+                                  widget: Text(
+                                    'IND',
+                                    style: AppTextStyle.tini.copyWith(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  angle: isPortrait ? 250 : 175,
+                                  positionFactor: isPortrait ? 1.2 : 1,
+                                ),
+                                GaugeAnnotation(
+                                  widget: Text(
+                                    'CAP',
+                                    style: AppTextStyle.tini.copyWith(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  angle: isPortrait ? 370 : 5,
+                                  positionFactor: isPortrait ? 1 : 1,
+                                ),
                               ],
                               onLabelCreated: (AxisLabelCreatedArgs args) {
                                 final double? labelValue =
                                     double.tryParse(args.text.toString());
-                                if (labelValue == 0.0) {
+
+                                if (labelValue == -1 || labelValue == 1) {
+                                  args.text = '';
+                                } else if (labelValue == 0.0) {
                                   args.text = '1';
                                 } else {
-                                  args.text = '.${labelValue?.abs()}';
+                                  args.text = '${labelValue?.abs()}';
                                 }
                               },
                             )
@@ -290,9 +295,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                       ],
                     ),
                   ),
-
-                  isPortrait ? 16.verticalSpace : 32.verticalSpace,
-
+                  // isPortrait ? 16.verticalSpace : 32.verticalSpace,
                   Row(
                     children: [
                       Expanded(
@@ -300,14 +303,11 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 4.r, vertical: 4.r),
                           decoration: BoxDecoration(
-                              color:
-                              AppColors.blueF8.withOpacity(0.5),
-                              borderRadius:
-                              BorderRadius.circular(4.r)),
+                              borderRadius: BorderRadius.circular(4.r)),
                           child: Center(
                             child: Text('15% THD',
-                                style: AppTextStyle.tini.copyWith(
-                                    color: AppColors.white)),
+                                style: AppTextStyle.tini
+                                    .copyWith(color: AppColors.textPrimary)),
                           ),
                         ),
                       ),
@@ -317,31 +317,25 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 4.r, vertical: 4.r),
                           decoration: BoxDecoration(
-                              color:
-                              AppColors.blueF8.withOpacity(0.5),
-                              borderRadius:
-                              BorderRadius.circular(4.r)),
+                              borderRadius: BorderRadius.circular(4.r)),
                           child: Center(
                             child: Text('220 Kw/h',
-                                style: AppTextStyle.tini.copyWith(
-                                    color: AppColors.white)),
+                                style: AppTextStyle.tini
+                                    .copyWith(color: AppColors.textPrimary)),
                           ),
                         ),
                       ),
-                       8.horizontalSpace,
+                      8.horizontalSpace,
                       Expanded(
                         child: Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: 4.r, vertical: 4.r),
                           decoration: BoxDecoration(
-                              color:
-                              AppColors.blueF8.withOpacity(0.5),
-                              borderRadius:
-                              BorderRadius.circular(4.r)),
+                              borderRadius: BorderRadius.circular(4.r)),
                           child: Center(
                             child: Text('60 Hz',
-                                style: AppTextStyle.tini.copyWith(
-                                    color: AppColors.white)),
+                                style: AppTextStyle.tini
+                                    .copyWith(color: AppColors.textPrimary)),
                           ),
                         ),
                       )

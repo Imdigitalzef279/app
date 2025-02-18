@@ -20,6 +20,8 @@ import 'package:solar_energy/presentation/screen/manager_water/manager_water_scr
 import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
+import '../../data/dto/project/response/project_response.dart';
+
 class AppRouter {
   Route onGenerateRoute(RouteSettings routeSettings) {
     Widget initialWidget = BlocProvider(
@@ -73,7 +75,7 @@ class AppRouter {
             child: const ManagerWaterScreen());
         break;
       case RouteName.generalDevice:
-        routeWidget = const GeneralDeviceScreen();
+        routeWidget = GeneralDeviceScreen(project: arguments as ProjectResponse,);
         break;
       case RouteName.detailDevice:
         routeWidget = const DetailDeviceScreen();
