@@ -23,6 +23,7 @@ mixin _$LoginState {
   String get errorUserName => throw _privateConstructorUsedError;
   String get errorPassword => throw _privateConstructorUsedError;
   String get error => throw _privateConstructorUsedError;
+  bool get showPass => throw _privateConstructorUsedError;
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -44,7 +45,8 @@ abstract class $LoginStateCopyWith<$Res> {
       bool clause,
       String errorUserName,
       String errorPassword,
-      String error});
+      String error,
+      bool showPass});
 
   $ResultCopyWith<AuthRequest, $Res> get request;
 }
@@ -71,6 +73,7 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
     Object? errorUserName = null,
     Object? errorPassword = null,
     Object? error = null,
+    Object? showPass = null,
   }) {
     return _then(_value.copyWith(
       request: null == request
@@ -101,6 +104,10 @@ class _$LoginStateCopyWithImpl<$Res, $Val extends LoginState>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String,
+      showPass: null == showPass
+          ? _value.showPass
+          : showPass // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -130,7 +137,8 @@ abstract class _$$LoginStateImplCopyWith<$Res>
       bool clause,
       String errorUserName,
       String errorPassword,
-      String error});
+      String error,
+      bool showPass});
 
   @override
   $ResultCopyWith<AuthRequest, $Res> get request;
@@ -156,6 +164,7 @@ class __$$LoginStateImplCopyWithImpl<$Res>
     Object? errorUserName = null,
     Object? errorPassword = null,
     Object? error = null,
+    Object? showPass = null,
   }) {
     return _then(_$LoginStateImpl(
       request: null == request
@@ -186,6 +195,10 @@ class __$$LoginStateImplCopyWithImpl<$Res>
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String,
+      showPass: null == showPass
+          ? _value.showPass
+          : showPass // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -197,10 +210,11 @@ class _$LoginStateImpl implements _LoginState {
       {required this.request,
       this.userName = "",
       this.password = "",
-      this.clause = false,
+      this.clause = true,
       this.errorUserName = "",
       this.errorPassword = "",
-      this.error = ""});
+      this.error = "",
+      this.showPass = false});
 
   @override
   final Result<AuthRequest> request;
@@ -222,10 +236,13 @@ class _$LoginStateImpl implements _LoginState {
   @override
   @JsonKey()
   final String error;
+  @override
+  @JsonKey()
+  final bool showPass;
 
   @override
   String toString() {
-    return 'LoginState(request: $request, userName: $userName, password: $password, clause: $clause, errorUserName: $errorUserName, errorPassword: $errorPassword, error: $error)';
+    return 'LoginState(request: $request, userName: $userName, password: $password, clause: $clause, errorUserName: $errorUserName, errorPassword: $errorPassword, error: $error, showPass: $showPass)';
   }
 
   @override
@@ -243,12 +260,14 @@ class _$LoginStateImpl implements _LoginState {
                 other.errorUserName == errorUserName) &&
             (identical(other.errorPassword, errorPassword) ||
                 other.errorPassword == errorPassword) &&
-            (identical(other.error, error) || other.error == error));
+            (identical(other.error, error) || other.error == error) &&
+            (identical(other.showPass, showPass) ||
+                other.showPass == showPass));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, request, userName, password,
-      clause, errorUserName, errorPassword, error);
+      clause, errorUserName, errorPassword, error, showPass);
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.
@@ -267,7 +286,8 @@ abstract class _LoginState implements LoginState {
       final bool clause,
       final String errorUserName,
       final String errorPassword,
-      final String error}) = _$LoginStateImpl;
+      final String error,
+      final bool showPass}) = _$LoginStateImpl;
 
   @override
   Result<AuthRequest> get request;
@@ -283,6 +303,8 @@ abstract class _LoginState implements LoginState {
   String get errorPassword;
   @override
   String get error;
+  @override
+  bool get showPass;
 
   /// Create a copy of LoginState
   /// with the given fields replaced by the non-null parameter values.

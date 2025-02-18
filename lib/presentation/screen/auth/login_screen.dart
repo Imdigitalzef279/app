@@ -8,6 +8,7 @@ import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/common_widgets/app_button.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
+import 'package:solar_energy/presentation/common_widgets/app_loading.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/auth/bloc/login_cubit.dart';
@@ -28,6 +29,20 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     check = ValueNotifier(false);
     cubit = BlocProvider.of(context);
+
+    checkToken();
+
+  }
+
+  Future<void> checkToken() async {
+    if (await cubit.checkToken()) {
+      AppToast.showToastSuccess(context, title: "Đăng nhập thành công");
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeWidget()),
+            (route) => false,
+      );
+    }
   }
 
   @override
@@ -43,28 +58,34 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       backgroundColor: AppColors.white,
       body: BlocListener<LoginCubit, LoginState>(
+        listenWhen: (previous, current) => previous.request.status != current.request.status,
         listener: (context, state) async {
-          if(await cubit.checkToken()){
+          if (state.request.status == LoadStatus.loading) {
+            showDialog(context: context, builder: (context) => const AppLoading(), barrierDismissible: false);
+            Future.delayed(const Duration(seconds: 15),() {
+              if(Navigator.canPop(context)){
+                Navigator.pop(context);
+                cubit.state.copyWith(error: "Kết nối không ổn định !!!");
+;              }
+              if(state.error == "Kết nối không ổn định !!!"){
+                AppToast.showToastError(context, title: state.error);
+              }
+            },);
+          }
+          if (state.request.status == LoadStatus.failure) {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+            if(state.error != ""){
+              AppToast.showToastError(context, title: state.error);
+            }
+          }
+          if (state.request.status == LoadStatus.success) {
             AppToast.showToastSuccess(context, title: "Đăng nhập thành công");
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const HomeWidget()),
-                  (route) => false,
-            );
-          }
-
-          if(state.request.status == LoadStatus.loading){
-            print("loading");
-          }
-          if(state.request.status == LoadStatus.failure){
-            print("failure");
-          }
-          if(state.request.status == LoadStatus.success){
-            AppToast.showToastSuccess(context, title: "Đăng nhập thành công");
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeWidget()),
-                  (route) => false,
+              (route) => false,
             );
           }
         },
@@ -130,29 +151,32 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              BlocBuilder<LoginCubit, LoginState>(builder: (context, state) => Checkbox(
-                                shape: const CircleBorder(),
-                                checkColor: Colors.white,
-                                fillColor: MaterialStateProperty.resolveWith(
-                                      (states) {
-                                    if (states
-                                        .contains(MaterialState.disabled)) {
-                                      return Colors
-                                          .white; // Color when disabled
-                                    }
-                                    if (states
-                                        .contains(MaterialState.selected)) {
-                                      return AppColors
-                                          .blueF8; // Color when selected
-                                    }
-                                    return Colors.white; // Default color
+                              BlocBuilder<LoginCubit, LoginState>(
+                                builder: (context, state) => Checkbox(
+                                  shape: const CircleBorder(),
+                                  checkColor: Colors.white,
+                                  fillColor: MaterialStateProperty.resolveWith(
+                                    (states) {
+                                      if (states
+                                          .contains(MaterialState.disabled)) {
+                                        return Colors
+                                            .white; // Color when disabled
+                                      }
+                                      if (states
+                                          .contains(MaterialState.selected)) {
+                                        return AppColors
+                                            .blueF8; // Color when selected
+                                      }
+                                      return Colors.white; // Default color
+                                    },
+                                  ),
+                                  value: state.clause,
+                                  onChanged: (value) => {
+                                    cubit.changeDataQuery(
+                                        clause: !state.clause),
                                   },
                                 ),
-                                value: state.clause,
-                                onChanged: (value) => {
-                                  cubit.changeDataQuery(clause: !state.clause),
-                                },
-                              ),),
+                              ),
                               Expanded(
                                   child: Text(
                                 "Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật của Kra Power",
@@ -186,12 +210,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               contentPadding: EdgeInsets.symmetric(vertical: 16.h),
               hintText: "Tên đăng nhập",
+              errorMessage: state.errorUserName,
               colorBorder: AppColors.white,
               backgroundColor: AppColors.greyFB,
               textStyleHint: AppTextStyle.textSm
                   .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
-              onChanged: (value) =>
-                  cubit.changeDataQuery(userName: value),
+              onChanged: (value) => cubit.changeDataQuery(userName: value),
               defaultValue: state.userName,
               textStyleInput: AppTextStyle.textSm.copyWith(
                   color: AppColors.textPrimary, fontWeight: FontWeight.w600),
@@ -209,17 +233,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 size: 24.r,
               ),
               suffixIcon: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  cubit.showPass();
+                },
                 child: Icon(
-                  Icons.remove_red_eye_outlined,
+                  state.showPass ? Icons.visibility : Icons.visibility_off,
                   color: AppColors.grey73.withOpacity(0.5),
                 ),
               ),
+              obscureText: !state.showPass,
               colorBorder: AppColors.white,
               backgroundColor: AppColors.greyFB,
               contentPadding: EdgeInsets.symmetric(vertical: 16.h),
-              onChanged: (value) =>
-                  cubit.changeDataQuery(password: value),
+              errorMessage: state.errorPassword,
+              onChanged: (value) => cubit.changeDataQuery(password: value),
               hintText: "Mật Khẩu",
               defaultValue: state.password,
               textStyleHint: AppTextStyle.textSm
@@ -232,10 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget buttonLogin() {
     return BlocBuilder<LoginCubit, LoginState>(
         builder: (context, state) => AppButton(
-              // isEnable: state.request.userName.isNotEmpty &&
-              //     state.request.password.isNotEmpty,
               onPressed: () async {
-                print("object");
                 await cubit.login();
               },
               title: "Đăng nhập",
