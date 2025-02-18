@@ -8,8 +8,11 @@ import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
+import '../../../data/dto/project/response/project_response.dart';
+
 class GeneralDeviceScreen extends StatefulWidget {
-  const GeneralDeviceScreen({super.key});
+  const GeneralDeviceScreen({super.key, required this.project});
+  final ProjectResponse project;
 
   @override
   State<GeneralDeviceScreen> createState() => _GeneralDeviceScreenState();
@@ -40,7 +43,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         scrolledUnderElevation: 0,
         elevation: 0,
         title: Text(
-          "Nhà máy Thien Son",
+          "Nhà máy ${widget.project.name}",
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
