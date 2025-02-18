@@ -111,15 +111,15 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
         backgroundColor: Colors.white,
         indicatorColor: Colors.blue.withOpacity(0.2),
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        destinations: [
+        destinations: const [
           NavigationDestination(
-            selectedIcon: const Icon(Icons.home_rounded, color: Colors.blue),
-            icon: const Icon(Icons.home_outlined, color: AppColors.grey73,),
+            selectedIcon: Icon(Icons.home_rounded, color: Colors.blue),
+            icon: Icon(Icons.home_outlined, color: AppColors.grey73,),
             label: "Tổng quan",
           ),
           NavigationDestination(
-            selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
-            icon: const Icon(Icons.developer_board_outlined, color: AppColors.grey73),
+            selectedIcon: Icon(Icons.developer_board, color: Colors.blue),
+            icon: Icon(Icons.developer_board_outlined, color: AppColors.grey73),
             label: "Thiết bị",
           ),
         ],

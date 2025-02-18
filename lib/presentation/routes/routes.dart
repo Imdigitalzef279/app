@@ -18,7 +18,6 @@ import 'package:solar_energy/presentation/screen/detail_device_water/widget/inde
 import 'package:solar_energy/presentation/screen/manager_water/bloc/manager_water_cubit.dart';
 import 'package:solar_energy/presentation/screen/manager_water/manager_water_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
-import 'package:solar_energy/presentation/screen/statistical/bloc/statistical_cubit.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
 class AppRouter {
@@ -59,9 +58,7 @@ class AppRouter {
       case RouteName.factoryDetail:
         routeWidget = MultiBlocProvider(providers: [
           BlocProvider(create: (context) => OverviewCubit()),
-          BlocProvider(
-            create: (context) => DeviceCubit(),
-          )
+          BlocProvider(create: (context) => DeviceCubit())
         ], child: DetailFactoryScreen(type: arguments as ElectricType));
         routeWidget = DetailFactoryScreen(type: arguments);
         break;
