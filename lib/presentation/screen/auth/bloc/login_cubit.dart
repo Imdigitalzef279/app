@@ -32,6 +32,10 @@ class LoginCubit extends Cubit<LoginState> {
         clause: clause ?? state.clause));
   }
 
+  void showPass(){
+    emit(state.copyWith(showPass: !state.showPass));
+  }
+
   bool checkClause(){
     return state.clause;
   }
@@ -41,6 +45,7 @@ class LoginCubit extends Cubit<LoginState> {
       emit(state.copyWith(errorUserName: "Không được để trống"));
       return false;
     }
+    emit(state.copyWith(errorUserName: ""));
     return true;
   }
 
@@ -49,17 +54,19 @@ class LoginCubit extends Cubit<LoginState> {
       emit(state.copyWith(errorPassword: "Không được để trống"));
     return false;
   }
+    emit(state.copyWith(errorPassword: ""));
     return true;
   }
 
   bool checkLogin(){
-    return checkClause() && checkPassword() && checkUserName();
+    return   checkUserName() && checkPassword() && checkClause();
   }
 
   Future<void> login() async {
     if(checkLogin()){
       try {
         emit(state.copyWith(request: Result(status: LoadStatus.loading)));
+        print("loading");
         changeRequest();
         final response = await authRepository.signIn(AuthRequest(
             username: state.userName,
@@ -76,6 +83,7 @@ class LoginCubit extends Cubit<LoginState> {
           emit(state.copyWith(request: Result(status: LoadStatus.failure)));
           return;
         }
+        emit(state.copyWith(request: Result(status: LoadStatus.failure),error:  response.error));
         return;
       } catch (e) {
         emit(state.copyWith(request: Result(status: LoadStatus.failure)));
@@ -85,7 +93,13 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<bool> checkToken() async{
+    emit(state.copyWith(request: Result(status: LoadStatus.loading)));
     final token = await sharedPreferences.getAccessToken();
-    return token.isNotEmpty;
+    if (token.isNotEmpty) {
+      emit(state.copyWith(request: Result(status: LoadStatus.success)));
+      return true;
+    }
+    emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+    return false;
   }
 }
