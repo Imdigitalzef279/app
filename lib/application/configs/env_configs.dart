@@ -9,10 +9,10 @@ class EnvConfigs {
     final packageName = packageInfo.packageName;
 
     switch (packageName) {
-      case 'com.example.solar_energy':
+      case 'com.KraGroup.KraPower':
         await dotenv.load(fileName: 'env/.env.prod');
         break;
-      case 'com.example.solar_energy.dev':
+      case 'com.KraGroup.KraPower.dev':
         await dotenv.load(fileName: 'env/.env.dev');
         break;
       default:
