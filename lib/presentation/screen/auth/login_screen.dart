@@ -113,21 +113,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
-                      Text(
-                        "Kra Power",
-                        style: AppTextStyle.textBase.copyWith(
-                          color: const Color(0xFFCA2E39),
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.3),
-                              offset: const Offset(2, 2),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      )
+                      // Text(
+                      //   "Kra Power",
+                      //   style: AppTextStyle.textBase.copyWith(
+                      //     color: const Color(0xFFCA2E39),
+                      //     fontWeight: FontWeight.w600,
+                      //     shadows: [
+                      //       Shadow(
+                      //         color: Colors.black.withOpacity(0.3),
+                      //         offset: const Offset(2, 2),
+                      //         blurRadius: 4,
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   textAlign: TextAlign.center,
+                      // )
                     ],
                   ),
                 ),

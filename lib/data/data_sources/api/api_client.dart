@@ -4,6 +4,7 @@ import 'package:solar_energy/data/dto/api_response/api_response.dart';
 import 'package:solar_energy/data/dto/auth/response/auth_response.dart';
 import 'package:solar_energy/data/dto/device/request/device_request.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
+import 'package:solar_energy/data/dto/electric/response/electric_meter_response.dart';
 import 'package:solar_energy/data/dto/profile/profile_response.dart';
 import 'package:solar_energy/data/dto/project/request/project_request.dart';
 import 'package:solar_energy/data/dto/project/response/project_response.dart';
@@ -40,4 +41,9 @@ abstract class ApiClient {
   @GET('api/app/project')
   Future<PaginationResponse<ProjectResponse>> getProjects(
       @Queries() ProjectRequest request);
+
+  @GET('api/app/meter/with-log')
+  Future<PaginationResponse<ElectricMeter>> getElectric(
+    @Query('ProjectId') int projectId,
+  );
 }

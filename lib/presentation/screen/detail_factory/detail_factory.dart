@@ -3,19 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
+import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/screen/Electricity/electricity_screen.dart';
 import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
+import '../Electricity/bloc/electric_cubit.dart';
 import '../device/bloc/device_cubit.dart';
 import '../overview/bloc/overview_cubit.dart';
 
 class DetailFactoryScreen extends StatefulWidget {
   const DetailFactoryScreen({super.key, required this.type});
 
-  final ElectricType type;
+  final ElectricMeterArgument type;
 
   @override
   State<DetailFactoryScreen> createState() => _DetailFactoryScreenState();
@@ -92,10 +94,10 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   Widget _buildBody() {
     switch (indexPage) {
       case 0:
-        return widget.type == ElectricType.saveElectric
-            ? const ElectricityScreen()
+        return widget.type.type == ElectricType.saveElectric
+            ? BlocProvider(create: (context) => ElectricCubit(), child: ElectricityScreen(project: widget.type.project,),)
             : BlocProvider(create: (context) => OverviewCubit(),
-            child: OverViewScreen(type: widget.type));
+            child: OverViewScreen(type: widget.type.type));
       case 1:
         return const StatisticalScreen();
       case 2:
