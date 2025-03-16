@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
+import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
@@ -146,7 +147,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             onTap: () {
                               Navigator.pushNamed(
                                   context, RouteName.factoryDetail,
-                                  arguments: ElectricType.saveElectric);
+                                  arguments: ElectricMeterArgument(project: widget.project, type: ElectricType.saveElectric));
                             },
                             icon: Assets.icons.savingElectric.svg(
                                 width: 22.w,
@@ -158,7 +159,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             onTap: () {
                               Navigator.pushNamed(
                                   context, RouteName.factoryDetail,
-                                  arguments: ElectricType.solarElectric);
+                                  arguments: ElectricMeterArgument(project: widget.project, type: ElectricType.solarElectric));
                             },
                             icon: Assets.icons.solarPanelSun.svg(
                                 width: 22.w,
