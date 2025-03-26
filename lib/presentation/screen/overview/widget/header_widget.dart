@@ -31,7 +31,7 @@ class HeaderWidget extends StatelessWidget {
                 colors: [AppColors.blueFB, AppColors.greyFB])),
         padding: EdgeInsets.symmetric(horizontal: 24.sp),
         child: Column(children: [
-          weather(),
+          //weather(),
           Gap(20.sp),
           type == ElectricType.saveElectric ? saveElectric() : solarElectric(),
         ]));

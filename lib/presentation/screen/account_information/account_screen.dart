@@ -9,6 +9,8 @@ import 'package:solar_energy/presentation/screen/account_information/Bloc/accoun
 import 'package:solar_energy/presentation/screen/account_information/widget/basic_account_widget.dart';
 import 'package:solar_energy/presentation/screen/account_information/widget/item_option_widget.dart';
 
+import '../../../application/cubit/app_cubit.dart';
+
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
 
@@ -24,14 +26,23 @@ class _AccountScreenState extends State<AccountScreen> {
     // TODO: implement initState
     super.initState();
     cubit = BlocProvider.of(context);
-    cubit.getProfile();
+    WidgetsBinding.instance.addPostFrameCallback((duration) {
+      cubit.getProfile();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.greyFB,
-      body: BlocBuilder<AccountCubit, AccountState>(
+      body: BlocConsumer<AccountCubit, AccountState>(
+        listener: (BuildContext context, AccountState state){
+          state.request.when(
+              loading: () => BlocProvider.of<AppCubit>(context).showLoading(),
+              success: (data) => BlocProvider.of<AppCubit>(context).hideShowLoading(),
+              error: (error) => BlocProvider.of<AppCubit>(context).hideShowLoading(),
+          );
+        },
         builder: (context, state) =>  SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),

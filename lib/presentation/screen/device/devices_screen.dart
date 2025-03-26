@@ -60,7 +60,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     BlocProvider.of<AppCubit>(context).hideShowLoading(),
                 error: (error) {
                   BlocProvider.of<AppCubit>(context).hideShowLoading();
-                  AppToast.showToastError(context, title: error);
+                  AppToast.showToastError(title: error);
                 });
           },
           builder: (BuildContext context, DeviceState state) {

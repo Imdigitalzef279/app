@@ -45,18 +45,18 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           LocalizationsUtils.localizations.factory,
           style: AppTextStyle.textBase.copyWith(fontWeight: FontWeight.w600),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              AppBottomSheet.showBottomSheet(context,
-                  child: const FilterListWidget());
-            },
-            icon: Icon(
-              Icons.filter_list_outlined,
-              size: 16.w,
-            ),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       AppBottomSheet.showBottomSheet(context,
+        //           child: const FilterListWidget());
+        //     },
+        //     icon: Icon(
+        //       Icons.filter_list_outlined,
+        //       size: 16.w,
+        //     ),
+        //   )
+        // ],
       ),
       backgroundColor: AppColors.greyFB,
       body: SafeArea(
@@ -188,7 +188,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                           BlocProvider.of<AppCubit>(context).hideShowLoading(),
                       error: (error) {
                         BlocProvider.of<AppCubit>(context).hideShowLoading();
-                        AppToast.showToastError(context, title: error);
+                        AppToast.showToastError(title: error);
                       });
                 },
                 builder: (BuildContext context, HomePageState state) {

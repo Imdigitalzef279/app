@@ -1,8 +1,15 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:solar_energy/application/enums/storages_key.dart';
+import 'package:solar_energy/application/utils/navigation_utils.dart';
 import 'package:solar_energy/data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 import 'package:solar_energy/data/dto/api_response/api_response.dart';
 import 'package:solar_energy/di.dart';
+import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
+import 'package:solar_energy/presentation/routes/route_name.dart';
 
 class ApiInterceptors extends InterceptorsWrapper {
   @override
@@ -26,6 +33,34 @@ class ApiInterceptors extends InterceptorsWrapper {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final response = err.response;
+    int? statusCode;
+    if (err.error is RedirectException) {
+      final redirectException = err.error as RedirectException;
+      if (redirectException.redirects.isNotEmpty) {
+        statusCode = redirectException.redirects.first.statusCode;
+      }
+    }
+
+    if (statusCode == 302) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+        AppToast.showToastNotify(title: "Phiên đăng nhập đã hết hạn");
+        sharedPreferences.removeAccessToken();
+        NavigatorUtils.navigatorKey.currentState
+            ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
+      });
+    }
+
+    if (response?.statusCode != null){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+        AppToast.showToastNotify(title: "Phiên đăng nhập đã hết hạn");
+        sharedPreferences.removeAccessToken();
+        NavigatorUtils.navigatorKey.currentState
+            ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
+      });
+    }
+
     if (response != null) {
       final Map<String, dynamic> data = response.data;
       if (data.containsKey('error')) {

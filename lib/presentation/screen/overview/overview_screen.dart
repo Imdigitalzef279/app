@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/cubit/app_cubit.dart';
@@ -32,10 +33,11 @@ class _OverViewScreenState extends State<OverViewScreen> {
     super.initState();
     cubit = BlocProvider.of<OverviewCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      cubit.getSolarElectric(const SolarElectricRequest(
+      String currentDay = DateFormat('dd/MM/yyyy').format(DateTime.now());
+      cubit.getSolarElectric(SolarElectricRequest(
           powerStationId: 21,
           searchType: SearchType.hour,
-          searchValue: "26/12/2024"));
+          searchValue: currentDay));
     });
   }
 
@@ -58,12 +60,12 @@ class _OverViewScreenState extends State<OverViewScreen> {
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.menu, size: 16.sp),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: Icon(Icons.menu, size: 16.sp),
+        //   )
+        // ],
       ),
       backgroundColor: AppColors.greyFB,
       body: BlocConsumer<OverviewCubit, OverviewState>(

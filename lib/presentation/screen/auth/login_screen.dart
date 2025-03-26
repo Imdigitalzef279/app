@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> checkToken() async {
     if (await cubit.checkToken()) {
-      AppToast.showToastSuccess(context, title: "Đăng nhập thành công");
+      AppToast.showToastSuccess(title: "Đăng nhập thành công");
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeWidget()),
@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 cubit.state.copyWith(error: "Kết nối không ổn định !!!");
 ;              }
               if(state.error == "Kết nối không ổn định !!!"){
-                AppToast.showToastError(context, title: state.error);
+                AppToast.showToastError(title: state.error);
               }
             },);
           }
@@ -77,11 +77,11 @@ class _LoginScreenState extends State<LoginScreen> {
               Navigator.pop(context);
             }
             if(state.error != ""){
-              AppToast.showToastError(context, title: state.error);
+              AppToast.showToastError(title: state.error);
             }
           }
           if (state.request.status == LoadStatus.success) {
-            AppToast.showToastSuccess(context, title: "Đăng nhập thành công");
+            AppToast.showToastSuccess(title: "Đăng nhập thành công");
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const HomeWidget()),
