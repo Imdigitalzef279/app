@@ -2,23 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/utils/navigation_utils.dart';
 
 class AppToast {
-  static void showToastError(BuildContext context, {required String title}) {
-    _showToast(context, title, Colors.red, Icons.error_outlined);
+  static void showToastError({required String title}) {
+    _showToast(title, Colors.red, Icons.error_outlined);
   }
 
-  static void showToastSuccess(BuildContext context, {required String title}) {
-    _showToast(context, title, Colors.green, Icons.check_circle_sharp);
+  static void showToastSuccess({required String title}) {
+    _showToast(title, Colors.green, Icons.check_circle_sharp);
   }
 
-  static void showToastNotify(BuildContext context, {required String title}) {
-    _showToast(context, title, null, null);
+  static void showToastNotify({required String title}) {
+    _showToast(title, null, null);
   }
 
-  static void _showToast(
-      BuildContext context, String title, Color? color, IconData? icon) {
-    final overlay = Overlay.of(context);
+  static void _showToast(String title, Color? color, IconData? icon) {
+    final overlayState = NavigatorUtils.navigatorKey.currentState?.overlay;
+    if (overlayState == null) return;
+
     OverlayEntry? entry;
     entry = OverlayEntry(
       builder: (context) => Positioned(
@@ -55,42 +57,42 @@ class AppToast {
               ),
               child: icon != null
                   ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          icon,
-                          color: AppColors.white,
-                          size: 25.r,
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                            child: Text(
-                          title,
-                          style: AppTextStyle.textSm
-                              .copyWith(color: AppColors.white),
-                        ))
-                      ],
-                    )
-                  : Center(
-                      child: Expanded(
-                          child: Text(
-                        title,
-                        style: AppTextStyle.textSm
-                            .copyWith(color: AppColors.textPrimary),
-                      )),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    icon,
+                    color: AppColors.white,
+                    size: 25.r,
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: AppTextStyle.textSm.copyWith(
+                        color: AppColors.white,
+                      ),
                     ),
+                  ),
+                ],
+              )
+                  : Center(
+                child: Text(
+                  title,
+                  style: AppTextStyle.textSm.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
       ),
     );
 
-    overlay.insert(entry);
+    overlayState.insert(entry);
 
     Future.delayed(const Duration(milliseconds: 3000), () {
-      if (entry != null) {
-        entry.remove();
-      }
+      entry?.remove();
     });
   }
 }

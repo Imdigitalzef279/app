@@ -57,7 +57,7 @@ class _DetailWidgetState extends State<DetailWidget>
                 BlocProvider.of<AppCubit>(context).hideShowLoading(),
             error: (error) {
               BlocProvider.of<AppCubit>(context).hideShowLoading();
-              AppToast.showToastError(context, title: error);
+              AppToast.showToastError(title: error);
             });
       },
       builder: (BuildContext context, StatisticalState state) {
