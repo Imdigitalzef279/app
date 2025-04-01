@@ -5,6 +5,7 @@ import 'package:solar_energy/data/dto/api_response/api_response.dart';
 import 'package:solar_energy/data/dto/result/result.dart';
 import 'package:solar_energy/di.dart';
 
+
 class BaseRepository {
   final api = getIt.get<ApiClient>();
 
@@ -41,4 +42,8 @@ class BaseRepository {
       return result.copyWith(status: LoadStatus.failure, error: e.toString());
     }
   }
+
+
+
+
 }

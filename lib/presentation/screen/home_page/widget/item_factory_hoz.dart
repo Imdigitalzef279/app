@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 import 'package:solar_energy/data/dto/project/response/project_response.dart';
 import 'package:solar_energy/presentation/common_widgets/app_network_image.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
@@ -9,7 +10,7 @@ import 'package:solar_energy/presentation/routes/route_name.dart';
 class ItemFactoryHoz extends StatelessWidget {
   const ItemFactoryHoz({super.key, required this.project});
 
-  final ProjectResponse project;
+  final PowerStationResponse project;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,8 @@ class ItemFactoryHoz extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(12.r),
       onTap: () {
-        Navigator.pushNamed(context, RouteName.generalDevice, arguments: project);
+        Navigator.pushNamed(context, RouteName.generalDevice,
+            arguments: project);
       },
       child: Ink(
         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
@@ -63,7 +65,7 @@ class ItemFactoryHoz extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    project.info,
+                    project.description,
                     style: AppTextStyle.tini
                         .copyWith(color: AppColors.textPrimary),
                     maxLines: 3,

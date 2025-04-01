@@ -22,6 +22,7 @@ import 'package:solar_energy/presentation/screen/manager_water/manager_water_scr
 import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
+import '../../data/dto/power_station/response/power_station_response.dart';
 import '../../data/dto/project/response/project_response.dart';
 
 class AppRouter {
@@ -77,7 +78,7 @@ class AppRouter {
             child: const ManagerWaterScreen());
         break;
       case RouteName.generalDevice:
-        routeWidget = GeneralDeviceScreen(project: arguments as ProjectResponse,);
+        routeWidget = GeneralDeviceScreen(project: arguments as PowerStationResponse,);
         break;
       case RouteName.detailDevice:
         routeWidget = const DetailDeviceScreen();

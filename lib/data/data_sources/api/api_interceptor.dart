@@ -27,6 +27,7 @@ class ApiInterceptors extends InterceptorsWrapper {
     options.headers['X-Requested-With'] = 'XMLHttpRequest';
     options.headers['RequestVerificationToken'] =
         'CfDJ8Pl3MwmQoUZGuLTC_mFq3igQBpSRRumIuQ-CtMEqMZrz28DQ1rBrR_FT3My2jiuNfJ9FHQRVNUlJ4cf55qLKdah5KM1wYuOLi07ymNPBCnFvZSxFPrLFQJw6lpdADui1OmYDkswhcvHzCRf6E8jM8bJYjXPP_L482b6tk0MwXfnUAvsvrIA1leMmPNHdDG0etA';
+    print('Request URL: ${options.baseUrl}${options.path}');
     return super.onRequest(options, handler);
   }
 

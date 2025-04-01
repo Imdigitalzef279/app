@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ElectricState {
   Result<ElectricMeter> get response => throw _privateConstructorUsedError;
-  dynamic get loadStatus => throw _privateConstructorUsedError;
+  LoadStatus get loadStatus => throw _privateConstructorUsedError;
 
   /// Create a copy of ElectricState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,7 +32,7 @@ abstract class $ElectricStateCopyWith<$Res> {
           ElectricState value, $Res Function(ElectricState) then) =
       _$ElectricStateCopyWithImpl<$Res, ElectricState>;
   @useResult
-  $Res call({Result<ElectricMeter> response, dynamic loadStatus});
+  $Res call({Result<ElectricMeter> response, LoadStatus loadStatus});
 
   $ResultCopyWith<ElectricMeter, $Res> get response;
 }
@@ -53,17 +53,17 @@ class _$ElectricStateCopyWithImpl<$Res, $Val extends ElectricState>
   @override
   $Res call({
     Object? response = null,
-    Object? loadStatus = freezed,
+    Object? loadStatus = null,
   }) {
     return _then(_value.copyWith(
       response: null == response
           ? _value.response
           : response // ignore: cast_nullable_to_non_nullable
               as Result<ElectricMeter>,
-      loadStatus: freezed == loadStatus
+      loadStatus: null == loadStatus
           ? _value.loadStatus
           : loadStatus // ignore: cast_nullable_to_non_nullable
-              as dynamic,
+              as LoadStatus,
     ) as $Val);
   }
 
@@ -86,7 +86,7 @@ abstract class _$$ElectricStateImplCopyWith<$Res>
       __$$ElectricStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Result<ElectricMeter> response, dynamic loadStatus});
+  $Res call({Result<ElectricMeter> response, LoadStatus loadStatus});
 
   @override
   $ResultCopyWith<ElectricMeter, $Res> get response;
@@ -106,14 +106,17 @@ class __$$ElectricStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? response = null,
-    Object? loadStatus = freezed,
+    Object? loadStatus = null,
   }) {
     return _then(_$ElectricStateImpl(
       response: null == response
           ? _value.response
           : response // ignore: cast_nullable_to_non_nullable
               as Result<ElectricMeter>,
-      loadStatus: freezed == loadStatus ? _value.loadStatus! : loadStatus,
+      loadStatus: null == loadStatus
+          ? _value.loadStatus
+          : loadStatus // ignore: cast_nullable_to_non_nullable
+              as LoadStatus,
     ));
   }
 }
@@ -128,7 +131,7 @@ class _$ElectricStateImpl implements _ElectricState {
   final Result<ElectricMeter> response;
   @override
   @JsonKey()
-  final dynamic loadStatus;
+  final LoadStatus loadStatus;
 
   @override
   String toString() {
@@ -142,13 +145,12 @@ class _$ElectricStateImpl implements _ElectricState {
             other is _$ElectricStateImpl &&
             (identical(other.response, response) ||
                 other.response == response) &&
-            const DeepCollectionEquality()
-                .equals(other.loadStatus, loadStatus));
+            (identical(other.loadStatus, loadStatus) ||
+                other.loadStatus == loadStatus));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, response, const DeepCollectionEquality().hash(loadStatus));
+  int get hashCode => Object.hash(runtimeType, response, loadStatus);
 
   /// Create a copy of ElectricState
   /// with the given fields replaced by the non-null parameter values.
@@ -162,12 +164,12 @@ class _$ElectricStateImpl implements _ElectricState {
 abstract class _ElectricState implements ElectricState {
   const factory _ElectricState(
       {required final Result<ElectricMeter> response,
-      final dynamic loadStatus}) = _$ElectricStateImpl;
+      final LoadStatus loadStatus}) = _$ElectricStateImpl;
 
   @override
   Result<ElectricMeter> get response;
   @override
-  dynamic get loadStatus;
+  LoadStatus get loadStatus;
 
   /// Create a copy of ElectricState
   /// with the given fields replaced by the non-null parameter values.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
+import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 
 import 'package:solar_energy/presentation/common_widgets/app_load_more.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
@@ -20,7 +21,7 @@ import '../../common_widgets/app_loading.dart';
 class ElectricityScreen extends StatefulWidget {
   const ElectricityScreen({super.key, required this.project});
 
-  final ProjectResponse project;
+  final PowerStationResponse project;
 
   @override
   State<ElectricityScreen> createState() => _ElectricityScreenState();

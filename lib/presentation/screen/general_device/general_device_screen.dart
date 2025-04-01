@@ -9,11 +9,11 @@ import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argu
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
-import '../../../data/dto/project/response/project_response.dart';
+import '../../../data/dto/power_station/response/power_station_response.dart';
 
 class GeneralDeviceScreen extends StatefulWidget {
   const GeneralDeviceScreen({super.key, required this.project});
-  final ProjectResponse project;
+  final PowerStationResponse project;
 
   @override
   State<GeneralDeviceScreen> createState() => _GeneralDeviceScreenState();
