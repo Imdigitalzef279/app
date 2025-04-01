@@ -45,18 +45,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           LocalizationsUtils.localizations.factory,
           style: AppTextStyle.textBase.copyWith(fontWeight: FontWeight.w600),
         ),
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {
-        //       AppBottomSheet.showBottomSheet(context,
-        //           child: const FilterListWidget());
-        //     },
-        //     icon: Icon(
-        //       Icons.filter_list_outlined,
-        //       size: 16.w,
-        //     ),
-        //   )
-        // ],
       ),
       backgroundColor: AppColors.greyFB,
       body: SafeArea(
@@ -177,7 +165,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                 _cubit.getProjects();
               },
               onLoadMore: () {
-                _cubit.getProjectsMore();
+                //_cubit.getProjectsMore();
               },
               child: BlocConsumer<HomePageCubit, HomePageState>(
                 listener: (context, state) {
@@ -196,10 +184,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) => ItemFactoryHoz(
-                            project: state.resultProjects.data!.data[index],
+                            project: state.resultProjects.data![index],
                           ),
                       separatorBuilder: (context, index) => 8.verticalSpace,
-                      itemCount: state.resultProjects.data?.data.length ?? 0);
+                      itemCount: state.resultProjects.data?.length ?? 0);
                 },
               ),
             ),

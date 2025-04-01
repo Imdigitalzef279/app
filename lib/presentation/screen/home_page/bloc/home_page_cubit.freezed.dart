@@ -16,9 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$HomePageState {
-  Result<PaginationResponse<ProjectResponse>> get resultProjects =>
-      throw _privateConstructorUsedError;
-  ProjectRequest get request => throw _privateConstructorUsedError;
+  Result<List<PowerStationResponse>> get resultProjects =>
+      throw _privateConstructorUsedError; //required ProjectRequest request,
+  int get projectID => throw _privateConstructorUsedError;
 
   /// Create a copy of HomePageState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,12 +33,9 @@ abstract class $HomePageStateCopyWith<$Res> {
           HomePageState value, $Res Function(HomePageState) then) =
       _$HomePageStateCopyWithImpl<$Res, HomePageState>;
   @useResult
-  $Res call(
-      {Result<PaginationResponse<ProjectResponse>> resultProjects,
-      ProjectRequest request});
+  $Res call({Result<List<PowerStationResponse>> resultProjects, int projectID});
 
-  $ResultCopyWith<PaginationResponse<ProjectResponse>, $Res> get resultProjects;
-  $ProjectRequestCopyWith<$Res> get request;
+  $ResultCopyWith<List<PowerStationResponse>, $Res> get resultProjects;
 }
 
 /// @nodoc
@@ -57,17 +54,17 @@ class _$HomePageStateCopyWithImpl<$Res, $Val extends HomePageState>
   @override
   $Res call({
     Object? resultProjects = null,
-    Object? request = null,
+    Object? projectID = null,
   }) {
     return _then(_value.copyWith(
       resultProjects: null == resultProjects
           ? _value.resultProjects
           : resultProjects // ignore: cast_nullable_to_non_nullable
-              as Result<PaginationResponse<ProjectResponse>>,
-      request: null == request
-          ? _value.request
-          : request // ignore: cast_nullable_to_non_nullable
-              as ProjectRequest,
+              as Result<List<PowerStationResponse>>,
+      projectID: null == projectID
+          ? _value.projectID
+          : projectID // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 
@@ -75,21 +72,10 @@ class _$HomePageStateCopyWithImpl<$Res, $Val extends HomePageState>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $ResultCopyWith<PaginationResponse<ProjectResponse>, $Res>
-      get resultProjects {
-    return $ResultCopyWith<PaginationResponse<ProjectResponse>, $Res>(
+  $ResultCopyWith<List<PowerStationResponse>, $Res> get resultProjects {
+    return $ResultCopyWith<List<PowerStationResponse>, $Res>(
         _value.resultProjects, (value) {
       return _then(_value.copyWith(resultProjects: value) as $Val);
-    });
-  }
-
-  /// Create a copy of HomePageState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ProjectRequestCopyWith<$Res> get request {
-    return $ProjectRequestCopyWith<$Res>(_value.request, (value) {
-      return _then(_value.copyWith(request: value) as $Val);
     });
   }
 }
@@ -102,14 +88,10 @@ abstract class _$$HomePageStateImplCopyWith<$Res>
       __$$HomePageStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {Result<PaginationResponse<ProjectResponse>> resultProjects,
-      ProjectRequest request});
+  $Res call({Result<List<PowerStationResponse>> resultProjects, int projectID});
 
   @override
-  $ResultCopyWith<PaginationResponse<ProjectResponse>, $Res> get resultProjects;
-  @override
-  $ProjectRequestCopyWith<$Res> get request;
+  $ResultCopyWith<List<PowerStationResponse>, $Res> get resultProjects;
 }
 
 /// @nodoc
@@ -126,17 +108,17 @@ class __$$HomePageStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? resultProjects = null,
-    Object? request = null,
+    Object? projectID = null,
   }) {
     return _then(_$HomePageStateImpl(
       resultProjects: null == resultProjects
           ? _value.resultProjects
           : resultProjects // ignore: cast_nullable_to_non_nullable
-              as Result<PaginationResponse<ProjectResponse>>,
-      request: null == request
-          ? _value.request
-          : request // ignore: cast_nullable_to_non_nullable
-              as ProjectRequest,
+              as Result<List<PowerStationResponse>>,
+      projectID: null == projectID
+          ? _value.projectID
+          : projectID // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -144,17 +126,18 @@ class __$$HomePageStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$HomePageStateImpl implements _HomePageState {
-  const _$HomePageStateImpl(
-      {required this.resultProjects, required this.request});
+  const _$HomePageStateImpl({required this.resultProjects, this.projectID = 0});
 
   @override
-  final Result<PaginationResponse<ProjectResponse>> resultProjects;
+  final Result<List<PowerStationResponse>> resultProjects;
+//required ProjectRequest request,
   @override
-  final ProjectRequest request;
+  @JsonKey()
+  final int projectID;
 
   @override
   String toString() {
-    return 'HomePageState(resultProjects: $resultProjects, request: $request)';
+    return 'HomePageState(resultProjects: $resultProjects, projectID: $projectID)';
   }
 
   @override
@@ -164,11 +147,12 @@ class _$HomePageStateImpl implements _HomePageState {
             other is _$HomePageStateImpl &&
             (identical(other.resultProjects, resultProjects) ||
                 other.resultProjects == resultProjects) &&
-            (identical(other.request, request) || other.request == request));
+            (identical(other.projectID, projectID) ||
+                other.projectID == projectID));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, resultProjects, request);
+  int get hashCode => Object.hash(runtimeType, resultProjects, projectID);
 
   /// Create a copy of HomePageState
   /// with the given fields replaced by the non-null parameter values.
@@ -181,14 +165,14 @@ class _$HomePageStateImpl implements _HomePageState {
 
 abstract class _HomePageState implements HomePageState {
   const factory _HomePageState(
-      {required final Result<PaginationResponse<ProjectResponse>>
-          resultProjects,
-      required final ProjectRequest request}) = _$HomePageStateImpl;
+      {required final Result<List<PowerStationResponse>> resultProjects,
+      final int projectID}) = _$HomePageStateImpl;
 
   @override
-  Result<PaginationResponse<ProjectResponse>> get resultProjects;
+  Result<List<PowerStationResponse>>
+      get resultProjects; //required ProjectRequest request,
   @override
-  ProjectRequest get request;
+  int get projectID;
 
   /// Create a copy of HomePageState
   /// with the given fields replaced by the non-null parameter values.

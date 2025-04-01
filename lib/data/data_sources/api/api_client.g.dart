@@ -178,37 +178,34 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<PaginationResponse<ProjectResponse>> getProjects(
-      ProjectRequest request) async {
+  Future<List<PowerStationResponse>> getPowerStation(int projectId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    queryParameters.addAll(request.toJson());
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options =
-        _setStreamType<PaginationResponse<ProjectResponse>>(Options(
+    final _options = _setStreamType<List<PowerStationResponse>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
-            .compose(
-              _dio.options,
-              'api/app/project',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late PaginationResponse<ProjectResponse> _value;
+        .compose(
+          _dio.options,
+          'api/app/power-station/power-station-lookup/${projectId}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<PowerStationResponse> _value;
     try {
-      _value = PaginationResponse<ProjectResponse>.fromJson(
-        _result.data!,
-        (json) => ProjectResponse.fromJson(json as Map<String, dynamic>),
-      );
+      _value = _result.data!
+          .map((dynamic i) =>
+              PowerStationResponse.fromJson(i as Map<String, dynamic>))
+          .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
