@@ -5,13 +5,14 @@ import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/cubit/app_cubit.dart';
-import 'package:solar_energy/data/dto/device/request/device_request.dart';
+import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
 import 'package:solar_energy/presentation/screen/device/widget/item_device.dart';
 
 class DevicesScreen extends StatefulWidget {
-  const DevicesScreen({super.key});
+  const DevicesScreen({super.key, required this.argument});
+  final ElectricMeterArgument argument;
 
   @override
   State<DevicesScreen> createState() => _DevicesScreenState();
@@ -25,7 +26,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
     super.initState();
     _cubit = BlocProvider.of<DeviceCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      _cubit.getDevices(const DeviceRequest(powerStationId: 21));
+      _cubit.getDevices(powerStationId: widget.argument.project.id);
     });
   }
 
@@ -45,7 +46,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
               child: Icon(Icons.arrow_back_ios, size: 16.sp)),
         ),
         title: Text(
-          "Thien son",
+          "Danh sách thiết bị",
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
@@ -64,14 +65,14 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 });
           },
           builder: (BuildContext context, DeviceState state) {
-            return state.resultDevices.data?.data != null &&
-                    state.resultDevices.data?.data != []
+            return state.resultDevices.data != null &&
+                    state.resultDevices.data != []
                 ? ListView.separated(
                     padding: EdgeInsets.all(12.sp),
                     itemBuilder: (context, index) => ItemDevice(
-                        device: state.resultDevices.data!.data[index]),
+                        device: state.resultDevices.data![index]),
                     separatorBuilder: (context, index) => Gap(12.sp),
-                    itemCount: state.resultDevices.data?.data.length ?? 0)
+                    itemCount: state.resultDevices.data?.length ?? 0)
                 : Center(
                     child: Text(
                       'Không có dữ liệu',

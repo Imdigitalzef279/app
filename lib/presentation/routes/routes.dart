@@ -52,7 +52,7 @@ class AppRouter {
         routeWidget = const AllAlarmWaterScreen();
         break;
       case RouteName.deviceScreen:
-        routeWidget = const DevicesScreen();
+        routeWidget = DevicesScreen(argument: arguments as ElectricMeterArgument);
         break;
       case RouteName.indexWarning:
         routeWidget = IndexWarningScreen(indexType: arguments as IndexType,);

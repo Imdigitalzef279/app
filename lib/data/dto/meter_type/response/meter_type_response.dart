@@ -11,6 +11,7 @@ class MeterTypeResponse with _$MeterTypeResponse {
     @Default('') String name,
     @Default('') String code,
     @Default('') String storeParam,
+    @Default("") String creationTime,
     @Default(0) int status,
   }) = _MeterTypeResponse;
 

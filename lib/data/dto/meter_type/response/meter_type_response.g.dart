@@ -13,6 +13,7 @@ _$MeterTypeResponseImpl _$$MeterTypeResponseImplFromJson(
       name: json['name'] as String? ?? '',
       code: json['code'] as String? ?? '',
       storeParam: json['storeParam'] as String? ?? '',
+      creationTime: json['creationTime'] as String? ?? "",
       status: (json['status'] as num?)?.toInt() ?? 0,
     );
 
@@ -23,5 +24,6 @@ Map<String, dynamic> _$$MeterTypeResponseImplToJson(
       'name': instance.name,
       'code': instance.code,
       'storeParam': instance.storeParam,
+      'creationTime': instance.creationTime,
       'status': instance.status,
     };

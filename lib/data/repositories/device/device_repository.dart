@@ -4,6 +4,6 @@ import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/dto/result/result.dart';
 
 abstract class DeviceRepository {
-  Future<Result<PaginationResponse<DeviceResponse>>> getSolarElectric(
-      DeviceRequest request);
+  Future<Result<List<DeviceResponse>>> getSolarElectric(
+      int powerStationID);
 }

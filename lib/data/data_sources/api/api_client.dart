@@ -30,9 +30,9 @@ abstract class ApiClient {
   Future<PaginationResponse<SolarElectricResponse>> getSolarElectric(
       @Queries() SolarElectricRequest request);
 
-  @GET('api/app/meter/with-log')
-  Future<PaginationResponse<DeviceResponse>> getDevices(
-      @Queries() DeviceRequest request);
+  @GET('api/app/meter/meter-lookup/{id}')
+  Future<List<DeviceResponse>> getDevices(
+      @Path("id") int powerStationID);
 
   @GET('api/account/my-profile')
   Future<ProfileResponse> getProfile();
