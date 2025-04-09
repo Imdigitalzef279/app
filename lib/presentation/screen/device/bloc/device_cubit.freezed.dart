@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$DeviceState {
-  Result<PaginationResponse<DeviceResponse>> get resultDevices =>
+  Result<List<DeviceResponse>> get resultDevices =>
       throw _privateConstructorUsedError;
 
   /// Create a copy of DeviceState
@@ -32,9 +32,9 @@ abstract class $DeviceStateCopyWith<$Res> {
           DeviceState value, $Res Function(DeviceState) then) =
       _$DeviceStateCopyWithImpl<$Res, DeviceState>;
   @useResult
-  $Res call({Result<PaginationResponse<DeviceResponse>> resultDevices});
+  $Res call({Result<List<DeviceResponse>> resultDevices});
 
-  $ResultCopyWith<PaginationResponse<DeviceResponse>, $Res> get resultDevices;
+  $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices;
 }
 
 /// @nodoc
@@ -58,7 +58,7 @@ class _$DeviceStateCopyWithImpl<$Res, $Val extends DeviceState>
       resultDevices: null == resultDevices
           ? _value.resultDevices
           : resultDevices // ignore: cast_nullable_to_non_nullable
-              as Result<PaginationResponse<DeviceResponse>>,
+              as Result<List<DeviceResponse>>,
     ) as $Val);
   }
 
@@ -66,9 +66,9 @@ class _$DeviceStateCopyWithImpl<$Res, $Val extends DeviceState>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $ResultCopyWith<PaginationResponse<DeviceResponse>, $Res> get resultDevices {
-    return $ResultCopyWith<PaginationResponse<DeviceResponse>, $Res>(
-        _value.resultDevices, (value) {
+  $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices {
+    return $ResultCopyWith<List<DeviceResponse>, $Res>(_value.resultDevices,
+        (value) {
       return _then(_value.copyWith(resultDevices: value) as $Val);
     });
   }
@@ -82,10 +82,10 @@ abstract class _$$DeviceStateImplCopyWith<$Res>
       __$$DeviceStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Result<PaginationResponse<DeviceResponse>> resultDevices});
+  $Res call({Result<List<DeviceResponse>> resultDevices});
 
   @override
-  $ResultCopyWith<PaginationResponse<DeviceResponse>, $Res> get resultDevices;
+  $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices;
 }
 
 /// @nodoc
@@ -107,7 +107,7 @@ class __$$DeviceStateImplCopyWithImpl<$Res>
       resultDevices: null == resultDevices
           ? _value.resultDevices
           : resultDevices // ignore: cast_nullable_to_non_nullable
-              as Result<PaginationResponse<DeviceResponse>>,
+              as Result<List<DeviceResponse>>,
     ));
   }
 }
@@ -118,7 +118,7 @@ class _$DeviceStateImpl implements _DeviceState {
   const _$DeviceStateImpl({required this.resultDevices});
 
   @override
-  final Result<PaginationResponse<DeviceResponse>> resultDevices;
+  final Result<List<DeviceResponse>> resultDevices;
 
   @override
   String toString() {
@@ -148,11 +148,11 @@ class _$DeviceStateImpl implements _DeviceState {
 
 abstract class _DeviceState implements DeviceState {
   const factory _DeviceState(
-      {required final Result<PaginationResponse<DeviceResponse>>
-          resultDevices}) = _$DeviceStateImpl;
+          {required final Result<List<DeviceResponse>> resultDevices}) =
+      _$DeviceStateImpl;
 
   @override
-  Result<PaginationResponse<DeviceResponse>> get resultDevices;
+  Result<List<DeviceResponse>> get resultDevices;
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.

@@ -107,21 +107,19 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<PaginationResponse<DeviceResponse>> getDevices(
-      DeviceRequest request) async {
+  Future<List<DeviceResponse>> getDevices(int powerStationID) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    queryParameters.addAll(request.toJson());
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<PaginationResponse<DeviceResponse>>(Options(
+    final _options = _setStreamType<List<DeviceResponse>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          'api/app/meter/with-log',
+          'api/app/meter/meter-lookup/${powerStationID}',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -130,13 +128,13 @@ class _ApiClient implements ApiClient {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late PaginationResponse<DeviceResponse> _value;
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<DeviceResponse> _value;
     try {
-      _value = PaginationResponse<DeviceResponse>.fromJson(
-        _result.data!,
-        (json) => DeviceResponse.fromJson(json as Map<String, dynamic>),
-      );
+      _value = _result.data!
+          .map(
+              (dynamic i) => DeviceResponse.fromJson(i as Map<String, dynamic>))
+          .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

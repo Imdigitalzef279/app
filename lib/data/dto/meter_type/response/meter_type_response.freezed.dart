@@ -24,6 +24,7 @@ mixin _$MeterTypeResponse {
   String get name => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get storeParam => throw _privateConstructorUsedError;
+  String get creationTime => throw _privateConstructorUsedError;
   int get status => throw _privateConstructorUsedError;
 
   /// Serializes this MeterTypeResponse to a JSON map.
@@ -42,7 +43,13 @@ abstract class $MeterTypeResponseCopyWith<$Res> {
           MeterTypeResponse value, $Res Function(MeterTypeResponse) then) =
       _$MeterTypeResponseCopyWithImpl<$Res, MeterTypeResponse>;
   @useResult
-  $Res call({int id, String name, String code, String storeParam, int status});
+  $Res call(
+      {int id,
+      String name,
+      String code,
+      String storeParam,
+      String creationTime,
+      int status});
 }
 
 /// @nodoc
@@ -64,6 +71,7 @@ class _$MeterTypeResponseCopyWithImpl<$Res, $Val extends MeterTypeResponse>
     Object? name = null,
     Object? code = null,
     Object? storeParam = null,
+    Object? creationTime = null,
     Object? status = null,
   }) {
     return _then(_value.copyWith(
@@ -83,6 +91,10 @@ class _$MeterTypeResponseCopyWithImpl<$Res, $Val extends MeterTypeResponse>
           ? _value.storeParam
           : storeParam // ignore: cast_nullable_to_non_nullable
               as String,
+      creationTime: null == creationTime
+          ? _value.creationTime
+          : creationTime // ignore: cast_nullable_to_non_nullable
+              as String,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -99,7 +111,13 @@ abstract class _$$MeterTypeResponseImplCopyWith<$Res>
       __$$MeterTypeResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, String code, String storeParam, int status});
+  $Res call(
+      {int id,
+      String name,
+      String code,
+      String storeParam,
+      String creationTime,
+      int status});
 }
 
 /// @nodoc
@@ -119,6 +137,7 @@ class __$$MeterTypeResponseImplCopyWithImpl<$Res>
     Object? name = null,
     Object? code = null,
     Object? storeParam = null,
+    Object? creationTime = null,
     Object? status = null,
   }) {
     return _then(_$MeterTypeResponseImpl(
@@ -138,6 +157,10 @@ class __$$MeterTypeResponseImplCopyWithImpl<$Res>
           ? _value.storeParam
           : storeParam // ignore: cast_nullable_to_non_nullable
               as String,
+      creationTime: null == creationTime
+          ? _value.creationTime
+          : creationTime // ignore: cast_nullable_to_non_nullable
+              as String,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -154,6 +177,7 @@ class _$MeterTypeResponseImpl implements _MeterTypeResponse {
       this.name = '',
       this.code = '',
       this.storeParam = '',
+      this.creationTime = "",
       this.status = 0});
 
   factory _$MeterTypeResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -173,11 +197,14 @@ class _$MeterTypeResponseImpl implements _MeterTypeResponse {
   final String storeParam;
   @override
   @JsonKey()
+  final String creationTime;
+  @override
+  @JsonKey()
   final int status;
 
   @override
   String toString() {
-    return 'MeterTypeResponse(id: $id, name: $name, code: $code, storeParam: $storeParam, status: $status)';
+    return 'MeterTypeResponse(id: $id, name: $name, code: $code, storeParam: $storeParam, creationTime: $creationTime, status: $status)';
   }
 
   @override
@@ -190,13 +217,15 @@ class _$MeterTypeResponseImpl implements _MeterTypeResponse {
             (identical(other.code, code) || other.code == code) &&
             (identical(other.storeParam, storeParam) ||
                 other.storeParam == storeParam) &&
+            (identical(other.creationTime, creationTime) ||
+                other.creationTime == creationTime) &&
             (identical(other.status, status) || other.status == status));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, code, storeParam, status);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, code, storeParam, creationTime, status);
 
   /// Create a copy of MeterTypeResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -221,6 +250,7 @@ abstract class _MeterTypeResponse implements MeterTypeResponse {
       final String name,
       final String code,
       final String storeParam,
+      final String creationTime,
       final int status}) = _$MeterTypeResponseImpl;
 
   factory _MeterTypeResponse.fromJson(Map<String, dynamic> json) =
@@ -234,6 +264,8 @@ abstract class _MeterTypeResponse implements MeterTypeResponse {
   String get code;
   @override
   String get storeParam;
+  @override
+  String get creationTime;
   @override
   int get status;
 

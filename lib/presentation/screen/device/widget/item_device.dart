@@ -3,8 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/utils/navigation_utils.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
+import 'package:solar_energy/presentation/screen/device/widget/content_dialog.dart';
 
 class ItemDevice extends StatelessWidget {
   const ItemDevice({super.key, required this.device});
@@ -20,6 +22,9 @@ class ItemDevice extends StatelessWidget {
       default:
         return '';
     }
+  }
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(context: NavigatorUtils.currentContext, builder: (context) => ContentDialog(device: device,),);
   }
 
   @override
@@ -55,17 +60,22 @@ class ItemDevice extends StatelessWidget {
                       fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.sp),
-                    color: const Color(0xFFff9f43).withOpacity(0.1),
-                  ),
-                  child: Text(
-                    "Dừng",
-                    style: AppTextStyle.textXs.copyWith(
-                        color: const Color(0xFFff9f43), fontSize: 12.sp),
+                InkWell(
+                  onTap: () {
+                    _showMyDialog();
+                  },
+                  child: Ink(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4.sp),
+                      color: const Color(0xFFff9f43).withOpacity(0.1),
+                    ),
+                    child: Text(
+                      device.status == 1 ? "Đang hoạt động" : "Dừng",
+                      style: AppTextStyle.textXs.copyWith(
+                          color: device.status == 1 ? AppColors.green50 : const Color(0xFFff9f43), fontSize: 12.sp),
+                    ),
                   ),
                 )
               ],
@@ -92,13 +102,14 @@ class ItemDevice extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 4.sp, vertical: 2.sp),
                       decoration: BoxDecoration(
-                        color: AppColors.green50,
+                        color: device.status == 1 ? AppColors.green50 : const Color(0xFFff9f43),
                         borderRadius: BorderRadius.circular(4.r),
                       ),
                       child: Text(
-                        "Dừng" ?? "Lỗi",
+                        device.status == 1 ? "Đang hoạt động" : "Dừng",
                         style: AppTextStyle.textXs.copyWith(
                           color: AppColors.white,
                           fontWeight: FontWeight.w400,
@@ -112,11 +123,7 @@ class ItemDevice extends StatelessWidget {
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Công suất thuần", content: "0,000 kW"),
-            const Divider(
-              color: AppColors.greyFB,
-            ),
-            rowItem(name: "Sản lượng hôm nay", content: "203,05 kWh"),
+            rowItem(name: "Mô tả", content: device.description),
             const Divider(
               color: AppColors.greyFB,
             ),

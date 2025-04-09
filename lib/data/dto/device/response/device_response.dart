@@ -10,18 +10,20 @@ part 'device_response.freezed.dart';
 @freezed
 class DeviceResponse with _$DeviceResponse {
   const factory DeviceResponse({
+    @Default(0) int meterTypeId,
     @Default(0) int id,
     @Default(0) int projectId,
+    @Default(0) int powerStationId,
     @Default(0) int status,
     @Default('') String name,
     @Default('') String code,
     @Default('') String description,
     @Default('') String serialNumber,
     @Default('') String creator,
-    @Default(false) bool isWarningStatus,
+    @Default("") String creationTime,
     @Default(MeterTypeResponse()) MeterTypeResponse meterType,
     @Default(PowerStationResponse()) PowerStationResponse powerStation,
-    @Default(LastedLogDataResponse()) LastedLogDataResponse lastedLogData,
+
   }) = _DeviceResponse;
 
   factory DeviceResponse.fromJson(Map<String, dynamic> json) =>

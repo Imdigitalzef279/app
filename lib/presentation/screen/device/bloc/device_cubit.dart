@@ -17,9 +17,9 @@ class DeviceCubit extends Cubit<DeviceState> {
 
   final _repo = getIt.get<DeviceRepository>();
 
-  Future<void> getDevices(DeviceRequest request) async {
+  Future<void> getDevices({required int powerStationId}) async {
     emit(state.copyWith(resultDevices: Result(status: LoadStatus.loading)));
-    final response = await _repo.getSolarElectric(request);
+    final response = await _repo.getSolarElectric(powerStationId);
     emit(state.copyWith(resultDevices: response));
   }
 }

@@ -102,7 +102,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
         return const StatisticalScreen();
       case 2:
         return BlocProvider(create: (context) => DeviceCubit(),
-        child: const DevicesScreen());
+        child:  DevicesScreen(argument: widget.type,));
       default:
         return const SizedBox();
     }

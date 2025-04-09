@@ -20,18 +20,19 @@ DeviceResponse _$DeviceResponseFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$DeviceResponse {
+  int get meterTypeId => throw _privateConstructorUsedError;
   int get id => throw _privateConstructorUsedError;
   int get projectId => throw _privateConstructorUsedError;
+  int get powerStationId => throw _privateConstructorUsedError;
   int get status => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   String get serialNumber => throw _privateConstructorUsedError;
   String get creator => throw _privateConstructorUsedError;
-  bool get isWarningStatus => throw _privateConstructorUsedError;
+  String get creationTime => throw _privateConstructorUsedError;
   MeterTypeResponse get meterType => throw _privateConstructorUsedError;
   PowerStationResponse get powerStation => throw _privateConstructorUsedError;
-  LastedLogDataResponse get lastedLogData => throw _privateConstructorUsedError;
 
   /// Serializes this DeviceResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,22 +51,22 @@ abstract class $DeviceResponseCopyWith<$Res> {
       _$DeviceResponseCopyWithImpl<$Res, DeviceResponse>;
   @useResult
   $Res call(
-      {int id,
+      {int meterTypeId,
+      int id,
       int projectId,
+      int powerStationId,
       int status,
       String name,
       String code,
       String description,
       String serialNumber,
       String creator,
-      bool isWarningStatus,
+      String creationTime,
       MeterTypeResponse meterType,
-      PowerStationResponse powerStation,
-      LastedLogDataResponse lastedLogData});
+      PowerStationResponse powerStation});
 
   $MeterTypeResponseCopyWith<$Res> get meterType;
   $PowerStationResponseCopyWith<$Res> get powerStation;
-  $LastedLogDataResponseCopyWith<$Res> get lastedLogData;
 }
 
 /// @nodoc
@@ -83,20 +84,25 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? meterTypeId = null,
     Object? id = null,
     Object? projectId = null,
+    Object? powerStationId = null,
     Object? status = null,
     Object? name = null,
     Object? code = null,
     Object? description = null,
     Object? serialNumber = null,
     Object? creator = null,
-    Object? isWarningStatus = null,
+    Object? creationTime = null,
     Object? meterType = null,
     Object? powerStation = null,
-    Object? lastedLogData = null,
   }) {
     return _then(_value.copyWith(
+      meterTypeId: null == meterTypeId
+          ? _value.meterTypeId
+          : meterTypeId // ignore: cast_nullable_to_non_nullable
+              as int,
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -104,6 +110,10 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
       projectId: null == projectId
           ? _value.projectId
           : projectId // ignore: cast_nullable_to_non_nullable
+              as int,
+      powerStationId: null == powerStationId
+          ? _value.powerStationId
+          : powerStationId // ignore: cast_nullable_to_non_nullable
               as int,
       status: null == status
           ? _value.status
@@ -129,10 +139,10 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
           ? _value.creator
           : creator // ignore: cast_nullable_to_non_nullable
               as String,
-      isWarningStatus: null == isWarningStatus
-          ? _value.isWarningStatus
-          : isWarningStatus // ignore: cast_nullable_to_non_nullable
-              as bool,
+      creationTime: null == creationTime
+          ? _value.creationTime
+          : creationTime // ignore: cast_nullable_to_non_nullable
+              as String,
       meterType: null == meterType
           ? _value.meterType
           : meterType // ignore: cast_nullable_to_non_nullable
@@ -141,10 +151,6 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
           ? _value.powerStation
           : powerStation // ignore: cast_nullable_to_non_nullable
               as PowerStationResponse,
-      lastedLogData: null == lastedLogData
-          ? _value.lastedLogData
-          : lastedLogData // ignore: cast_nullable_to_non_nullable
-              as LastedLogDataResponse,
     ) as $Val);
   }
 
@@ -167,16 +173,6 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
       return _then(_value.copyWith(powerStation: value) as $Val);
     });
   }
-
-  /// Create a copy of DeviceResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $LastedLogDataResponseCopyWith<$Res> get lastedLogData {
-    return $LastedLogDataResponseCopyWith<$Res>(_value.lastedLogData, (value) {
-      return _then(_value.copyWith(lastedLogData: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
@@ -188,25 +184,24 @@ abstract class _$$DeviceResponseImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int id,
+      {int meterTypeId,
+      int id,
       int projectId,
+      int powerStationId,
       int status,
       String name,
       String code,
       String description,
       String serialNumber,
       String creator,
-      bool isWarningStatus,
+      String creationTime,
       MeterTypeResponse meterType,
-      PowerStationResponse powerStation,
-      LastedLogDataResponse lastedLogData});
+      PowerStationResponse powerStation});
 
   @override
   $MeterTypeResponseCopyWith<$Res> get meterType;
   @override
   $PowerStationResponseCopyWith<$Res> get powerStation;
-  @override
-  $LastedLogDataResponseCopyWith<$Res> get lastedLogData;
 }
 
 /// @nodoc
@@ -222,20 +217,25 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? meterTypeId = null,
     Object? id = null,
     Object? projectId = null,
+    Object? powerStationId = null,
     Object? status = null,
     Object? name = null,
     Object? code = null,
     Object? description = null,
     Object? serialNumber = null,
     Object? creator = null,
-    Object? isWarningStatus = null,
+    Object? creationTime = null,
     Object? meterType = null,
     Object? powerStation = null,
-    Object? lastedLogData = null,
   }) {
     return _then(_$DeviceResponseImpl(
+      meterTypeId: null == meterTypeId
+          ? _value.meterTypeId
+          : meterTypeId // ignore: cast_nullable_to_non_nullable
+              as int,
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -243,6 +243,10 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
       projectId: null == projectId
           ? _value.projectId
           : projectId // ignore: cast_nullable_to_non_nullable
+              as int,
+      powerStationId: null == powerStationId
+          ? _value.powerStationId
+          : powerStationId // ignore: cast_nullable_to_non_nullable
               as int,
       status: null == status
           ? _value.status
@@ -268,10 +272,10 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
           ? _value.creator
           : creator // ignore: cast_nullable_to_non_nullable
               as String,
-      isWarningStatus: null == isWarningStatus
-          ? _value.isWarningStatus
-          : isWarningStatus // ignore: cast_nullable_to_non_nullable
-              as bool,
+      creationTime: null == creationTime
+          ? _value.creationTime
+          : creationTime // ignore: cast_nullable_to_non_nullable
+              as String,
       meterType: null == meterType
           ? _value.meterType
           : meterType // ignore: cast_nullable_to_non_nullable
@@ -280,10 +284,6 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
           ? _value.powerStation
           : powerStation // ignore: cast_nullable_to_non_nullable
               as PowerStationResponse,
-      lastedLogData: null == lastedLogData
-          ? _value.lastedLogData
-          : lastedLogData // ignore: cast_nullable_to_non_nullable
-              as LastedLogDataResponse,
     ));
   }
 }
@@ -292,28 +292,35 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DeviceResponseImpl implements _DeviceResponse {
   const _$DeviceResponseImpl(
-      {this.id = 0,
+      {this.meterTypeId = 0,
+      this.id = 0,
       this.projectId = 0,
+      this.powerStationId = 0,
       this.status = 0,
       this.name = '',
       this.code = '',
       this.description = '',
       this.serialNumber = '',
       this.creator = '',
-      this.isWarningStatus = false,
+      this.creationTime = "",
       this.meterType = const MeterTypeResponse(),
-      this.powerStation = const PowerStationResponse(),
-      this.lastedLogData = const LastedLogDataResponse()});
+      this.powerStation = const PowerStationResponse()});
 
   factory _$DeviceResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$DeviceResponseImplFromJson(json);
 
   @override
   @JsonKey()
+  final int meterTypeId;
+  @override
+  @JsonKey()
   final int id;
   @override
   @JsonKey()
   final int projectId;
+  @override
+  @JsonKey()
+  final int powerStationId;
   @override
   @JsonKey()
   final int status;
@@ -334,20 +341,17 @@ class _$DeviceResponseImpl implements _DeviceResponse {
   final String creator;
   @override
   @JsonKey()
-  final bool isWarningStatus;
+  final String creationTime;
   @override
   @JsonKey()
   final MeterTypeResponse meterType;
   @override
   @JsonKey()
   final PowerStationResponse powerStation;
-  @override
-  @JsonKey()
-  final LastedLogDataResponse lastedLogData;
 
   @override
   String toString() {
-    return 'DeviceResponse(id: $id, projectId: $projectId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, isWarningStatus: $isWarningStatus, meterType: $meterType, powerStation: $powerStation, lastedLogData: $lastedLogData)';
+    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, creationTime: $creationTime, meterType: $meterType, powerStation: $powerStation)';
   }
 
   @override
@@ -355,9 +359,13 @@ class _$DeviceResponseImpl implements _DeviceResponse {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DeviceResponseImpl &&
+            (identical(other.meterTypeId, meterTypeId) ||
+                other.meterTypeId == meterTypeId) &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.projectId, projectId) ||
                 other.projectId == projectId) &&
+            (identical(other.powerStationId, powerStationId) ||
+                other.powerStationId == powerStationId) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.code, code) || other.code == code) &&
@@ -366,32 +374,31 @@ class _$DeviceResponseImpl implements _DeviceResponse {
             (identical(other.serialNumber, serialNumber) ||
                 other.serialNumber == serialNumber) &&
             (identical(other.creator, creator) || other.creator == creator) &&
-            (identical(other.isWarningStatus, isWarningStatus) ||
-                other.isWarningStatus == isWarningStatus) &&
+            (identical(other.creationTime, creationTime) ||
+                other.creationTime == creationTime) &&
             (identical(other.meterType, meterType) ||
                 other.meterType == meterType) &&
             (identical(other.powerStation, powerStation) ||
-                other.powerStation == powerStation) &&
-            (identical(other.lastedLogData, lastedLogData) ||
-                other.lastedLogData == lastedLogData));
+                other.powerStation == powerStation));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      meterTypeId,
       id,
       projectId,
+      powerStationId,
       status,
       name,
       code,
       description,
       serialNumber,
       creator,
-      isWarningStatus,
+      creationTime,
       meterType,
-      powerStation,
-      lastedLogData);
+      powerStation);
 
   /// Create a copy of DeviceResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -412,26 +419,31 @@ class _$DeviceResponseImpl implements _DeviceResponse {
 
 abstract class _DeviceResponse implements DeviceResponse {
   const factory _DeviceResponse(
-      {final int id,
+      {final int meterTypeId,
+      final int id,
       final int projectId,
+      final int powerStationId,
       final int status,
       final String name,
       final String code,
       final String description,
       final String serialNumber,
       final String creator,
-      final bool isWarningStatus,
+      final String creationTime,
       final MeterTypeResponse meterType,
-      final PowerStationResponse powerStation,
-      final LastedLogDataResponse lastedLogData}) = _$DeviceResponseImpl;
+      final PowerStationResponse powerStation}) = _$DeviceResponseImpl;
 
   factory _DeviceResponse.fromJson(Map<String, dynamic> json) =
       _$DeviceResponseImpl.fromJson;
 
   @override
+  int get meterTypeId;
+  @override
   int get id;
   @override
   int get projectId;
+  @override
+  int get powerStationId;
   @override
   int get status;
   @override
@@ -445,13 +457,11 @@ abstract class _DeviceResponse implements DeviceResponse {
   @override
   String get creator;
   @override
-  bool get isWarningStatus;
+  String get creationTime;
   @override
   MeterTypeResponse get meterType;
   @override
   PowerStationResponse get powerStation;
-  @override
-  LastedLogDataResponse get lastedLogData;
 
   /// Create a copy of DeviceResponse
   /// with the given fields replaced by the non-null parameter values.
