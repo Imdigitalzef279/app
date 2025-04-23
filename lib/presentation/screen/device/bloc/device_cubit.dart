@@ -22,4 +22,10 @@ class DeviceCubit extends Cubit<DeviceState> {
     final response = await _repo.getSolarElectric(powerStationId);
     emit(state.copyWith(resultDevices: response));
   }
+
+  Future<int> getDeviceFirst({required int powerStationId}) async {
+    emit(state.copyWith(resultDevices: Result(status: LoadStatus.loading)));
+    final response = await _repo.getSolarElectric(powerStationId);
+    return response.data?.first.id ?? 0;
+  }
 }

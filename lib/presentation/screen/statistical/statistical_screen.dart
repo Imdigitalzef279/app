@@ -5,12 +5,20 @@ import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/presentation/screen/statistical/bloc/statistical_cubit.dart';
+import 'package:solar_energy/presentation/screen/statistical/estatictical/estatistical_screen.dart';
+import 'package:solar_energy/presentation/screen/statistical/estatictical/estatistical_screen.dart';
+import 'package:solar_energy/presentation/screen/statistical/estatictical/estatistical_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/widget/detail_widget.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-class StatisticalScreen extends StatefulWidget {
-  const StatisticalScreen({super.key});
+import '../../../application/enums/electric_type.dart';
+import '../../../domain/arguments/electric_meter/electric_meter_argument.dart';
+import 'estatictical/bloc/estatistical_cubit.dart';
 
+class StatisticalScreen extends StatefulWidget {
+  const StatisticalScreen({super.key, required this.argument, required this.meterId});
+  final ElectricMeterArgument argument;
+  final int meterId;
   @override
   State<StatisticalScreen> createState() => _StatisticalScreenState();
 }
@@ -44,7 +52,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                 child: Icon(Icons.arrow_back_ios, size: 16.sp)),
           ),
           title: Text(
-            "Thien son",
+            "Biểu đồ",
             style: AppTextStyle.textBase.copyWith(
                 color: AppColors.textPrimary, fontWeight: FontWeight.w600),
           ),
@@ -107,34 +115,63 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                   ValueListenableBuilder(
                       valueListenable: index,
                       builder: (context, value, child) {
-                        return Column(
-                          children: [
-                            BlocProvider(
-                              create: (context) =>
-                                  StatisticalCubit(DateRangePickerView.month),
-                              child: Visibility(
-                                visible: value == 0,
-                                child: const DetailWidget(),
-                              ),
-                            ),
-                            BlocProvider(
-                              create: (context) =>
-                                  StatisticalCubit(DateRangePickerView.year),
-                              child: Visibility(
-                                visible: value == 1,
-                                child: const DetailWidget(),
-                              ),
-                            ),
-                            BlocProvider(
-                              create: (context) =>
-                                  StatisticalCubit(DateRangePickerView.decade),
-                              child: Visibility(
-                                visible: value == 2,
-                                child: const DetailWidget(),
-                              ),
-                            )
-                          ],
-                        );
+                        return widget.argument.type == ElectricType.solarElectric
+                            ? Column(
+                                children: [
+                                  BlocProvider(
+                                    create: (context) => StatisticalCubit(
+                                        DateRangePickerView.month),
+                                    child: Visibility(
+                                      visible: value == 0,
+                                      child:  DetailWidget(project: widget.argument.project,),
+                                    ),
+                                  ),
+                                  BlocProvider(
+                                    create: (context) => StatisticalCubit(
+                                        DateRangePickerView.year),
+                                    child: Visibility(
+                                      visible: value == 1,
+                                      child:  DetailWidget(project: widget.argument.project,),
+                                    ),
+                                  ),
+                                  BlocProvider(
+                                    create: (context) => StatisticalCubit(
+                                        DateRangePickerView.decade),
+                                    child: Visibility(
+                                      visible: value == 2,
+                                      child:  DetailWidget(project: widget.argument.project,),
+                                    ),
+                                  )
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  BlocProvider(
+                                    create: (context) => EStatisticalCubit(
+                                        DateRangePickerView.month, widget.meterId),
+                                    child: Visibility(
+                                      visible: value == 0,
+                                      child:  EStatisticalScreen(meterId: widget.meterId,),
+                                    ),
+                                  ),
+                                  BlocProvider(
+                                    create: (context) => EStatisticalCubit(
+                                        DateRangePickerView.year, widget.meterId),
+                                    child: Visibility(
+                                      visible: value == 1,
+                                      child:  EStatisticalScreen(meterId: widget.meterId,),
+                                    ),
+                                  ),
+                                  BlocProvider(
+                                    create: (context) => EStatisticalCubit(
+                                        DateRangePickerView.decade, widget.meterId),
+                                    child: Visibility(
+                                      visible: value == 2,
+                                      child:  EStatisticalScreen(meterId: widget.meterId,),
+                                    ),
+                                  )
+                                ],
+                              );
                       })
                 ],
               ),
