@@ -10,6 +10,7 @@ import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
+import '../../../application/cubit/app_cubit.dart';
 import '../Electricity/bloc/electric_cubit.dart';
 import '../device/bloc/device_cubit.dart';
 import '../overview/bloc/overview_cubit.dart';
@@ -25,11 +26,19 @@ class DetailFactoryScreen extends StatefulWidget {
 
 class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   late int indexPage;
+  late DeviceCubit cubit;
+  late int meterId;
 
   @override
   void initState() {
     super.initState();
     indexPage = (0);
+    cubit = BlocProvider.of<DeviceCubit>(context);
+    _loadInitialMeterId();
+  }
+
+  Future<void> _loadInitialMeterId() async {
+    meterId = await cubit.getDeviceFirst(powerStationId: widget.type.project.id);
   }
 
   @override
@@ -95,14 +104,23 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
     switch (indexPage) {
       case 0:
         return widget.type.type == ElectricType.saveElectric
-            ? BlocProvider(create: (context) => ElectricCubit(), child: ElectricityScreen(project: widget.type.project,),)
-            : BlocProvider(create: (context) => OverviewCubit(),
-            child: OverViewScreen(type: widget.type.type));
+            ? BlocProvider(
+                create: (context) => ElectricCubit(),
+                child: ElectricityScreen(
+                  project: widget.type.project,
+                ),
+              )
+            : BlocProvider(
+                create: (context) => OverviewCubit(),
+                child: OverViewScreen(type: widget.type.type, project: widget.type.project,));
       case 1:
-        return const StatisticalScreen();
+        return StatisticalScreen(argument: widget.type, meterId: meterId);
       case 2:
-        return BlocProvider(create: (context) => DeviceCubit(),
-        child:  DevicesScreen(argument: widget.type,));
+        return BlocProvider(
+            create: (context) => DeviceCubit(),
+            child: DevicesScreen(
+              argument: widget.type,
+            ));
       default:
         return const SizedBox();
     }

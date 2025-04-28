@@ -42,18 +42,10 @@ class AppRouter {
             create: (BuildContext context) => LoginCubit(),
             child: const LoginScreen());
         break;
-      case RouteName.statistical:
-        routeWidget = DetailFactoryScreen(type: arguments as ElectricMeterArgument);
-        break;
-      case RouteName.statisticalScreen:
-        routeWidget = const StatisticalScreen();
-        break;
       case RouteName.allAlarmWater:
         routeWidget = const AllAlarmWaterScreen();
         break;
-      case RouteName.deviceScreen:
-        routeWidget = DevicesScreen(argument: arguments as ElectricMeterArgument);
-        break;
+
       case RouteName.indexWarning:
         routeWidget = IndexWarningScreen(indexType: arguments as IndexType,);
         break;
@@ -61,11 +53,13 @@ class AppRouter {
         routeWidget = const DetailDeviceWaterScreen();
         break;
       case RouteName.factoryDetail:
-        routeWidget = MultiBlocProvider(providers: [
-          BlocProvider(create: (context) => OverviewCubit()),
-          BlocProvider(create: (context) => DeviceCubit()),
-        ], child: DetailFactoryScreen(type: arguments as ElectricMeterArgument));
-        routeWidget = DetailFactoryScreen(type: arguments);
+        routeWidget = MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => OverviewCubit()),
+            BlocProvider(create: (context) => DeviceCubit()),
+          ],
+          child: DetailFactoryScreen(type: arguments as ElectricMeterArgument),
+        );
         break;
       case RouteName.deviceIndex:
         routeWidget = BlocProvider(

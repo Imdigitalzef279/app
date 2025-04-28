@@ -4,7 +4,9 @@ import 'package:solar_energy/data/dto/api_response/api_response.dart';
 import 'package:solar_energy/data/dto/auth/response/auth_response.dart';
 import 'package:solar_energy/data/dto/device/request/device_request.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
+import 'package:solar_energy/data/dto/electric/chart_electric/chart_electric_request.dart';
 import 'package:solar_energy/data/dto/electric/response/electric_meter_response.dart';
+import 'package:solar_energy/data/dto/lasted_log_data/response/lasted_log_data_response.dart';
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 import 'package:solar_energy/data/dto/profile/profile_response.dart';
 import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
@@ -29,6 +31,10 @@ abstract class ApiClient {
   @GET('api/app/power-station/solar-power-chart')
   Future<PaginationResponse<SolarElectricResponse>> getSolarElectric(
       @Queries() SolarElectricRequest request);
+
+  @GET('api/app/log-meter/history-log-meter-by-group-type')
+  Future<PaginationResponse<LastedLogDataResponse>> getChartElectric(
+      @Queries() ChartElectricRequest request);
 
   @GET('api/app/meter/meter-lookup/{id}')
   Future<List<DeviceResponse>> getDevices(

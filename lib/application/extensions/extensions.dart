@@ -26,3 +26,20 @@ extension DoubleExtension on double {
     }
   }
 }
+
+extension EnergyFormatExtension on double {
+  String get toKWhFormatted {
+    if (this >= 1e12) {
+      return '${(this / 1e12).toStringAsFixed(1)} TWh';
+    } else if (this >= 1e9) {
+      return '${(this / 1e9).toStringAsFixed(1)} GWh';
+    } else if (this >= 1e6) {
+      return '${(this / 1e6).toStringAsFixed(1)} MWh';
+    } else if (this >= 1e3) {
+      return '${(this / 1e3).toStringAsFixed(1)} kWh';
+    } else {
+      return '${toStringAsFixed(1)} Wh';
+    }
+  }
+}
+

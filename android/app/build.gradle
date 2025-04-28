@@ -42,12 +42,12 @@ android {
         dev {
             dimension "default"
             applicationId "com.KraGroup.KraPower.dev"
-            resValue "string", "app_name", "Kra Power Dev"
+            resValue "string", "app_name", "Kra Power"
         }
 
         prod {
             dimension "default"
-            applicationId "com.KraGroup.KraPower.dev"
+            applicationId "com.KraGroup.KraPower"
             resValue "string", "app_name", "Kra Power"
         }
     }

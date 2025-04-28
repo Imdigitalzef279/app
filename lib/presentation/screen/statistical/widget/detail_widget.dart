@@ -14,8 +14,12 @@ import 'package:solar_energy/presentation/screen/statistical/widget/descrip.dart
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+import '../../../../data/dto/power_station/response/power_station_response.dart';
+
 class DetailWidget extends StatefulWidget {
-  const DetailWidget({super.key});
+  const DetailWidget({super.key, required this.project});
+  final PowerStationResponse project;
+
 
   @override
   State<DetailWidget> createState() => _DetailWidgetState();
@@ -37,7 +41,7 @@ class _DetailWidgetState extends State<DetailWidget>
     _cubit = BlocProvider.of<StatisticalCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
       _cubit.changeRequest(SolarElectricRequest(
-          powerStationId: 21,
+          powerStationId: widget.project.id,
           searchType: _cubit.getSearchType(_cubit.typeDate),
           searchValue: DateTime.now().formatTime()));
       _cubit.getSolarElectric();

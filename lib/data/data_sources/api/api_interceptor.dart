@@ -42,23 +42,33 @@ class ApiInterceptors extends InterceptorsWrapper {
       }
     }
 
+    if (response?.statusCode == 400) {
+      super.onError(err, handler);
+      return;
+    }
+
     if (statusCode == 302) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+        AppToast.dismissAll();
         AppToast.showToastNotify(title: "Phiên đăng nhập đã hết hạn");
         sharedPreferences.removeAccessToken();
         NavigatorUtils.navigatorKey.currentState
             ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
+        return;
       });
+
     }
 
     if (response?.statusCode != null){
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+        AppToast.dismissAll();
         AppToast.showToastNotify(title: "Phiên đăng nhập đã hết hạn");
         sharedPreferences.removeAccessToken();
         NavigatorUtils.navigatorKey.currentState
             ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
+        return;
       });
     }
 

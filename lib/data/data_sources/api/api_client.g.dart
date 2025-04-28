@@ -107,6 +107,45 @@ class _ApiClient implements ApiClient {
   }
 
   @override
+  Future<PaginationResponse<LastedLogDataResponse>> getChartElectric(
+      ChartElectricRequest request) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(request.toJson());
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options =
+        _setStreamType<PaginationResponse<LastedLogDataResponse>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'api/app/log-meter/history-log-meter-by-group-type',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PaginationResponse<LastedLogDataResponse> _value;
+    try {
+      _value = PaginationResponse<LastedLogDataResponse>.fromJson(
+        _result.data!,
+        (json) => LastedLogDataResponse.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<List<DeviceResponse>> getDevices(int powerStationID) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

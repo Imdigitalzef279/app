@@ -13,13 +13,18 @@ import 'package:solar_energy/presentation/screen/overview/widget/currently_widge
 import 'package:solar_energy/presentation/screen/overview/widget/header_widget.dart';
 import 'package:solar_energy/presentation/screen/overview/widget/saving_energy.dart';
 
+import '../../../data/dto/power_station/response/power_station_response.dart';
+
 class OverViewScreen extends StatefulWidget {
   const OverViewScreen({
     super.key,
     required this.type,
+    required this.project
   });
 
   final ElectricType type;
+  final PowerStationResponse project;
+
 
   @override
   State<OverViewScreen> createState() => _OverViewScreenState();
@@ -35,7 +40,7 @@ class _OverViewScreenState extends State<OverViewScreen> {
     WidgetsBinding.instance.addPostFrameCallback((duration) {
       String currentDay = DateFormat('dd/MM/yyyy').format(DateTime.now());
       cubit.getSolarElectric(SolarElectricRequest(
-          powerStationId: 21,
+          powerStationId: widget.project.id,
           searchType: SearchType.hour,
           searchValue: currentDay));
     });
@@ -56,7 +61,7 @@ class _OverViewScreenState extends State<OverViewScreen> {
               child: Icon(Icons.arrow_back_ios, size: 16.sp)),
         ),
         title: Text(
-          "Thien son",
+          widget.project.name,
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),

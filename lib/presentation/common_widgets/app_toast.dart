@@ -5,6 +5,8 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/utils/navigation_utils.dart';
 
 class AppToast {
+  static final List<OverlayEntry> _toastEntries = [];
+
   static void showToastError({required String title}) {
     _showToast(title, Colors.red, Icons.error_outlined);
   }
@@ -89,10 +91,21 @@ class AppToast {
       ),
     );
 
+    _toastEntries.add(entry); // 👈 Lưu lại entry
     overlayState.insert(entry);
 
     Future.delayed(const Duration(milliseconds: 3000), () {
       entry?.remove();
+      _toastEntries.remove(entry); // 👈 Cleanup sau khi toast biến mất
     });
   }
+
+  /// ✅ Hàm gọi để đóng tất cả toast hiện tại
+  static void dismissAll() {
+    for (final entry in _toastEntries) {
+      entry.remove();
+    }
+    _toastEntries.clear();
+  }
 }
+

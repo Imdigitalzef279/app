@@ -22,11 +22,14 @@ class GeneralDeviceScreen extends StatefulWidget {
 class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
+  late bool isLandscape;
+
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
+
   }
 
   @override
@@ -37,6 +40,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
   @override
   Widget build(BuildContext context) {
+    isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       backgroundColor: AppColors.greyFB,
       appBar: AppBar(
@@ -172,23 +176,58 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: Center(
-                                    child:
-                                        Assets.images.exclamation.image(
-                                          width: 1.sw/3,
-                                          height: 1.sw/3
-                                        ),
+                                  backgroundColor: AppColors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.r),
                                   ),
-                                  content: Text(
-                                    "Tính năng này đang trong quá trình phát triển",
-                                    style: AppTextStyle.textSm.copyWith(
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.textPrimary,),
-                                    textAlign: TextAlign.center,
+                                  insetPadding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 24.h),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+                                  content: ConstrainedBox(
+                                    constraints: BoxConstraints(maxWidth: isLandscape ? 200.h : 500.w),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Assets.images.exclamation.image(
+                                          width: isLandscape ? 150.h : 100.w,
+                                          height: isLandscape ? 150.h : 100.w,
+                                          fit: BoxFit.contain,
+                                        ),
+                                        SizedBox(height: 24.h),
+                                        Text(
+                                          "Tính năng này đang trong quá trình phát triển",
+                                          style: AppTextStyle.tini.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.textPrimary,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(height: 32.h),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: ElevatedButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: AppColors.blueEA,
+                                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12.r),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              "Đã hiểu",
+                                              style: AppTextStyle.tini.copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
+
                             },
                             icon: Assets.icons.air.svg(
                                 width: 22.w,
