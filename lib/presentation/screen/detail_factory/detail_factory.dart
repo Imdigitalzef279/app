@@ -38,7 +38,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   }
 
   Future<void> _loadInitialMeterId() async {
-    meterId = await cubit.getDeviceFirst(powerStationId: widget.type.project.id);
+    meterId = await cubit.getDeviceFirst(powerStationId: widget.type.project.id, type: widget.type.type);
   }
 
   @override

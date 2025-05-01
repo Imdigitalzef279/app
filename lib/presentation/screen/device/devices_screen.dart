@@ -26,7 +26,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
     super.initState();
     _cubit = BlocProvider.of<DeviceCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      _cubit.getDevices(powerStationId: widget.argument.project.id);
+      _cubit.getDevices(powerStationId: widget.argument.project.id, type: widget.argument.type);
     });
   }
 
