@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/data/dto/api_response/api_response.dart';
 import 'package:solar_energy/data/dto/device/request/device_request.dart';
@@ -17,15 +18,40 @@ class DeviceCubit extends Cubit<DeviceState> {
 
   final _repo = getIt.get<DeviceRepository>();
 
-  Future<void> getDevices({required int powerStationId}) async {
+  Future<void> getDevices({required int powerStationId, required ElectricType type}) async {
     emit(state.copyWith(resultDevices: Result(status: LoadStatus.loading)));
     final response = await _repo.getSolarElectric(powerStationId);
-    emit(state.copyWith(resultDevices: response));
+    if (response.data?.isEmpty ?? true) {
+      emit(state.copyWith(resultDevices: Result(status: LoadStatus.failure)));
+      return;
+    }
+    final rawList = response.data;
+
+    final filteredDevices = rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
+    print("list divice: $filteredDevices");
+    emit(state.copyWith(resultDevices: response.copyWith(data: filteredDevices, status: LoadStatus.success)));
   }
 
-  Future<int> getDeviceFirst({required int powerStationId}) async {
+  Future<int> getDeviceFirst({required int powerStationId,ElectricType? type}) async {
     emit(state.copyWith(resultDevices: Result(status: LoadStatus.loading)));
     final response = await _repo.getSolarElectric(powerStationId);
-    return response.data?.first.id ?? 0;
+    final rawList = response.data;
+
+    final filteredDevices = rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
+    print("project id: ${filteredDevices?.first.id}");
+    return filteredDevices?.first.id ?? 0;
   }
+
+  ElectricType? fromMeterTypeId(int id) {
+    switch (id) {
+      case 2:
+        return ElectricType.saveElectric;
+      case 21:
+      case 22:
+        return ElectricType.solarElectric;
+      default:
+        return null;
+    }
+  }
+
 }
