@@ -123,7 +123,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                                         DateRangePickerView.month),
                                     child: Visibility(
                                       visible: value == 0,
-                                      child:  DetailWidget(project: widget.argument.project,),
+                                      child:  DetailWidget(powerStationId: widget.argument.project.id,),
                                     ),
                                   ),
                                   BlocProvider(
@@ -131,7 +131,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                                         DateRangePickerView.year),
                                     child: Visibility(
                                       visible: value == 1,
-                                      child:  DetailWidget(project: widget.argument.project,),
+                                      child:  DetailWidget(powerStationId: widget.argument.project.id,),
                                     ),
                                   ),
                                   BlocProvider(
@@ -139,7 +139,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                                         DateRangePickerView.decade),
                                     child: Visibility(
                                       visible: value == 2,
-                                      child:  DetailWidget(project: widget.argument.project,),
+                                      child:  DetailWidget(powerStationId: widget.argument.project.id,),
                                     ),
                                   )
                                 ],

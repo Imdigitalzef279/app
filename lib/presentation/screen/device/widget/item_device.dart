@@ -31,7 +31,7 @@ class ItemDevice extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, RouteName.detailDevice);
+        Navigator.pushNamed(context, RouteName.detailDevice, arguments: device);
       },
       borderRadius: BorderRadius.circular(12.sp),
       child: Ink(

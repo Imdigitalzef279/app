@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_energy/application/cubit/app_cubit.dart';
 import 'package:solar_energy/application/enums/search_type.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
+import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/statistical/bloc/statistical_cubit.dart';
@@ -17,9 +18,13 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../../../data/dto/power_station/response/power_station_response.dart';
 
 class DetailWidget extends StatefulWidget {
-  const DetailWidget({super.key, required this.project});
-  final PowerStationResponse project;
+  const DetailWidget(
+      {super.key,
+      required this.powerStationId,
+      this.visibleRadianChart = true});
 
+  final int powerStationId;
+  final bool visibleRadianChart;
 
   @override
   State<DetailWidget> createState() => _DetailWidgetState();
@@ -41,7 +46,7 @@ class _DetailWidgetState extends State<DetailWidget>
     _cubit = BlocProvider.of<StatisticalCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
       _cubit.changeRequest(SolarElectricRequest(
-          powerStationId: widget.project.id,
+          powerStationId: widget.powerStationId,
           searchType: _cubit.getSearchType(_cubit.typeDate),
           searchValue: DateTime.now().formatTime()));
       _cubit.getSolarElectric();
@@ -67,11 +72,14 @@ class _DetailWidgetState extends State<DetailWidget>
       builder: (BuildContext context, StatisticalState state) {
         return Column(
           children: [
+            Text("power station id: ${widget.powerStationId}"),
             _buildDateTime(),
-            Gap(12.sp),
-            _buildOutput(),
-            Gap(12.sp),
-            _buildUsed(),
+            if (widget.visibleRadianChart) ...[
+              Gap(12.sp),
+              _buildOutput(),
+              Gap(12.sp),
+              _buildUsed(),
+            ],
             Gap(12.sp),
             _buildChart()
           ],

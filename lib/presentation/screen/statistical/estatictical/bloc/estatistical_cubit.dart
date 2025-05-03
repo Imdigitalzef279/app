@@ -33,13 +33,17 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
     List<SalesData> gridPowers = [];
     if (response.isSuccess) {
       if (response.data?.data.isNotEmpty ?? false) {
-        gridPowers = response.data!.data
-            .map((e) => SalesData(
+        final listData = response.data?.data.reversed;
+        gridPowers = listData!.map((e) => SalesData(
                 getTimeLine(e.updateTime),
                 (double.tryParse(e.paramEpi.toString()) ?? 0.0) *
                     (double.tryParse(e.ct.toString()) ?? 0.0)))
             .toList();
         emit(state.copyWith(resultChart: response, loadPowers: gridPowers));
+        for (final item in state.loadPowers) {
+          print('Year: ${item.year}, Sales: ${item.sales}');
+        }
+
         return;
       }
       emit(state.copyWith(resultChart: Result(status: LoadStatus.failure, error: "Không có dữ liệu.")));
@@ -58,18 +62,15 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
   }
 
   void changDateTime(DateTime dateTime) {
-    print(dateTime.toString());
     emit(state.copyWith(dateTime: dateTime, meterId: meterId));
     switch (typeDate) {
       case DateRangePickerView.month:
-        print("1");
         return emit(state.copyWith(
             request: state.request.copyWith(
                 searchType: SearchType.hour,
                 fromDate: DateFormat("dd/MM/yyyy").format(dateTime),
                 toDate: DateFormat("dd/MM/yyyy").format(dateTime.add(const Duration(days: 1))))));
       case DateRangePickerView.year:
-        print("2");
         return emit(state.copyWith(
             request: state.request.copyWith(
                 searchType: SearchType.day,
@@ -77,13 +78,12 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
                 toDate: DateFormat("MM/yyyy")
                     .format(DateTime(dateTime.year, dateTime.month + 1)))));
       case DateRangePickerView.decade:
-        print("3");
         return emit(state.copyWith(
             request: state.request.copyWith(
                 searchType: SearchType.month,
                 fromDate:
                     DateFormat("MM/yyyy").format(DateTime(dateTime.year, 1)),
-                toDate: DateFormat("MM/yyyy").format(DateTime(dateTime.year, DateTime.now().month)))));
+                toDate: DateFormat("MM/yyyy").format(DateTime(dateTime.year, 12)))));
       default:
     }
   }
