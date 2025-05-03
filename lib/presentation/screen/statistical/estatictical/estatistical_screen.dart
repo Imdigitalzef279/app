@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -71,7 +73,7 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
             // _buildOutput(),
             // Gap(12.sp),
             // _buildUsed(),
-            Gap(12.sp),
+            Gap(22.sp),
             _buildChart()
           ],
         );
@@ -112,12 +114,12 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
 
   Widget _buildChart() {
     return Container(
+      width: 1.sw,
       margin: EdgeInsets.symmetric(horizontal: 8.sp),
       decoration: const BoxDecoration(
         color: AppColors.white,
       ),
-      child: _cubit.state.resultChart.data?.data.isNotEmpty ?? false
-          ? Column(
+      child: Column(
               children: [
                 SfCartesianChart(
                     legend: const Legend(isVisible: false),
@@ -212,11 +214,6 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
                 // )
               ],
             )
-          : Text(
-              "Không có dữ liệu!",
-              style: AppTextStyle.textSm.copyWith(
-                  color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-            ),
     );
   }
 

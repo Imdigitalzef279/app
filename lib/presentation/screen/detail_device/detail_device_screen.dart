@@ -6,8 +6,12 @@ import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/alarm_infor_screen.dart';
 import 'package:solar_energy/presentation/screen/infor_device/info_device_screen.dart';
 
+import '../../../data/dto/device/response/device_response.dart';
+
 class DetailDeviceScreen extends StatefulWidget {
-  const DetailDeviceScreen({super.key});
+  const DetailDeviceScreen({super.key, required this.device});
+
+  final DeviceResponse device;
 
   @override
   State<DetailDeviceScreen> createState() => _DetailDeviceScreenState();
@@ -31,7 +35,7 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
         scrolledUnderElevation: 0,
         elevation: 0,
         title: Text(
-          "100KTL-M2(COM1-12)",
+          widget.device.name,
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
@@ -71,7 +75,7 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
                 height: 16.w,
                 colorFilter:
                 const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
-            label: "Lịch sử báo động",
+            label: "Thông tin thiết bị",
           ),
         ],
       ),
@@ -85,7 +89,7 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
       case 0:
         return const AlarmInfoScreen();
       case 1:
-        return const InfoDeviceScreen();
+        return InfoDeviceScreen(deviceResponse: widget.device,);
       default:
         return const AlarmInfoScreen();
     }

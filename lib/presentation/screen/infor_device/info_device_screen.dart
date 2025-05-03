@@ -1,122 +1,209 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:solar_energy/application/enums/electric_type.dart';
+import 'package:solar_energy/application/extensions/extensions.dart';
+import 'package:solar_energy/data/dto/device/response/device_response.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+import '../statistical/bloc/statistical_cubit.dart';
+import '../statistical/estatictical/bloc/estatistical_cubit.dart';
+import '../statistical/estatictical/estatistical_screen.dart';
+import '../statistical/widget/detail_widget.dart';
 
 class InfoDeviceScreen extends StatefulWidget {
-  const InfoDeviceScreen({super.key});
+  const InfoDeviceScreen({super.key, required this.deviceResponse});
+
+  final DeviceResponse deviceResponse;
 
   @override
   State<InfoDeviceScreen> createState() => _InfoDeviceScreenState();
 }
 
-class _InfoDeviceScreenState extends State<InfoDeviceScreen> {
+class _InfoDeviceScreenState extends State<InfoDeviceScreen>
+    with SingleTickerProviderStateMixin {
+  late final ValueNotifier<int> index;
+  late final TabController controller;
+  late final ElectricType meterType;
 
-  List<_SalesData> generateSalesData() {
-    final random = Random();
-    List<_SalesData> data = [];
-
-    for (int hour = 0; hour < 24; hour++) {
-      for (int minute = 0; minute < 60; minute += 5) {
-        String time =
-            '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
-        int value = (hour > 8 && hour < 16)
-            ? random.nextInt(101)
-            : 0; // Giá trị từ 0 đến 100
-
-        data.add(_SalesData(time, value));
-      }
-    }
-
-    return data;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    index = ValueNotifier(0);
+    controller = TabController(length: 3, vsync: this);
+    meterType = getTypeDevice(widget.deviceResponse.meterTypeId);
   }
 
+  String getSignalType(int meterTypeID) {
+    switch (meterTypeID) {
+      case 1:
+        return "%";
+      case 2:
+      case 21:
+      case 22:
+        return "Công suất (Kw)";
+      case 41:
+        return "Lưu lượng nước (Lit)";
+      default:
+        return "Không có";
+    }
+  }
+
+  ElectricType getTypeDevice(int meterTypeID) {
+    switch (meterTypeID) {
+      case 1:
+        return ElectricType.humidity;
+      case 2:
+        return ElectricType.saveElectric;
+      case 21:
+      case 22:
+        return ElectricType.solarElectric;
+      case 41:
+        return ElectricType.water;
+      default:
+        return ElectricType.meterNull;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12.w,vertical: 8.h),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16.r)
-      ),
-
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-        child: Column(
-          children: [
-            rowItem(name: "Loại tín hiệu", value: "Công suất (kW)"),
-            const Divider(color: AppColors.greyFB,),
-            rowItem(name: "Điểm tín hiệu", value: "Tổng công suất đầu vào(kW)"),
-            const Divider(color: AppColors.greyFB,),
-            rowItem(name: "Ngày", value: "27/11/2024"),
-            Gap(16.h),
-
-            SizedBox(height: 1.sw/2,
-              child: SfCartesianChart(
-                // Enable legend
-                  legend: const Legend(isVisible: false),
-                  primaryXAxis: CategoryAxis(
-                    labelStyle: AppTextStyle.textXs
-                        .copyWith(color: AppColors.textPrimary),
-                    desiredIntervals: 10,
-                    labelRotation: 0,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(16.r)),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+              child: Column(
+                children: [
+                  rowItem(
+                      name: "Loại tín hiệu",
+                      value: getSignalType(widget.deviceResponse.meterTypeId)),
+                  const Divider(
+                    color: AppColors.greyFB,
                   ),
-                  primaryYAxis: NumericAxis(
-                    axisLabelFormatter: (AxisLabelRenderDetails details) {
-                      return ChartAxisLabel(
-                          '${details.value} kW',
-                          AppTextStyle.textXs
-                              .copyWith(color: AppColors.textPrimary));
+                  rowItem(
+                      name: "Điểm tín hiệu", value: widget.deviceResponse.name),
+                  const Divider(
+                    color: AppColors.greyFB,
+                  ),
+                  rowItem(
+                    name: "Ngày tạo",
+                    value: DateTime.parse(
+                            widget.deviceResponse.creationTime.toString())
+                        .formatTime(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 12.sp),
+            margin: EdgeInsets.all(12.sp),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(12.sp),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.greyDF.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                )
+              ],
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.sp),
+                  child: TabBar(
+                    tabs: <Widget>[
+                      Tab(
+                        text: "Ngày",
+                        height: 35.sp,
+                      ),
+                      Tab(
+                        text: "Tháng",
+                        height: 35.sp,
+                      ),
+                      Tab(
+                        text: "Năm",
+                        height: 35.sp,
+                      ),
+                    ],
+                    controller: controller,
+                    labelStyle: AppTextStyle.textSm.copyWith(
+                        fontSize: 14.sp,
+                        color: AppColors.blueEA,
+                        fontWeight: FontWeight.w500),
+                    indicatorColor: AppColors.blueFD,
+                    unselectedLabelColor: AppColors.grey73,
+                    indicator: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.sp),
+                        color: AppColors.blueFD.withOpacity(0.8)),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorWeight: 0,
+                    dividerColor: Colors.transparent,
+                    onTap: (value) {
+                      index.value = value;
                     },
                   ),
-                  // Enable tooltip
-                  //tooltipBehavior: TooltipBehavior(enable: true, shared: true),
-                  trackballBehavior: TrackballBehavior(
-                    enable: true,
-                    activationMode: ActivationMode.singleTap,
-                    hideDelay: 2500,
-                    tooltipAlignment: ChartAlignment.center,
-                    tooltipDisplayMode:
-                    TrackballDisplayMode.groupAllPoints,
-                    // Hiển thị tất cả series
-                    tooltipSettings: InteractiveTooltip(
-                      enable: true,
-                      format: 'point.y kW',
-                      color: Colors.black.withOpacity(0.7),
-                      textStyle: const TextStyle(
-                          color: Colors.white, fontSize: 12),
-                    ),
-                    // tooltipSettings: const InteractiveTooltip(
-                    //   enable: true,
-                    //   format: 'point.y kW',
-                    // ),
-                  ),
-                  zoomPanBehavior: ZoomPanBehavior(
-                      enablePanning: true,
-                      enablePinching: true,
-                      enableDoubleTapZooming: true,
-                      zoomMode: ZoomMode.x),
-                  series: <CartesianSeries<_SalesData, String>>[
-                      SplineSeries<_SalesData, String>(
-                          dataSource: generateSalesData(),
-                          xValueMapper: (_SalesData sales, _) =>
-                          sales.year,
-                          yValueMapper: (_SalesData sales, _) =>
-                          sales.sales,
-                          color: const Color(0xFF1dd1a1),
-                          name: 'Công suất PV',
-                          // Enable data label
-                          dataLabelSettings:
-                          const DataLabelSettings(isVisible: false)),
-                  ]),
+                ),
+                Gap(12.sp),
+                ValueListenableBuilder(
+                    valueListenable: index,
+                    builder: (context, value, child) {
+                      return Column(
+                        children: [
+                          BlocProvider(
+                            create: (context) => EStatisticalCubit(
+                                DateRangePickerView.month,
+                                widget.deviceResponse.id),
+                            child: Visibility(
+                              visible: value == 0,
+                              child: EStatisticalScreen(
+                                meterId: widget.deviceResponse.id,
+                              ),
+                            ),
+                          ),
+                          BlocProvider(
+                            create: (context) => EStatisticalCubit(
+                                DateRangePickerView.year,
+                                widget.deviceResponse.id),
+                            child: Visibility(
+                              visible: value == 1,
+                              child: EStatisticalScreen(
+                                meterId: widget.deviceResponse.id,
+                              ),
+                            ),
+                          ),
+                          BlocProvider(
+                            create: (context) => EStatisticalCubit(
+                                DateRangePickerView.decade,
+                                widget.deviceResponse.id),
+                            child: Visibility(
+                              visible: value == 2,
+                              child: EStatisticalScreen(
+                                meterId: widget.deviceResponse.id,
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    })
+              ],
             ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
@@ -145,18 +232,11 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen> {
                     fontWeight: FontWeight.w500),
                 textAlign: TextAlign.right,
               ),
-              Icon(Icons.chevron_right_rounded, color: AppColors.textPrimary.withOpacity(0.5), size: 15.w,)
+              //Icon(Icons.chevron_right_rounded, color: AppColors.textPrimary.withOpacity(0.5), size: 15.w,)
             ],
           ),
         )
       ],
     );
   }
-}
-
-class _SalesData {
-  _SalesData(this.year, this.sales);
-
-  final String year;
-  final int sales;
 }

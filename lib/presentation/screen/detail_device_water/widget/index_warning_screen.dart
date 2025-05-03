@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/enums/index_type.dart';
-import 'package:solar_energy/application/extentions/index_extension.dart';
+import 'package:solar_energy/application/extensions/index_extension.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
 import '../../../../application/constants/app_color.dart';

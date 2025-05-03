@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/enums/index_type.dart';
+import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Electricity/bloc/electric_cubit.dart';
@@ -75,7 +76,7 @@ class AppRouter {
         routeWidget = GeneralDeviceScreen(project: arguments as PowerStationResponse,);
         break;
       case RouteName.detailDevice:
-        routeWidget = const DetailDeviceScreen();
+        routeWidget = DetailDeviceScreen(device: arguments as DeviceResponse,);
         break;
       default:
         routeWidget = initialWidget;
