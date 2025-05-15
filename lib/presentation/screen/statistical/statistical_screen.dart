@@ -43,14 +43,14 @@ class _StatisticalScreenState extends State<StatisticalScreen>
           backgroundColor: AppColors.white,
           scrolledUnderElevation: 0,
           elevation: 0,
-          leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Padding(
-                padding: EdgeInsets.only(left: 4.sp),
-                child: Icon(Icons.arrow_back_ios, size: 16.sp)),
-          ),
+          // leading: InkWell(
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //   },
+          //   child: Padding(
+          //       padding: EdgeInsets.only(left: 4.sp),
+          //       child: Icon(Icons.arrow_back_ios, size: 16.sp)),
+          // ),
           title: Text(
             "Biểu đồ",
             style: AppTextStyle.textBase.copyWith(

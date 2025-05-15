@@ -37,14 +37,14 @@ class _DevicesScreenState extends State<DevicesScreen> {
         backgroundColor: AppColors.white,
         scrolledUnderElevation: 0,
         elevation: 0,
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Padding(
-              padding: EdgeInsets.only(left: 4.sp),
-              child: Icon(Icons.arrow_back_ios, size: 16.sp)),
-        ),
+        // leading: InkWell(
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //   },
+        //   child: Padding(
+        //       padding: EdgeInsets.only(left: 4.sp),
+        //       child: Icon(Icons.arrow_back_ios, size: 16.sp)),
+        // ),
         title: Text(
           "Danh sách thiết bị",
           style: AppTextStyle.textBase.copyWith(

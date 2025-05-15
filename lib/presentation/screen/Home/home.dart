@@ -50,8 +50,8 @@ class _HomeWidgetState extends State<HomeWidget> {
             label: LocalizationsUtils.localizations.home,
           ),
           const NavigationDestination(
-            selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
-            icon: const Icon(
+            selectedIcon: Icon(Icons.developer_board, color: Colors.blue),
+            icon: Icon(
               Icons.developer_board,
               color: AppColors.grey73,
             ),

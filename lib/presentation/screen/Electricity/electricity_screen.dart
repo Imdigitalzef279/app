@@ -50,14 +50,14 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: AppColors.white,
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Padding(
-              padding: EdgeInsets.only(left: 4.sp),
-              child: Icon(Icons.arrow_back_ios, size: 16.sp)),
-        ),
+        // leading: InkWell(
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //   },
+        //   child: Padding(
+        //       padding: EdgeInsets.only(left: 4.sp),
+        //       child: Icon(Icons.arrow_back_ios, size: 16.sp)),
+        // ),
         title: Text(
           widget.project.name,
           style: AppTextStyle.textBase.copyWith(
@@ -102,7 +102,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
         builder: (context, state) =>
             AppLoadMore(
               onRefresh: () => cubit.getElectric(widget.project.id),
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 child: Column(
                   children: [

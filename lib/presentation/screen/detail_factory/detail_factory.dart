@@ -58,39 +58,39 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
         destinations: [
           NavigationDestination(
             selectedIcon: Assets.icons.overview.svg(
-                width: 16.w,
-                height: 16.w,
+                width: 20,
+                height: 20,
                 colorFilter:
                     const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
             icon: Assets.icons.overviewLine.svg(
-                width: 16.w,
-                height: 16.w,
+                width: 20,
+                height: 20,
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: "",
           ),
           NavigationDestination(
             selectedIcon: Assets.icons.chartArea.svg(
-                width: 16.w,
-                height: 16.w,
+                width: 20,
+                height: 20,
                 colorFilter:
                     const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
             icon: Assets.icons.chartAreaLine.svg(
-                width: 16.w,
-                height: 16.w,
+                width: 20,
+                height: 20,
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: "",
           ),
           NavigationDestination(
             selectedIcon: Assets.icons.computerSpeaker.svg(
-                width: 16.w,
-                height: 16.w,
+                width: 20,
+                height: 20,
                 colorFilter:
                     const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
             icon: Assets.icons.computerSpeakerLine.svg(
-                width: 16.w,
-                height: 16.w,
+                width: 20,
+                height: 20,
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: "",

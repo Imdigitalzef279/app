@@ -68,8 +68,8 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
         return emit(state.copyWith(
             request: state.request.copyWith(
                 searchType: SearchType.hour,
-                fromDate: DateFormat("dd/MM/yyyy").format(dateTime),
-                toDate: DateFormat("dd/MM/yyyy").format(dateTime.add(const Duration(days: 1))))));
+                fromDate: "${dateTime.year}-${dateTime.month}-${dateTime.day}T00:00:00",
+                toDate: "${dateTime.year}-${dateTime.month}-${dateTime.day}T23:59:59")));
       case DateRangePickerView.year:
         return emit(state.copyWith(
             request: state.request.copyWith(
