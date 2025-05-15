@@ -45,24 +45,11 @@ class ItemFactoryHoz extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // project name - status
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        project.name,
-                        style: AppTextStyle.textSm.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 4.w, vertical: 4.w),
-                        decoration: BoxDecoration(
-                          color: AppColors.green50.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(99.r),
-                        ),
-                      )
-                    ],
+                  Text(
+                    project.name,
+                    style: AppTextStyle.textSm.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w400),
                   ),
                   Text(
                     project.description,

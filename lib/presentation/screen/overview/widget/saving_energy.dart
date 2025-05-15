@@ -86,8 +86,8 @@ class SavingEnergy extends StatelessWidget {
                   color: color.withOpacity(0.2)),
               child: SvgPicture.asset(
                 path,
-                width: 20.r,
-                height: 20.r,
+                width: 20,
+                height: 20,
                 colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
               ),
             ),
@@ -107,14 +107,13 @@ class SavingEnergy extends StatelessWidget {
                             text: ' $unit',
                             style: AppTextStyle.textXs.copyWith(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 10.sp,
                                 color: AppColors.grey4D)),
                       ])),
                   Gap(4.h),
                   Text(
                     title,
                     style: AppTextStyle.textXs
-                        .copyWith(color: AppColors.grey73, fontSize: 10.sp),
+                        .copyWith(color: AppColors.grey73),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   )
