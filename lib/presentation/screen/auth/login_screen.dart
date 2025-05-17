@@ -10,6 +10,7 @@ import 'package:solar_energy/presentation/common_widgets/app_button.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
 import 'package:solar_energy/presentation/common_widgets/app_loading.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
+import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/auth/bloc/login_cubit.dart';
 
@@ -148,6 +149,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: const Divider(color: AppColors.greyE5),
                           ),
                           Gap(32.h),
+
+                          buttonRegister(),
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -264,11 +268,29 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               title: "Đăng nhập",
               color: AppColors.blue,
-              fontSize: 16.sp,
+              fontSize: 12.sp,
+              heightText: 16.sp/12.sp,
               textColor: AppColors.white,
               radius: 8.r,
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.h),
             ));
+  }
+
+  Widget buttonRegister() {
+    return AppButton(
+      onPressed: () {
+        Navigator.pushNamed(context, RouteName.registerWidget);
+      },
+      title: "Đăng ký",
+      color: AppColors.blue,
+      fontSize: 12.sp,
+      heightText: 16.sp / 12.sp,
+      textColor: AppColors.white,
+      radius: 8.r,
+      width: 1.sw/3,
+      contentPadding:
+      EdgeInsets.symmetric(vertical: 4.h),
+    );
   }
 }

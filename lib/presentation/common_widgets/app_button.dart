@@ -12,6 +12,7 @@ class AppButton extends StatelessWidget {
   final FontWeight? fontWeight;
   final double? width;
   final double? height;
+  final double? heightText;
   final double? radius;
   final VoidCallback? onPressed;
   final Color? borderColor;
@@ -32,6 +33,7 @@ class AppButton extends StatelessWidget {
     this.onPressed,
     this.borderColor,
     this.contentPadding,
+    this.heightText
   });
 
   @override
@@ -68,6 +70,7 @@ class AppButton extends StatelessWidget {
                     fontFamily: 'BeVietNamPro',
                     fontSize: fontSize,
                     fontWeight: fontWeight,
+                    height: heightText,
                   color: textColor
                 ),
               )

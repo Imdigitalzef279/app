@@ -21,6 +21,8 @@ import 'package:solar_energy/presentation/screen/detail_device_water/widget/inde
 import 'package:solar_energy/presentation/screen/manager_water/bloc/manager_water_cubit.dart';
 import 'package:solar_energy/presentation/screen/manager_water/manager_water_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
+import 'package:solar_energy/presentation/screen/register/Bloc/register_cubit.dart';
+import 'package:solar_energy/presentation/screen/register/register_widget.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
 import '../../data/dto/power_station/response/power_station_response.dart';
@@ -52,6 +54,9 @@ class AppRouter {
         break;
       case RouteName.detailDeviceWater:
         routeWidget = const DetailDeviceWaterScreen();
+        break;
+      case RouteName.registerWidget:
+        routeWidget = BlocProvider(create: (context) => RegisterCubit(),child: const RegisterWidget(),);
         break;
       case RouteName.factoryDetail:
         routeWidget = MultiBlocProvider(
