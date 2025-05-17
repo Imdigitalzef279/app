@@ -15,4 +15,5 @@ class RouteName {
   static const indexWarning =  '/index_waring';
   static const deviceIndex = '/device_index';
   static const detailDeviceWater = '/detailDeviceWater';
+  static const registerWidget = '/registerWidget';
 }
