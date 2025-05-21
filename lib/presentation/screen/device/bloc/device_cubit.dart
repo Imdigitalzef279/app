@@ -28,7 +28,6 @@ class DeviceCubit extends Cubit<DeviceState> {
     final rawList = response.data;
 
     final filteredDevices = rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
-    print("list divice: $filteredDevices");
     emit(state.copyWith(resultDevices: response.copyWith(data: filteredDevices, status: LoadStatus.success)));
   }
 
@@ -38,7 +37,6 @@ class DeviceCubit extends Cubit<DeviceState> {
     final rawList = response.data;
 
     final filteredDevices = rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
-    print("project id: ${filteredDevices?.first.id}");
     return filteredDevices?.first.id ?? 0;
   }
 
