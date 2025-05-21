@@ -6,8 +6,6 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/presentation/screen/statistical/bloc/statistical_cubit.dart';
 import 'package:solar_energy/presentation/screen/statistical/estatictical/estatistical_screen.dart';
-import 'package:solar_energy/presentation/screen/statistical/estatictical/estatistical_screen.dart';
-import 'package:solar_energy/presentation/screen/statistical/estatictical/estatistical_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/widget/detail_widget.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -16,7 +14,7 @@ import '../../../domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'estatictical/bloc/estatistical_cubit.dart';
 
 class StatisticalScreen extends StatefulWidget {
-  const StatisticalScreen({super.key, required this.argument, required this.meterId});
+  const StatisticalScreen({super.key, required this.argument, this.meterId = 0});
   final ElectricMeterArgument argument;
   final int meterId;
   @override

@@ -66,7 +66,6 @@ class LoginCubit extends Cubit<LoginState> {
     if(checkLogin()){
       try {
         emit(state.copyWith(request: Result(status: LoadStatus.loading)));
-        print("loading");
         changeRequest();
         final response = await authRepository.signIn(AuthRequest(
             username: state.userName,

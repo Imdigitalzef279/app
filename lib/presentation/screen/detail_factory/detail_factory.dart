@@ -27,7 +27,7 @@ class DetailFactoryScreen extends StatefulWidget {
 class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   late int indexPage;
   late DeviceCubit cubit;
-  late int meterId;
+  int meterId = 0;
 
   @override
   void initState() {
@@ -39,6 +39,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
 
   Future<void> _loadInitialMeterId() async {
     meterId = await cubit.getDeviceFirst(powerStationId: widget.type.project.id, type: widget.type.type);
+
   }
 
   @override
