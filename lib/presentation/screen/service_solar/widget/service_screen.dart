@@ -4,6 +4,8 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
+import '../../../common_widgets/common_under_development_dialog.dart';
+
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
 
@@ -53,6 +55,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   spacing: 8.w,
                   children: [
                     itemService(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const UnderDevelopmentDialog(
+                                isLandscape: false),
+                          );
+                        },
                         icon: Assets.icons.screenPlay.svg(
                             width: 22.w,
                             height: 22.w,
@@ -60,6 +69,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 AppColors.blueEA, BlendMode.srcIn)),
                         name: "Video hướng dẫn"),
                     itemService(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const UnderDevelopmentDialog(
+                                isLandscape: false),
+                          );
+                        },
                         icon: Assets.icons.guideAlt.svg(
                             width: 22.w,
                             height: 22.w,
@@ -67,6 +83,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 AppColors.blueEA, BlendMode.srcIn)),
                         name: "Hướng dân sử dụng"),
                     itemService(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const UnderDevelopmentDialog(
+                                isLandscape: false),
+                          );
+                        },
                         icon: Assets.icons.messagesQuestion.svg(
                             width: 22.w,
                             height: 22.w,
@@ -74,6 +97,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 AppColors.blueEA, BlendMode.srcIn)),
                         name: "Câu hỏi thường gặp"),
                     itemService(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const UnderDevelopmentDialog(
+                                isLandscape: false),
+                          );
+                        },
                         icon: Assets.icons.chatbotSpeechBubble.svg(
                             width: 22.w,
                             height: 22.w,
@@ -81,6 +111,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 AppColors.blueEA, BlendMode.srcIn)),
                         name: "Dịch vụ Chatbot"),
                     itemService(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const UnderDevelopmentDialog(
+                                isLandscape: false),
+                          );
+                        },
                         icon: Assets.icons.autoReply.svg(
                             width: 22.w,
                             height: 22.w,
@@ -88,6 +125,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 AppColors.blueEA, BlendMode.srcIn)),
                         name: "Phản hồi"),
                     itemService(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => const UnderDevelopmentDialog(
+                                isLandscape: false),
+                          );
+                        },
                         icon: Assets.icons.phoneCall.svg(
                             width: 22.w,
                             height: 22.w,
@@ -106,22 +150,27 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   Widget itemService(
       {required String name, required Widget icon, VoidCallback? onTap}) {
-    return SizedBox(
-      width: (1.sw - 80.w) / 4,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          icon,
-          SizedBox(
-            height: 4.h,
-          ),
-          Text(
-            name,
-            style: AppTextStyle.textXs.copyWith(
-                color: AppColors.textPrimary, fontWeight: FontWeight.w400),
-            textAlign: TextAlign.center,
-          )
-        ],
+    return GestureDetector(
+      onTap: () {
+        onTap?.call();
+      },
+      child: Ink(
+        width: (1.sw - 80.w) / 4,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            icon,
+            SizedBox(
+              height: 4.h,
+            ),
+            Text(
+              name,
+              style: AppTextStyle.textXs.copyWith(
+                  color: AppColors.textPrimary, fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
       ),
     );
   }

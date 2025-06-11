@@ -42,4 +42,3 @@ extension EnergyFormatExtension on double {
     }
   }
 }
-

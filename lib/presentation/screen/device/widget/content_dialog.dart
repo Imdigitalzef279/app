@@ -73,26 +73,25 @@ class ContentDialog extends StatelessWidget {
             children: [
               Text(
                 'Nhập mã code',
-                style: AppTextStyle.textSm.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                style: AppTextStyle.textSm.copyWith(
+                    color: AppColors.textPrimary, fontWeight: FontWeight.w600),
               ),
               SizedBox(height: 8.h),
               TextField(
                 decoration: const InputDecoration(
-                  labelText: 'Mã Code',
-                  border: OutlineInputBorder(),
-                  counterText: ""
-                ),
-                style: AppTextStyle.textSm.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                    labelText: 'Mã Code',
+                    border: OutlineInputBorder(),
+                    counterText: ""),
+                style: AppTextStyle.textSm.copyWith(
+                    color: AppColors.textPrimary, fontWeight: FontWeight.w600),
                 maxLength: 6,
-
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(
-                          context);
+                      Navigator.pop(context);
                     },
                     child: const Text('Xác nhận'),
                   ),

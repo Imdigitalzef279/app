@@ -12,7 +12,7 @@ class RouteName {
   static const factoryDetail = '/factory_detail';
   static const managerWater = '/manager_water';
   static const allAlarmWater = '/all_alarm_water';
-  static const indexWarning =  '/index_waring';
+  static const indexWarning = '/index_waring';
   static const deviceIndex = '/device_index';
   static const detailDeviceWater = '/detailDeviceWater';
   static const registerWidget = '/registerWidget';

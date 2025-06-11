@@ -1,1 +1,8 @@
-enum ElectricType { solarElectric, saveElectric, humidity, versatile, water, meterNull}
+enum ElectricType {
+  solarElectric,
+  saveElectric,
+  humidity,
+  versatile,
+  water,
+  meterNull
+}

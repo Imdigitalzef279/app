@@ -70,10 +70,10 @@ class SavingEnergy extends StatelessWidget {
 
   Widget item(BuildContext context,
       {required String path,
-        required Color color,
-        required String title,
-        required String content,
-        required String unit}) {
+      required Color color,
+      required String title,
+      required String content,
+      required String unit}) {
     return LayoutBuilder(
       builder: (context, constraints) => SizedBox(
         width: (constraints.maxWidth - 12.r) / 2,
@@ -98,22 +98,22 @@ class SavingEnergy extends StatelessWidget {
                 children: [
                   RichText(
                       text: TextSpan(children: [
-                        TextSpan(
-                            text: content,
-                            style: AppTextStyle.textBase.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary)),
-                        TextSpan(
-                            text: ' $unit',
-                            style: AppTextStyle.textXs.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.grey4D)),
-                      ])),
+                    TextSpan(
+                        text: content,
+                        style: AppTextStyle.textBase.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary)),
+                    TextSpan(
+                        text: ' $unit',
+                        style: AppTextStyle.textXs.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.grey4D)),
+                  ])),
                   Gap(4.h),
                   Text(
                     title,
-                    style: AppTextStyle.textXs
-                        .copyWith(color: AppColors.grey73),
+                    style:
+                        AppTextStyle.textXs.copyWith(color: AppColors.grey73),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   )

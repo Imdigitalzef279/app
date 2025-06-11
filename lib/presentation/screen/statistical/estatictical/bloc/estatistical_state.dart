@@ -14,5 +14,8 @@ class EStatisticalState with _$EStatisticalState {
       meterId: 0,
       resultChart: Result(),
       dateTime: DateTime.now(),
-      request: const ChartElectricRequest(meterId: 0, searchType: SearchType.hour,));
+      request: const ChartElectricRequest(
+        meterId: 0,
+        searchType: SearchType.hour,
+      ));
 }

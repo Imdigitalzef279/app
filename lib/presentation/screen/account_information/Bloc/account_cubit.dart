@@ -18,21 +18,21 @@ class AccountCubit extends Cubit<AccountState> {
   final authRepository = GetIt.instance<AuthRepository>();
   final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
 
-
-  void removeToken() async{
+  void removeToken() async {
     await sharedPreferences.removeAccessToken();
   }
 
   Future<void> getProfile() async {
-    try{
+    try {
       emit(state.copyWith(request: Result(status: LoadStatus.loading)));
       final response = await authRepository.getProfile();
-      if(response.isSuccess){
-        emit(state.copyWith(request: Result(status: LoadStatus.success, data: response.data)));
+      if (response.isSuccess) {
+        emit(state.copyWith(
+            request: Result(status: LoadStatus.success, data: response.data)));
         return;
       }
       emit(state.copyWith(request: Result(status: LoadStatus.failure)));
-    }catch(e){
+    } catch (e) {
       emit(state.copyWith(request: Result(status: LoadStatus.failure)));
     }
   }

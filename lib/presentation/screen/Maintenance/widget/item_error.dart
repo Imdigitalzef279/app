@@ -17,12 +17,27 @@ class ItemErrorWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(children: [
-            Icon(Icons.error_rounded, size: 22.w, color: const Color(0xFFee5253),),
-            SizedBox(width: 8.w,),
-            Expanded(child: Text("Lỗi chức nng tự kiểm tra AFCI Lỗi chức nng tự kiểm tra AFCI", style: AppTextStyle.textSm.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600),)),
-          ],),
-          SizedBox(height: 12.w,),
+          Row(
+            children: [
+              Icon(
+                Icons.error_rounded,
+                size: 22.w,
+                color: const Color(0xFFee5253),
+              ),
+              SizedBox(
+                width: 8.w,
+              ),
+              Expanded(
+                  child: Text(
+                "Lỗi chức nng tự kiểm tra AFCI Lỗi chức nng tự kiểm tra AFCI",
+                style: AppTextStyle.textSm.copyWith(
+                    color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+              )),
+            ],
+          ),
+          SizedBox(
+            height: 12.w,
+          ),
           rowItem(title: "Trạng thái quy trình loại bỏ lỗi", content: "--"),
           const Divider(),
           rowItem(title: "Tên thiết bị", content: "100KTL-M2(COM1-13)"),
@@ -34,12 +49,28 @@ class ItemErrorWidget extends StatelessWidget {
       ),
     );
   }
-  Widget rowItem({required String title, required String content}){
+
+  Widget rowItem({required String title, required String content}) {
     return Row(
       children: [
-        Expanded(flex: 2,child: Text(title, style: AppTextStyle.textXs.copyWith(color: AppColors.textPrimary.withOpacity(0.5)),textAlign: TextAlign.left,)),
-        SizedBox(width: 8.w,),
-        Expanded(flex: 3,child: Text(content, style: AppTextStyle.textXs.copyWith(color: AppColors.textPrimary), textAlign: TextAlign.left,)),
+        Expanded(
+            flex: 2,
+            child: Text(
+              title,
+              style: AppTextStyle.textXs
+                  .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
+              textAlign: TextAlign.left,
+            )),
+        SizedBox(
+          width: 8.w,
+        ),
+        Expanded(
+            flex: 3,
+            child: Text(
+              content,
+              style: AppTextStyle.textXs.copyWith(color: AppColors.textPrimary),
+              textAlign: TextAlign.left,
+            )),
       ],
     );
   }

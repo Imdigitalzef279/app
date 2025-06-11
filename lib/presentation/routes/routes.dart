@@ -50,13 +50,18 @@ class AppRouter {
         break;
 
       case RouteName.indexWarning:
-        routeWidget = IndexWarningScreen(indexType: arguments as IndexType,);
+        routeWidget = IndexWarningScreen(
+          indexType: arguments as IndexType,
+        );
         break;
       case RouteName.detailDeviceWater:
         routeWidget = const DetailDeviceWaterScreen();
         break;
       case RouteName.registerWidget:
-        routeWidget = BlocProvider(create: (context) => RegisterCubit(),child: const RegisterWidget(),);
+        routeWidget = BlocProvider(
+          create: (context) => RegisterCubit(),
+          child: const RegisterWidget(),
+        );
         break;
       case RouteName.factoryDetail:
         routeWidget = MultiBlocProvider(
@@ -78,10 +83,14 @@ class AppRouter {
             child: const ManagerWaterScreen());
         break;
       case RouteName.generalDevice:
-        routeWidget = GeneralDeviceScreen(project: arguments as PowerStationResponse,);
+        routeWidget = GeneralDeviceScreen(
+          project: arguments as PowerStationResponse,
+        );
         break;
       case RouteName.detailDevice:
-        routeWidget = DetailDeviceScreen(device: arguments as DeviceResponse,);
+        routeWidget = DetailDeviceScreen(
+          device: arguments as DeviceResponse,
+        );
         break;
       default:
         routeWidget = initialWidget;

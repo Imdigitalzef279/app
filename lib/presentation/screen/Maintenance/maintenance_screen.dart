@@ -180,7 +180,8 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
           ),
           Expanded(
               child: ListView.separated(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   itemBuilder: (context, index) => const ItemErrorWidget(),
                   separatorBuilder: (context, index) => SizedBox(
                         height: 8.h,

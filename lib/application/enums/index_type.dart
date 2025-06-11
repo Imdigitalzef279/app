@@ -1,6 +1,1 @@
-enum IndexType {
-  normal,
-  good,
-  high,
-  very_hight
-}
+enum IndexType { normal, good, high, very_hight }

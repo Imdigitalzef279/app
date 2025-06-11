@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
@@ -10,7 +9,6 @@ import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/overview/overview_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
-import '../../../application/cubit/app_cubit.dart';
 import '../Electricity/bloc/electric_cubit.dart';
 import '../device/bloc/device_cubit.dart';
 import '../overview/bloc/overview_cubit.dart';
@@ -38,8 +36,8 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   }
 
   Future<void> _loadInitialMeterId() async {
-    meterId = await cubit.getDeviceFirst(powerStationId: widget.type.project.id, type: widget.type.type);
-
+    meterId = await cubit.getDeviceFirst(
+        powerStationId: widget.type.project.id, type: widget.type.type);
   }
 
   @override
@@ -113,7 +111,10 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
               )
             : BlocProvider(
                 create: (context) => OverviewCubit(),
-                child: OverViewScreen(type: widget.type.type, project: widget.type.project,));
+                child: OverViewScreen(
+                  type: widget.type.type,
+                  project: widget.type.project,
+                ));
       case 1:
         return StatisticalScreen(argument: widget.type, meterId: meterId);
       case 2:

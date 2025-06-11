@@ -143,7 +143,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                    previous.fullName != current.fullName ||
+                        previous.fullName != current.fullName ||
                         previous.fullNameError != current.fullNameError,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
@@ -170,7 +170,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                    previous.phoneNumber != current.phoneNumber ||
+                        previous.phoneNumber != current.phoneNumber ||
                         previous.phoneNumberError != current.phoneNumberError,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
@@ -182,14 +182,17 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       contentPadding: EdgeInsets.symmetric(vertical: 16.h),
                       hintText: "Số điên thoại",
                       maxLine: 1,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       keyboardType: TextInputType.number,
                       errorMessage: state.phoneNumberError,
                       colorBorder: AppColors.white,
                       backgroundColor: AppColors.greyFB,
                       textStyleHint: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary.withOpacity(0.5)),
-                      onChanged: (value) => cubit.changeQuery(phoneNumber: value),
+                      onChanged: (value) =>
+                          cubit.changeQuery(phoneNumber: value),
                       defaultValue: state.phoneNumber,
                       textStyleInput: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary,
@@ -199,7 +202,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                    previous.accountName != current.accountName ||
+                        previous.accountName != current.accountName ||
                         previous.accountNameError != current.accountNameError,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
@@ -216,7 +219,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       backgroundColor: AppColors.greyFB,
                       textStyleHint: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary.withOpacity(0.5)),
-                      onChanged: (value) => cubit.changeQuery(accountName: value),
+                      onChanged: (value) =>
+                          cubit.changeQuery(accountName: value),
                       defaultValue: state.accountName,
                       textStyleInput: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary,
@@ -226,8 +230,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                    previous.password != current.password ||
-                        previous.passwordError != current.passwordError || previous.showPass != current.showPass,
+                        previous.password != current.password ||
+                        previous.passwordError != current.passwordError ||
+                        previous.showPass != current.showPass,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
                       prefixIcon: Icon(
@@ -241,7 +246,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                           cubit.changeQuery(showPass: values);
                         },
                         child: Icon(
-                          state.showPass ? Icons.visibility_off : Icons.visibility,
+                          state.showPass
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           size: 24.r,
                           color: AppColors.blueF8,
                         ),
@@ -265,8 +272,10 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                    previous.confirmPassword != current.confirmPassword ||
-                        previous.confirmPasswordError != current.confirmPasswordError || previous.showPassConfirm != current.showPassConfirm,
+                        previous.confirmPassword != current.confirmPassword ||
+                        previous.confirmPasswordError !=
+                            current.confirmPasswordError ||
+                        previous.showPassConfirm != current.showPassConfirm,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
                       prefixIcon: Icon(
@@ -280,7 +289,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                           cubit.changeQuery(showPassConfirm: values);
                         },
                         child: Icon(
-                          state.showPassConfirm ? Icons.visibility_off : Icons.visibility,
+                          state.showPassConfirm
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           size: 24.r,
                           color: AppColors.blueF8,
                         ),
@@ -294,7 +305,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       backgroundColor: AppColors.greyFB,
                       textStyleHint: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary.withOpacity(0.5)),
-                      onChanged: (value) => cubit.changeQuery(confirmPassword: value),
+                      onChanged: (value) =>
+                          cubit.changeQuery(confirmPassword: value),
                       defaultValue: state.confirmPassword,
                       textStyleInput: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary,
@@ -304,7 +316,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                    previous.projectName != current.projectName ||
+                        previous.projectName != current.projectName ||
                         previous.projectNameError != current.projectNameError,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
@@ -321,7 +333,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       backgroundColor: AppColors.greyFB,
                       textStyleHint: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary.withOpacity(0.5)),
-                      onChanged: (value) => cubit.changeQuery(projectName: value),
+                      onChanged: (value) =>
+                          cubit.changeQuery(projectName: value),
                       defaultValue: state.projectName,
                       textStyleInput: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary,
@@ -331,8 +344,10 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                    previous.descriptionProject != current.descriptionProject ||
-                        previous.descriptionProjectError != current.descriptionProjectError,
+                        previous.descriptionProject !=
+                            current.descriptionProject ||
+                        previous.descriptionProjectError !=
+                            current.descriptionProjectError,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
                       contentPadding:
@@ -349,7 +364,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       backgroundColor: AppColors.greyFB,
                       textStyleHint: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary.withOpacity(0.5)),
-                      onChanged: (value) => cubit.changeQuery(descriptionProject: value),
+                      onChanged: (value) =>
+                          cubit.changeQuery(descriptionProject: value),
                       defaultValue: state.descriptionProject,
                       textStyleInput: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary,
@@ -357,11 +373,14 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                     ),
                   ),
                   Gap(32.h),
-                  button(title: "Đăng Ký", callBack: () async {
-                    if(cubit.validate()){
-                      await cubit.sendMail();
-                    }
-                  },),
+                  button(
+                    title: "Đăng Ký",
+                    callBack: () async {
+                      if (cubit.validate()) {
+                        await cubit.sendMail();
+                      }
+                    },
+                  ),
                 ])
               ],
             ),

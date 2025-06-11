@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/presentation/common_widgets/app_loading_indicator.dart';
 
-
 class AppLoading extends StatelessWidget {
   const AppLoading({super.key});
 

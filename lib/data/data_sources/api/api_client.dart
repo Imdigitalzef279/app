@@ -37,18 +37,15 @@ abstract class ApiClient {
       @Queries() ChartElectricRequest request);
 
   @GET('api/app/meter/meter-lookup/{id}')
-  Future<List<DeviceResponse>> getDevices(
-      @Path("id") int powerStationID);
+  Future<List<DeviceResponse>> getDevices(@Path("id") int powerStationID);
 
   @GET('api/account/my-profile')
   Future<ProfileResponse> getProfile();
 
   @GET('api/app/power-station/power-station-lookup/{projectId}')
   Future<List<PowerStationResponse>> getPowerStation(
-      @Path("projectId") int projectId,
-      );
-
-
+    @Path("projectId") int projectId,
+  );
 
   @GET('api/app/meter/with-log')
   Future<PaginationResponse<ElectricMeter>> getElectric(

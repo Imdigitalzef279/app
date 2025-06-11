@@ -16,15 +16,10 @@ import 'package:solar_energy/presentation/screen/overview/widget/saving_energy.d
 import '../../../data/dto/power_station/response/power_station_response.dart';
 
 class OverViewScreen extends StatefulWidget {
-  const OverViewScreen({
-    super.key,
-    required this.type,
-    required this.project
-  });
+  const OverViewScreen({super.key, required this.type, required this.project});
 
   final ElectricType type;
   final PowerStationResponse project;
-
 
   @override
   State<OverViewScreen> createState() => _OverViewScreenState();

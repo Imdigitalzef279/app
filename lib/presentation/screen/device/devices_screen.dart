@@ -12,6 +12,7 @@ import 'package:solar_energy/presentation/screen/device/widget/item_device.dart'
 
 class DevicesScreen extends StatefulWidget {
   const DevicesScreen({super.key, required this.argument});
+
   final ElectricMeterArgument argument;
 
   @override
@@ -26,7 +27,9 @@ class _DevicesScreenState extends State<DevicesScreen> {
     super.initState();
     _cubit = BlocProvider.of<DeviceCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      _cubit.getDevices(powerStationId: widget.argument.project.id, type: widget.argument.type);
+      _cubit.getDevices(
+          powerStationId: widget.argument.project.id,
+          type: widget.argument.type);
     });
   }
 
@@ -69,8 +72,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     state.resultDevices.data != []
                 ? ListView.separated(
                     padding: EdgeInsets.all(12.sp),
-                    itemBuilder: (context, index) => ItemDevice(
-                        device: state.resultDevices.data![index]),
+                    itemBuilder: (context, index) =>
+                        ItemDevice(device: state.resultDevices.data![index]),
                     separatorBuilder: (context, index) => Gap(12.sp),
                     itemCount: state.resultDevices.data?.length ?? 0)
                 : Center(

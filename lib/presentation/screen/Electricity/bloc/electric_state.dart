@@ -1,6 +1,5 @@
 part of 'electric_cubit.dart';
 
-
 @freezed
 class ElectricState with _$ElectricState {
   const factory ElectricState({
@@ -9,6 +8,6 @@ class ElectricState with _$ElectricState {
   }) = _ElectricState;
 
   factory ElectricState.initial() => ElectricState(
-      response: Result(
-          data: const ElectricMeter(), status: LoadStatus.initial));
+      response:
+          Result(data: const ElectricMeter(), status: LoadStatus.initial));
 }

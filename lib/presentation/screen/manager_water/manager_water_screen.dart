@@ -114,7 +114,10 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
         destinations: const [
           NavigationDestination(
             selectedIcon: Icon(Icons.home_rounded, color: Colors.blue),
-            icon: Icon(Icons.home_outlined, color: AppColors.grey73,),
+            icon: Icon(
+              Icons.home_outlined,
+              color: AppColors.grey73,
+            ),
             label: "Tổng quan",
           ),
           NavigationDestination(
@@ -576,33 +579,37 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
                   child: warningWidget(
                 name: "1",
                 colors: AppColors.greyAE.withOpacity(0.7),
-                onPress: () =>
-                    Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.normal),
+                onPress: () => Navigator.pushNamed(
+                    context, RouteName.indexWarning,
+                    arguments: IndexType.normal),
               )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
                 name: "1",
                 colors: AppColors.green50.withOpacity(0.3),
-                onPress: () =>
-                    Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.good),
+                onPress: () => Navigator.pushNamed(
+                    context, RouteName.indexWarning,
+                    arguments: IndexType.good),
               )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
-                    name: "1",
-                    colors: AppColors.yellow57.withOpacity(0.7),
-                    onPress: () =>
-                        Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.high),
-                  )),
+                name: "1",
+                colors: AppColors.yellow57.withOpacity(0.7),
+                onPress: () => Navigator.pushNamed(
+                    context, RouteName.indexWarning,
+                    arguments: IndexType.high),
+              )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
-                    name: "1",
-                    colors: AppColors.red14.withOpacity(0.7),
-                    onPress: () =>
-                        Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.very_hight),
-                  )),
+                name: "1",
+                colors: AppColors.red14.withOpacity(0.7),
+                onPress: () => Navigator.pushNamed(
+                    context, RouteName.indexWarning,
+                    arguments: IndexType.very_hight),
+              )),
             ],
           ),
         ],

@@ -19,6 +19,7 @@ class DetailDeviceScreen extends StatefulWidget {
 
 class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
   late int indexPage;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -56,12 +57,12 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
                 width: 16.w,
                 height: 16.w,
                 colorFilter:
-                const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
+                    const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
             icon: Assets.icons.bellLine.svg(
                 width: 16.w,
                 height: 16.w,
                 colorFilter:
-                const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+                    const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: "Thông tin báo động",
           ),
           NavigationDestination(
@@ -69,18 +70,17 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
                 width: 16.w,
                 height: 16.w,
                 colorFilter:
-                const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
+                    const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
             icon: Assets.icons.infoLine.svg(
                 width: 16.w,
                 height: 16.w,
                 colorFilter:
-                const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+                    const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: "Thông tin thiết bị",
           ),
         ],
       ),
-      body:  _buildBody(),
-
+      body: _buildBody(),
     );
   }
 
@@ -89,7 +89,9 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
       case 0:
         return const AlarmInfoScreen();
       case 1:
-        return InfoDeviceScreen(deviceResponse: widget.device,);
+        return InfoDeviceScreen(
+          deviceResponse: widget.device,
+        );
       default:
         return const AlarmInfoScreen();
     }

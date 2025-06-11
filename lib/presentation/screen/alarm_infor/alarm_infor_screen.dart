@@ -34,8 +34,7 @@ class _AlarmInfoScreenState extends State<AlarmInfoScreen>
       children: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          decoration: const BoxDecoration(
-              color: AppColors.white),
+          decoration: const BoxDecoration(color: AppColors.white),
           child: TabBar(
               tabs: const <Widget>[
                 Tab(
@@ -60,7 +59,9 @@ class _AlarmInfoScreenState extends State<AlarmInfoScreen>
           child: TabBarView(
             controller: _tabController,
             children: const [
-              CurrentAlarm(listCurrent: [],),
+              CurrentAlarm(
+                listCurrent: [],
+              ),
               HistoryAlarm(listCurrent: [])
             ],
           ),

@@ -18,7 +18,8 @@ class DeviceCubit extends Cubit<DeviceState> {
 
   final _repo = getIt.get<DeviceRepository>();
 
-  Future<void> getDevices({required int powerStationId, required ElectricType type}) async {
+  Future<void> getDevices(
+      {required int powerStationId, required ElectricType type}) async {
     emit(state.copyWith(resultDevices: Result(status: LoadStatus.loading)));
     final response = await _repo.getSolarElectric(powerStationId);
     if (response.data?.isEmpty ?? true) {
@@ -27,16 +28,21 @@ class DeviceCubit extends Cubit<DeviceState> {
     }
     final rawList = response.data;
 
-    final filteredDevices = rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
-    emit(state.copyWith(resultDevices: response.copyWith(data: filteredDevices, status: LoadStatus.success)));
+    final filteredDevices =
+        rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
+    emit(state.copyWith(
+        resultDevices: response.copyWith(
+            data: filteredDevices, status: LoadStatus.success)));
   }
 
-  Future<int> getDeviceFirst({required int powerStationId,ElectricType? type}) async {
+  Future<int> getDeviceFirst(
+      {required int powerStationId, ElectricType? type}) async {
     emit(state.copyWith(resultDevices: Result(status: LoadStatus.loading)));
     final response = await _repo.getSolarElectric(powerStationId);
     final rawList = response.data;
 
-    final filteredDevices = rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
+    final filteredDevices =
+        rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
     return filteredDevices?.first.id ?? 0;
   }
 
@@ -51,5 +57,4 @@ class DeviceCubit extends Cubit<DeviceState> {
         return null;
     }
   }
-
 }

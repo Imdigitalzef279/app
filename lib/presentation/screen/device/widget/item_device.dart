@@ -23,8 +23,14 @@ class ItemDevice extends StatelessWidget {
         return '';
     }
   }
+
   Future<void> _showMyDialog() async {
-    return showDialog<void>(context: NavigatorUtils.currentContext, builder: (context) => ContentDialog(device: device,),);
+    return showDialog<void>(
+      context: NavigatorUtils.currentContext,
+      builder: (context) => ContentDialog(
+        device: device,
+      ),
+    );
   }
 
   @override
@@ -74,7 +80,10 @@ class ItemDevice extends StatelessWidget {
                     child: Text(
                       device.status == 1 ? "Đang hoạt động" : "Dừng",
                       style: AppTextStyle.textXs.copyWith(
-                          color: device.status == 1 ? AppColors.green50 : const Color(0xFFff9f43), fontSize: 12.sp),
+                          color: device.status == 1
+                              ? AppColors.green50
+                              : const Color(0xFFff9f43),
+                          fontSize: 12.sp),
                     ),
                   ),
                 )
@@ -105,7 +114,9 @@ class ItemDevice extends StatelessWidget {
                       padding: EdgeInsets.symmetric(
                           horizontal: 4.sp, vertical: 2.sp),
                       decoration: BoxDecoration(
-                        color: device.status == 1 ? AppColors.green50 : const Color(0xFFff9f43),
+                        color: device.status == 1
+                            ? AppColors.green50
+                            : const Color(0xFFff9f43),
                         borderRadius: BorderRadius.circular(4.r),
                       ),
                       child: Text(
