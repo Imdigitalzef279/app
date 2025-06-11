@@ -17,6 +17,8 @@ class LoginCubit extends Cubit<LoginState> {
 
   final authRepository = GetIt.instance<AuthRepository>();
   final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+  final useNameTest = "hongln";
+  final passwordTest = "123456Aa@";
 
   void changeRequest() {
     emit(state.copyWith(
@@ -100,5 +102,32 @@ class LoginCubit extends Cubit<LoginState> {
     }
     emit(state.copyWith(request: Result(status: LoadStatus.failure)));
     return false;
+  }
+
+  Future<void> loginTest() async {
+    try {
+      emit(state.copyWith(request: Result(status: LoadStatus.loading)));
+      changeRequest();
+      final response = await authRepository.signIn(AuthRequest(
+          username: useNameTest,
+          password: passwordTest,
+          grantType: 'password',
+          clientId: 'MonitorSystem_App',
+          scope: 'MonitorSystem offline_access'));
+      if (response.isSuccess) {
+        if (response.data?.accessToken != null) {
+          sharedPreferences.setAccessToken(response.data!.accessToken);
+          emit(state.copyWith(request: Result(status: LoadStatus.success)));
+          return;
+        }
+        emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+        return;
+      }
+      emit(state.copyWith(request: Result(status: LoadStatus.failure),error:  response.error));
+      return;
+    } catch (e) {
+      emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+      return;
+    }
   }
 }

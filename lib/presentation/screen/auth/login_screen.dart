@@ -139,6 +139,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       username(),
                       Gap(12.h),
                       password(),
+                      Gap(12.h),
+                      Row(
+                        children: [
+                          buttonRegister(),
+                        ],
+                      ),
                       Gap(32.h),
                       Column(
                         children: [
@@ -148,9 +154,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: EdgeInsets.symmetric(horizontal: 42.w),
                             child: const Divider(color: AppColors.greyE5),
                           ),
-                          Gap(32.h),
 
-                          buttonRegister(),
+                          loginTest(),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -278,19 +283,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget buttonRegister() {
-    return AppButton(
-      onPressed: () {
+    return InkWell(
+      borderRadius: BorderRadius.circular(4.r),
+      onTap: () {
         Navigator.pushNamed(context, RouteName.registerWidget);
       },
-      title: "Đăng ký",
-      color: AppColors.blue,
-      fontSize: 12.sp,
-      heightText: 16.sp / 12.sp,
-      textColor: AppColors.white,
-      radius: 8.r,
-      width: 1.sw/3,
-      contentPadding:
-      EdgeInsets.symmetric(vertical: 4.h),
+      child: Ink(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
+        child: Text("Chưa có tài khoản? Đăng ký ngay", style: AppTextStyle.textSm.copyWith(color: AppColors.blue),),
+      )
+    );
+  }
+
+  Widget loginTest() {
+    return InkWell(
+        borderRadius: BorderRadius.circular(4.r),
+        onTap: () {
+          cubit.loginTest();
+        },
+        child: Ink(
+          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12.h),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
+          child: Text("Đăng nhập thử nghiệm", style: AppTextStyle.textSm.copyWith(color: AppColors.blue),),
+        )
     );
   }
 }
