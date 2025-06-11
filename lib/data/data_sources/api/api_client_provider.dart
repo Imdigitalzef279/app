@@ -19,12 +19,15 @@ class ApiClientProvider {
     // By pass certificate
     dio.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
-        final client = HttpClient(context: SecurityContext(withTrustedRoots: false));
-        client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
+        final client =
+            HttpClient(context: SecurityContext(withTrustedRoots: false));
+        client.badCertificateCallback =
+            ((X509Certificate cert, String host, int port) => true);
 
         return client;
       },
     );
-    getIt.registerLazySingleton<ApiClient>(() => ApiClient(dio, baseUrl: EnvConfigs.baseUrl));
+    getIt.registerLazySingleton<ApiClient>(
+        () => ApiClient(dio, baseUrl: EnvConfigs.baseUrl));
   }
 }

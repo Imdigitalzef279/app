@@ -23,7 +23,6 @@ class HomePageCubit extends Cubit<HomePageState> {
   final ProjectRepository _repo = getIt.get<ProjectRepository>();
   final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
 
-
   Future<void> getProjects() async {
     try {
       emit(state.copyWith(resultProjects: Result(status: LoadStatus.loading)));
@@ -36,32 +35,29 @@ class HomePageCubit extends Cubit<HomePageState> {
           if (projectId is List) {
             int id = int.tryParse(projectId[0]) ?? 0;
             final response = await _repo.getPowerStation(id);
-            print("$response");
             if (response.isSuccess) {
               emit(state.copyWith(
                   resultProjects: Result(
-                    status: LoadStatus.success,
-                    data: response.data,
-                  )));
+                status: LoadStatus.success,
+                data: response.data,
+              ), allStation: response.data?.length ?? 0, active: response.data?.length ?? 0));
               return;
             }
             emit(state.copyWith(
                 resultProjects: Result(
-                    status: LoadStatus.failure,
-                    error: "không success")));
+                    status: LoadStatus.failure, error: "không success")));
             return;
           }
           emit(state.copyWith(
               resultProjects: Result(
-                  status: LoadStatus.failure,
-                  error: "Project ko la list")));return;
+                  status: LoadStatus.failure, error: "Project ko la list")));
+          return;
         }
         emit(state.copyWith(
-            resultProjects: Result(
-                status: LoadStatus.failure,
-                error: "Project NUll")));return;
+            resultProjects:
+                Result(status: LoadStatus.failure, error: "Project NUll")));
+        return;
       }
-
 
       emit(state.copyWith(
           resultProjects: Result(
@@ -81,11 +77,5 @@ class HomePageCubit extends Cubit<HomePageState> {
       emit(state.copyWith(resultProjects: Result(status: LoadStatus.loading)));
     } catch (e) {}
 
-    // Future<void> loadMore() async {
-    //   try {
-    //     emit(
-    //         state.copyWith(resultProjects: Result(status: LoadStatus.loading)));
-    //   } catch (e) {
-    //
   }
 }

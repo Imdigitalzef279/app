@@ -36,34 +36,33 @@ class CurrentAlarm extends StatelessWidget {
           )
         : Column(children: [
             Row(
-        children: [
-          Expanded(
-              flex: 8,
-              child: CustomLabelTextField(
-                backgroundColor: AppColors.greyFB,
-                hintText: "Nhập tên báo động.",
-                textStyleHint: AppTextStyle.textXs
-                    .copyWith(color: AppColors.grey73),
-                contentPadding: EdgeInsets.symmetric(vertical: 8.h),
-                radius: 99.r,
-                prefixIcon: Assets.icons.search.svg(
-                    width: 16.w,
-                    height: 16.w,
-                    color: AppColors.textPrimary.withOpacity(0.7)),
-              )),
-          Expanded(
-              flex: 1,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(99.r),
-                onTap: () {
-                },
-                child: Icon(
-                  Icons.filter_list_outlined,
-                  size: 20.r,
-                ),
-              )),
-        ],
-      ),
+              children: [
+                Expanded(
+                    flex: 8,
+                    child: CustomLabelTextField(
+                      backgroundColor: AppColors.greyFB,
+                      hintText: "Nhập tên báo động.",
+                      textStyleHint:
+                          AppTextStyle.textXs.copyWith(color: AppColors.grey73),
+                      contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                      radius: 99.r,
+                      prefixIcon: Assets.icons.search.svg(
+                          width: 16.w,
+                          height: 16.w,
+                          color: AppColors.textPrimary.withOpacity(0.7)),
+                    )),
+                Expanded(
+                    flex: 1,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(99.r),
+                      onTap: () {},
+                      child: Icon(
+                        Icons.filter_list_outlined,
+                        size: 20.r,
+                      ),
+                    )),
+              ],
+            ),
             ListView.separated(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 itemBuilder: (context, index) => const ItemAlarm(),

@@ -7,12 +7,14 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
+import 'package:solar_energy/presentation/common_widgets/common_under_development_dialog.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
 import '../../../data/dto/power_station/response/power_station_response.dart';
 
 class GeneralDeviceScreen extends StatefulWidget {
   const GeneralDeviceScreen({super.key, required this.project});
+
   final PowerStationResponse project;
 
   @override
@@ -24,12 +26,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late final AnimationController _controller;
   late bool isLandscape;
 
-
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-
   }
 
   @override
@@ -151,7 +151,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             onTap: () {
                               Navigator.pushNamed(
                                   context, RouteName.factoryDetail,
-                                  arguments: ElectricMeterArgument(project: widget.project, type: ElectricType.saveElectric));
+                                  arguments: ElectricMeterArgument(
+                                      project: widget.project,
+                                      type: ElectricType.saveElectric));
                             },
                             icon: Assets.icons.savingElectric.svg(
                                 width: 22.w,
@@ -163,7 +165,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             onTap: () {
                               Navigator.pushNamed(
                                   context, RouteName.factoryDetail,
-                                  arguments: ElectricMeterArgument(project: widget.project, type: ElectricType.solarElectric));
+                                  arguments: ElectricMeterArgument(
+                                      project: widget.project,
+                                      type: ElectricType.solarElectric));
                             },
                             icon: Assets.icons.solarPanelSun.svg(
                                 width: 22.w,
@@ -175,59 +179,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             onTap: () {
                               showDialog(
                                 context: context,
-                                builder: (context) => AlertDialog(
-                                  backgroundColor: AppColors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.r),
-                                  ),
-                                  insetPadding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 24.h),
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
-                                  content: ConstrainedBox(
-                                    constraints: BoxConstraints(maxWidth: isLandscape ? 200.h : 500.w),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Assets.images.exclamation.image(
-                                          width: isLandscape ? 150.h : 100.w,
-                                          height: isLandscape ? 150.h : 100.w,
-                                          fit: BoxFit.contain,
-                                        ),
-                                        SizedBox(height: 24.h),
-                                        Text(
-                                          "Tính năng này đang trong quá trình phát triển",
-                                          style: AppTextStyle.tini.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.textPrimary,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        SizedBox(height: 32.h),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: AppColors.blueEA,
-                                              padding: EdgeInsets.symmetric(vertical: 12.h),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(12.r),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              "Đã hiểu",
-                                              style: AppTextStyle.tini.copyWith(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                builder: (context) =>
+                                    const UnderDevelopmentDialog(
+                                        isLandscape: false),
                               );
-
                             },
                             icon: Assets.icons.air.svg(
                                 width: 22.w,

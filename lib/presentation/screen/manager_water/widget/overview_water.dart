@@ -23,7 +23,8 @@ class OverviewWater extends StatefulWidget {
   State<OverviewWater> createState() => _OverviewWaterState();
 }
 
-class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateMixin{
+class _OverviewWaterState extends State<OverviewWater>
+    with TickerProviderStateMixin {
   late final AnimationController _controller;
   late final AnimationController _controllerWaterIndex;
   late Animation<double> _animation;
@@ -104,6 +105,7 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
       ),
     );
   }
+
   Widget _overview() {
     return Container(
       padding: EdgeInsets.all(12.sp),
@@ -145,12 +147,12 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
                   ),
                   Center(
                       child: Text(
-                        "3,6 L",
-                        style: AppTextStyle.textBase.copyWith(
-                            fontSize: 16.sp,
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w600),
-                      )),
+                    "3,6 L",
+                    style: AppTextStyle.textBase.copyWith(
+                        fontSize: 16.sp,
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600),
+                  )),
                 ],
               ),
               Gap(12.sp),
@@ -263,7 +265,7 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
                 spacing: 8.sp,
                 children: List.generate(
                     state.listSelected.length,
-                        (index) => itemWaterIndex(state.listSelected[index],
+                    (index) => itemWaterIndex(state.listSelected[index],
                         isAdd: false)),
               ),
               SizeTransition(
@@ -285,7 +287,7 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
                         spacing: 8.sp,
                         children: List.generate(
                             state.listWaterIndex.length,
-                                (index) => itemWaterIndex(
+                            (index) => itemWaterIndex(
                                 state.listWaterIndex[index],
                                 isAdd: true)),
                       ),
@@ -323,19 +325,19 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
                   Gap(4.sp),
                   RichText(
                       text: TextSpan(children: [
-                        TextSpan(
-                            text: waterIndex.value.toString(),
-                            style: AppTextStyle.textSm.copyWith(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14.sp,
-                                color: AppColors.textPrimary)),
-                        TextSpan(
-                            text: ' ${waterIndex.unit}',
-                            style: AppTextStyle.textXs.copyWith(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12.sp,
-                                color: AppColors.grey4D)),
-                      ])),
+                    TextSpan(
+                        text: waterIndex.value.toString(),
+                        style: AppTextStyle.textSm.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.sp,
+                            color: AppColors.textPrimary)),
+                    TextSpan(
+                        text: ' ${waterIndex.unit}',
+                        style: AppTextStyle.textXs.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
+                            color: AppColors.grey4D)),
+                  ])),
                   Gap(4.sp),
                   Text(
                       waterIndex.limit != null
@@ -420,9 +422,9 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) => const ItemAlarmWater(),
               separatorBuilder: (context, index) => const Divider(
-                color: AppColors.greyCC,
-                height: 0,
-              ),
+                    color: AppColors.greyCC,
+                    height: 0,
+                  ),
               itemCount: 3)
         ],
       ),
@@ -456,7 +458,7 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
           SizedBox(
             height: 1.sw / 2,
             child: SfCartesianChart(
-              // Enable legend
+                // Enable legend
                 legend: const Legend(isVisible: false),
                 primaryXAxis: CategoryAxis(
                   labelStyle: AppTextStyle.textXs.copyWith(
@@ -513,7 +515,7 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
                       name: 'Công suất PV',
                       // Enable data label
                       dataLabelSettings:
-                      const DataLabelSettings(isVisible: false)),
+                          const DataLabelSettings(isVisible: false)),
                 ]),
           ),
         ],
@@ -551,35 +553,39 @@ class _OverviewWaterState extends State<OverviewWater> with TickerProviderStateM
             children: [
               Expanded(
                   child: warningWidget(
-                    name: "1",
-                    colors: AppColors.greyAE.withOpacity(0.7),
-                    onPress: () =>
-                        Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.normal),
-                  )),
+                name: "1",
+                colors: AppColors.greyAE.withOpacity(0.7),
+                onPress: () => Navigator.pushNamed(
+                    context, RouteName.indexWarning,
+                    arguments: IndexType.normal),
+              )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
-                    name: "1",
-                    colors: AppColors.green50.withOpacity(0.3),
-                    onPress: () =>
-                        Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.good),
-                  )),
+                name: "1",
+                colors: AppColors.green50.withOpacity(0.3),
+                onPress: () => Navigator.pushNamed(
+                    context, RouteName.indexWarning,
+                    arguments: IndexType.good),
+              )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
-                    name: "1",
-                    colors: AppColors.yellow57.withOpacity(0.7),
-                    onPress: () =>
-                        Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.high),
-                  )),
+                name: "1",
+                colors: AppColors.yellow57.withOpacity(0.7),
+                onPress: () => Navigator.pushNamed(
+                    context, RouteName.indexWarning,
+                    arguments: IndexType.high),
+              )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
-                    name: "1",
-                    colors: AppColors.red14.withOpacity(0.7),
-                    onPress: () =>
-                        Navigator.pushNamed(context, RouteName.indexWarning, arguments: IndexType.very_hight),
-                  )),
+                name: "1",
+                colors: AppColors.red14.withOpacity(0.7),
+                onPress: () => Navigator.pushNamed(
+                    context, RouteName.indexWarning,
+                    arguments: IndexType.very_hight),
+              )),
             ],
           ),
         ],

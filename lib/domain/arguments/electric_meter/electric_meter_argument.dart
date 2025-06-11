@@ -3,7 +3,7 @@ import 'package:solar_energy/data/dto/power_station/response/power_station_respo
 
 import '../../../data/dto/project/response/project_response.dart';
 
-class ElectricMeterArgument{
+class ElectricMeterArgument {
   final ElectricType type;
   final PowerStationResponse project;
 

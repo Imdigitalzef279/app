@@ -34,16 +34,16 @@ class LoginCubit extends Cubit<LoginState> {
         clause: clause ?? state.clause));
   }
 
-  void showPass(){
+  void showPass() {
     emit(state.copyWith(showPass: !state.showPass));
   }
 
-  bool checkClause(){
+  bool checkClause() {
     return state.clause;
   }
 
-  bool checkUserName(){
-    if(state.userName == ""){
+  bool checkUserName() {
+    if (state.userName == "") {
       emit(state.copyWith(errorUserName: "Không được để trống"));
       return false;
     }
@@ -51,21 +51,21 @@ class LoginCubit extends Cubit<LoginState> {
     return true;
   }
 
-  bool checkPassword(){
-    if(state.password == ""){
+  bool checkPassword() {
+    if (state.password == "") {
       emit(state.copyWith(errorPassword: "Không được để trống"));
-    return false;
-  }
+      return false;
+    }
     emit(state.copyWith(errorPassword: ""));
     return true;
   }
 
-  bool checkLogin(){
-    return   checkUserName() && checkPassword() && checkClause();
+  bool checkLogin() {
+    return checkUserName() && checkPassword() && checkClause();
   }
 
   Future<void> login() async {
-    if(checkLogin()){
+    if (checkLogin()) {
       try {
         emit(state.copyWith(request: Result(status: LoadStatus.loading)));
         changeRequest();
@@ -84,7 +84,9 @@ class LoginCubit extends Cubit<LoginState> {
           emit(state.copyWith(request: Result(status: LoadStatus.failure)));
           return;
         }
-        emit(state.copyWith(request: Result(status: LoadStatus.failure),error:  response.error));
+        emit(state.copyWith(
+            request: Result(status: LoadStatus.failure),
+            error: response.error));
         return;
       } catch (e) {
         emit(state.copyWith(request: Result(status: LoadStatus.failure)));
@@ -93,7 +95,7 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  Future<bool> checkToken() async{
+  Future<bool> checkToken() async {
     emit(state.copyWith(request: Result(status: LoadStatus.loading)));
     final token = await sharedPreferences.getAccessToken();
     if (token.isNotEmpty) {
@@ -123,7 +125,8 @@ class LoginCubit extends Cubit<LoginState> {
         emit(state.copyWith(request: Result(status: LoadStatus.failure)));
         return;
       }
-      emit(state.copyWith(request: Result(status: LoadStatus.failure),error:  response.error));
+      emit(state.copyWith(
+          request: Result(status: LoadStatus.failure), error: response.error));
       return;
     } catch (e) {
       emit(state.copyWith(request: Result(status: LoadStatus.failure)));

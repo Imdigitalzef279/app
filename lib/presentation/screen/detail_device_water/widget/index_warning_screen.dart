@@ -51,17 +51,15 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
                   onTap: () {
                     Navigator.pushNamed(context, RouteName.detailDeviceWater);
                   },
-                  child: Column(
-                    children: [
-                      itemDevice(
-                          nameDevice: "100KTL - M2(COM1-12) - Đo đầu nguồn",
-                          serialNumber: "mbl8320ML",
-                          statusDevice: widget.indexType.title,
-                          typeDevice: "Van nước",
-                          expirationDate: "05/01/2026"),
-                      8.verticalSpace
-                    ]
-                  ),
+                  child: Column(children: [
+                    itemDevice(
+                        nameDevice: "100KTL - M2(COM1-12) - Đo đầu nguồn",
+                        serialNumber: "mbl8320ML",
+                        statusDevice: widget.indexType.title,
+                        typeDevice: "Van nước",
+                        expirationDate: "05/01/2026"),
+                    8.verticalSpace
+                  ]),
                 ),
               ),
             )
@@ -113,8 +111,8 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
                 flex: 2,
                 child: Text(
                   "Trạng thái",
-                  style: AppTextStyle.textXs.copyWith(
-                      color: AppColors.textPrimary.withOpacity(0.5)),
+                  style: AppTextStyle.textXs
+                      .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
                 ),
               ),
               12.verticalSpace,
@@ -123,7 +121,8 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
                     decoration: BoxDecoration(
                       color: AppColors.green50,
                       borderRadius: BorderRadius.circular(4.r),
@@ -156,8 +155,8 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
           flex: 2,
           child: Text(
             name,
-            style: AppTextStyle.textXs.copyWith(
-                color: AppColors.textPrimary.withOpacity(0.5)),
+            style: AppTextStyle.textXs
+                .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
           ),
         ),
         12.verticalSpace,
@@ -166,8 +165,8 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
           child: Text(
             content,
             style: AppTextStyle.textXs.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w400,
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w400,
             ),
           ),
         )

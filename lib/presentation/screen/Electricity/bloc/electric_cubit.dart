@@ -18,20 +18,32 @@ class ElectricCubit extends Cubit<ElectricState> {
   final electricRepository = GetIt.instance<ElectricRepository>();
   final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
 
-  Future<void> getElectric(int projectId) async{
-    try{
-      emit(state.copyWith(response: Result(status: LoadStatus.loading), loadStatus: LoadStatus.loading));
+  Future<void> getElectric(int projectId) async {
+    try {
+      emit(state.copyWith(
+          response: Result(status: LoadStatus.loading),
+          loadStatus: LoadStatus.loading));
       final response = await electricRepository.getElectric(projectId);
-      if(response.isSuccess && response.data != null){
-        emit(state.copyWith(response: Result(status: LoadStatus.success, data: response.data!.data.first), loadStatus: LoadStatus.success));
+      if (response.isSuccess && response.data != null) {
+        emit(state.copyWith(
+            response: Result(
+                status: LoadStatus.success, data: response.data!.data.first),
+            loadStatus: LoadStatus.success));
 
         return;
       }
-      emit(state.copyWith(response: Result(status: LoadStatus.failure,), loadStatus: LoadStatus.failure ));
+      emit(state.copyWith(
+          response: Result(
+            status: LoadStatus.failure,
+          ),
+          loadStatus: LoadStatus.failure));
       return;
-
-    }catch (e){
-      emit(state.copyWith(response: Result(status: LoadStatus.failure,), loadStatus: LoadStatus.failure));
+    } catch (e) {
+      emit(state.copyWith(
+          response: Result(
+            status: LoadStatus.failure,
+          ),
+          loadStatus: LoadStatus.failure));
     }
   }
 }

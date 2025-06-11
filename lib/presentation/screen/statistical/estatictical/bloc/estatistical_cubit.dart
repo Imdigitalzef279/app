@@ -34,7 +34,8 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
     if (response.isSuccess) {
       if (response.data?.data.isNotEmpty ?? false) {
         final listData = response.data?.data.reversed;
-        gridPowers = listData!.map((e) => SalesData(
+        gridPowers = listData!
+            .map((e) => SalesData(
                 getTimeLine(e.updateTime),
                 (double.tryParse(e.paramEpi.toString()) ?? 0.0) *
                     (double.tryParse(e.ct.toString()) ?? 0.0)))
@@ -46,10 +47,15 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
 
         return;
       }
-      emit(state.copyWith(resultChart: Result(status: LoadStatus.failure, error: "Không có dữ liệu.")));
+      emit(state.copyWith(
+          resultChart:
+              Result(status: LoadStatus.failure, error: "Không có dữ liệu.")));
       return;
     }
-    emit(state.copyWith(resultChart: Result(status: LoadStatus.failure, error: "đã xảy ra lỗi vui lòng liên hệ với quản trị viên.")));
+    emit(state.copyWith(
+        resultChart: Result(
+            status: LoadStatus.failure,
+            error: "đã xảy ra lỗi vui lòng liên hệ với quản trị viên.")));
     return;
   }
 
@@ -57,8 +63,10 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
     emit(state.copyWith(request: request));
   }
 
-  void changeMeterId({int ? meterId}){
-    emit(state.copyWith(meterId: meterId ?? this.meterId, request: state.request.copyWith(meterId: meterId ?? this.meterId)));
+  void changeMeterId({int? meterId}) {
+    emit(state.copyWith(
+        meterId: meterId ?? this.meterId,
+        request: state.request.copyWith(meterId: meterId ?? this.meterId)));
   }
 
   void changDateTime(DateTime dateTime) {
@@ -68,8 +76,10 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
         return emit(state.copyWith(
             request: state.request.copyWith(
                 searchType: SearchType.hour,
-                fromDate: "${dateTime.year}-${dateTime.month}-${dateTime.day}T00:00:00",
-                toDate: "${dateTime.year}-${dateTime.month}-${dateTime.day}T23:59:59")));
+                fromDate:
+                    "${dateTime.year}-${dateTime.month}-${dateTime.day}T00:00:00",
+                toDate:
+                    "${dateTime.year}-${dateTime.month}-${dateTime.day}T23:59:59")));
       case DateRangePickerView.year:
         return emit(state.copyWith(
             request: state.request.copyWith(
@@ -83,7 +93,8 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
                 searchType: SearchType.month,
                 fromDate:
                     DateFormat("MM/yyyy").format(DateTime(dateTime.year, 1)),
-                toDate: DateFormat("MM/yyyy").format(DateTime(dateTime.year, 12)))));
+                toDate: DateFormat("MM/yyyy")
+                    .format(DateTime(dateTime.year, 12)))));
       default:
     }
   }

@@ -80,9 +80,7 @@ class _DeviceIndexScreenState extends State<DeviceIndexScreen> {
         runSpacing: 12.sp,
         spacing: 8.sp,
         children: List.generate(
-            indexItem.length,
-                (index) =>
-                itemWaterIndex(indexItem[index])),
+            indexItem.length, (index) => itemWaterIndex(indexItem[index])),
       ),
     );
   }

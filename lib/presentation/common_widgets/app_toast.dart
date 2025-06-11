@@ -59,32 +59,32 @@ class AppToast {
               ),
               child: icon != null
                   ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    icon,
-                    color: AppColors.white,
-                    size: 25.r,
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: AppTextStyle.textSm.copyWith(
-                        color: AppColors.white,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          icon,
+                          color: AppColors.white,
+                          size: 25.r,
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: AppTextStyle.textSm.copyWith(
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Center(
+                      child: Text(
+                        title,
+                        style: AppTextStyle.textSm.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              )
-                  : Center(
-                child: Text(
-                  title,
-                  style: AppTextStyle.textSm.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ),
             ),
           ),
         ),
@@ -108,4 +108,3 @@ class AppToast {
     _toastEntries.clear();
   }
 }
-

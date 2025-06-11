@@ -57,10 +57,9 @@ class ApiInterceptors extends InterceptorsWrapper {
             ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
         return;
       });
-
     }
 
-    if (response?.statusCode != null){
+    if (response?.statusCode != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
         AppToast.dismissAll();

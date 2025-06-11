@@ -58,102 +58,104 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                 borderRadius: BorderRadius.only(
                     bottomRight: Radius.circular(16.r),
                     bottomLeft: Radius.circular(16.r))),
-            child: Column(
-              children: [
-                ValueListenableBuilder(
-                  valueListenable: selectTab,
-                  builder: (context, value, child) => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TabSelectWidget(
-                        title: "Tất cả",
-                        quantity: 3,
-                        values: "Tất cả",
-                        selectValues: selectTab.value,
-                        callBack: (value) {
-                          selectTab.value = value;
-                        },
-                        iconTab: Assets.icons.allIconLine.svg(
-                            width: 16,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.greyAE.withOpacity(0.7),
-                                BlendMode.srcIn)),
-                        iconSelectTab: Assets.icons.allIconBold.svg(
-                            width: 16,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.greyAE.withOpacity(0.7),
-                                BlendMode.srcIn)),
-                      ),
-                      const VerticalDivider(
-                        width: 1,
-                        thickness: 1,
-                        color: Colors.grey,
-                      ),
-                      TabSelectWidget(
-                        title: "Bình thường",
-                        quantity: 3,
-                        values: "Bình thường",
-                        selectValues: selectTab.value,
-                        callBack: (value) {
-                          selectTab.value = value;
-                        },
-                        iconTab: Assets.icons.checkCircleLine.svg(
-                            width: 16,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.green50.withOpacity(0.3),
-                                BlendMode.srcIn)),
-                        iconSelectTab: Assets.icons.checkCircleBold.svg(
-                            width: 16,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.green50.withOpacity(0.3),
-                                BlendMode.srcIn)),
-                      ),
-                      const VerticalDivider(
-                          width: 1, thickness: 1, color: Colors.grey),
-                      TabSelectWidget(
-                        title: "Bị lỗi",
-                        quantity: 0,
-                        values: "Bị lỗi",
-                        selectValues: selectTab.value,
-                        callBack: (value) {
-                          selectTab.value = value;
-                        },
-                        iconTab: Assets.icons.exclamationLine.svg(
-                            width: 16,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.red14.withOpacity(0.7),
-                                BlendMode.srcIn)),
-                        iconSelectTab: Assets.icons.exclamationBold.svg(
-                            width: 16,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.red14.withOpacity(0.7),
-                                BlendMode.srcIn)),
-                      ),
-                      const VerticalDivider(
-                          width: 1, thickness: 1, color: Colors.grey),
-                      TabSelectWidget(
-                        title: "Ngoại tuyến",
-                        quantity: 0,
-                        values: "Ngoại tuyến",
-                        selectValues: selectTab.value,
-                        callBack: (value) {
-                          selectTab.value = value;
-                        },
-                        iconSelectTab: Assets.icons.wifiXmark.svg(
-                            width: 16,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.yellow57.withOpacity(0.7),
-                                BlendMode.srcIn)),
-                        iconTab: Assets.icons.wifiXmark.svg(
-                            width: 16,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.yellow57.withOpacity(0.7),
-                                BlendMode.srcIn)),
-                      ),
-                    ],
+            child: BlocBuilder<HomePageCubit, HomePageState>(
+              builder:(context, state) =>  Column(
+                children: [
+                  ValueListenableBuilder(
+                    valueListenable: selectTab,
+                    builder: (context, value, child) => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TabSelectWidget(
+                          title: "Tất cả",
+                          quantity: _cubit.state.allStation,
+                          values: "Tất cả",
+                          selectValues: selectTab.value,
+                          callBack: (value) {
+                            selectTab.value = value;
+                          },
+                          iconTab: Assets.icons.allIconLine.svg(
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.greyAE.withOpacity(0.7),
+                                  BlendMode.srcIn)),
+                          iconSelectTab: Assets.icons.allIconBold.svg(
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.greyAE.withOpacity(0.7),
+                                  BlendMode.srcIn)),
+                        ),
+                        const VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey,
+                        ),
+                        TabSelectWidget(
+                          title: "Bình thường",
+                          quantity: _cubit.state.active,
+                          values: "Bình thường",
+                          selectValues: selectTab.value,
+                          callBack: (value) {
+                            selectTab.value = value;
+                          },
+                          iconTab: Assets.icons.checkCircleLine.svg(
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.green50.withOpacity(0.3),
+                                  BlendMode.srcIn)),
+                          iconSelectTab: Assets.icons.checkCircleBold.svg(
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.green50.withOpacity(0.3),
+                                  BlendMode.srcIn)),
+                        ),
+                        const VerticalDivider(
+                            width: 1, thickness: 1, color: Colors.grey),
+                        TabSelectWidget(
+                          title: "Bị lỗi",
+                          quantity: _cubit.state.warning,
+                          values: "Bị lỗi",
+                          selectValues: selectTab.value,
+                          callBack: (value) {
+                            selectTab.value = value;
+                          },
+                          iconTab: Assets.icons.exclamationLine.svg(
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.red14.withOpacity(0.7),
+                                  BlendMode.srcIn)),
+                          iconSelectTab: Assets.icons.exclamationBold.svg(
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.red14.withOpacity(0.7),
+                                  BlendMode.srcIn)),
+                        ),
+                        const VerticalDivider(
+                            width: 1, thickness: 1, color: Colors.grey),
+                        TabSelectWidget(
+                          title: "Ngoại tuyến",
+                          quantity: _cubit.state.loss,
+                          values: "Ngoại tuyến",
+                          selectValues: selectTab.value,
+                          callBack: (value) {
+                            selectTab.value = value;
+                          },
+                          iconSelectTab: Assets.icons.wifiXmark.svg(
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.yellow57.withOpacity(0.7),
+                                  BlendMode.srcIn)),
+                          iconTab: Assets.icons.wifiXmark.svg(
+                              width: 16,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.yellow57.withOpacity(0.7),
+                                  BlendMode.srcIn)),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 

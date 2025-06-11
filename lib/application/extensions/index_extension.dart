@@ -1,6 +1,6 @@
 import 'package:solar_energy/application/enums/index_type.dart';
 
-extension IndexExtension on IndexType{
+extension IndexExtension on IndexType {
   String get title {
     switch (this) {
       case IndexType.normal:

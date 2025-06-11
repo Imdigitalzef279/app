@@ -14,10 +14,11 @@ class ListWarningDevice extends StatefulWidget {
 class _ListWarningDeviceState extends State<ListWarningDevice> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        itemBuilder: (context, index) => const ItemAlarmWater(),
-        separatorBuilder: (context, index) => Gap(12.h),
-        itemCount: 10));
+    return SafeArea(
+        child: ListView.separated(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            itemBuilder: (context, index) => const ItemAlarmWater(),
+            separatorBuilder: (context, index) => Gap(12.h),
+            itemCount: 10));
   }
 }

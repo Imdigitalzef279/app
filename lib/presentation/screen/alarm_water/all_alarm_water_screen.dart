@@ -29,7 +29,7 @@ class _AllAlarmWaterScreenState extends State<AllAlarmWaterScreen> {
       ),
       body: SafeArea(
         child: ListView.separated(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             itemBuilder: (context, index) => const ItemAlarmWater(),
             separatorBuilder: (context, index) => Gap(12.h),
             itemCount: 10),

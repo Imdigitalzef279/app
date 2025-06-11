@@ -36,23 +36,26 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       backgroundColor: AppColors.greyFB,
       body: BlocConsumer<AccountCubit, AccountState>(
-        listener: (BuildContext context, AccountState state){
+        listener: (BuildContext context, AccountState state) {
           state.request.when(
-              loading: () => BlocProvider.of<AppCubit>(context).showLoading(),
-              success: (data) => BlocProvider.of<AppCubit>(context).hideShowLoading(),
-              error: (error) => BlocProvider.of<AppCubit>(context).hideShowLoading(),
+            loading: () => BlocProvider.of<AppCubit>(context).showLoading(),
+            success: (data) =>
+                BlocProvider.of<AppCubit>(context).hideShowLoading(),
+            error: (error) =>
+                BlocProvider.of<AppCubit>(context).hideShowLoading(),
           );
         },
-        builder: (context, state) =>  SafeArea(
+        builder: (context, state) => SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: Column(
               children: [
                 BasicAccountWidget(
                   email: state.request.data?.email ?? "Không có thông tin",
-                  userName: state.request.data?.userName ?? "Không có thông tin",
+                  userName:
+                      state.request.data?.userName ?? "Không có thông tin",
                   imageLink:
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                      "https://cdn-icons-png.flaticon.com/512/149/149071.png",
                 ),
                 SizedBox(
                   height: 12.h,
@@ -65,7 +68,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         Icons.account_circle,
                         size: 22.w,
                       ),
-                      optionName: "${state.request.data?.surname} ${state.request.data?.name}",
+                      optionName:
+                          "${state.request.data?.surname} ${state.request.data?.name}",
                     ),
                     const Divider(
                       color: AppColors.greyFB,
@@ -75,7 +79,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         Icons.attach_email,
                         size: 22.w,
                       ),
-                      optionName: state.request.data?.email ?? "Không có thông tin",
+                      optionName:
+                          state.request.data?.email ?? "Không có thông tin",
                     ),
                     const Divider(
                       color: AppColors.greyFB,
@@ -85,7 +90,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         Icons.phone_android,
                         size: 22.w,
                       ),
-                      optionName: state.request.data?.phoneNumber ?? "Không có thông tin",
+                      optionName: state.request.data?.phoneNumber ??
+                          "Không có thông tin",
                     )
                   ],
                 )),

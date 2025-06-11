@@ -13,10 +13,12 @@ class DetailDeviceWaterScreen extends StatefulWidget {
   const DetailDeviceWaterScreen({super.key});
 
   @override
-  State<DetailDeviceWaterScreen> createState() => _DetailDeviceWaterScreenState();
+  State<DetailDeviceWaterScreen> createState() =>
+      _DetailDeviceWaterScreenState();
 }
 
-class _DetailDeviceWaterScreenState extends State<DetailDeviceWaterScreen> with TickerProviderStateMixin{
+class _DetailDeviceWaterScreenState extends State<DetailDeviceWaterScreen>
+    with TickerProviderStateMixin {
   late final TabController _tabController;
 
   @override
@@ -25,25 +27,26 @@ class _DetailDeviceWaterScreenState extends State<DetailDeviceWaterScreen> with 
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(
-          backgroundColor: AppColors.white,
-          scrolledUnderElevation: 0,
-          elevation: 0,
-          title: Text(
-            "100KTL - M2(COM1-12)",
-            style: AppTextStyle.textBase.copyWith(
-                color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-          ),
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        title: Text(
+          "100KTL - M2(COM1-12)",
+          style: AppTextStyle.textBase.copyWith(
+              color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
-      body: SafeArea(child: Column(
+      ),
+      body: SafeArea(
+          child: Column(
         children: [
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            decoration: const BoxDecoration(
-                color: AppColors.white),
+            decoration: const BoxDecoration(color: AppColors.white),
             child: TabBar(
                 tabs: const <Widget>[
                   Tab(
@@ -54,7 +57,8 @@ class _DetailDeviceWaterScreenState extends State<DetailDeviceWaterScreen> with 
                   ),
                 ],
                 controller: _tabController,
-                labelStyle: AppTextStyle.textSm.copyWith(color: AppColors.blueEA),
+                labelStyle:
+                    AppTextStyle.textSm.copyWith(color: AppColors.blueEA),
                 indicatorColor: AppColors.blueFD,
                 unselectedLabelColor: AppColors.grey73,
                 indicator: BoxDecoration(
@@ -68,9 +72,9 @@ class _DetailDeviceWaterScreenState extends State<DetailDeviceWaterScreen> with 
             child: TabBarView(
               controller: _tabController,
               children: [
-              BlocProvider(
-                  create: (context) => ManagerWaterCubit(),
-                  child: const DeviceIndexScreen()),
+                BlocProvider(
+                    create: (context) => ManagerWaterCubit(),
+                    child: const DeviceIndexScreen()),
                 const ListWarningDevice()
               ],
             ),

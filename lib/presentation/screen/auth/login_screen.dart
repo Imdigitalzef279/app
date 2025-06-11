@@ -32,7 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
     cubit = BlocProvider.of(context);
 
     checkToken();
-
   }
 
   Future<void> checkToken() async {
@@ -41,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeWidget()),
-            (route) => false,
+        (route) => false,
       );
     }
   }
@@ -59,25 +58,33 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       backgroundColor: AppColors.white,
       body: BlocListener<LoginCubit, LoginState>(
-        listenWhen: (previous, current) => previous.request.status != current.request.status,
+        listenWhen: (previous, current) =>
+            previous.request.status != current.request.status,
         listener: (context, state) async {
           if (state.request.status == LoadStatus.loading) {
-            showDialog(context: context, builder: (context) => const AppLoading(), barrierDismissible: false);
-            Future.delayed(const Duration(seconds: 15),() {
-              if(Navigator.canPop(context)){
-                Navigator.pop(context);
-                cubit.state.copyWith(error: "Kết nối không ổn định !!!");
-;              }
-              if(state.error == "Kết nối không ổn định !!!"){
-                AppToast.showToastError(title: state.error);
-              }
-            },);
+            showDialog(
+                context: context,
+                builder: (context) => const AppLoading(),
+                barrierDismissible: false);
+            Future.delayed(
+              const Duration(seconds: 15),
+              () {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                  cubit.state.copyWith(error: "Kết nối không ổn định !!!");
+                  ;
+                }
+                if (state.error == "Kết nối không ổn định !!!") {
+                  AppToast.showToastError(title: state.error);
+                }
+              },
+            );
           }
           if (state.request.status == LoadStatus.failure) {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
-            if(state.error != ""){
+            if (state.error != "") {
               AppToast.showToastError(title: state.error);
             }
           }
@@ -154,9 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: EdgeInsets.symmetric(horizontal: 42.w),
                             child: const Divider(color: AppColors.greyE5),
                           ),
-
                           loginTest(),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -274,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
               title: "Đăng nhập",
               color: AppColors.blue,
               fontSize: 12.sp,
-              heightText: 16.sp/12.sp,
+              heightText: 16.sp / 12.sp,
               textColor: AppColors.white,
               radius: 8.r,
               contentPadding:
@@ -284,16 +289,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget buttonRegister() {
     return InkWell(
-      borderRadius: BorderRadius.circular(4.r),
-      onTap: () {
-        Navigator.pushNamed(context, RouteName.registerWidget);
-      },
-      child: Ink(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
-        child: Text("Chưa có tài khoản? Đăng ký ngay", style: AppTextStyle.textSm.copyWith(color: AppColors.blue),),
-      )
-    );
+        borderRadius: BorderRadius.circular(4.r),
+        onTap: () {
+          Navigator.pushNamed(context, RouteName.registerWidget);
+        },
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
+          child: Text(
+            "Chưa có tài khoản? Đăng ký ngay",
+            style: AppTextStyle.textSm.copyWith(color: AppColors.blue),
+          ),
+        ));
   }
 
   Widget loginTest() {
@@ -305,8 +312,10 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Ink(
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12.h),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
-          child: Text("Đăng nhập thử nghiệm", style: AppTextStyle.textSm.copyWith(color: AppColors.blue),),
-        )
-    );
+          child: Text(
+            "Đăng nhập thử nghiệm",
+            style: AppTextStyle.textSm.copyWith(color: AppColors.blue),
+          ),
+        ));
   }
 }

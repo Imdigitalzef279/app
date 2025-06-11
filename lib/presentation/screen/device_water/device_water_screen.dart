@@ -58,10 +58,10 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
 
   Widget itemDevice(
       {String? nameDevice,
-        String? serialNumber,
-        String? typeDevice,
-        String? statusDevice,
-        String? expirationDate}) {
+      String? serialNumber,
+      String? typeDevice,
+      String? statusDevice,
+      String? expirationDate}) {
     return Ink(
       padding: EdgeInsets.all(12.sp),
       decoration: BoxDecoration(
@@ -87,8 +87,7 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
               ),
               const Spacer(),
               Container(
-                padding:
-                EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4.sp),
                   color: const Color(0xFFff9f43).withOpacity(0.1),
@@ -116,8 +115,8 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
                 flex: 2,
                 child: Text(
                   "Trạng thái",
-                  style: AppTextStyle.textXs.copyWith(
-                      color: AppColors.textPrimary.withOpacity(0.5)),
+                  style: AppTextStyle.textXs
+                      .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
                 ),
               ),
               12.verticalSpace,
@@ -126,7 +125,8 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 4.sp, vertical: 2.sp),
                     decoration: BoxDecoration(
                       color: AppColors.green50,
                       borderRadius: BorderRadius.circular(4.r),
@@ -159,8 +159,8 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
           flex: 2,
           child: Text(
             name,
-            style: AppTextStyle.textXs.copyWith(
-                color: AppColors.textPrimary.withOpacity(0.5)),
+            style: AppTextStyle.textXs
+                .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
           ),
         ),
         12.verticalSpace,
