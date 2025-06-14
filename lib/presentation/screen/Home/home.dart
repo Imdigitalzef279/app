@@ -7,6 +7,7 @@ import 'package:solar_energy/presentation/screen/account_information/Bloc/accoun
 import 'package:solar_energy/presentation/screen/account_information/account_screen.dart';
 import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.dart';
 import 'package:solar_energy/presentation/screen/home_page/home_page_widget.dart';
+import 'package:solar_energy/presentation/screen/service_solar/bottom_contact_info.dart';
 import 'package:solar_energy/presentation/screen/service_solar/widget/service_screen.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -32,9 +33,19 @@ class _HomeWidgetState extends State<HomeWidget> {
       body: _buildBody(),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (index) {
-          setState(() {
-            indexPage = index;
-          });
+          if (index == 1) {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (builder) {
+                return const BottomContactInfo();
+              },
+            );
+          } else {
+            setState(() {
+              indexPage = index;
+            });
+          }
         },
         selectedIndex: indexPage,
         backgroundColor: Colors.white,
@@ -68,14 +79,14 @@ class _HomeWidgetState extends State<HomeWidget> {
     );
   }
 
-  Widget _buildBody() {
+  _buildBody() {
     switch (indexPage) {
       case 0:
         return BlocProvider(
             create: (BuildContext context) => HomePageCubit(),
             child: const HomePageWidget());
       case 1:
-        return const ServiceScreen();
+        return;
       case 2:
         return BlocProvider(
           create: (context) => AccountCubit(),
