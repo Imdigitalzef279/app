@@ -136,17 +136,17 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       runSpacing: 12.w,
                       spacing: 8.w,
                       children: [
-                        itemService(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, RouteName.managerWater);
-                            },
-                            icon: Assets.icons.water.svg(
-                                width: 22.w,
-                                height: 22.w,
-                                colorFilter: const ColorFilter.mode(
-                                    AppColors.blueEA, BlendMode.srcIn)),
-                            name: "Nước sạch"),
+                        // itemService(
+                        //     onTap: () {
+                        //       Navigator.pushNamed(
+                        //           context, RouteName.managerWater);
+                        //     },
+                        //     icon: Assets.icons.water.svg(
+                        //         width: 22.w,
+                        //         height: 22.w,
+                        //         colorFilter: const ColorFilter.mode(
+                        //             AppColors.blueEA, BlendMode.srcIn)),
+                        //     name: "Nước sạch"),
                         itemService(
                             onTap: () {
                               Navigator.pushNamed(
@@ -175,21 +175,21 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                 colorFilter: const ColorFilter.mode(
                                     AppColors.blueEA, BlendMode.srcIn)),
                             name: "Điện mặt trời"),
-                        itemService(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    const UnderDevelopmentDialog(
-                                        isLandscape: false),
-                              );
-                            },
-                            icon: Assets.icons.air.svg(
-                                width: 22.w,
-                                height: 22.w,
-                                colorFilter: const ColorFilter.mode(
-                                    AppColors.blueEA, BlendMode.srcIn)),
-                            name: "Không khí"),
+                        // itemService(
+                        //     onTap: () {
+                        //       showDialog(
+                        //         context: context,
+                        //         builder: (context) =>
+                        //             const UnderDevelopmentDialog(
+                        //                 isLandscape: false),
+                        //       );
+                        //     },
+                        //     icon: Assets.icons.air.svg(
+                        //         width: 22.w,
+                        //         height: 22.w,
+                        //         colorFilter: const ColorFilter.mode(
+                        //             AppColors.blueEA, BlendMode.srcIn)),
+                        //     name: "Không khí"),
                       ],
                     )
                   ],
@@ -207,7 +207,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     return GestureDetector(
       onTap: () => onTap?.call(),
       child: SizedBox(
-        width: (1.sw - 80.w) / 4,
+        // width: (1.sw - 80.w) / 4,
+        width: (1.sw - 80.w) / 2,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
