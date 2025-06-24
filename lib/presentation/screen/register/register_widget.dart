@@ -55,6 +55,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
           backgroundColor: AppColors.blueF8,
         ),
         body: BlocListener<RegisterCubit, RegisterState>(
+          listenWhen: (previous, current) => previous.loadStatus != current.loadStatus,
           listener: (BuildContext context, RegisterState state) {
             if (state.loadStatus == LoadStatus.loading) {
               BlocProvider.of<AppCubit>(context).showLoading();
@@ -143,8 +144,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                        previous.fullName != current.fullName ||
-                        previous.fullNameError != current.fullNameError,
+                        previous.name != current.name ||
+                        previous.nameError != current.nameError,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
                       prefixIcon: Icon(
@@ -153,15 +154,42 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                         color: AppColors.blueF8,
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 16.h),
-                      hintText: "Họ và tên",
+                      hintText: "Tên",
                       maxLine: 1,
-                      errorMessage: state.fullNameError,
+                      errorMessage: state.nameError,
                       colorBorder: AppColors.white,
                       backgroundColor: AppColors.greyFB,
                       textStyleHint: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary.withOpacity(0.5)),
                       onChanged: (value) => cubit.changeQuery(name: value),
-                      defaultValue: state.fullName,
+                      defaultValue: state.name,
+                      textStyleInput: AppTextStyle.textSm.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Gap(12.h),
+                  BlocBuilder<RegisterCubit, RegisterState>(
+                    buildWhen: (previous, current) =>
+                    previous.surname != current.surname ||
+                        previous.surnameError != current.surnameError,
+                    builder: (context, state) => CustomLabelTextField(
+                      radius: 8.r,
+                      prefixIcon: Icon(
+                        Icons.person,
+                        size: 24.r,
+                        color: AppColors.blueF8,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(vertical: 16.h),
+                      hintText: "Tên đệm",
+                      maxLine: 1,
+                      errorMessage: state.surnameError,
+                      colorBorder: AppColors.white,
+                      backgroundColor: AppColors.greyFB,
+                      textStyleHint: AppTextStyle.textSm.copyWith(
+                          color: AppColors.textPrimary.withOpacity(0.5)),
+                      onChanged: (value) => cubit.changeQuery(surname: value),
+                      defaultValue: state.surname,
                       textStyleInput: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600),
@@ -313,71 +341,12 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Gap(12.h),
-                  BlocBuilder<RegisterCubit, RegisterState>(
-                    buildWhen: (previous, current) =>
-                        previous.projectName != current.projectName ||
-                        previous.projectNameError != current.projectNameError,
-                    builder: (context, state) => CustomLabelTextField(
-                      radius: 8.r,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
-                      label: "Tên dự án",
-                      maxLine: 3,
-                      textStyleLabel: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600),
-                      obscureText: false,
-                      errorMessage: state.projectNameError,
-                      colorBorder: AppColors.white,
-                      backgroundColor: AppColors.greyFB,
-                      textStyleHint: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary.withOpacity(0.5)),
-                      onChanged: (value) =>
-                          cubit.changeQuery(projectName: value),
-                      defaultValue: state.projectName,
-                      textStyleInput: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Gap(12.h),
-                  BlocBuilder<RegisterCubit, RegisterState>(
-                    buildWhen: (previous, current) =>
-                        previous.descriptionProject !=
-                            current.descriptionProject ||
-                        previous.descriptionProjectError !=
-                            current.descriptionProjectError,
-                    builder: (context, state) => CustomLabelTextField(
-                      radius: 8.r,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
-                      label: "Mô tả dự án",
-                      maxLine: 10,
-                      textStyleLabel: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600),
-                      hintText: "Mô tả...",
-                      obscureText: false,
-                      errorMessage: state.descriptionProjectError,
-                      colorBorder: AppColors.white,
-                      backgroundColor: AppColors.greyFB,
-                      textStyleHint: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary.withOpacity(0.5)),
-                      onChanged: (value) =>
-                          cubit.changeQuery(descriptionProject: value),
-                      defaultValue: state.descriptionProject,
-                      textStyleInput: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
                   Gap(32.h),
                   button(
                     title: "Đăng Ký",
                     callBack: () async {
                       if (cubit.validate()) {
-                        await cubit.sendMail();
+                        await cubit.registerUser();
                       }
                     },
                   ),

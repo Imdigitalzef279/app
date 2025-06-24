@@ -9,6 +9,7 @@ import 'package:solar_energy/data/dto/electric/response/electric_meter_response.
 import 'package:solar_energy/data/dto/lasted_log_data/response/lasted_log_data_response.dart';
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 import 'package:solar_energy/data/dto/profile/profile_response.dart';
+import 'package:solar_energy/data/dto/register/request/user_request.dart';
 import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
 import 'package:solar_energy/data/dto/solar_electric/response/solar_electric_response.dart';
 
@@ -51,4 +52,9 @@ abstract class ApiClient {
   Future<PaginationResponse<ElectricMeter>> getElectric(
     @Query('ProjectId') int projectId,
   );
+
+  @POST('api/identity/users')
+  Future<ProfileResponse> registerUser(
+      @Body() UserRequest request,
+      );
 }

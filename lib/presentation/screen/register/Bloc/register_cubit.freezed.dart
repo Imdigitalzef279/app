@@ -18,8 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$RegisterState {
   String get gmail => throw _privateConstructorUsedError;
   String get gmailError => throw _privateConstructorUsedError;
-  String get fullName => throw _privateConstructorUsedError;
-  String get fullNameError => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get nameError => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
   String get phoneNumberError => throw _privateConstructorUsedError;
   String get accountName => throw _privateConstructorUsedError;
@@ -28,10 +28,8 @@ mixin _$RegisterState {
   String get passwordError => throw _privateConstructorUsedError;
   String get confirmPassword => throw _privateConstructorUsedError;
   String get confirmPasswordError => throw _privateConstructorUsedError;
-  String get projectName => throw _privateConstructorUsedError;
-  String get projectNameError => throw _privateConstructorUsedError;
-  String get descriptionProject => throw _privateConstructorUsedError;
-  String get descriptionProjectError => throw _privateConstructorUsedError;
+  String get surname => throw _privateConstructorUsedError;
+  String get surnameError => throw _privateConstructorUsedError;
   String get message => throw _privateConstructorUsedError;
   bool get showPass => throw _privateConstructorUsedError;
   bool get showPassConfirm => throw _privateConstructorUsedError;
@@ -53,8 +51,8 @@ abstract class $RegisterStateCopyWith<$Res> {
   $Res call(
       {String gmail,
       String gmailError,
-      String fullName,
-      String fullNameError,
+      String name,
+      String nameError,
       String phoneNumber,
       String phoneNumberError,
       String accountName,
@@ -63,10 +61,8 @@ abstract class $RegisterStateCopyWith<$Res> {
       String passwordError,
       String confirmPassword,
       String confirmPasswordError,
-      String projectName,
-      String projectNameError,
-      String descriptionProject,
-      String descriptionProjectError,
+      String surname,
+      String surnameError,
       String message,
       bool showPass,
       bool showPassConfirm,
@@ -90,8 +86,8 @@ class _$RegisterStateCopyWithImpl<$Res, $Val extends RegisterState>
   $Res call({
     Object? gmail = null,
     Object? gmailError = null,
-    Object? fullName = null,
-    Object? fullNameError = null,
+    Object? name = null,
+    Object? nameError = null,
     Object? phoneNumber = null,
     Object? phoneNumberError = null,
     Object? accountName = null,
@@ -100,10 +96,8 @@ class _$RegisterStateCopyWithImpl<$Res, $Val extends RegisterState>
     Object? passwordError = null,
     Object? confirmPassword = null,
     Object? confirmPasswordError = null,
-    Object? projectName = null,
-    Object? projectNameError = null,
-    Object? descriptionProject = null,
-    Object? descriptionProjectError = null,
+    Object? surname = null,
+    Object? surnameError = null,
     Object? message = null,
     Object? showPass = null,
     Object? showPassConfirm = null,
@@ -118,13 +112,13 @@ class _$RegisterStateCopyWithImpl<$Res, $Val extends RegisterState>
           ? _value.gmailError
           : gmailError // ignore: cast_nullable_to_non_nullable
               as String,
-      fullName: null == fullName
-          ? _value.fullName
-          : fullName // ignore: cast_nullable_to_non_nullable
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String,
-      fullNameError: null == fullNameError
-          ? _value.fullNameError
-          : fullNameError // ignore: cast_nullable_to_non_nullable
+      nameError: null == nameError
+          ? _value.nameError
+          : nameError // ignore: cast_nullable_to_non_nullable
               as String,
       phoneNumber: null == phoneNumber
           ? _value.phoneNumber
@@ -158,21 +152,13 @@ class _$RegisterStateCopyWithImpl<$Res, $Val extends RegisterState>
           ? _value.confirmPasswordError
           : confirmPasswordError // ignore: cast_nullable_to_non_nullable
               as String,
-      projectName: null == projectName
-          ? _value.projectName
-          : projectName // ignore: cast_nullable_to_non_nullable
+      surname: null == surname
+          ? _value.surname
+          : surname // ignore: cast_nullable_to_non_nullable
               as String,
-      projectNameError: null == projectNameError
-          ? _value.projectNameError
-          : projectNameError // ignore: cast_nullable_to_non_nullable
-              as String,
-      descriptionProject: null == descriptionProject
-          ? _value.descriptionProject
-          : descriptionProject // ignore: cast_nullable_to_non_nullable
-              as String,
-      descriptionProjectError: null == descriptionProjectError
-          ? _value.descriptionProjectError
-          : descriptionProjectError // ignore: cast_nullable_to_non_nullable
+      surnameError: null == surnameError
+          ? _value.surnameError
+          : surnameError // ignore: cast_nullable_to_non_nullable
               as String,
       message: null == message
           ? _value.message
@@ -205,8 +191,8 @@ abstract class _$$RegisterStateImplCopyWith<$Res>
   $Res call(
       {String gmail,
       String gmailError,
-      String fullName,
-      String fullNameError,
+      String name,
+      String nameError,
       String phoneNumber,
       String phoneNumberError,
       String accountName,
@@ -215,10 +201,8 @@ abstract class _$$RegisterStateImplCopyWith<$Res>
       String passwordError,
       String confirmPassword,
       String confirmPasswordError,
-      String projectName,
-      String projectNameError,
-      String descriptionProject,
-      String descriptionProjectError,
+      String surname,
+      String surnameError,
       String message,
       bool showPass,
       bool showPassConfirm,
@@ -240,8 +224,8 @@ class __$$RegisterStateImplCopyWithImpl<$Res>
   $Res call({
     Object? gmail = null,
     Object? gmailError = null,
-    Object? fullName = null,
-    Object? fullNameError = null,
+    Object? name = null,
+    Object? nameError = null,
     Object? phoneNumber = null,
     Object? phoneNumberError = null,
     Object? accountName = null,
@@ -250,10 +234,8 @@ class __$$RegisterStateImplCopyWithImpl<$Res>
     Object? passwordError = null,
     Object? confirmPassword = null,
     Object? confirmPasswordError = null,
-    Object? projectName = null,
-    Object? projectNameError = null,
-    Object? descriptionProject = null,
-    Object? descriptionProjectError = null,
+    Object? surname = null,
+    Object? surnameError = null,
     Object? message = null,
     Object? showPass = null,
     Object? showPassConfirm = null,
@@ -268,13 +250,13 @@ class __$$RegisterStateImplCopyWithImpl<$Res>
           ? _value.gmailError
           : gmailError // ignore: cast_nullable_to_non_nullable
               as String,
-      fullName: null == fullName
-          ? _value.fullName
-          : fullName // ignore: cast_nullable_to_non_nullable
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String,
-      fullNameError: null == fullNameError
-          ? _value.fullNameError
-          : fullNameError // ignore: cast_nullable_to_non_nullable
+      nameError: null == nameError
+          ? _value.nameError
+          : nameError // ignore: cast_nullable_to_non_nullable
               as String,
       phoneNumber: null == phoneNumber
           ? _value.phoneNumber
@@ -308,21 +290,13 @@ class __$$RegisterStateImplCopyWithImpl<$Res>
           ? _value.confirmPasswordError
           : confirmPasswordError // ignore: cast_nullable_to_non_nullable
               as String,
-      projectName: null == projectName
-          ? _value.projectName
-          : projectName // ignore: cast_nullable_to_non_nullable
+      surname: null == surname
+          ? _value.surname
+          : surname // ignore: cast_nullable_to_non_nullable
               as String,
-      projectNameError: null == projectNameError
-          ? _value.projectNameError
-          : projectNameError // ignore: cast_nullable_to_non_nullable
-              as String,
-      descriptionProject: null == descriptionProject
-          ? _value.descriptionProject
-          : descriptionProject // ignore: cast_nullable_to_non_nullable
-              as String,
-      descriptionProjectError: null == descriptionProjectError
-          ? _value.descriptionProjectError
-          : descriptionProjectError // ignore: cast_nullable_to_non_nullable
+      surnameError: null == surnameError
+          ? _value.surnameError
+          : surnameError // ignore: cast_nullable_to_non_nullable
               as String,
       message: null == message
           ? _value.message
@@ -350,8 +324,8 @@ class _$RegisterStateImpl implements _RegisterState {
   const _$RegisterStateImpl(
       {this.gmail = "",
       this.gmailError = "",
-      this.fullName = "",
-      this.fullNameError = "",
+      this.name = "",
+      this.nameError = "",
       this.phoneNumber = "",
       this.phoneNumberError = "",
       this.accountName = "",
@@ -360,10 +334,8 @@ class _$RegisterStateImpl implements _RegisterState {
       this.passwordError = "",
       this.confirmPassword = "",
       this.confirmPasswordError = "",
-      this.projectName = "",
-      this.projectNameError = "",
-      this.descriptionProject = "",
-      this.descriptionProjectError = "",
+      this.surname = "",
+      this.surnameError = "",
       this.message = "",
       this.showPass = false,
       this.showPassConfirm = false,
@@ -377,10 +349,10 @@ class _$RegisterStateImpl implements _RegisterState {
   final String gmailError;
   @override
   @JsonKey()
-  final String fullName;
+  final String name;
   @override
   @JsonKey()
-  final String fullNameError;
+  final String nameError;
   @override
   @JsonKey()
   final String phoneNumber;
@@ -407,16 +379,10 @@ class _$RegisterStateImpl implements _RegisterState {
   final String confirmPasswordError;
   @override
   @JsonKey()
-  final String projectName;
+  final String surname;
   @override
   @JsonKey()
-  final String projectNameError;
-  @override
-  @JsonKey()
-  final String descriptionProject;
-  @override
-  @JsonKey()
-  final String descriptionProjectError;
+  final String surnameError;
   @override
   @JsonKey()
   final String message;
@@ -432,7 +398,7 @@ class _$RegisterStateImpl implements _RegisterState {
 
   @override
   String toString() {
-    return 'RegisterState(gmail: $gmail, gmailError: $gmailError, fullName: $fullName, fullNameError: $fullNameError, phoneNumber: $phoneNumber, phoneNumberError: $phoneNumberError, accountName: $accountName, accountNameError: $accountNameError, password: $password, passwordError: $passwordError, confirmPassword: $confirmPassword, confirmPasswordError: $confirmPasswordError, projectName: $projectName, projectNameError: $projectNameError, descriptionProject: $descriptionProject, descriptionProjectError: $descriptionProjectError, message: $message, showPass: $showPass, showPassConfirm: $showPassConfirm, loadStatus: $loadStatus)';
+    return 'RegisterState(gmail: $gmail, gmailError: $gmailError, name: $name, nameError: $nameError, phoneNumber: $phoneNumber, phoneNumberError: $phoneNumberError, accountName: $accountName, accountNameError: $accountNameError, password: $password, passwordError: $passwordError, confirmPassword: $confirmPassword, confirmPasswordError: $confirmPasswordError, surname: $surname, surnameError: $surnameError, message: $message, showPass: $showPass, showPassConfirm: $showPassConfirm, loadStatus: $loadStatus)';
   }
 
   @override
@@ -443,10 +409,9 @@ class _$RegisterStateImpl implements _RegisterState {
             (identical(other.gmail, gmail) || other.gmail == gmail) &&
             (identical(other.gmailError, gmailError) ||
                 other.gmailError == gmailError) &&
-            (identical(other.fullName, fullName) ||
-                other.fullName == fullName) &&
-            (identical(other.fullNameError, fullNameError) ||
-                other.fullNameError == fullNameError) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.nameError, nameError) ||
+                other.nameError == nameError) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
             (identical(other.phoneNumberError, phoneNumberError) ||
@@ -463,15 +428,9 @@ class _$RegisterStateImpl implements _RegisterState {
                 other.confirmPassword == confirmPassword) &&
             (identical(other.confirmPasswordError, confirmPasswordError) ||
                 other.confirmPasswordError == confirmPasswordError) &&
-            (identical(other.projectName, projectName) ||
-                other.projectName == projectName) &&
-            (identical(other.projectNameError, projectNameError) ||
-                other.projectNameError == projectNameError) &&
-            (identical(other.descriptionProject, descriptionProject) ||
-                other.descriptionProject == descriptionProject) &&
-            (identical(
-                    other.descriptionProjectError, descriptionProjectError) ||
-                other.descriptionProjectError == descriptionProjectError) &&
+            (identical(other.surname, surname) || other.surname == surname) &&
+            (identical(other.surnameError, surnameError) ||
+                other.surnameError == surnameError) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.showPass, showPass) ||
                 other.showPass == showPass) &&
@@ -482,29 +441,26 @@ class _$RegisterStateImpl implements _RegisterState {
   }
 
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        gmail,
-        gmailError,
-        fullName,
-        fullNameError,
-        phoneNumber,
-        phoneNumberError,
-        accountName,
-        accountNameError,
-        password,
-        passwordError,
-        confirmPassword,
-        confirmPasswordError,
-        projectName,
-        projectNameError,
-        descriptionProject,
-        descriptionProjectError,
-        message,
-        showPass,
-        showPassConfirm,
-        loadStatus
-      ]);
+  int get hashCode => Object.hash(
+      runtimeType,
+      gmail,
+      gmailError,
+      name,
+      nameError,
+      phoneNumber,
+      phoneNumberError,
+      accountName,
+      accountNameError,
+      password,
+      passwordError,
+      confirmPassword,
+      confirmPasswordError,
+      surname,
+      surnameError,
+      message,
+      showPass,
+      showPassConfirm,
+      loadStatus);
 
   /// Create a copy of RegisterState
   /// with the given fields replaced by the non-null parameter values.
@@ -519,8 +475,8 @@ abstract class _RegisterState implements RegisterState {
   const factory _RegisterState(
       {final String gmail,
       final String gmailError,
-      final String fullName,
-      final String fullNameError,
+      final String name,
+      final String nameError,
       final String phoneNumber,
       final String phoneNumberError,
       final String accountName,
@@ -529,10 +485,8 @@ abstract class _RegisterState implements RegisterState {
       final String passwordError,
       final String confirmPassword,
       final String confirmPasswordError,
-      final String projectName,
-      final String projectNameError,
-      final String descriptionProject,
-      final String descriptionProjectError,
+      final String surname,
+      final String surnameError,
       final String message,
       final bool showPass,
       final bool showPassConfirm,
@@ -543,9 +497,9 @@ abstract class _RegisterState implements RegisterState {
   @override
   String get gmailError;
   @override
-  String get fullName;
+  String get name;
   @override
-  String get fullNameError;
+  String get nameError;
   @override
   String get phoneNumber;
   @override
@@ -563,13 +517,9 @@ abstract class _RegisterState implements RegisterState {
   @override
   String get confirmPasswordError;
   @override
-  String get projectName;
+  String get surname;
   @override
-  String get projectNameError;
-  @override
-  String get descriptionProject;
-  @override
-  String get descriptionProjectError;
+  String get surnameError;
   @override
   String get message;
   @override
