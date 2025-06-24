@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 
 extension DateTimeExtension on DateTime {
@@ -40,5 +41,20 @@ extension EnergyFormatExtension on double {
     } else {
       return '${toStringAsFixed(1)} Wh';
     }
+  }
+}
+
+
+extension DioExt on Dio {
+  Dio setFollowRedirects(bool followRedirects) {
+    options.followRedirects = followRedirects;
+    if (followRedirects) {
+      options.validateStatus =
+          (int? status) => status != null && status >= 200 && status < 300;
+    } else {
+      options.validateStatus =
+          (int? status) => status != null && status >= 200 && status < 400;
+    }
+    return this;
   }
 }

@@ -2,10 +2,17 @@ import 'dart:ffi';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:solar_energy/application/constants/mail.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
+import 'package:solar_energy/data/dto/register/request/user_request.dart';
+
+import '../../../../data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
+import '../../../../data/dto/auth/request/auth_request.dart';
+import '../../../../data/repositories/auth/auth_repository.dart';
+import '../../../../data/repositories/register/register_repository.dart';
 
 part 'register_state.dart';
 
@@ -13,6 +20,16 @@ part 'register_cubit.freezed.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
   RegisterCubit() : super(RegisterState.init());
+
+  final registerRepo = GetIt.instance<RegisterRepository>();
+  final auth = GetIt.instance<AuthRepository>();
+  final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+  final authRequest = const AuthRequest(
+      username: "admin",
+      password: "1q2w3E*",
+      grantType: 'password',
+      clientId: 'MonitorSystem_App',
+      scope: 'MonitorSystem offline_access');
 
   final smtpServer = gmail(MailSMTP.GMAIL_MAIL, MailSMTP.GMAIL_PASSWORD);
   final notNull = "Không được để trống";
@@ -23,93 +40,67 @@ class RegisterCubit extends Cubit<RegisterState> {
   final RegExp passwordRegex =
       RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$');
 
-  Future<void> sendMail() async {
-    final messageToUser = Message()
-      ..from = const Address(MailSMTP.GMAIL_MAIL, 'KARA GROUP')
-      ..recipients.add(state.gmail)
-      ..subject = 'Cảm ơn bạn đã đăng ký'
-      ..text = 'Chúng tôi đã nhận được thông tin của bạn và sẽ liên hệ sớm.'
-      ..html = '''
-    <h3>Thông tin đăng ký</h3>
-    <ul>
-      <li>Email người dùng: ${state.gmail}</li>
-      <li>Tên: ${state.fullName}</li>
-      <li>SĐT: ${state.phoneNumber}</li>
-      <li>Tài khoản: ${state.accountName}</li>
-      <li>Dự án: ${state.projectName}</li>
-      <li>Mô tả dự án: ${state.descriptionProject}</li>
-    </ul>
-  ''';
 
-    final messageToAdmin = Message()
-      ..from = const Address(MailSMTP.GMAIL_MAIL, 'KARA GROUP')
-      ..recipients.add(MailSMTP.GMAIL_MAIL)
-      ..subject = 'Người dùng mới đã đăng ký'
-      ..text = '''
-        Người dùng vừa đăng ký với các thông tin:
-        Email người dùng: ${state.gmail}
-        Tên: ${state.fullName}
-        SĐT: ${state.phoneNumber}
-        Tài khoản: ${state.accountName}
-        Mật khẩu: ${state.password}
-        Dự án: ${state.projectName}
-        Mô tả dự án: ${state.descriptionProject}
-    ''';
-
+  Future<void> registerUser() async {
     try {
-      emit(state.copyWith(loadStatus: LoadStatus.loading));
-      final sendUser = await send(messageToUser, smtpServer);
-      final sendAdmin = await send(messageToAdmin, smtpServer);
-      emit(state.copyWith(
-          loadStatus: LoadStatus.success,
-          message:
-              "Tài khoản của bạn sẽ được đăng ký trong vòng 2 ngày. Vui lòng kiêm tra gmail!"));
-    } on MailerException catch (e) {
-      emit(state.copyWith(
-          loadStatus: LoadStatus.failure,
-          message: "Đăng ký thất bại. Vui lòng liên hệ quản trị viên."));
+      emit(state.copyWith(loadStatus: LoadStatus.loading),);
+
+      final token = await auth.signIn(authRequest);
+      await sharedPreferences.setAccessToken(token.data?.accessToken ?? "");
+
+      final response = await registerRepo.register(UserRequest(
+          userName: state.accountName,
+          name: state.name,
+          surname: state.surname,
+          email: state.gmail,
+          phoneNumber: state.phoneNumber,
+          password: state.password));
+
+      if(response.status == LoadStatus.failure){
+        emit(state.copyWith(message: "Có lỗi xảy ra, vui lòng thao tác lại sau", loadStatus: LoadStatus.failure),);
+        return;
+      }
+      emit(state.copyWith(message: "Đăng ký thành công", loadStatus: LoadStatus.success),);
+    } catch (e) {
+      emit(state.copyWith(message: "Có lỗi xảy ra, vui lòng thao tác lại sau"));
     }
   }
 
-  changeQuery(
-      {String? mail,
-      String? name,
-      String? phoneNumber,
-      String? accountName,
-      String? password,
-      String? confirmPassword,
-      String? projectName,
-      String? descriptionProject,
-      String? mailError,
-      String? nameError,
-      String? phoneNumberError,
-      String? accountNameError,
-      String? passwordError,
-      String? confirmPasswordError,
-      String? projectNameError,
-      String? descriptionProjectError,
-      String? message,
-      bool? showPass,
-      bool? showPassConfirm}) {
+
+  changeQuery({String? mail,
+    String? name,
+    String? phoneNumber,
+    String? accountName,
+    String? password,
+    String? confirmPassword,
+    String? surname,
+    String? descriptionProject,
+    String? mailError,
+    String? nameError,
+    String? phoneNumberError,
+    String? accountNameError,
+    String? passwordError,
+    String? confirmPasswordError,
+    String? surnameError,
+    String? message,
+    bool? showPass,
+    bool? showPassConfirm}) {
     emit(state.copyWith(
         password: password ?? state.password,
         gmail: mail ?? state.gmail,
-        fullName: name ?? state.fullName,
+        name: name ?? state.name,
         phoneNumber: phoneNumber ?? state.phoneNumber,
         accountName: accountName ?? state.accountName,
         confirmPassword: confirmPassword ?? state.confirmPassword,
-        projectName: projectName ?? state.projectName,
-        descriptionProject: descriptionProject ?? state.descriptionProject,
+        surname: surname ?? state.surname,
         passwordError: passwordError ?? state.passwordError,
         gmailError: mailError ?? state.gmailError,
-        fullNameError: nameError ?? state.fullNameError,
+        nameError: nameError ?? state.nameError,
         phoneNumberError: phoneNumberError ?? state.phoneNumberError,
         accountNameError: accountNameError ?? state.accountNameError,
         confirmPasswordError:
             confirmPasswordError ?? state.confirmPasswordError,
-        projectNameError: projectNameError ?? state.projectNameError,
-        descriptionProjectError:
-            descriptionProjectError ?? state.descriptionProjectError,
+        surnameError: surnameError ?? state.surnameError,
         message: message ?? state.message,
         showPass: showPass ?? state.showPass,
         showPassConfirm: showPassConfirm ?? state.showPassConfirm));
@@ -122,8 +113,7 @@ class RegisterCubit extends Cubit<RegisterState> {
         validateAccount() &&
         validatePass() &&
         validateConfirmPass() &&
-        validateProjectName() &&
-        validateProjectDescription();
+        validateProjectName();
   }
 
   bool validateEmail() {
@@ -140,11 +130,11 @@ class RegisterCubit extends Cubit<RegisterState> {
   }
 
   bool validateName() {
-    if (state.fullName.isEmpty) {
-      emit(state.copyWith(fullNameError: notNull));
+    if (state.name.isEmpty) {
+      emit(state.copyWith(nameError: notNull));
       return false;
     }
-    emit(state.copyWith(fullNameError: ""));
+    emit(state.copyWith(nameError: ""));
     return true;
   }
 
@@ -196,20 +186,12 @@ class RegisterCubit extends Cubit<RegisterState> {
   }
 
   bool validateProjectName() {
-    if (state.projectName.isEmpty) {
-      emit(state.copyWith(projectNameError: notNull));
+    if (state.surname.isEmpty) {
+      emit(state.copyWith(surnameError: notNull));
       return false;
     }
-    emit(state.copyWith(projectNameError: ""));
+    emit(state.copyWith(surnameError: ""));
     return true;
   }
 
-  bool validateProjectDescription() {
-    if (state.descriptionProject.isEmpty) {
-      emit(state.copyWith(descriptionProjectError: notNull));
-      return false;
-    }
-    emit(state.copyWith(descriptionProjectError: ""));
-    return true;
-  }
 }

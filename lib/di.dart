@@ -13,6 +13,8 @@ import 'package:solar_energy/data/repositories/solar_electric/solar_electric_rep
 
 import 'data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 import 'data/repositories/electric/electric_repository_impl.dart';
+import 'data/repositories/register/register_repository.dart';
+import 'data/repositories/register/register_repository_impl.dart';
 import 'di.config.dart';
 
 final getIt = GetIt.instance;
@@ -34,5 +36,6 @@ void configureDependencies() {
   getIt.registerLazySingleton<DeviceRepository>(() => DeviceRepositoryImpl());
   getIt.registerLazySingleton<ProjectRepository>(() => ProjectRepositoryImpl());
   getIt.registerLazySingleton<ElectricRepository>(() => ElectricRepositoryImpl());
+  getIt.registerLazySingleton<RegisterRepository>(() => RegisterRepositoryImpl());
 
 }
