@@ -7,6 +7,9 @@ import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/dto/electric/chart_electric/chart_electric_request.dart';
 import 'package:solar_energy/data/dto/electric/response/electric_meter_response.dart';
 import 'package:solar_energy/data/dto/lasted_log_data/response/lasted_log_data_response.dart';
+import 'package:solar_energy/data/dto/meter/request/meter_request.dart';
+import 'package:solar_energy/data/dto/meter/response/meter_response.dart';
+import 'package:solar_energy/data/dto/power_station/request/power_station_request.dart';
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 import 'package:solar_energy/data/dto/profile/profile_response.dart';
 import 'package:solar_energy/data/dto/register/request/user_request.dart';
@@ -42,7 +45,7 @@ abstract class ApiClient {
 
   @GET('api/account/my-profile')
   Future<ProfileResponse> getProfile();
-  
+
   @DELETE('api/user/{uid}')
   Future<String> deleteAccount(@Path("uid") uid);
 
@@ -58,6 +61,14 @@ abstract class ApiClient {
 
   @POST('api/identity/users')
   Future<ProfileResponse> registerUser(
-      @Body() UserRequest request,
-      );
+    @Body() UserRequest request,
+  );
+
+  @POST("api/app/power-station")
+  Future<PowerStationResponse> createPowerStation(
+      @Body() PowerStationRequest request);
+
+  @POST("api/app/meter")
+  Future<MeterResponse> createMeter(
+      @Body() MeterRequest request);
 }

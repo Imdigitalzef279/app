@@ -17,12 +17,13 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$HomePageState {
   Result<List<PowerStationResponse>> get resultProjects =>
-      throw _privateConstructorUsedError; //required ProjectRequest request,
+      throw _privateConstructorUsedError;
   int get projectID => throw _privateConstructorUsedError;
   int get allStation => throw _privateConstructorUsedError;
   int get active => throw _privateConstructorUsedError;
   int get warning => throw _privateConstructorUsedError;
   int get loss => throw _privateConstructorUsedError;
+  LoadStatus get status => throw _privateConstructorUsedError;
 
   /// Create a copy of HomePageState
   /// with the given fields replaced by the non-null parameter values.
@@ -43,7 +44,8 @@ abstract class $HomePageStateCopyWith<$Res> {
       int allStation,
       int active,
       int warning,
-      int loss});
+      int loss,
+      LoadStatus status});
 
   $ResultCopyWith<List<PowerStationResponse>, $Res> get resultProjects;
 }
@@ -69,6 +71,7 @@ class _$HomePageStateCopyWithImpl<$Res, $Val extends HomePageState>
     Object? active = null,
     Object? warning = null,
     Object? loss = null,
+    Object? status = null,
   }) {
     return _then(_value.copyWith(
       resultProjects: null == resultProjects
@@ -95,6 +98,10 @@ class _$HomePageStateCopyWithImpl<$Res, $Val extends HomePageState>
           ? _value.loss
           : loss // ignore: cast_nullable_to_non_nullable
               as int,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as LoadStatus,
     ) as $Val);
   }
 
@@ -124,7 +131,8 @@ abstract class _$$HomePageStateImplCopyWith<$Res>
       int allStation,
       int active,
       int warning,
-      int loss});
+      int loss,
+      LoadStatus status});
 
   @override
   $ResultCopyWith<List<PowerStationResponse>, $Res> get resultProjects;
@@ -149,6 +157,7 @@ class __$$HomePageStateImplCopyWithImpl<$Res>
     Object? active = null,
     Object? warning = null,
     Object? loss = null,
+    Object? status = null,
   }) {
     return _then(_$HomePageStateImpl(
       resultProjects: null == resultProjects
@@ -175,6 +184,10 @@ class __$$HomePageStateImplCopyWithImpl<$Res>
           ? _value.loss
           : loss // ignore: cast_nullable_to_non_nullable
               as int,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as LoadStatus,
     ));
   }
 }
@@ -188,11 +201,11 @@ class _$HomePageStateImpl implements _HomePageState {
       this.allStation = 0,
       this.active = 0,
       this.warning = 0,
-      this.loss = 0});
+      this.loss = 0,
+      this.status = LoadStatus.initial});
 
   @override
   final Result<List<PowerStationResponse>> resultProjects;
-//required ProjectRequest request,
   @override
   @JsonKey()
   final int projectID;
@@ -208,10 +221,13 @@ class _$HomePageStateImpl implements _HomePageState {
   @override
   @JsonKey()
   final int loss;
+  @override
+  @JsonKey()
+  final LoadStatus status;
 
   @override
   String toString() {
-    return 'HomePageState(resultProjects: $resultProjects, projectID: $projectID, allStation: $allStation, active: $active, warning: $warning, loss: $loss)';
+    return 'HomePageState(resultProjects: $resultProjects, projectID: $projectID, allStation: $allStation, active: $active, warning: $warning, loss: $loss, status: $status)';
   }
 
   @override
@@ -227,12 +243,13 @@ class _$HomePageStateImpl implements _HomePageState {
                 other.allStation == allStation) &&
             (identical(other.active, active) || other.active == active) &&
             (identical(other.warning, warning) || other.warning == warning) &&
-            (identical(other.loss, loss) || other.loss == loss));
+            (identical(other.loss, loss) || other.loss == loss) &&
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, resultProjects, projectID,
-      allStation, active, warning, loss);
+      allStation, active, warning, loss, status);
 
   /// Create a copy of HomePageState
   /// with the given fields replaced by the non-null parameter values.
@@ -250,11 +267,11 @@ abstract class _HomePageState implements HomePageState {
       final int allStation,
       final int active,
       final int warning,
-      final int loss}) = _$HomePageStateImpl;
+      final int loss,
+      final LoadStatus status}) = _$HomePageStateImpl;
 
   @override
-  Result<List<PowerStationResponse>>
-      get resultProjects; //required ProjectRequest request,
+  Result<List<PowerStationResponse>> get resultProjects;
   @override
   int get projectID;
   @override
@@ -265,6 +282,8 @@ abstract class _HomePageState implements HomePageState {
   int get warning;
   @override
   int get loss;
+  @override
+  LoadStatus get status;
 
   /// Create a copy of HomePageState
   /// with the given fields replaced by the non-null parameter values.

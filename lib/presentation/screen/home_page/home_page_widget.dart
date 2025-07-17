@@ -5,9 +5,11 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/cubit/app_cubit.dart';
+import 'package:solar_energy/data/dto/power_station/request/power_station_request.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/common_widgets/app_load_more.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
+import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.dart';
 import 'package:solar_energy/presentation/screen/home_page/widget/item_factory_hoz.dart';
 import 'package:solar_energy/presentation/screen/home_page/widget/tab_widget.dart';
@@ -43,6 +45,15 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           LocalizationsUtils.localizations.factory,
           style: AppTextStyle.textBase.copyWith(fontWeight: FontWeight.w600),
         ),
+        actions: [
+          IconButton(
+              onPressed: () =>
+                  _showCreateStationDialog(context, _cubit.state.projectID),
+              icon: const Icon(
+                Icons.add,
+                size: 22,
+              ))
+        ],
       ),
       backgroundColor: AppColors.greyFB,
       body: SafeArea(
@@ -57,7 +68,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     bottomRight: Radius.circular(16.r),
                     bottomLeft: Radius.circular(16.r))),
             child: BlocBuilder<HomePageCubit, HomePageState>(
-              builder:(context, state) =>  Column(
+              builder: (context, state) => Column(
                 children: [
                   ValueListenableBuilder(
                     valueListenable: selectTab,
@@ -195,5 +206,92 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         ],
       )),
     );
+  }
+
+  void _showCreateStationDialog(BuildContext context, int projectId) {
+    final _formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+    final descriptionController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Tạo Trạm Mới"),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Hiển thị projectId, không cho sửa
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Project ID: $projectId",
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Nhập tên trạm
+                TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: "Tên trạm",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty
+                      ? "Vui lòng nhập tên trạm"
+                      : null,
+                ),
+                const SizedBox(height: 12),
+                // Nhập mô tả
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: "Mô tả",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty
+                      ? "Vui lòng nhập mô tả"
+                      : null,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => backWidget(),
+              child: const Text("Huỷ"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState?.validate() ?? false) {
+                  final requestBody = PowerStationRequest(
+                    projectId: projectId,
+                    name: nameController.text,
+                    code: "",
+                    description: descriptionController.text,
+                    latitude: "",
+                    longitude: "",
+                    planViewPath: "",
+                  );
+
+                  final check = await _cubit.createPowerStation(requestBody);
+                  backWidget();
+                  if (check) {
+                    _cubit.getProjects();
+                  }
+                }
+              },
+              child: const Text("Tạo"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void backWidget() {
+    Navigator.pop(context);
   }
 }

@@ -38,7 +38,6 @@ class ApiInterceptors extends InterceptorsWrapper {
         print(statusCode);
       }
     }
-
     if (response?.statusCode == 400) {
       super.onError(err, handler);
       return;

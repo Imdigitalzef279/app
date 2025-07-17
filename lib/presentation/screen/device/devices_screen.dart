@@ -5,6 +5,8 @@ import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/cubit/app_cubit.dart';
+import 'package:solar_energy/data/dto/meter/request/meter_request.dart';
+import 'package:solar_energy/data/dto/meter/response/meter_response.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
@@ -40,14 +42,15 @@ class _DevicesScreenState extends State<DevicesScreen> {
         backgroundColor: AppColors.white,
         scrolledUnderElevation: 0,
         elevation: 0,
-        // leading: InkWell(
-        //   onTap: () {
-        //     Navigator.pop(context);
-        //   },
-        //   child: Padding(
-        //       padding: EdgeInsets.only(left: 4.sp),
-        //       child: Icon(Icons.arrow_back_ios, size: 16.sp)),
-        // ),
+        actions: [
+          IconButton(
+              onPressed: () =>
+                  _showCreateStationDialog(context, widget.argument.project.id),
+              icon: const Icon(
+                Icons.add,
+                size: 22,
+              ))
+        ],
         title: Text(
           "Danh sách thiết bị",
           style: AppTextStyle.textBase.copyWith(
@@ -87,5 +90,90 @@ class _DevicesScreenState extends State<DevicesScreen> {
         ),
       ),
     );
+  }
+
+  void _showCreateStationDialog(BuildContext context, int projectId) {
+    final _formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+    final descriptionController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Thêm Thiết Bị Mới"),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "PowerStation ID: $projectId",
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Nhập tên trạm
+                TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: "Tên thiết bị",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty
+                      ? "Vui lòng nhập tên thiết bị"
+                      : null,
+                ),
+                const SizedBox(height: 12),
+                // Nhập mô tả
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: "Mô tả",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty
+                      ? "Vui lòng nhập mô tả"
+                      : null,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => backWidget(),
+              child: const Text("Huỷ"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState?.validate() ?? false) {
+                  final requestBody = MeterRequest(
+                    name: nameController.text,
+                    powerStationId: projectId,
+                    description: descriptionController.text,
+                    meterTypeId: _cubit.toMeterTypeIds(widget.argument.type)
+                  );
+
+                  final check = await _cubit.createPowerStation(requestBody);
+                  backWidget();
+                  if (check) {
+                    _cubit.getDevices(
+                        powerStationId: widget.argument.project.id,
+                        type: widget.argument.type);
+                  }
+                }
+              },
+              child: const Text("Tạo"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void backWidget() {
+    Navigator.pop(context);
   }
 }

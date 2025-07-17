@@ -7,6 +7,7 @@ import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argu
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Electricity/bloc/electric_cubit.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
+import 'package:solar_energy/presentation/screen/add_station/create_new_station.dart';
 import 'package:solar_energy/presentation/screen/alarm_water/all_alarm_water_screen.dart';
 import 'package:solar_energy/presentation/screen/auth/bloc/login_cubit.dart';
 import 'package:solar_energy/presentation/screen/auth/login_screen.dart';
@@ -48,7 +49,9 @@ class AppRouter {
       case RouteName.allAlarmWater:
         routeWidget = const AllAlarmWaterScreen();
         break;
-
+      case RouteName.createStation:
+        routeWidget = const CreateNewStation();
+        break;
       case RouteName.indexWarning:
         routeWidget = IndexWarningScreen(
           indexType: arguments as IndexType,

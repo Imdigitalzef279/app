@@ -5,12 +5,14 @@ import 'package:get_it/get_it.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/data/dto/api_response/api_response.dart';
+import 'package:solar_energy/data/dto/power_station/request/power_station_request.dart';
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 import 'package:solar_energy/data/dto/project/request/project_request.dart';
 import 'package:solar_energy/data/dto/project/response/project_response.dart';
 import 'package:solar_energy/data/dto/result/result.dart';
 import 'package:solar_energy/data/repositories/project/project_repository.dart';
 import 'package:solar_energy/di.dart';
+import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 
 import '../../../../data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 
@@ -37,6 +39,7 @@ class HomePageCubit extends Cubit<HomePageState> {
             final response = await _repo.getPowerStation(id);
             if (response.isSuccess) {
               emit(state.copyWith(
+                projectID: id,
                   resultProjects: Result(
                 status: LoadStatus.success,
                 data: response.data,
@@ -76,6 +79,27 @@ class HomePageCubit extends Cubit<HomePageState> {
     try {
       emit(state.copyWith(resultProjects: Result(status: LoadStatus.loading)));
     } catch (e) {}
+  }
 
+
+  Future<bool> createPowerStation(PowerStationRequest request) async {
+    try{
+      emit(state.copyWith(status: LoadStatus.loading));
+      final response = await _repo.createPowerStation(request);
+      if (response.isSuccess){
+        emit(state.copyWith(status: LoadStatus.success,));
+        AppToast.showToastSuccess(title: "Đăng ký trạm ${request.name} thành công");
+        return true;
+      }
+      AppToast.showToastSuccess(title: "Đăng ký trạm ${request.name} không thành công");
+      return false;
+    }catch (e){
+      if(e is DioException){
+        AppToast.showToastError(title: "Xảy ra lỗi Dio");
+        return false;
+      }
+      AppToast.showToastError(title: "Xảy ra lỗi");
+      return false;
+    }
   }
 }
