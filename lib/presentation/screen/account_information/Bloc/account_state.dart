@@ -10,6 +10,7 @@ class AccountState with _$AccountState {
     @Default("") String surname,
     @Default("") String email,
     @Default("") String phoneNumber,
+    @Default(LoadStatus.initial) LoadStatus status
   }) = _AccountState;
 
   factory AccountState.initial() =>

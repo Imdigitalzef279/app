@@ -42,6 +42,9 @@ abstract class ApiClient {
 
   @GET('api/account/my-profile')
   Future<ProfileResponse> getProfile();
+  
+  @DELETE('api/user/{uid}')
+  Future<String> deleteAccount(@Path("uid") uid);
 
   @GET('api/app/power-station/power-station-lookup/{projectId}')
   Future<List<PowerStationResponse>> getPowerStation(
