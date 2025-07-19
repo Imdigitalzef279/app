@@ -23,6 +23,7 @@ mixin _$AccountState {
   String get surname => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
+  LoadStatus get status => throw _privateConstructorUsedError;
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.
@@ -44,7 +45,8 @@ abstract class $AccountStateCopyWith<$Res> {
       String name,
       String surname,
       String email,
-      String phoneNumber});
+      String phoneNumber,
+      LoadStatus status});
 
   $ResultCopyWith<ProfileResponse, $Res> get request;
 }
@@ -71,6 +73,7 @@ class _$AccountStateCopyWithImpl<$Res, $Val extends AccountState>
     Object? surname = null,
     Object? email = null,
     Object? phoneNumber = null,
+    Object? status = null,
   }) {
     return _then(_value.copyWith(
       request: null == request
@@ -101,6 +104,10 @@ class _$AccountStateCopyWithImpl<$Res, $Val extends AccountState>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as LoadStatus,
     ) as $Val);
   }
 
@@ -130,7 +137,8 @@ abstract class _$$AccountStateImplCopyWith<$Res>
       String name,
       String surname,
       String email,
-      String phoneNumber});
+      String phoneNumber,
+      LoadStatus status});
 
   @override
   $ResultCopyWith<ProfileResponse, $Res> get request;
@@ -156,6 +164,7 @@ class __$$AccountStateImplCopyWithImpl<$Res>
     Object? surname = null,
     Object? email = null,
     Object? phoneNumber = null,
+    Object? status = null,
   }) {
     return _then(_$AccountStateImpl(
       request: null == request
@@ -186,6 +195,10 @@ class __$$AccountStateImplCopyWithImpl<$Res>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as LoadStatus,
     ));
   }
 }
@@ -200,7 +213,8 @@ class _$AccountStateImpl implements _AccountState {
       this.name = "",
       this.surname = "",
       this.email = "",
-      this.phoneNumber = ""});
+      this.phoneNumber = "",
+      this.status = LoadStatus.initial});
 
   @override
   final Result<ProfileResponse> request;
@@ -222,10 +236,13 @@ class _$AccountStateImpl implements _AccountState {
   @override
   @JsonKey()
   final String phoneNumber;
+  @override
+  @JsonKey()
+  final LoadStatus status;
 
   @override
   String toString() {
-    return 'AccountState(request: $request, error: $error, userName: $userName, name: $name, surname: $surname, email: $email, phoneNumber: $phoneNumber)';
+    return 'AccountState(request: $request, error: $error, userName: $userName, name: $name, surname: $surname, email: $email, phoneNumber: $phoneNumber, status: $status)';
   }
 
   @override
@@ -241,12 +258,13 @@ class _$AccountStateImpl implements _AccountState {
             (identical(other.surname, surname) || other.surname == surname) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, request, error, userName, name, surname, email, phoneNumber);
+  int get hashCode => Object.hash(runtimeType, request, error, userName, name,
+      surname, email, phoneNumber, status);
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.
@@ -265,7 +283,8 @@ abstract class _AccountState implements AccountState {
       final String name,
       final String surname,
       final String email,
-      final String phoneNumber}) = _$AccountStateImpl;
+      final String phoneNumber,
+      final LoadStatus status}) = _$AccountStateImpl;
 
   @override
   Result<ProfileResponse> get request;
@@ -281,6 +300,8 @@ abstract class _AccountState implements AccountState {
   String get email;
   @override
   String get phoneNumber;
+  @override
+  LoadStatus get status;
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.

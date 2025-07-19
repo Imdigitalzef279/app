@@ -16,4 +16,5 @@ class RouteName {
   static const deviceIndex = '/device_index';
   static const detailDeviceWater = '/detailDeviceWater';
   static const registerWidget = '/registerWidget';
+  static const createStation = '/createStation';
 }

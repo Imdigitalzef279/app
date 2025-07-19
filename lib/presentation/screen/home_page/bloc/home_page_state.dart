@@ -4,12 +4,12 @@ part of 'home_page_cubit.dart';
 class HomePageState with _$HomePageState {
   const factory HomePageState({
     required Result<List<PowerStationResponse>> resultProjects,
-    //required ProjectRequest request,
     @Default(0) int projectID,
     @Default(0) int allStation,
     @Default(0) int active,
     @Default(0) int warning,
     @Default(0) int loss,
+    @Default(LoadStatus.initial) LoadStatus status,
   }) = _HomePageState;
 
   factory HomePageState.init() {

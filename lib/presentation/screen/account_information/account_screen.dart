@@ -92,7 +92,26 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       optionName: state.request.data?.phoneNumber ??
                           "Không có thông tin",
-                    )
+                    ),
+                    const Divider(
+                      color: AppColors.greyFB,
+                    ),
+                    GestureDetector(
+                      onTap: ()  async {
+                        final check = await cubit.deleteAccount();
+                        if (check){
+                          Navigator.pushNamedAndRemoveUntil(context,
+                              RouteName.loginScreen, (Route<dynamic> route) => false);
+                        }
+                      },
+                      child: ItemOptionWidget(
+                        icon: Icon(
+                          Icons.restore_from_trash,
+                          size: 22.w,
+                        ),
+                        optionName: "Ngừng kích hoạt tài khoản",
+                      ),
+                    ),
                   ],
                 )),
                 SizedBox(

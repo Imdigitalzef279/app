@@ -6,4 +6,5 @@ import 'package:solar_energy/data/dto/result/result.dart';
 abstract class AuthRepository {
   Future<Result<AuthResponse>> signIn(AuthRequest request);
   Future<Result<ProfileResponse>> getProfile();
+  Future<String> deleteAccount(String uid);
 }

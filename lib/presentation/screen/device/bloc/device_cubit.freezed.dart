@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$DeviceState {
   Result<List<DeviceResponse>> get resultDevices =>
       throw _privateConstructorUsedError;
+  LoadStatus get status => throw _privateConstructorUsedError;
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,7 +33,7 @@ abstract class $DeviceStateCopyWith<$Res> {
           DeviceState value, $Res Function(DeviceState) then) =
       _$DeviceStateCopyWithImpl<$Res, DeviceState>;
   @useResult
-  $Res call({Result<List<DeviceResponse>> resultDevices});
+  $Res call({Result<List<DeviceResponse>> resultDevices, LoadStatus status});
 
   $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices;
 }
@@ -53,12 +54,17 @@ class _$DeviceStateCopyWithImpl<$Res, $Val extends DeviceState>
   @override
   $Res call({
     Object? resultDevices = null,
+    Object? status = null,
   }) {
     return _then(_value.copyWith(
       resultDevices: null == resultDevices
           ? _value.resultDevices
           : resultDevices // ignore: cast_nullable_to_non_nullable
               as Result<List<DeviceResponse>>,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as LoadStatus,
     ) as $Val);
   }
 
@@ -82,7 +88,7 @@ abstract class _$$DeviceStateImplCopyWith<$Res>
       __$$DeviceStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Result<List<DeviceResponse>> resultDevices});
+  $Res call({Result<List<DeviceResponse>> resultDevices, LoadStatus status});
 
   @override
   $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices;
@@ -102,12 +108,17 @@ class __$$DeviceStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? resultDevices = null,
+    Object? status = null,
   }) {
     return _then(_$DeviceStateImpl(
       resultDevices: null == resultDevices
           ? _value.resultDevices
           : resultDevices // ignore: cast_nullable_to_non_nullable
               as Result<List<DeviceResponse>>,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as LoadStatus,
     ));
   }
 }
@@ -115,14 +126,18 @@ class __$$DeviceStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$DeviceStateImpl implements _DeviceState {
-  const _$DeviceStateImpl({required this.resultDevices});
+  const _$DeviceStateImpl(
+      {required this.resultDevices, this.status = LoadStatus.initial});
 
   @override
   final Result<List<DeviceResponse>> resultDevices;
+  @override
+  @JsonKey()
+  final LoadStatus status;
 
   @override
   String toString() {
-    return 'DeviceState(resultDevices: $resultDevices)';
+    return 'DeviceState(resultDevices: $resultDevices, status: $status)';
   }
 
   @override
@@ -131,11 +146,12 @@ class _$DeviceStateImpl implements _DeviceState {
         (other.runtimeType == runtimeType &&
             other is _$DeviceStateImpl &&
             (identical(other.resultDevices, resultDevices) ||
-                other.resultDevices == resultDevices));
+                other.resultDevices == resultDevices) &&
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, resultDevices);
+  int get hashCode => Object.hash(runtimeType, resultDevices, status);
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.
@@ -148,11 +164,13 @@ class _$DeviceStateImpl implements _DeviceState {
 
 abstract class _DeviceState implements DeviceState {
   const factory _DeviceState(
-          {required final Result<List<DeviceResponse>> resultDevices}) =
-      _$DeviceStateImpl;
+      {required final Result<List<DeviceResponse>> resultDevices,
+      final LoadStatus status}) = _$DeviceStateImpl;
 
   @override
   Result<List<DeviceResponse>> get resultDevices;
+  @override
+  LoadStatus get status;
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.
