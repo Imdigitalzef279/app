@@ -1,9 +1,6 @@
-import 'dart:ffi';
-
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:solar_energy/application/constants/mail.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
@@ -109,7 +106,6 @@ class RegisterCubit extends Cubit<RegisterState> {
   bool validate() {
     return validateEmail() &&
         validateName() &&
-        validatePhone() &&
         validateAccount() &&
         validatePass() &&
         validateConfirmPass() &&
@@ -135,20 +131,6 @@ class RegisterCubit extends Cubit<RegisterState> {
       return false;
     }
     emit(state.copyWith(nameError: ""));
-    return true;
-  }
-
-  bool validatePhone() {
-    if (state.phoneNumber.isEmpty) {
-      emit(state.copyWith(phoneNumberError: notNull));
-      return false;
-    }
-    if (!phoneRegex.hasMatch(state.phoneNumber)) {
-      emit(state.copyWith(
-          phoneNumberError: "Số điện thoại không đúng định dạng"));
-      return false;
-    }
-    emit(state.copyWith(phoneNumberError: ""));
     return true;
   }
 
