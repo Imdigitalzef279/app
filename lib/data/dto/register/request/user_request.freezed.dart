@@ -254,7 +254,7 @@ class _$UserRequestImpl implements _UserRequest {
       @JsonKey(name: 'name') this.name = "",
       @JsonKey(name: 'surname') this.surname = "",
       @JsonKey(name: 'email') this.email = "",
-      @JsonKey(name: 'phoneNumber') this.phoneNumber = "",
+      @JsonKey(name: 'phoneNumber') this.phoneNumber = "0985629282",
       @JsonKey(name: 'isActive') this.isActive = true,
       @JsonKey(name: 'lockoutEnabled') this.lockoutEnabled = true,
       @JsonKey(name: 'roleNames') final List<String> roleNames = const ["USER"],

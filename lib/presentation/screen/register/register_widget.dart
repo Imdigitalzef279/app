@@ -26,7 +26,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     cubit = BlocProvider.of<RegisterCubit>(context);
   }
@@ -55,7 +54,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
           backgroundColor: AppColors.blueF8,
         ),
         body: BlocListener<RegisterCubit, RegisterState>(
-          listenWhen: (previous, current) => previous.loadStatus != current.loadStatus,
+          listenWhen: (previous, current) =>
+              previous.loadStatus != current.loadStatus,
           listener: (BuildContext context, RegisterState state) {
             if (state.loadStatus == LoadStatus.loading) {
               BlocProvider.of<AppCubit>(context).showLoading();
@@ -96,21 +96,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                           ),
                         ],
                       ),
-                      // Text(
-                      //   "Kra Power",
-                      //   style: AppTextStyle.textBase.copyWith(
-                      //     color: const Color(0xFFCA2E39),
-                      //     fontWeight: FontWeight.w600,
-                      //     shadows: [
-                      //       Shadow(
-                      //         color: Colors.black.withOpacity(0.3),
-                      //         offset: const Offset(2, 2),
-                      //         blurRadius: 4,
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   textAlign: TextAlign.center,
-                      // )
                     ],
                   ),
                 ),
@@ -171,7 +156,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   Gap(12.h),
                   BlocBuilder<RegisterCubit, RegisterState>(
                     buildWhen: (previous, current) =>
-                    previous.surname != current.surname ||
+                        previous.surname != current.surname ||
                         previous.surnameError != current.surnameError,
                     builder: (context, state) => CustomLabelTextField(
                       radius: 8.r,
@@ -190,38 +175,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                           color: AppColors.textPrimary.withOpacity(0.5)),
                       onChanged: (value) => cubit.changeQuery(surname: value),
                       defaultValue: state.surname,
-                      textStyleInput: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Gap(12.h),
-                  BlocBuilder<RegisterCubit, RegisterState>(
-                    buildWhen: (previous, current) =>
-                        previous.phoneNumber != current.phoneNumber ||
-                        previous.phoneNumberError != current.phoneNumberError,
-                    builder: (context, state) => CustomLabelTextField(
-                      radius: 8.r,
-                      prefixIcon: Icon(
-                        Icons.phone,
-                        size: 24.r,
-                        color: AppColors.blueF8,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 16.h),
-                      hintText: "Số điên thoại",
-                      maxLine: 1,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      keyboardType: TextInputType.number,
-                      errorMessage: state.phoneNumberError,
-                      colorBorder: AppColors.white,
-                      backgroundColor: AppColors.greyFB,
-                      textStyleHint: AppTextStyle.textSm.copyWith(
-                          color: AppColors.textPrimary.withOpacity(0.5)),
-                      onChanged: (value) =>
-                          cubit.changeQuery(phoneNumber: value),
-                      defaultValue: state.phoneNumber,
                       textStyleInput: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600),

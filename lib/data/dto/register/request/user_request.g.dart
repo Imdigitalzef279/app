@@ -12,7 +12,7 @@ _$UserRequestImpl _$$UserRequestImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String? ?? "",
       surname: json['surname'] as String? ?? "",
       email: json['email'] as String? ?? "",
-      phoneNumber: json['phoneNumber'] as String? ?? "",
+      phoneNumber: json['phoneNumber'] as String? ?? "0985629282",
       isActive: json['isActive'] as bool? ?? true,
       lockoutEnabled: json['lockoutEnabled'] as bool? ?? true,
       roleNames: (json['roleNames'] as List<dynamic>?)

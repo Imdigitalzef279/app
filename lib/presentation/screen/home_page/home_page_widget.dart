@@ -9,7 +9,6 @@ import 'package:solar_energy/data/dto/power_station/request/power_station_reques
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/common_widgets/app_load_more.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
-import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.dart';
 import 'package:solar_energy/presentation/screen/home_page/widget/item_factory_hoz.dart';
 import 'package:solar_energy/presentation/screen/home_page/widget/tab_widget.dart';

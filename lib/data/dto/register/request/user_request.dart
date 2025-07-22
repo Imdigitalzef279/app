@@ -13,7 +13,7 @@ class UserRequest with _$UserRequest {
     @Default("") @JsonKey(name: 'name') String name,
     @Default("") @JsonKey(name: 'surname') String surname,
     @Default("") @JsonKey(name: 'email') String email,
-    @Default("") @JsonKey(name: 'phoneNumber') String phoneNumber,
+    @Default("0985629282") @JsonKey(name: 'phoneNumber') String phoneNumber,
     @Default(true) @JsonKey(name: 'isActive') bool isActive,
     @Default(true) @JsonKey(name: 'lockoutEnabled') bool lockoutEnabled,
     @Default(["USER"]) @JsonKey(name: 'roleNames') List<String> roleNames,
