@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
-import 'package:solar_energy/data/dto/project/response/project_response.dart';
 import 'package:solar_energy/presentation/common_widgets/app_network_image.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
@@ -14,8 +13,6 @@ class ItemFactoryHoz extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
     return InkWell(
       borderRadius: BorderRadius.circular(12.r),
       onTap: () {
@@ -31,12 +28,14 @@ class ItemFactoryHoz extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppNetworkImage(
-              "https://i0.wp.com/mcnaircustomhomes.com/wp-content/uploads/2023/06/luxury-smart-home.jpg?resize=1536%2C1024&ssl=1",
-              radius: 8.r,
-              fit: BoxFit.cover,
-              width: 100.w,
-              height: 60.w,
+            Expanded(
+              child: AppNetworkImage(
+                project.img,
+                radius: 8.r,
+                fit: BoxFit.cover,
+                width: 100.w,
+                height: 60.w,
+              ),
             ),
             12.horizontalSpace,
             Expanded(

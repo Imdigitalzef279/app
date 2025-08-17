@@ -6,7 +6,6 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/cubit/app_cubit.dart';
 import 'package:solar_energy/data/dto/meter/request/meter_request.dart';
-import 'package:solar_energy/data/dto/meter/response/meter_response.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';

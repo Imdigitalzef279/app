@@ -190,14 +190,16 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       });
                 },
                 builder: (BuildContext context, HomePageState state) {
-                  return ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) => ItemFactoryHoz(
-                            project: state.resultProjects.data![index],
-                          ),
-                      separatorBuilder: (context, index) => 8.verticalSpace,
-                      itemCount: state.resultProjects.data?.length ?? 0);
+                  final items = state.resultProjects.data ?? [];
+
+                  return Column(
+                    children: [
+                      for (int i = 0; i < items.length; i++) ...[
+                        ItemFactoryHoz(project: items[i]),
+                        if (i < items.length - 1) 8.verticalSpace,
+                      ]
+                    ],
+                  );
                 },
               ),
             ),

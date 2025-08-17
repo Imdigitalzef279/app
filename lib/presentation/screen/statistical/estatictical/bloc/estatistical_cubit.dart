@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
@@ -40,6 +41,12 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
                 (double.tryParse(e.paramEpi.toString()) ?? 0.0) *
                     (double.tryParse(e.ct.toString()) ?? 0.0)))
             .toList();
+
+        gridPowers = gridPowers.mapIndexed((index, current) {
+          if (index == 0) return SalesData(current.year, current.sales);
+          final prev = gridPowers[index - 1];
+          return SalesData(current.year, current.sales - prev.sales);
+        }).toList();
         emit(state.copyWith(resultChart: response, loadPowers: gridPowers));
         for (final item in state.loadPowers) {
           print('Year: ${item.year}, Sales: ${item.sales}');
