@@ -29,21 +29,12 @@ class ApiInterceptors extends InterceptorsWrapper {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final response = err.response;
-    int? statusCode;
     print(response.toString());
-    if (err.error is RedirectException) {
-      final redirectException = err.error as RedirectException;
-      if (redirectException.redirects.isNotEmpty) {
-        statusCode = redirectException.redirects.first.statusCode;
-        print(statusCode);
-      }
-    }
-    if (response?.statusCode == 400) {
-      super.onError(err, handler);
-      return;
-    }
 
-    if (statusCode == 302) {
+
+    print("status code: ${err.response?.statusCode}");
+
+    if (err.response?.statusCode == 401) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
         AppToast.dismissAll();

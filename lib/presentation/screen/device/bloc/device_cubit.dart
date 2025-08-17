@@ -28,7 +28,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(resultDevices: Result(status: LoadStatus.loading)));
     final response = await _repo.getSolarElectric(powerStationId);
     if (response.data?.isEmpty ?? true) {
-      emit(state.copyWith(resultDevices: Result(status: LoadStatus.failure)));
+      emit(state.copyWith(resultDevices: Result(status: LoadStatus.failure, error: "Không có dữ liệu"), ));
       return;
     }
     final rawList = response.data;

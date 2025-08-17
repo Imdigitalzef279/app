@@ -23,7 +23,6 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     cubit = BlocProvider.of(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
@@ -97,12 +96,70 @@ class _AccountScreenState extends State<AccountScreen> {
                       color: AppColors.greyFB,
                     ),
                     GestureDetector(
-                      onTap: ()  async {
-                        final check = await cubit.deleteAccount();
-                        if (check){
-                          Navigator.pushNamedAndRemoveUntil(context,
-                              RouteName.loginScreen, (Route<dynamic> route) => false);
+                      onTap: () async {
+                        if (state.request.data?.email == "hong@gmail.com") {
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text(
+                                "⚠️ Cảnh báo",
+                                style: AppTextStyle.textBase,
+                              ),
+                              content: Text(
+                                'Tài khoản thử nghiệm không thể ngừng kích hoạt',
+                                style: AppTextStyle.textSm,
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, 'Cancel'),
+                                  child: Text(
+                                    'Đã hiểu',
+                                    style: AppTextStyle.textSm,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                          return;
                         }
+                        showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: Text(
+                              'Ngừng kích hoạt tài khoản',
+                              style: AppTextStyle.textSm,
+                            ),
+                            content: Text(
+                              'Xác nhận ngừng kích hoạt tài khoản này',
+                              style: AppTextStyle.textSm,
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(context, 'Cancel'),
+                                child: Text(
+                                  'Cancel',
+                                  style: AppTextStyle.textSm,
+                                ),
+                              ),
+                              TextButton(
+                                  onPressed: () async {
+                                    final check = await cubit.deleteAccount();
+                                    if (check) {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context,
+                                          RouteName.loginScreen,
+                                          (Route<dynamic> route) => false);
+                                    }
+                                  },
+                                  child: Text(
+                                    'Xác nhận',
+                                    style: AppTextStyle.textSm,
+                                  )),
+                            ],
+                          ),
+                        );
                       },
                       child: ItemOptionWidget(
                         icon: Icon(

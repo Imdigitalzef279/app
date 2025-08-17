@@ -30,6 +30,7 @@ mixin _$PowerStationResponse {
   String get longitude => throw _privateConstructorUsedError;
   String get latitude => throw _privateConstructorUsedError;
   String get creator => throw _privateConstructorUsedError;
+  String get img => throw _privateConstructorUsedError;
 
   /// Serializes this PowerStationResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -57,7 +58,8 @@ abstract class $PowerStationResponseCopyWith<$Res> {
       String planViewPath,
       String longitude,
       String latitude,
-      String creator});
+      String creator,
+      String img});
 }
 
 /// @nodoc
@@ -86,6 +88,7 @@ class _$PowerStationResponseCopyWithImpl<$Res,
     Object? longitude = null,
     Object? latitude = null,
     Object? creator = null,
+    Object? img = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -128,6 +131,10 @@ class _$PowerStationResponseCopyWithImpl<$Res,
           ? _value.creator
           : creator // ignore: cast_nullable_to_non_nullable
               as String,
+      img: null == img
+          ? _value.img
+          : img // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -150,7 +157,8 @@ abstract class _$$PowerStationResponseImplCopyWith<$Res>
       String planViewPath,
       String longitude,
       String latitude,
-      String creator});
+      String creator,
+      String img});
 }
 
 /// @nodoc
@@ -176,6 +184,7 @@ class __$$PowerStationResponseImplCopyWithImpl<$Res>
     Object? longitude = null,
     Object? latitude = null,
     Object? creator = null,
+    Object? img = null,
   }) {
     return _then(_$PowerStationResponseImpl(
       id: null == id
@@ -218,6 +227,10 @@ class __$$PowerStationResponseImplCopyWithImpl<$Res>
           ? _value.creator
           : creator // ignore: cast_nullable_to_non_nullable
               as String,
+      img: null == img
+          ? _value.img
+          : img // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -235,7 +248,9 @@ class _$PowerStationResponseImpl implements _PowerStationResponse {
       this.planViewPath = '',
       this.longitude = '',
       this.latitude = '',
-      this.creator = ''});
+      this.creator = '',
+      this.img =
+          'https://i0.wp.com/mcnaircustomhomes.com/wp-content/uploads/2023/06/luxury-smart-home.jpg?resize=1536%2C1024&ssl=1'});
 
   factory _$PowerStationResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$PowerStationResponseImplFromJson(json);
@@ -270,10 +285,13 @@ class _$PowerStationResponseImpl implements _PowerStationResponse {
   @override
   @JsonKey()
   final String creator;
+  @override
+  @JsonKey()
+  final String img;
 
   @override
   String toString() {
-    return 'PowerStationResponse(id: $id, projectId: $projectId, name: $name, code: $code, storeParam: $storeParam, description: $description, planViewPath: $planViewPath, longitude: $longitude, latitude: $latitude, creator: $creator)';
+    return 'PowerStationResponse(id: $id, projectId: $projectId, name: $name, code: $code, storeParam: $storeParam, description: $description, planViewPath: $planViewPath, longitude: $longitude, latitude: $latitude, creator: $creator, img: $img)';
   }
 
   @override
@@ -296,13 +314,14 @@ class _$PowerStationResponseImpl implements _PowerStationResponse {
                 other.longitude == longitude) &&
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
-            (identical(other.creator, creator) || other.creator == creator));
+            (identical(other.creator, creator) || other.creator == creator) &&
+            (identical(other.img, img) || other.img == img));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, projectId, name, code,
-      storeParam, description, planViewPath, longitude, latitude, creator);
+      storeParam, description, planViewPath, longitude, latitude, creator, img);
 
   /// Create a copy of PowerStationResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -333,7 +352,8 @@ abstract class _PowerStationResponse implements PowerStationResponse {
       final String planViewPath,
       final String longitude,
       final String latitude,
-      final String creator}) = _$PowerStationResponseImpl;
+      final String creator,
+      final String img}) = _$PowerStationResponseImpl;
 
   factory _PowerStationResponse.fromJson(Map<String, dynamic> json) =
       _$PowerStationResponseImpl.fromJson;
@@ -358,6 +378,8 @@ abstract class _PowerStationResponse implements PowerStationResponse {
   String get latitude;
   @override
   String get creator;
+  @override
+  String get img;
 
   /// Create a copy of PowerStationResponse
   /// with the given fields replaced by the non-null parameter values.

@@ -14,6 +14,7 @@ class PowerStationResponse with _$PowerStationResponse{
     @Default('') String longitude,
     @Default('') String latitude,
     @Default('') String creator,
+    @Default('https://i0.wp.com/mcnaircustomhomes.com/wp-content/uploads/2023/06/luxury-smart-home.jpg?resize=1536%2C1024&ssl=1') String img,
   }) = _PowerStationResponse;
 
   factory PowerStationResponse.fromJson(Map<String, dynamic> json) =>

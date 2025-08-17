@@ -89,7 +89,7 @@ class LoginCubit extends Cubit<LoginState> {
             error: response.error));
         return;
       } catch (e) {
-        emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+        emit(state.copyWith(request: Result(status: LoadStatus.failure), error: "Đã có lỗi xảy ra vui lòng thao tac lại sau!"));
         return;
       }
     }
@@ -129,7 +129,7 @@ class LoginCubit extends Cubit<LoginState> {
           request: Result(status: LoadStatus.failure), error: response.error));
       return;
     } catch (e) {
-      emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+      emit(state.copyWith(request: Result(status: LoadStatus.failure), error: "Đã có lỗi xảy ra vui lòng thao tac lại sau!"));
       return;
     }
   }

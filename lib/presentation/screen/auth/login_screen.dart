@@ -72,7 +72,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (Navigator.canPop(context)) {
                   Navigator.pop(context);
                   cubit.state.copyWith(error: "Kết nối không ổn định !!!");
-                  ;
                 }
                 if (state.error == "Kết nối không ổn định !!!") {
                   AppToast.showToastError(title: state.error);

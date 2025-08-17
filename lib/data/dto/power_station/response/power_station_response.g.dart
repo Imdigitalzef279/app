@@ -19,6 +19,8 @@ _$PowerStationResponseImpl _$$PowerStationResponseImplFromJson(
       longitude: json['longitude'] as String? ?? '',
       latitude: json['latitude'] as String? ?? '',
       creator: json['creator'] as String? ?? '',
+      img: json['img'] as String? ??
+          'https://i0.wp.com/mcnaircustomhomes.com/wp-content/uploads/2023/06/luxury-smart-home.jpg?resize=1536%2C1024&ssl=1',
     );
 
 Map<String, dynamic> _$$PowerStationResponseImplToJson(
@@ -34,4 +36,5 @@ Map<String, dynamic> _$$PowerStationResponseImplToJson(
       'longitude': instance.longitude,
       'latitude': instance.latitude,
       'creator': instance.creator,
+      'img': instance.img,
     };
