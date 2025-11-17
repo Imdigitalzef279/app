@@ -139,6 +139,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/module.svg
   SvgGenImage get module => const SvgGenImage('assets/icons/module.svg');
 
+  /// File path: assets/icons/non_device_disconnected.svg
+  SvgGenImage get nonDeviceDisconnected =>
+      const SvgGenImage('assets/icons/non_device_disconnected.svg');
+
   /// File path: assets/icons/overview.svg
   SvgGenImage get overview => const SvgGenImage('assets/icons/overview.svg');
 
@@ -233,6 +237,7 @@ class $AssetsIconsGen {
         infoLine,
         messagesQuestion,
         module,
+        nonDeviceDisconnected,
         overview,
         overviewLine,
         phoneCall,

@@ -1,23 +1,29 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
+
+import 'package:solar_energy/data/dto/base_chart_line.dart';
+
+import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../../application/constants/app_color.dart';
 import '../../../../application/constants/app_text_style.dart';
+import '../../../../application/cubit/app_cubit.dart';
 import '../../../../application/enums/index_type.dart';
+import '../../../../data/dto/water/request/meter_water_request.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../routes/route_name.dart';
 import '../../alarm_water/widget/item_alarm_water.dart';
 import '../bloc/manager_water_cubit.dart';
 
 class OverviewWater extends StatefulWidget {
-  const OverviewWater({super.key});
+  const OverviewWater({super.key, required this.deviceWater, required this.stationId});
+  final int deviceWater;
+  final int stationId;
 
   @override
   State<OverviewWater> createState() => _OverviewWaterState();
@@ -44,6 +50,23 @@ class _OverviewWaterState extends State<OverviewWater>
       curve: Curves.easeIn,
     );
     _cubit = BlocProvider.of<ManagerWaterCubit>(context);
+    final date = DateTime.now();
+    final nextDay = DateTime.now().add(const Duration(days: 1));
+
+    if (widget.deviceWater != 0) {
+      final request = MeterWaterRequest(
+        detailId: widget.deviceWater,
+        powerStationId: widget.stationId,
+        fromDate: "${date.month}/${date.day}/${date.year}",
+        toDate: "${nextDay.month}/${nextDay.day}/${nextDay.year}",
+      );
+      _cubit.getValuesWater(request);
+    } else {
+      AppToast.showToastError(title: "Không có dữ liệu");
+      Future.delayed(const Duration(seconds: 3), (){
+        AppToast.dismissAll();
+      });
+    }
   }
 
   void _openListWaterIndex() {
@@ -63,43 +86,37 @@ class _OverviewWaterState extends State<OverviewWater>
     super.dispose();
   }
 
-  List<_SalesData> generateSalesData() {
-    final random = Random();
-    List<_SalesData> data = [];
-
-    for (int hour = 0; hour < 24; hour++) {
-      for (int minute = 0; minute < 60; minute += 5) {
-        String time =
-            '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
-        int value = (hour > 8 && hour < 16)
-            ? random.nextInt(30)
-            : 0; // Giá trị từ 0 đến 100
-
-        data.add(_SalesData(time, value));
-      }
-    }
-
-    return data;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(12.sp),
-          child: Column(
-            children: [
-              _overview(),
-              Gap(12.sp),
-              _waterIndexWarning(),
-              Gap(12.sp),
-              _waterIndex(),
-              Gap(12.sp),
-              _warning(),
-              Gap(12.sp),
-              _waterConsumption()
-            ],
+          child: BlocListener<ManagerWaterCubit, ManagerWaterState>(
+            listener: (context, state) {
+              state.values.when(
+                  loading: () =>
+                      BlocProvider.of<AppCubit>(context).showLoading(),
+                  success: (data) =>
+                      BlocProvider.of<AppCubit>(context).hideShowLoading(),
+                  error: (error) {
+                    BlocProvider.of<AppCubit>(context).hideShowLoading();
+                    AppToast.showToastError(title: "Đã có lỗi xảy ra!!");
+                  });
+            },
+            child: Column(
+              children: [
+                _overview(),
+                Gap(12.sp),
+                _waterIndexWarning(),
+                Gap(12.sp),
+                _waterIndex(),
+                Gap(12.sp),
+                _warning(),
+                Gap(12.sp),
+                _waterConsumption()
+              ],
+            ),
           ),
         ),
       ),
@@ -107,117 +124,127 @@ class _OverviewWaterState extends State<OverviewWater>
   }
 
   Widget _overview() {
-    return Container(
-      padding: EdgeInsets.all(12.sp),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.sp),
-          color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.greyDF.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            )
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Tổng quan",
-            style: AppTextStyle.textSm.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
+    return BlocBuilder<ManagerWaterCubit, ManagerWaterState>(
+      builder: (context, state) =>
+          Container(
+            padding: EdgeInsets.all(12.sp),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.sp),
+                color: AppColors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.greyDF.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  )
+                ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Tổng quan",
+                  style: AppTextStyle.textSm.copyWith(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary),
+                ),
+                Row(
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Lottie.asset(
+                          Assets.images.waterLottie,
+                          controller: _controller,
+                          height: 1.sw / 4,
+                          onLoaded: (composition) {
+                            _controller
+                              ..duration = composition.duration
+                              ..repeat(reverse: true);
+                          },
+                        ),
+                        Center(
+                            child: Text(
+                              "${state.currentIndex.toString()} L",
+                              style: AppTextStyle.textBase.copyWith(
+                                  fontSize: 16.sp,
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600),
+                            )),
+                      ],
+                    ),
+                    Gap(12.sp),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Assets.icons.faucet.svg(
+                                width: 14.sp,
+                                colorFilter: const ColorFilter.mode(
+                                    AppColors.blueF8, BlendMode.srcIn)),
+                            Gap(8.sp),
+                            Text(
+                              state.loadPowers.isNotEmpty
+                                  ? "Chỉ số: ${state.loadPowers.last.sales} Lít"
+                                  : "Chỉ số: -- Lít",
+                              style: AppTextStyle.textXs.copyWith(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12.sp,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Gap(8.sp),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Assets.icons.usdCircle.svg(
+                                width: 14.sp,
+                                colorFilter: const ColorFilter.mode(
+                                    AppColors.blueF8, BlendMode.srcIn)),
+                            Gap(8.sp),
+                            Text(
+                              state.loadPowers.isNotEmpty
+                                  ? "Số tiền: ${(state.loadPowers.last.sales *
+                                  35000).toStringAsFixed(0)} Đồng"
+                                  : "Số tiền: -- Đồng",
+                              style: AppTextStyle.textXs.copyWith(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Gap(8.sp),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Assets.icons.arrowDownStrenght.svg(
+                                width: 14.sp,
+                                colorFilter: const ColorFilter.mode(
+                                    AppColors.blueF8, BlendMode.srcIn)),
+                            Gap(8.sp),
+                            Text(
+                              "Áp suất: 0 Pa",
+                              style: AppTextStyle.textXs.copyWith(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
-          Row(
-            children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Lottie.asset(
-                    Assets.images.waterLottie,
-                    controller: _controller,
-                    height: 1.sw / 4,
-                    onLoaded: (composition) {
-                      _controller
-                        ..duration = composition.duration
-                        ..repeat(reverse: true);
-                    },
-                  ),
-                  Center(
-                      child: Text(
-                    "3,6 L",
-                    style: AppTextStyle.textBase.copyWith(
-                        fontSize: 16.sp,
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w600),
-                  )),
-                ],
-              ),
-              Gap(12.sp),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Assets.icons.faucet.svg(
-                          width: 14.sp,
-                          colorFilter: const ColorFilter.mode(
-                              AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(8.sp),
-                      Text(
-                        "Tiêu thụ: 27 Lít",
-                        style: AppTextStyle.textXs.copyWith(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12.sp,
-                            color: AppColors.textPrimary),
-                      ),
-                    ],
-                  ),
-                  Gap(8.sp),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Assets.icons.usdCircle.svg(
-                          width: 14.sp,
-                          colorFilter: const ColorFilter.mode(
-                              AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(8.sp),
-                      Text(
-                        "Số tiền: 270,000,000 Đồng",
-                        style: AppTextStyle.textXs.copyWith(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary),
-                      ),
-                    ],
-                  ),
-                  Gap(8.sp),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Assets.icons.arrowDownStrenght.svg(
-                          width: 14.sp,
-                          colorFilter: const ColorFilter.mode(
-                              AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(8.sp),
-                      Text(
-                        "Áp suất: 9800 Pa",
-                        style: AppTextStyle.textXs.copyWith(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -265,8 +292,9 @@ class _OverviewWaterState extends State<OverviewWater>
                 spacing: 8.sp,
                 children: List.generate(
                     state.listSelected.length,
-                    (index) => itemWaterIndex(state.listSelected[index],
-                        isAdd: false)),
+                        (index) =>
+                        itemWaterIndex(state.listSelected[index],
+                            isAdd: false)),
               ),
               SizeTransition(
                   sizeFactor: _animation,
@@ -287,9 +315,10 @@ class _OverviewWaterState extends State<OverviewWater>
                         spacing: 8.sp,
                         children: List.generate(
                             state.listWaterIndex.length,
-                            (index) => itemWaterIndex(
-                                state.listWaterIndex[index],
-                                isAdd: true)),
+                                (index) =>
+                                itemWaterIndex(
+                                    state.listWaterIndex[index],
+                                    isAdd: true)),
                       ),
                     ],
                   )),
@@ -325,19 +354,19 @@ class _OverviewWaterState extends State<OverviewWater>
                   Gap(4.sp),
                   RichText(
                       text: TextSpan(children: [
-                    TextSpan(
-                        text: waterIndex.value.toString(),
-                        style: AppTextStyle.textSm.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14.sp,
-                            color: AppColors.textPrimary)),
-                    TextSpan(
-                        text: ' ${waterIndex.unit}',
-                        style: AppTextStyle.textXs.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12.sp,
-                            color: AppColors.grey4D)),
-                  ])),
+                        TextSpan(
+                            text: waterIndex.value.toString(),
+                            style: AppTextStyle.textSm.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14.sp,
+                                color: AppColors.textPrimary)),
+                        TextSpan(
+                            text: ' ${waterIndex.unit}',
+                            style: AppTextStyle.textXs.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12.sp,
+                                color: AppColors.grey4D)),
+                      ])),
                   Gap(4.sp),
                   Text(
                       waterIndex.limit != null
@@ -421,10 +450,11 @@ class _OverviewWaterState extends State<OverviewWater>
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) => const ItemAlarmWater(),
-              separatorBuilder: (context, index) => const Divider(
-                    color: AppColors.greyCC,
-                    height: 0,
-                  ),
+              separatorBuilder: (context, index) =>
+              const Divider(
+                color: AppColors.greyCC,
+                height: 0,
+              ),
               itemCount: 3)
         ],
       ),
@@ -432,94 +462,103 @@ class _OverviewWaterState extends State<OverviewWater>
   }
 
   Widget _waterConsumption() {
-    return Container(
-      padding: EdgeInsets.all(12.sp),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.sp),
-          color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.greyDF.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            )
-          ]),
-      child: Column(
-        children: [
-          Text(
-            "Số nước tiêu thụ",
-            style: AppTextStyle.textSm.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
-          ),
-          Gap(8.sp),
-          SizedBox(
-            height: 1.sw / 2,
-            child: SfCartesianChart(
-                // Enable legend
-                legend: const Legend(isVisible: false),
-                primaryXAxis: CategoryAxis(
-                  labelStyle: AppTextStyle.textXs.copyWith(
-                      color: AppColors.textPrimary,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400),
-                  desiredIntervals: 10,
-                  labelRotation: 0,
-                ),
-                primaryYAxis: NumericAxis(
-                  axisLabelFormatter: (AxisLabelRenderDetails details) {
-                    return ChartAxisLabel(
-                        '${details.value} L',
-                        AppTextStyle.textXs.copyWith(
-                            fontSize: 12.sp,
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w400));
-                  },
-                ),
-                // Enable tooltip
-                //tooltipBehavior: TooltipBehavior(enable: true, shared: true),
-                trackballBehavior: TrackballBehavior(
-                  enable: true,
-                  activationMode: ActivationMode.singleTap,
-                  hideDelay: 2500,
-                  tooltipAlignment: ChartAlignment.center,
-                  tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
-                  // Hiển thị tất cả series
-                  tooltipSettings: InteractiveTooltip(
-                    enable: true,
-                    format: 'point.y L',
-                    color: Colors.black.withOpacity(0.7),
-                    textStyle: AppTextStyle.textXs.copyWith(
-                        fontSize: 10.sp,
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  // tooltipSettings: const InteractiveTooltip(
-                  //   enable: true,
-                  //   format: 'point.y kW',
-                  // ),
-                ),
-                zoomPanBehavior: ZoomPanBehavior(
-                    enablePanning: true,
-                    enablePinching: true,
-                    enableDoubleTapZooming: true,
-                    zoomMode: ZoomMode.x),
-                series: <CartesianSeries<_SalesData, String>>[
-                  SplineSeries<_SalesData, String>(
-                      dataSource: generateSalesData(),
-                      xValueMapper: (_SalesData sales, _) => sales.year,
-                      yValueMapper: (_SalesData sales, _) => sales.sales,
-                      color: const Color(0xFF1dd1a1),
-                      name: 'Công suất PV',
-                      // Enable data label
-                      dataLabelSettings:
-                          const DataLabelSettings(isVisible: false)),
+    return BlocBuilder<ManagerWaterCubit, ManagerWaterState>(
+      buildWhen: (previous, current) =>
+      previous.loadPowers != current.loadPowers,
+      builder: (context, state) =>
+          Container(
+            padding: EdgeInsets.all(12.sp),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.sp),
+                color: AppColors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.greyDF.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  )
                 ]),
+            child: Column(
+              children: [
+                Text(
+                  "Số nước tiêu thụ",
+                  style: AppTextStyle.textSm.copyWith(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary),
+                ),
+                Gap(8.sp),
+                SizedBox(
+                  height: 1.sw / 2,
+                  child: SfCartesianChart(
+                    // Enable legend
+                      legend: const Legend(isVisible: false),
+                      primaryXAxis: CategoryAxis(
+                        labelStyle: AppTextStyle.textXs.copyWith(
+                            color: AppColors.textPrimary,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w400),
+                        desiredIntervals: 10,
+                        labelRotation: 0,
+                      ),
+                      primaryYAxis: NumericAxis(
+                        axisLabelFormatter: (AxisLabelRenderDetails details) {
+                          final formattedValue = details.value.toStringAsFixed(
+                              2);
+                          return ChartAxisLabel(
+                              '$formattedValue L',
+                              AppTextStyle.textXs.copyWith(
+                                  fontSize: 10.sp,
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w400));
+                        },
+                      ),
+                      // Enable tooltip
+                      //tooltipBehavior: TooltipBehavior(enable: true, shared: true),
+                      trackballBehavior: TrackballBehavior(
+                        enable: true,
+                        activationMode: ActivationMode.singleTap,
+                        hideDelay: 2500,
+                        tooltipAlignment: ChartAlignment.center,
+                        tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+                        // Hiển thị tất cả series
+                        tooltipSettings: InteractiveTooltip(
+                          enable: true,
+                          format: 'point.y L',
+                          color: Colors.black.withOpacity(0.7),
+                          textStyle: AppTextStyle.textXs.copyWith(
+                              fontSize: 10.sp,
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        // tooltipSettings: const InteractiveTooltip(
+                        //   enable: true,
+                        //   format: 'point.y kW',
+                        // ),
+                      ),
+                      zoomPanBehavior: ZoomPanBehavior(
+                          enablePanning: true,
+                          enablePinching: true,
+                          enableDoubleTapZooming: true,
+                          zoomMode: ZoomMode.x),
+                      series: <CartesianSeries<BaseChartLine, String>>[
+                        SplineSeries<BaseChartLine, String>(
+                            dataSource: state.loadPowers,
+                            xValueMapper: (BaseChartLine sales, _) =>
+                            sales.year,
+                            yValueMapper: (BaseChartLine sales, _) =>
+                            sales.sales,
+                            color: const Color(0xFF1dd1a1),
+                            name: 'Công suất PV',
+                            // Enable data label
+                            dataLabelSettings:
+                            const DataLabelSettings(isVisible: false)),
+                      ]),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
     );
   }
 
@@ -553,39 +592,43 @@ class _OverviewWaterState extends State<OverviewWater>
             children: [
               Expanded(
                   child: warningWidget(
-                name: "1",
-                colors: AppColors.greyAE.withOpacity(0.7),
-                onPress: () => Navigator.pushNamed(
-                    context, RouteName.indexWarning,
-                    arguments: IndexType.normal),
-              )),
+                    name: "1",
+                    colors: AppColors.greyAE.withOpacity(0.7),
+                    onPress: () =>
+                        Navigator.pushNamed(
+                            context, RouteName.indexWarning,
+                            arguments: IndexType.normal),
+                  )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
-                name: "1",
-                colors: AppColors.green50.withOpacity(0.3),
-                onPress: () => Navigator.pushNamed(
-                    context, RouteName.indexWarning,
-                    arguments: IndexType.good),
-              )),
+                    name: "1",
+                    colors: AppColors.green50.withOpacity(0.3),
+                    onPress: () =>
+                        Navigator.pushNamed(
+                            context, RouteName.indexWarning,
+                            arguments: IndexType.good),
+                  )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
-                name: "1",
-                colors: AppColors.yellow57.withOpacity(0.7),
-                onPress: () => Navigator.pushNamed(
-                    context, RouteName.indexWarning,
-                    arguments: IndexType.high),
-              )),
+                    name: "1",
+                    colors: AppColors.yellow57.withOpacity(0.7),
+                    onPress: () =>
+                        Navigator.pushNamed(
+                            context, RouteName.indexWarning,
+                            arguments: IndexType.high),
+                  )),
               4.horizontalSpace,
               Expanded(
                   child: warningWidget(
-                name: "1",
-                colors: AppColors.red14.withOpacity(0.7),
-                onPress: () => Navigator.pushNamed(
-                    context, RouteName.indexWarning,
-                    arguments: IndexType.very_hight),
-              )),
+                    name: "1",
+                    colors: AppColors.red14.withOpacity(0.7),
+                    onPress: () =>
+                        Navigator.pushNamed(
+                            context, RouteName.indexWarning,
+                            arguments: IndexType.very_hight),
+                  )),
             ],
           ),
         ],
@@ -613,11 +656,4 @@ class _OverviewWaterState extends State<OverviewWater>
       ),
     );
   }
-}
-
-class _SalesData {
-  _SalesData(this.year, this.sales);
-
-  final String year;
-  final int sales;
 }

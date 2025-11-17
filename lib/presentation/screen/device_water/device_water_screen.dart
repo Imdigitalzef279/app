@@ -6,7 +6,8 @@ import '../../../application/constants/app_text_style.dart';
 import '../../routes/route_name.dart';
 
 class DeviceWaterScreen extends StatefulWidget {
-  const DeviceWaterScreen({super.key});
+  const DeviceWaterScreen({super.key, required this.stationId});
+  final int stationId;
 
   @override
   State<DeviceWaterScreen> createState() => _DeviceWaterScreenState();

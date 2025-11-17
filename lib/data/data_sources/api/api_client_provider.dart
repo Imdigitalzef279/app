@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:solar_energy/application/extensions/extensions.dart';
 
 import '../../../application/configs/env_configs.dart';
 import '../../../di.dart';

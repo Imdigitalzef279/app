@@ -91,12 +91,12 @@ class AppToast {
       ),
     );
 
-    _toastEntries.add(entry); // 👈 Lưu lại entry
+    _toastEntries.add(entry);
     overlayState.insert(entry);
 
     Future.delayed(const Duration(milliseconds: 3000), () {
       entry?.remove();
-      _toastEntries.remove(entry); // 👈 Cleanup sau khi toast biến mất
+      _toastEntries.remove(entry);
     });
   }
 

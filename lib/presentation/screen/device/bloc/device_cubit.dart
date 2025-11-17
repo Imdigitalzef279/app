@@ -3,11 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
-import 'package:solar_energy/data/dto/api_response/api_response.dart';
-import 'package:solar_energy/data/dto/device/request/device_request.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/dto/meter/request/meter_request.dart';
-import 'package:solar_energy/data/dto/meter/response/meter_response.dart';
 import 'package:solar_energy/data/dto/result/result.dart';
 import 'package:solar_energy/data/repositories/device/device_repository.dart';
 import 'package:solar_energy/di.dart';
@@ -48,7 +45,15 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     final filteredDevices =
         rawList?.where((d) => fromMeterTypeId(d.meterTypeId) == type).toList();
-    return filteredDevices?.first.id ?? 0;
+
+    if (filteredDevices == null){
+      return 0;
+    }
+
+    if (filteredDevices.isEmpty){
+      return 0;
+    }
+    return filteredDevices.first.id ?? 0;
   }
 
   ElectricType? fromMeterTypeId(int id) {
@@ -58,6 +63,8 @@ class DeviceCubit extends Cubit<DeviceState> {
       case 21:
       case 22:
         return ElectricType.solarElectric;
+      case 41:
+        return ElectricType.water;
       default:
         return null;
     }
