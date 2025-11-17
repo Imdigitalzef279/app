@@ -13,8 +13,11 @@ import 'package:solar_energy/data/dto/power_station/request/power_station_reques
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 import 'package:solar_energy/data/dto/profile/profile_response.dart';
 import 'package:solar_energy/data/dto/register/request/user_request.dart';
+import 'package:solar_energy/data/dto/result/result.dart';
 import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
 import 'package:solar_energy/data/dto/solar_electric/response/solar_electric_response.dart';
+import 'package:solar_energy/data/dto/water/request/meter_water_request.dart';
+import 'package:solar_energy/data/dto/water/response/meter_water_response.dart';
 
 part 'api_client.g.dart';
 
@@ -69,6 +72,9 @@ abstract class ApiClient {
       @Body() PowerStationRequest request);
 
   @POST("api/app/meter")
-  Future<MeterResponse> createMeter(
-      @Body() MeterRequest request);
+  Future<MeterResponse> createMeter(@Body() MeterRequest request);
+
+  @GET("api/app/log-water/log-by-meter-detail-id")
+  Future<List<MeterWaterResponse>> getChartWater(
+      @Queries() MeterWaterRequest request);
 }

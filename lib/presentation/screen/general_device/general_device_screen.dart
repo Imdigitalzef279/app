@@ -134,19 +134,20 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     Gap(16.h),
                     Wrap(
                       runSpacing: 12.w,
-                      spacing: 8.w,
+                      spacing: 12.w,
                       children: [
-                        // itemService(
-                        //     onTap: () {
-                        //       Navigator.pushNamed(
-                        //           context, RouteName.managerWater);
-                        //     },
-                        //     icon: Assets.icons.water.svg(
-                        //         width: 22.w,
-                        //         height: 22.w,
-                        //         colorFilter: const ColorFilter.mode(
-                        //             AppColors.blueEA, BlendMode.srcIn)),
-                        //     name: "Nước sạch"),
+                        itemService(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, RouteName.managerWater,
+                                  arguments: widget.project);
+                            },
+                            icon: Assets.icons.water.svg(
+                                width: 22.w,
+                                height: 22.w,
+                                colorFilter: const ColorFilter.mode(
+                                    AppColors.blueEA, BlendMode.srcIn)),
+                            name: "Nước sạch"),
                         itemService(
                             onTap: () {
                               Navigator.pushNamed(
@@ -207,8 +208,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     return GestureDetector(
       onTap: () => onTap?.call(),
       child: SizedBox(
-        // width: (1.sw - 80.w) / 4,
-        width: (1.sw - 80.w) / 2,
+        width: (1.sw - 80.w) / 3,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

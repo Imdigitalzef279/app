@@ -10,6 +10,8 @@ import 'package:solar_energy/data/repositories/project/project_repository.dart';
 import 'package:solar_energy/data/repositories/project/project_repository_impl.dart';
 import 'package:solar_energy/data/repositories/solar_electric/solar_electric_repository.dart';
 import 'package:solar_energy/data/repositories/solar_electric/solar_electric_repository_impl.dart';
+import 'package:solar_energy/data/repositories/water/water_repository.dart';
+import 'package:solar_energy/data/repositories/water/water_repository_impl.dart';
 
 import 'data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 import 'data/repositories/electric/electric_repository_impl.dart';
@@ -37,5 +39,6 @@ void configureDependencies() {
   getIt.registerLazySingleton<ProjectRepository>(() => ProjectRepositoryImpl());
   getIt.registerLazySingleton<ElectricRepository>(() => ElectricRepositoryImpl());
   getIt.registerLazySingleton<RegisterRepository>(() => RegisterRepositoryImpl());
+  getIt.registerLazySingleton<WaterRepository>(() => WaterRepositoryImpl());
 
 }

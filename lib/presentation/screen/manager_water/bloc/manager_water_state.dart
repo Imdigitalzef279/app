@@ -2,13 +2,16 @@ part of 'manager_water_cubit.dart';
 
 @freezed
 class ManagerWaterState with _$ManagerWaterState {
-  const factory ManagerWaterState(
-      {@Default(false) bool isEdit,
-      @Default([]) List<WaterIndexModel> listSelected,
-      @Default([]) List<WaterIndexModel> listWaterIndex}) = _ManagerWaterState;
+  const factory ManagerWaterState({@Default(false) bool isEdit,
+    @Default([]) List<WaterIndexModel> listSelected,
+    @Default([]) List<WaterIndexModel> listWaterIndex,
+    @Default([]) List<BaseChartLine> loadPowers,
+    @Default(0) double currentIndex,
+    @Default(LoadStatus.initial) LoadStatus loadStatus,
+    required Result<List<MeterWaterResponse>> values}) = _ManagerWaterState;
 
   factory ManagerWaterState.init() =>
-      ManagerWaterState(isEdit: false, listWaterIndex: [
+      ManagerWaterState(values: Result(), isEdit: false, listWaterIndex: [
         WaterIndexModel(
             icon: Assets.icons.bacterium.path,
             title: "Vi sinh vật",

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/enums/index_type.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
-import 'package:solar_energy/presentation/screen/Electricity/bloc/electric_cubit.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/add_station/create_new_station.dart';
 import 'package:solar_energy/presentation/screen/alarm_water/all_alarm_water_screen.dart';
@@ -15,7 +13,6 @@ import 'package:solar_energy/presentation/screen/detail_device/detail_device_scr
 import 'package:solar_energy/presentation/screen/detail_device_water/detail_device_water_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_factory/detail_factory.dart';
 import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
-import 'package:solar_energy/presentation/screen/device/devices_screen.dart';
 import 'package:solar_energy/presentation/screen/device_index/device_index_screen.dart';
 import 'package:solar_energy/presentation/screen/general_device/general_device_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_device_water/widget/index_warning_screen.dart';
@@ -24,10 +21,8 @@ import 'package:solar_energy/presentation/screen/manager_water/manager_water_scr
 import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
 import 'package:solar_energy/presentation/screen/register/Bloc/register_cubit.dart';
 import 'package:solar_energy/presentation/screen/register/register_widget.dart';
-import 'package:solar_energy/presentation/screen/statistical/statistical_screen.dart';
 
 import '../../data/dto/power_station/response/power_station_response.dart';
-import '../../data/dto/project/response/project_response.dart';
 
 class AppRouter {
   Route onGenerateRoute(RouteSettings routeSettings) {
@@ -81,9 +76,14 @@ class AppRouter {
             child: const DeviceIndexScreen());
         break;
       case RouteName.managerWater:
-        routeWidget = BlocProvider(
-            create: (BuildContext context) => ManagerWaterCubit(),
-            child: const ManagerWaterScreen());
+        routeWidget = MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => ManagerWaterCubit()),
+              BlocProvider(create: (context) => DeviceCubit())
+            ],
+            child: ManagerWaterScreen(
+              station: arguments as PowerStationResponse,
+            ));
         break;
       case RouteName.generalDevice:
         routeWidget = GeneralDeviceScreen(

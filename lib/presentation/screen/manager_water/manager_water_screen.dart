@@ -1,90 +1,50 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gap/gap.dart';
-import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
-import 'package:solar_energy/application/enums/index_type.dart';
+import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
-import 'package:solar_energy/presentation/routes/route_name.dart';
-import 'package:solar_energy/presentation/screen/alarm_water/widget/item_alarm_water.dart';
+import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
 import 'package:solar_energy/presentation/screen/device_water/device_water_screen.dart';
-import 'package:solar_energy/presentation/screen/manager_water/bloc/manager_water_cubit.dart';
 import 'package:solar_energy/presentation/screen/manager_water/widget/overview_water.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+
+import '../../../data/dto/power_station/response/power_station_response.dart';
 
 class ManagerWaterScreen extends StatefulWidget {
-  const ManagerWaterScreen({super.key});
+  const ManagerWaterScreen({super.key, required this.station});
+
+  final PowerStationResponse station;
 
   @override
   State<ManagerWaterScreen> createState() => _ManagerWaterScreenState();
 }
 
-class _ManagerWaterScreenState extends State<ManagerWaterScreen>
-    with TickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final AnimationController _controllerWaterIndex;
-  late Animation<double> _animation;
-  late final ManagerWaterCubit _cubit;
+class _ManagerWaterScreenState extends State<ManagerWaterScreen> {
+  late DeviceCubit _deviceCubit;
+  int _futureDeviceId = 0;
+  late int indexPage;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
-    _controllerWaterIndex = AnimationController(
-      value: 0,
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
+    indexPage = 0;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _deviceCubit = BlocProvider.of<DeviceCubit>(context);
+      _loadInitialMeterId();
+    });
+  }
+
+  Future<void> _loadInitialMeterId() async {
+    final id = await _deviceCubit.getDeviceFirst(
+      powerStationId: widget.station.id,
+      type: ElectricType.water,
     );
-    _animation = CurvedAnimation(
-      parent: _controllerWaterIndex,
-      curve: Curves.easeIn,
-    );
-    _cubit = BlocProvider.of<ManagerWaterCubit>(context);
-
-    indexPage = (0);
+    setState(() {
+      _futureDeviceId = id;
+    });
   }
-
-  void _openListWaterIndex() {
-    _cubit.changeIsEdit();
-    if (_animation.value == 0) {
-      _controllerWaterIndex.forward();
-    } else if (_animation.value == 1) {
-      _controllerWaterIndex.animateBack(0,
-          duration: const Duration(milliseconds: 500));
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _controllerWaterIndex.dispose();
-    super.dispose();
-  }
-
-  List<_SalesData> generateSalesData() {
-    final random = Random();
-    List<_SalesData> data = [];
-
-    for (int hour = 0; hour < 24; hour++) {
-      for (int minute = 0; minute < 60; minute += 5) {
-        String time =
-            '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
-        int value = (hour > 8 && hour < 16)
-            ? random.nextInt(30)
-            : 0; // Giá trị từ 0 đến 100
-
-        data.add(_SalesData(time, value));
-      }
-    }
-
-    return data;
-  }
-
-  late int indexPage;
 
   @override
   Widget build(BuildContext context) {
@@ -100,559 +60,74 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen>
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
       ),
-      body: _buildBody(),
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (index) {
-          setState(() {
-            indexPage = index;
-          });
-        },
-        selectedIndex: indexPage,
-        backgroundColor: Colors.white,
-        indicatorColor: Colors.blue.withOpacity(0.2),
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        destinations: const [
-          NavigationDestination(
-            selectedIcon: Icon(Icons.home_rounded, color: Colors.blue),
-            icon: Icon(
-              Icons.home_outlined,
-              color: AppColors.grey73,
-            ),
-            label: "Tổng quan",
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.developer_board, color: Colors.blue),
-            icon: Icon(Icons.developer_board_outlined, color: AppColors.grey73),
-            label: "Thiết bị",
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _overview() {
-    return Container(
-      padding: EdgeInsets.all(12.sp),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.sp),
-          color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.greyDF.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            )
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Tổng quan",
-            style: AppTextStyle.textSm.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
-          ),
-          Row(
-            children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Lottie.asset(
-                    Assets.images.waterLottie,
-                    controller: _controller,
-                    height: 1.sw / 4,
-                    onLoaded: (composition) {
-                      _controller
-                        ..duration = composition.duration
-                        ..repeat(reverse: true);
-                    },
-                  ),
-                  Center(
-                      child: Text(
-                    "3,6 L",
-                    style: AppTextStyle.textBase.copyWith(
-                        fontSize: 16.sp,
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w600),
-                  )),
-                ],
-              ),
-              Gap(12.sp),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Assets.icons.faucet.svg(
-                          width: 14.sp,
-                          colorFilter: const ColorFilter.mode(
-                              AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(8.sp),
-                      Text(
-                        "Tiêu thụ: 27 Lít",
-                        style: AppTextStyle.textXs.copyWith(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12.sp,
-                            color: AppColors.textPrimary),
-                      ),
-                    ],
-                  ),
-                  Gap(8.sp),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Assets.icons.usdCircle.svg(
-                          width: 14.sp,
-                          colorFilter: const ColorFilter.mode(
-                              AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(8.sp),
-                      Text(
-                        "Số tiền: 270,000,000 Đồng",
-                        style: AppTextStyle.textXs.copyWith(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary),
-                      ),
-                    ],
-                  ),
-                  Gap(8.sp),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Assets.icons.arrowDownStrenght.svg(
-                          width: 14.sp,
-                          colorFilter: const ColorFilter.mode(
-                              AppColors.blueF8, BlendMode.srcIn)),
-                      Gap(8.sp),
-                      Text(
-                        "Áp suất: 9800 Pa",
-                        style: AppTextStyle.textXs.copyWith(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _waterIndex() {
-    return BlocBuilder<ManagerWaterCubit, ManagerWaterState>(
-      builder: (BuildContext context, ManagerWaterState state) {
-        return Container(
-          padding: EdgeInsets.all(12.sp),
-          decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(12.sp),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.greyDF.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                )
-              ]),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Chỉ số nước",
-                    style: AppTextStyle.textSm
-                        .copyWith(fontWeight: FontWeight.w600, fontSize: 14.sp),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      _openListWaterIndex();
-                    },
-                    child: Icon(
-                      state.isEdit ? Icons.done : Icons.settings,
-                      size: 18.sp,
-                    ),
-                  )
-                ],
-              ),
-              Gap(8.sp),
-              Wrap(
-                runSpacing: 12.sp,
-                spacing: 8.sp,
-                children: List.generate(
-                    state.listSelected.length,
-                    (index) => itemWaterIndex(state.listSelected[index],
-                        isAdd: false)),
-              ),
-              SizeTransition(
-                  sizeFactor: _animation,
-                  axis: Axis.vertical,
-                  axisAlignment: -1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Gap(16.sp),
-                      Text(
-                        "Danh sách chỉ số",
-                        style: AppTextStyle.textSm.copyWith(
-                            fontWeight: FontWeight.w600, fontSize: 14.sp),
-                      ),
-                      Gap(8.sp),
-                      Wrap(
-                        runSpacing: 12.sp,
-                        spacing: 8.sp,
-                        children: List.generate(
-                            state.listWaterIndex.length,
-                            (index) => itemWaterIndex(
-                                state.listWaterIndex[index],
-                                isAdd: true)),
-                      ),
-                    ],
-                  )),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget itemWaterIndex(WaterIndexModel waterIndex, {required bool isAdd}) {
-    Color color = _cubit.handleColorStatus(waterIndex);
-    return Stack(
-      children: [
-        Container(
-          width: (1.sw - 48.sp - 8.sp) / 2,
-          padding: EdgeInsets.all(12.sp),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.sp),
-              color: color.withOpacity(0.2)),
-          child: Row(children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    waterIndex.title,
-                    style: AppTextStyle.textXs
-                        .copyWith(color: AppColors.grey4D, fontSize: 12.sp),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Gap(4.sp),
-                  RichText(
-                      text: TextSpan(children: [
-                    TextSpan(
-                        text: waterIndex.value.toString(),
-                        style: AppTextStyle.textSm.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14.sp,
-                            color: AppColors.textPrimary)),
-                    TextSpan(
-                        text: ' ${waterIndex.unit}',
-                        style: AppTextStyle.textXs.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12.sp,
-                            color: AppColors.grey4D)),
-                  ])),
-                  Gap(4.sp),
-                  Text(
-                      waterIndex.limit != null
-                          ? "Giới hạn: <= ${waterIndex.limit}"
-                          : "Không giới hạn",
-                      style: AppTextStyle.textXs
-                          .copyWith(color: AppColors.grey73, fontSize: 12.sp))
-                ],
-              ),
-            ),
-            Gap(12.sp),
-            SvgPicture.asset(
-              waterIndex.icon,
-              width: 20.sp,
-              height: 20.sp,
-              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-            ),
-          ]),
-        ),
-        if (_cubit.state.isEdit)
-          Positioned(
-              right: 0,
-              child: CircleAvatar(
-                radius: 8.sp,
-                backgroundColor: isAdd ? AppColors.green50 : AppColors.red14,
-                child: InkWell(
-                  onTap: () {
-                    _cubit.addToListSelected(waterIndex, isAdd);
-                  },
-                  child: Icon(
-                    isAdd ? Icons.add : Icons.remove,
-                    color: AppColors.white,
-                    size: 16.sp,
-                  ),
+      body: _futureDeviceId == 0
+          ? _noDeviceWidget()
+          : _buildBody(
+              deviceIdFirst: _futureDeviceId, stationId: widget.station.id),
+      bottomNavigationBar: _futureDeviceId != 0
+          ? NavigationBar(
+              onDestinationSelected: (index) {
+                setState(() {
+                  indexPage = index;
+                });
+              },
+              selectedIndex: indexPage,
+              backgroundColor: Colors.white,
+              indicatorColor: Colors.blue.withOpacity(0.2),
+              labelBehavior:
+                  NavigationDestinationLabelBehavior.onlyShowSelected,
+              destinations: const [
+                NavigationDestination(
+                  selectedIcon: Icon(Icons.home_rounded, color: Colors.blue),
+                  icon: Icon(Icons.home_outlined, color: AppColors.grey73),
+                  label: "Tổng quan",
                 ),
-              ))
-      ],
-    );
-  }
-
-  Widget _warning() {
-    return Container(
-      padding: EdgeInsets.all(12.sp).copyWith(bottom: 4.sp),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.sp),
-          color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.greyDF.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            )
-          ]),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Cảnh báo gần nhất",
-                style: AppTextStyle.textSm.copyWith(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary),
-              ),
-              GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, RouteName.allAlarmWater);
-                  },
-                  child: Text(
-                    "Xem thêm",
-                    style: AppTextStyle.textXs.copyWith(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.blueF8),
-                  ))
-            ],
-          ),
-          ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => const ItemAlarmWater(),
-              separatorBuilder: (context, index) => const Divider(
-                    color: AppColors.greyCC,
-                    height: 0,
-                  ),
-              itemCount: 3)
-        ],
-      ),
-    );
-  }
-
-  Widget _waterConsumption() {
-    return Container(
-      padding: EdgeInsets.all(12.sp),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.sp),
-          color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.greyDF.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            )
-          ]),
-      child: Column(
-        children: [
-          Text(
-            "Số nước tiêu thụ",
-            style: AppTextStyle.textSm.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
-          ),
-          Gap(8.sp),
-          SizedBox(
-            height: 1.sw / 2,
-            child: SfCartesianChart(
-                // Enable legend
-                legend: const Legend(isVisible: false),
-                primaryXAxis: CategoryAxis(
-                  labelStyle: AppTextStyle.textXs.copyWith(
-                      color: AppColors.textPrimary,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400),
-                  desiredIntervals: 10,
-                  labelRotation: 0,
+                NavigationDestination(
+                  selectedIcon: Icon(Icons.developer_board, color: Colors.blue),
+                  icon: Icon(Icons.developer_board_outlined,
+                      color: AppColors.grey73),
+                  label: "Thiết bị",
                 ),
-                primaryYAxis: NumericAxis(
-                  axisLabelFormatter: (AxisLabelRenderDetails details) {
-                    return ChartAxisLabel(
-                        '${details.value} L',
-                        AppTextStyle.textXs.copyWith(
-                            fontSize: 12.sp,
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w400));
-                  },
-                ),
-                // Enable tooltip
-                //tooltipBehavior: TooltipBehavior(enable: true, shared: true),
-                trackballBehavior: TrackballBehavior(
-                  enable: true,
-                  activationMode: ActivationMode.singleTap,
-                  hideDelay: 2500,
-                  tooltipAlignment: ChartAlignment.center,
-                  tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
-                  // Hiển thị tất cả series
-                  tooltipSettings: InteractiveTooltip(
-                    enable: true,
-                    format: 'point.y L',
-                    color: Colors.black.withOpacity(0.7),
-                    textStyle: AppTextStyle.textXs.copyWith(
-                        fontSize: 10.sp,
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  // tooltipSettings: const InteractiveTooltip(
-                  //   enable: true,
-                  //   format: 'point.y kW',
-                  // ),
-                ),
-                zoomPanBehavior: ZoomPanBehavior(
-                    enablePanning: true,
-                    enablePinching: true,
-                    enableDoubleTapZooming: true,
-                    zoomMode: ZoomMode.x),
-                series: <CartesianSeries<_SalesData, String>>[
-                  SplineSeries<_SalesData, String>(
-                      dataSource: generateSalesData(),
-                      xValueMapper: (_SalesData sales, _) => sales.year,
-                      yValueMapper: (_SalesData sales, _) => sales.sales,
-                      color: const Color(0xFF1dd1a1),
-                      name: 'Công suất PV',
-                      // Enable data label
-                      dataLabelSettings:
-                          const DataLabelSettings(isVisible: false)),
-                ]),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _waterIndexWarning() {
-    return Container(
-      padding: EdgeInsets.all(12.sp),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.sp),
-          color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.greyDF.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
+              ],
             )
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Cảnh báo",
-            style: AppTextStyle.textSm.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
-          ),
-          8.verticalSpace,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                  child: warningWidget(
-                name: "1",
-                colors: AppColors.greyAE.withOpacity(0.7),
-                onPress: () => Navigator.pushNamed(
-                    context, RouteName.indexWarning,
-                    arguments: IndexType.normal),
-              )),
-              4.horizontalSpace,
-              Expanded(
-                  child: warningWidget(
-                name: "1",
-                colors: AppColors.green50.withOpacity(0.3),
-                onPress: () => Navigator.pushNamed(
-                    context, RouteName.indexWarning,
-                    arguments: IndexType.good),
-              )),
-              4.horizontalSpace,
-              Expanded(
-                  child: warningWidget(
-                name: "1",
-                colors: AppColors.yellow57.withOpacity(0.7),
-                onPress: () => Navigator.pushNamed(
-                    context, RouteName.indexWarning,
-                    arguments: IndexType.high),
-              )),
-              4.horizontalSpace,
-              Expanded(
-                  child: warningWidget(
-                name: "1",
-                colors: AppColors.red14.withOpacity(0.7),
-                onPress: () => Navigator.pushNamed(
-                    context, RouteName.indexWarning,
-                    arguments: IndexType.very_hight),
-              )),
-            ],
-          ),
-        ],
-      ),
+          : const SizedBox(),
     );
   }
 
-  Widget warningWidget(
-      {required String name, VoidCallback? onPress, Color? colors}) {
-    return GestureDetector(
-      onTap: () {
-        onPress?.call();
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.sp),
-          color: colors ?? AppColors.white,
-        ),
-        child: Text(
-          name,
-          style: AppTextStyle.textSm.copyWith(color: AppColors.white),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBody() {
+  Widget _buildBody({required int stationId, required int deviceIdFirst}) {
     switch (indexPage) {
       case 0:
-        return const OverviewWater();
+        return OverviewWater(deviceWater: deviceIdFirst, stationId: stationId);
       case 1:
-        return const DeviceWaterScreen();
+        return DeviceWaterScreen(stationId: stationId);
       default:
         return const SizedBox();
     }
   }
-}
 
-class _SalesData {
-  _SalesData(this.year, this.sales);
+  Widget _noDeviceWidget() {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 32.h,vertical: 32.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(99.r),
+          color: AppColors.blueF8,
+        ),
 
-  final String year;
-  final int sales;
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Assets.icons.nonDeviceDisconnected.svg(
+              colorFilter:
+                  const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            ),
+            Text(
+              "Không có thiết bị !!!",
+              style: AppTextStyle.textSm.copyWith(color: AppColors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
