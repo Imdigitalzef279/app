@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 
@@ -29,7 +30,6 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     cubit = BlocProvider.of<ElectricCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
@@ -48,14 +48,6 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: AppColors.white,
-        // leading: InkWell(
-        //   onTap: () {
-        //     Navigator.pop(context);
-        //   },
-        //   child: Padding(
-        //       padding: EdgeInsets.only(left: 4.sp),
-        //       child: Icon(Icons.arrow_back_ios, size: 16.sp)),
-        // ),
         title: Text(
           widget.project.name,
           style: AppTextStyle.textBase.copyWith(
@@ -72,31 +64,6 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
               error: (error) =>
                   BlocProvider.of<AppCubit>(context).hideShowLoading());
         },
-        // listener: (context, state) {
-        //   if (state.loadStatus == LoadStatus.loading) {
-        //     String error = "";
-        //     showDialog(context: context, builder: (context) => const AppLoading(), barrierDismissible: false);
-        //     Future.delayed(const Duration(seconds: 15),() {
-        //       if(Navigator.canPop(context)){
-        //         Navigator.pop(context);
-        //         error = "Kết nối không ổn định !!!";
-        //       }
-        //       if(error == "Kết nối không ổn định !!!"){
-        //         AppToast.showToastError(context, title: error);
-        //       }
-        //     },);
-        //   }
-        //   if (state.loadStatus == LoadStatus.failure) {
-        //     if (Navigator.canPop(context)) {
-        //       Navigator.pop(context);
-        //     }
-        //   }
-        //   if (state.loadStatus == LoadStatus.success) {
-        //     if (Navigator.canPop(context)) {
-        //       Navigator.pop(context);
-        //     }
-        //   }
-        // },
         builder: (context, state) => AppLoadMore(
           onRefresh: () => cubit.getElectric(widget.project.id),
           child: SingleChildScrollView(
@@ -122,7 +89,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Tổng quan",
+                        LocalizationsUtils.localizations.overview,
                         style: AppTextStyle.textSm.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700),

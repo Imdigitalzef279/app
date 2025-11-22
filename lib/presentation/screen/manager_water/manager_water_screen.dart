@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
@@ -55,7 +56,7 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen> {
         scrolledUnderElevation: 0,
         elevation: 0,
         title: Text(
-          "Quản lý nước",
+          LocalizationsUtils.localizations.water,
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
@@ -122,7 +123,7 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen> {
                   const ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
             Text(
-              "Không có thiết bị !!!",
+              LocalizationsUtils.localizations.no_devices,
               style: AppTextStyle.textSm.copyWith(color: AppColors.white),
             ),
           ],

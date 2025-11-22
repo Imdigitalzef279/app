@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/data/dto/profile/profile_response.dart';
 import 'package:solar_energy/data/repositories/auth/auth_repository.dart';
@@ -62,26 +64,26 @@ class AccountCubit extends Cubit<AccountState> {
       if (response.data == null || response.data.toString() != uniqueName) {
         emit(state.copyWith(
           status: LoadStatus.failure,
-          error: "Tên người dùng không khớp hoặc không tồn tại.",
+          error: LocalizationsUtils.localizations.usernameNotMatchOrNotExist,
           request: Result(status: LoadStatus.failure),
         ));
         AppToast.showToastSuccess(
-            title: "Tên người dùng không khớp hoặc không tồn tại.");
+            title: LocalizationsUtils.localizations.usernameNotMatchOrNotExist);
         return false;
       }
 
       emit(state.copyWith(
           status: LoadStatus.success,
           request: Result(status: LoadStatus.success)));
-      AppToast.showToastSuccess(title: "Xóa tài khoản thành công!!");
+      AppToast.showToastSuccess(title: LocalizationsUtils.localizations.deleteAccountSuccess);
       removeToken();
       return true;
     } catch (e) {
       emit(state.copyWith(
           status: LoadStatus.failure,
-          error: "Đã có lỗi xảy ra!!!",
+          error: LocalizationsUtils.localizations.an_error_occurred,
           request: Result(status: LoadStatus.failure)));
-      AppToast.showToastSuccess(title: "Đã có lỗi xảy ra!!!");
+      AppToast.showToastSuccess(title: LocalizationsUtils.localizations.an_error_occurred);
       return false;
     }
   }

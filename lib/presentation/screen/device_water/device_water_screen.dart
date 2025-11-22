@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 
 import '../../../application/constants/app_color.dart';
 import '../../../application/constants/app_text_style.dart';
@@ -7,6 +8,7 @@ import '../../routes/route_name.dart';
 
 class DeviceWaterScreen extends StatefulWidget {
   const DeviceWaterScreen({super.key, required this.stationId});
+
   final int stationId;
 
   @override
@@ -24,7 +26,7 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Danh sách các thiết bị",
+              LocalizationsUtils.localizations.device_list,
               style: AppTextStyle.textSm.copyWith(
                   color: AppColors.textPrimary, fontWeight: FontWeight.w600),
             ),
@@ -82,7 +84,7 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
           Row(
             children: [
               Text(
-                nameDevice ?? "Lỗi",
+                nameDevice ?? LocalizationsUtils.localizations.no_value,
                 style: AppTextStyle.textSm.copyWith(
                     fontWeight: FontWeight.w700, color: AppColors.textPrimary),
               ),
@@ -94,7 +96,7 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
                   color: const Color(0xFFff9f43).withOpacity(0.1),
                 ),
                 child: Text(
-                  "Dừng",
+                  LocalizationsUtils.localizations.stopped,
                   style: AppTextStyle.textXs.copyWith(
                       color: const Color(0xFFff9f43), fontSize: 12.sp),
                 ),
@@ -102,11 +104,11 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
             ],
           ),
           8.verticalSpace,
-          rowItem(name: "Số sê-ri", content: serialNumber ?? "Lỗi"),
+          rowItem(name: LocalizationsUtils.localizations.serialNumber, content: serialNumber ?? LocalizationsUtils.localizations.no_value),
           const Divider(
             color: AppColors.greyFB,
           ),
-          rowItem(name: "Loại thiết bị", content: typeDevice ?? "Lỗi"),
+          rowItem(name: LocalizationsUtils.localizations.deviceType, content: typeDevice ?? LocalizationsUtils.localizations.no_value),
           const Divider(
             color: AppColors.greyFB,
           ),
@@ -115,7 +117,7 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  "Trạng thái",
+                  LocalizationsUtils.localizations.status,
                   style: AppTextStyle.textXs
                       .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
                 ),
@@ -133,7 +135,7 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
                       borderRadius: BorderRadius.circular(4.r),
                     ),
                     child: Text(
-                      statusDevice ?? "Lỗi",
+                      statusDevice ?? LocalizationsUtils.localizations.no_value,
                       style: AppTextStyle.textXs.copyWith(
                         color: AppColors.white,
                         fontWeight: FontWeight.w400,
@@ -147,7 +149,7 @@ class _DeviceWaterScreenState extends State<DeviceWaterScreen> {
           const Divider(
             color: AppColors.greyFB,
           ),
-          rowItem(name: "Ngày hết hạn bảo hành", content: "2029/09/23"),
+          rowItem(name: LocalizationsUtils.localizations.warranty_expiration_date, content: "2029/09/23"),
         ],
       ),
     );

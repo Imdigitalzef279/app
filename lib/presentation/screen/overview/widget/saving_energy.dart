@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
 class SavingEnergy extends StatelessWidget {
@@ -29,7 +30,7 @@ class SavingEnergy extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Dữ liệu hiện tại',
+              LocalizationsUtils.localizations.current_data,
               style: AppTextStyle.textSm.copyWith(
                   fontWeight: FontWeight.w600, color: AppColors.textPrimary),
             ),
@@ -42,25 +43,25 @@ class SavingEnergy extends StatelessWidget {
                   item(context,
                       path: Assets.icons.thunderstormSun6854078.path,
                       color: AppColors.blueFF,
-                      title: "Sản lượng cao điểm",
+                      title: LocalizationsUtils.localizations.peak_output,
                       content: "2,37",
                       unit: "Kw"),
                   item(context,
                       path: Assets.icons.revenue.path,
                       color: AppColors.orange43,
-                      title: "Sản lượng thấp điểm",
+                      title: LocalizationsUtils.localizations.off_peak_output,
                       content: "12,43",
                       unit: "Kw"),
                   item(context,
                       path: Assets.icons.square.path,
                       color: AppColors.green50,
-                      title: "Sản lượng thường điểm",
+                      title: LocalizationsUtils.localizations.normal_output,
                       content: "5,77",
                       unit: "Kw"),
                   item(context,
                       path: Assets.icons.thunderstormSun6854078.path,
                       color: AppColors.grey,
-                      title: "Tổng tiền",
+                      title: LocalizationsUtils.localizations.total_cost,
                       content: "100,372",
                       unit: "Dong"),
                 ])

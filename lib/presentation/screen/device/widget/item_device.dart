@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/utils/navigation_utils.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
@@ -16,9 +17,9 @@ class ItemDevice extends StatelessWidget {
   String getStatus(int status) {
     switch (status) {
       case 0:
-        return 'Dừng';
+        return LocalizationsUtils.localizations.stopped;
       case 1:
-        return 'Hoạt động';
+        return LocalizationsUtils.localizations.active;
       default:
         return '';
     }
@@ -78,7 +79,7 @@ class ItemDevice extends StatelessWidget {
                       color: const Color(0xFFff9f43).withOpacity(0.1),
                     ),
                     child: Text(
-                      device.status == 1 ? "Đang hoạt động" : "Dừng",
+                      getStatus(device.status),
                       style: AppTextStyle.textXs.copyWith(
                           color: device.status == 1
                               ? AppColors.green50
@@ -91,7 +92,7 @@ class ItemDevice extends StatelessWidget {
             ),
             Gap(8.sp),
             // body
-            rowItem(name: "Mã thiết bị", content: device.code),
+            rowItem(name: LocalizationsUtils.localizations.device_code, content: device.code),
             const Divider(
               color: AppColors.greyFB,
             ),
@@ -100,7 +101,7 @@ class ItemDevice extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    "Trạng thái",
+                    LocalizationsUtils.localizations.status,
                     style: AppTextStyle.textXs.copyWith(
                         color: AppColors.textPrimary.withOpacity(0.5)),
                   ),
@@ -120,7 +121,7 @@ class ItemDevice extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4.r),
                       ),
                       child: Text(
-                        device.status == 1 ? "Đang hoạt động" : "Dừng",
+                        getStatus(device.status),
                         style: AppTextStyle.textXs.copyWith(
                           color: AppColors.white,
                           fontWeight: FontWeight.w400,
@@ -134,11 +135,11 @@ class ItemDevice extends StatelessWidget {
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Mô tả", content: device.description),
+            rowItem(name: LocalizationsUtils.localizations.description, content: device.description),
             const Divider(
               color: AppColors.greyFB,
             ),
-            rowItem(name: "Ngày hết hạn bảo hành", content: "2029/09/23"),
+            rowItem(name: LocalizationsUtils.localizations.warranty_expiration_date, content: "2029/09/23"),
           ],
         ),
       ),

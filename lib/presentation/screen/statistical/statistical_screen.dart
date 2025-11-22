@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/statistical/bloc/statistical_cubit.dart';
 import 'package:solar_energy/presentation/screen/statistical/estatictical/estatistical_screen.dart';
 import 'package:solar_energy/presentation/screen/statistical/widget/detail_widget.dart';
@@ -45,7 +46,7 @@ class _StatisticalScreenState extends State<StatisticalScreen>
           scrolledUnderElevation: 0,
           elevation: 0,
           title: Text(
-            "Biểu đồ",
+            LocalizationsUtils.localizations.chart,
             style: AppTextStyle.textBase.copyWith(
                 color: AppColors.textPrimary, fontWeight: FontWeight.w600),
           ),
@@ -74,15 +75,15 @@ class _StatisticalScreenState extends State<StatisticalScreen>
                     child: TabBar(
                       tabs: <Widget>[
                         Tab(
-                          text: "Ngày",
+                          text: LocalizationsUtils.localizations.day,
                           height: 35.sp,
                         ),
                         Tab(
-                          text: "Tháng",
+                          text: LocalizationsUtils.localizations.month,
                           height: 35.sp,
                         ),
                         Tab(
-                          text: "Năm",
+                          text: LocalizationsUtils.localizations.year,
                           height: 35.sp,
                         ),
                       ],

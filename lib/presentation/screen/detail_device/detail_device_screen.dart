@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/alarm_infor_screen.dart';
 import 'package:solar_energy/presentation/screen/infor_device/info_device_screen.dart';
@@ -22,7 +23,6 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     indexPage = (0);
   }
@@ -63,7 +63,7 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
                 height: 16.w,
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
-            label: "Thông tin báo động",
+            label: LocalizationsUtils.localizations.alarm_information,
           ),
           NavigationDestination(
             selectedIcon: Assets.icons.info.svg(
@@ -76,7 +76,7 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
                 height: 16.w,
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
-            label: "Thông tin thiết bị",
+            label: LocalizationsUtils.localizations.device_information,
           ),
         ],
       ),

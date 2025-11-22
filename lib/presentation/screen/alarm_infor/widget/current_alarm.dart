@@ -5,7 +5,6 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
-import 'package:solar_energy/presentation/common_widgets/app_bottom_sheet.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/alarm_infor_screen.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/widget/item_alarm.dart';
@@ -26,7 +25,7 @@ class CurrentAlarm extends StatelessWidget {
                     .image(width: 1.sw / 3, height: 1.sw / 3, fit: BoxFit.fill),
                 Gap(12.h),
                 Text(
-                  "Không có dữ liệu",
+                  LocalizationsUtils.localizations.no_value,
                   style: AppTextStyle.textSm.copyWith(
                       color: AppColors.textPrimary.withOpacity(0.5),
                       fontWeight: FontWeight.w600),
@@ -41,15 +40,20 @@ class CurrentAlarm extends StatelessWidget {
                     flex: 8,
                     child: CustomLabelTextField(
                       backgroundColor: AppColors.greyFB,
-                      hintText: "Nhập tên báo động.",
+                      hintText:
+                          LocalizationsUtils.localizations.enter_alarm_name,
                       textStyleHint:
                           AppTextStyle.textXs.copyWith(color: AppColors.grey73),
                       contentPadding: EdgeInsets.symmetric(vertical: 8.h),
                       radius: 99.r,
                       prefixIcon: Assets.icons.search.svg(
-                          width: 16.w,
-                          height: 16.w,
-                          color: AppColors.textPrimary.withOpacity(0.7)),
+                        width: 16.w,
+                        height: 16.w,
+                        colorFilter: ColorFilter.mode(
+                          AppColors.textPrimary.withOpacity(0.7),
+                          BlendMode.srcIn,
+                        ),
+                      ),
                     )),
                 Expanded(
                     flex: 1,

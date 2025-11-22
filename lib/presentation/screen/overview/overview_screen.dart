@@ -47,14 +47,6 @@ class _OverViewScreenState extends State<OverViewScreen> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: AppColors.blueFB,
-        // leading: InkWell(
-        //   onTap: () {
-        //     Navigator.pop(context);
-        //   },
-        //   child: Padding(
-        //       padding: EdgeInsets.only(left: 4.sp),
-        //       child: Icon(Icons.arrow_back_ios, size: 16.sp)),
-        // ),
         title: Text(
           widget.project.name,
           style: AppTextStyle.textBase.copyWith(

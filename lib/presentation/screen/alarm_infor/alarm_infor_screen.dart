@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/widget/current_alarm.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/widget/history_alarm.dart';
-import 'package:solar_energy/presentation/screen/alarm_infor/widget/item_alarm.dart';
 
 import '../../../application/constants/app_text_style.dart';
 
@@ -23,7 +22,6 @@ class _AlarmInfoScreenState extends State<AlarmInfoScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
@@ -36,12 +34,12 @@ class _AlarmInfoScreenState extends State<AlarmInfoScreen>
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           decoration: const BoxDecoration(color: AppColors.white),
           child: TabBar(
-              tabs: const <Widget>[
+              tabs: <Widget>[
                 Tab(
-                  text: "Hiện tại",
+                  text: LocalizationsUtils.localizations.current,
                 ),
                 Tab(
-                  text: "Trước đó",
+                  text: LocalizationsUtils.localizations.previous,
                 ),
               ],
               controller: _tabController,

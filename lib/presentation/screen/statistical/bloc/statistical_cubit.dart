@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/application/enums/search_type.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
@@ -55,17 +56,17 @@ class StatisticalCubit extends Cubit<StatisticalState> {
       double totalLoadPower =
           data.data.fold(0, (previous, data) => previous += data.loadPower);
       listOutput = [
-        ChartData(x: 'Điện lưới', y: totalGridPower, color: AppColors.greenA1),
+        ChartData(x: LocalizationsUtils.localizations.grid_energy, y: totalGridPower, color: AppColors.greenA1),
         ChartData(
-            x: "Điện mặt trời",
+            x: LocalizationsUtils.localizations.solar_power,
             y: totalProductionPower,
             color: AppColors.grey74)
       ];
       listUsed = [
         ChartData(
-            x: 'Điện sử dụng', y: totalLoadPower, color: AppColors.orange43),
+            x: LocalizationsUtils.localizations.consumed_power, y: totalLoadPower, color: AppColors.orange43),
         ChartData(
-            x: 'Tổng',
+            x: LocalizationsUtils.localizations.total,
             y: totalGridPower + totalProductionPower,
             color: AppColors.green50)
       ];

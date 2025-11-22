@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 
 class ItemAlarmWater extends StatelessWidget {
   const ItemAlarmWater({super.key});
@@ -40,7 +41,7 @@ class ItemAlarmWater extends StatelessWidget {
             ),
             Gap(4.sp),
             rowItem(
-                title: "Thời gian xảy ra", content: "08/11/2024 - 06:55:07"),
+                title: LocalizationsUtils.localizations.occurrenceTime, content: "08/11/2024 - 06:55:07"),
           ],
         ),
       ),

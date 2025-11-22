@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/index_type.dart';
 import 'package:solar_energy/application/extensions/index_extension.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
@@ -36,7 +37,7 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Danh sách các thiết bị",
+              LocalizationsUtils.localizations.device_list,
               style: AppTextStyle.textSm.copyWith(
                   color: AppColors.textPrimary, fontWeight: FontWeight.w600),
             ),
@@ -92,16 +93,16 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            nameDevice ?? "Lỗi",
+            nameDevice ?? LocalizationsUtils.localizations.no_value,
             style: AppTextStyle.textSm.copyWith(
                 fontWeight: FontWeight.w700, color: AppColors.textPrimary),
           ),
           8.verticalSpace,
-          rowItem(name: "Số sê-ri", content: serialNumber ?? "Lỗi"),
+          rowItem(name: LocalizationsUtils.localizations.serialNumber, content: serialNumber ?? LocalizationsUtils.localizations.no_value),
           const Divider(
             color: AppColors.greyFB,
           ),
-          rowItem(name: "Loại thiết bị", content: typeDevice ?? "Lỗi"),
+          rowItem(name: LocalizationsUtils.localizations.deviceType, content: typeDevice ?? "Lỗi"),
           const Divider(
             color: AppColors.greyFB,
           ),
@@ -110,7 +111,7 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  "Trạng thái",
+                  LocalizationsUtils.localizations.status,
                   style: AppTextStyle.textXs
                       .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
                 ),
@@ -128,7 +129,7 @@ class _IndexWarningScreenState extends State<IndexWarningScreen> {
                       borderRadius: BorderRadius.circular(4.r),
                     ),
                     child: Text(
-                      statusDevice ?? "Lỗi",
+                      statusDevice ?? LocalizationsUtils.localizations.no_value,
                       style: AppTextStyle.textXs.copyWith(
                         color: AppColors.white,
                         fontWeight: FontWeight.w400,

@@ -5,7 +5,6 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
-import 'package:solar_energy/presentation/common_widgets/app_bottom_sheet.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/alarm_infor_screen.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/widget/item_alarm.dart';
@@ -17,7 +16,7 @@ class HistoryAlarm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return listCurrent.isEmpty == false
+    return listCurrent.isEmpty
         ? Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -26,7 +25,7 @@ class HistoryAlarm extends StatelessWidget {
                     .image(width: 1.sw / 3, height: 1.sw / 3, fit: BoxFit.fill),
                 Gap(12.h),
                 Text(
-                  "Không có dữ liệu",
+                  LocalizationsUtils.localizations.no_value,
                   style: AppTextStyle.textSm.copyWith(
                       color: AppColors.textPrimary.withOpacity(0.5),
                       fontWeight: FontWeight.w600),
@@ -44,7 +43,8 @@ class HistoryAlarm extends StatelessWidget {
                       flex: 8,
                       child: CustomLabelTextField(
                         backgroundColor: AppColors.white,
-                        hintText: "Nhập tên báo động.",
+                        hintText:
+                            LocalizationsUtils.localizations.enter_alarm_name,
                         textStyleHint: AppTextStyle.textXs
                             .copyWith(color: AppColors.grey73),
                         contentPadding: EdgeInsets.symmetric(vertical: 8.h),
@@ -52,7 +52,9 @@ class HistoryAlarm extends StatelessWidget {
                         prefixIcon: Assets.icons.search.svg(
                             width: 16.w,
                             height: 16.w,
-                            color: AppColors.textPrimary.withOpacity(0.7)),
+                            colorFilter: ColorFilter.mode(
+                                AppColors.textPrimary.withOpacity(0.7),
+                                BlendMode.srcIn)),
                       )),
                   Expanded(
                       flex: 1,
@@ -72,9 +74,12 @@ class HistoryAlarm extends StatelessWidget {
               child: ListView.separated(
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                  itemBuilder: (context, index) => const ItemAlarm(),
+                  itemBuilder: (context, index) {
+                    // final alarm = listCurrent[index];
+                    return const ItemAlarm();
+                  },
                   separatorBuilder: (context, index) => Gap(12.h),
-                  itemCount: 10),
+                  itemCount: listCurrent.length),
             ),
           ]);
   }

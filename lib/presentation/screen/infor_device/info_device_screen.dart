@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
@@ -33,7 +34,6 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     index = ValueNotifier(0);
     controller = TabController(length: 3, vsync: this);
@@ -47,11 +47,11 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
       case 2:
       case 21:
       case 22:
-        return "Công suất (Kw)";
+        return LocalizationsUtils.localizations.power_kw;
       case 41:
-        return "Lưu lượng nước (Lit)";
+        return LocalizationsUtils.localizations.water_flow_liters;
       default:
-        return "Không có";
+        return LocalizationsUtils.localizations.no_data;
     }
   }
 
@@ -86,18 +86,18 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
               child: Column(
                 children: [
                   rowItem(
-                      name: "Loại tín hiệu",
+                      name: LocalizationsUtils.localizations.signal_type,
                       value: getSignalType(widget.deviceResponse.meterTypeId)),
                   const Divider(
                     color: AppColors.greyFB,
                   ),
                   rowItem(
-                      name: "Điểm tín hiệu", value: widget.deviceResponse.name),
+                      name: LocalizationsUtils.localizations.signal_point, value: widget.deviceResponse.name),
                   const Divider(
                     color: AppColors.greyFB,
                   ),
                   rowItem(
-                    name: "Ngày tạo",
+                    name: LocalizationsUtils.localizations.created_date,
                     value: DateTime.parse(
                             widget.deviceResponse.creationTime.toString())
                         .formatTime(),
@@ -128,15 +128,15 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                   child: TabBar(
                     tabs: <Widget>[
                       Tab(
-                        text: "Ngày",
+                        text: LocalizationsUtils.localizations.day,
                         height: 35.sp,
                       ),
                       Tab(
-                        text: "Tháng",
+                        text: LocalizationsUtils.localizations.month,
                         height: 35.sp,
                       ),
                       Tab(
-                        text: "Năm",
+                        text: LocalizationsUtils.localizations.year,
                         height: 35.sp,
                       ),
                     ],
