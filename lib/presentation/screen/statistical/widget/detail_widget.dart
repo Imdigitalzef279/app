@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/cubit/app_cubit.dart';
-import 'package:solar_energy/application/enums/search_type.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
-import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/statistical/bloc/statistical_cubit.dart';
@@ -14,8 +13,6 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/presentation/screen/statistical/widget/descrip.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-
-import '../../../../data/dto/power_station/response/power_station_response.dart';
 
 class DetailWidget extends StatefulWidget {
   const DetailWidget(
@@ -72,7 +69,6 @@ class _DetailWidgetState extends State<DetailWidget>
       builder: (BuildContext context, StatisticalState state) {
         return Column(
           children: [
-            Text("power station id: ${widget.powerStationId}"),
             _buildDateTime(),
             if (widget.visibleRadianChart) ...[
               Gap(12.sp),
@@ -139,7 +135,7 @@ class _DetailWidgetState extends State<DetailWidget>
       child: _cubit.state.listOutput.isNotEmpty
           ? SfCircularChart(
               title: ChartTitle(
-                text: "Sản Lượng",
+                text: LocalizationsUtils.localizations.output,
                 textStyle: AppTextStyle.textXs.copyWith(
                     fontSize: 12.sp,
                     color: AppColors.textPrimary,
@@ -195,7 +191,7 @@ class _DetailWidgetState extends State<DetailWidget>
             )
           : Center(
               child: Text(
-                'Không có dữ liệu',
+                LocalizationsUtils.localizations.no_value,
                 style: AppTextStyle.textXs
                     .copyWith(fontSize: 12.sp, color: AppColors.textPrimary),
               ),
@@ -223,7 +219,7 @@ class _DetailWidgetState extends State<DetailWidget>
       child: _cubit.state.listUsed.isNotEmpty
           ? SfCircularChart(
               title: ChartTitle(
-                text: "Mức sử dụng",
+                text: LocalizationsUtils.localizations.usage_level,
                 textStyle: AppTextStyle.textXs.copyWith(
                     fontSize: 12.sp,
                     color: AppColors.textPrimary,
@@ -276,7 +272,7 @@ class _DetailWidgetState extends State<DetailWidget>
             )
           : Center(
               child: Text(
-                'Không có dữ liệu',
+                LocalizationsUtils.localizations.no_value,
                 style: AppTextStyle.textXs
                     .copyWith(fontSize: 12.sp, color: AppColors.textPrimary),
               ),
@@ -345,7 +341,7 @@ class _DetailWidgetState extends State<DetailWidget>
                       xValueMapper: (SalesData sales, _) => sales.year,
                       yValueMapper: (SalesData sales, _) => sales.sales,
                       color: AppColors.greenA1,
-                      name: 'Công suất PV',
+                      name: LocalizationsUtils.localizations.pv_power,
                       // Enable data label
                       dataLabelSettings:
                           const DataLabelSettings(isVisible: false)),
@@ -355,7 +351,7 @@ class _DetailWidgetState extends State<DetailWidget>
                       xValueMapper: (SalesData sales, _) => sales.year,
                       yValueMapper: (SalesData sales, _) => sales.sales,
                       color: AppColors.grey74,
-                      name: 'Điện lưới',
+                      name: LocalizationsUtils.localizations.grid_energy,
                       dataLabelSettings:
                           const DataLabelSettings(isVisible: false)),
                 if (selectConsumer)
@@ -364,7 +360,7 @@ class _DetailWidgetState extends State<DetailWidget>
                       xValueMapper: (SalesData sales, _) => sales.year,
                       yValueMapper: (SalesData sales, _) => sales.sales,
                       color: AppColors.orange43,
-                      name: 'Điện tiêu thụ',
+                      name: LocalizationsUtils.localizations.pv_power,
                       dataLabelSettings:
                           const DataLabelSettings(isVisible: false))
               ]),
@@ -374,7 +370,7 @@ class _DetailWidgetState extends State<DetailWidget>
             children: [
               DescriptionWidget(
                 color: const Color(0xFF1dd1a1),
-                name: 'Công suất PV',
+                name: LocalizationsUtils.localizations.pv_power,
                 selection: selectPV,
                 callback: () {
                   setState(() {
@@ -384,7 +380,7 @@ class _DetailWidgetState extends State<DetailWidget>
               ),
               DescriptionWidget(
                 color: AppColors.grey74,
-                name: 'Điện lưới',
+                name: LocalizationsUtils.localizations.grid_energy,
                 callback: () {
                   setState(() {
                     selectNet = !selectNet;
@@ -394,7 +390,7 @@ class _DetailWidgetState extends State<DetailWidget>
               ),
               DescriptionWidget(
                 color: AppColors.orange,
-                name: 'Điện tiêu thụ',
+                name: LocalizationsUtils.localizations.pv_power,
                 callback: () => setState(() {
                   selectConsumer = !selectConsumer;
                 }),

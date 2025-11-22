@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
@@ -37,33 +38,6 @@ class HeaderWidget extends StatelessWidget {
         ]));
   }
 
-  Widget weather() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Icons.electric_meter,
-              color: AppColors.blueFF,
-              size: 20.sp,
-            ),
-            Gap(4.w),
-            Text("218 Kw",
-                style:
-                    AppTextStyle.textXs.copyWith(color: AppColors.textPrimary))
-          ],
-        ),
-        Gap(4.sp),
-        Text(
-          "Bình thường",
-          style: AppTextStyle.textXs
-              .copyWith(color: AppColors.green50, fontSize: 12.sp),
-        )
-      ],
-    );
-  }
-
   Widget saveElectric() {
     return Container(
         alignment: Alignment.center,
@@ -88,13 +62,13 @@ class HeaderWidget extends StatelessWidget {
                   value: gridPower,
                   size: 150.sp,
                   sizeIcon: 130.sp,
-                  type: "Lưới điện"),
+                  type: LocalizationsUtils.localizations.grid_power),
               item(
                   img: Assets.images.factory.path,
                   value: loadPower,
                   size: 140.sp,
                   sizeIcon: 100.sp,
-                  type: "Mức sử dụng",
+                  type: LocalizationsUtils.localizations.usage_level,
                   isRight: false),
             ],
           ),
@@ -148,7 +122,7 @@ class HeaderWidget extends StatelessWidget {
                   value: loadPower,
                   size: 140.sp,
                   sizeIcon: 100.sp,
-                  type: "Mức sử dụng",
+                  type: LocalizationsUtils.localizations.usage_level,
                   isRight: false),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,7 +132,7 @@ class HeaderWidget extends StatelessWidget {
                       value: gridPower,
                       size: 150.sp,
                       sizeIcon: 130.sp,
-                      type: "Lưới điện"),
+                      type: LocalizationsUtils.localizations.grid_power),
                   item(
                       img: Assets.images.solarEnergy.path,
                       value: productionPower,
@@ -185,7 +159,6 @@ class HeaderWidget extends StatelessWidget {
       height: size,
       color: Colors.transparent,
       child: Stack(
-        // clipBehavior: Clip.none,
         children: [
           Positioned(
             bottom: 0,
@@ -212,8 +185,9 @@ class HeaderWidget extends StatelessWidget {
             margin: isRight ? null : EdgeInsets.only(left: 40.sp),
             child: SizedBox(
               child: Column(
-                crossAxisAlignment:
-                    isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                // crossAxisAlignment:
+                //     isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   RichText(
                       textAlign: isRight ? TextAlign.right : TextAlign.left,

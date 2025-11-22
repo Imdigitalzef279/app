@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/common_widgets/app_button.dart';
@@ -12,7 +13,7 @@ import 'package:solar_energy/presentation/common_widgets/app_loading.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
-import 'package:solar_energy/presentation/screen/auth/bloc/login_cubit.dart';
+import 'package:solar_energy/presentation/screen/login/bloc/login_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,7 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> checkToken() async {
     if (await cubit.checkToken()) {
-      AppToast.showToastSuccess(title: "Đăng nhập thành công");
+      if (!mounted) return;
+
+      AppToast.showToastSuccess(
+          title: LocalizationsUtils.localizations.login_success);
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeWidget()),
@@ -50,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Đăng nhập",
+          LocalizationsUtils.localizations.login,
           style: AppTextStyle.textBase
               .copyWith(fontWeight: FontWeight.w600, color: AppColors.white),
         ),
@@ -66,18 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 context: context,
                 builder: (context) => const AppLoading(),
                 barrierDismissible: false);
-            Future.delayed(
-              const Duration(seconds: 15),
-              () {
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
-                  cubit.state.copyWith(error: "Kết nối không ổn định !!!");
-                }
-                if (state.error == "Kết nối không ổn định !!!") {
-                  AppToast.showToastError(title: state.error);
-                }
-              },
-            );
           }
           if (state.request.status == LoadStatus.failure) {
             if (Navigator.canPop(context)) {
@@ -88,7 +80,8 @@ class _LoginScreenState extends State<LoginScreen> {
             }
           }
           if (state.request.status == LoadStatus.success) {
-            AppToast.showToastSuccess(title: "Đăng nhập thành công");
+            AppToast.showToastSuccess(
+                title: LocalizationsUtils.localizations.login_success);
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const HomeWidget()),
@@ -153,21 +146,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 builder: (context, state) => Checkbox(
                                   shape: const CircleBorder(),
                                   checkColor: Colors.white,
-                                  fillColor: MaterialStateProperty.resolveWith(
-                                    (states) {
-                                      if (states
-                                          .contains(MaterialState.disabled)) {
-                                        return Colors
-                                            .white; // Color when disabled
-                                      }
-                                      if (states
-                                          .contains(MaterialState.selected)) {
-                                        return AppColors
-                                            .blueF8; // Color when selected
-                                      }
-                                      return Colors.white; // Default color
-                                    },
-                                  ),
+                                  fillColor:
+                                      WidgetStateProperty.resolveWith<Color>(
+                                          (states) {
+                                    if (states.contains(WidgetState.selected)) {
+                                      return AppColors.blueF8;
+                                    }
+                                    return Colors.white;
+                                  }),
                                   value: state.clause,
                                   onChanged: (value) => {
                                     cubit.changeDataQuery(
@@ -177,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               Expanded(
                                   child: Text(
-                                "Tôi đồng ý với điều khoản dịch vụ và chính sách bảo mật của Kra Power",
+                                LocalizationsUtils.localizations.agree_terms,
                                 style: AppTextStyle.textXs.copyWith(
                                     color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w400),
@@ -207,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 size: 24.r,
               ),
               contentPadding: EdgeInsets.symmetric(vertical: 16.h),
-              hintText: "Tên đăng nhập",
+              hintText: LocalizationsUtils.localizations.username,
               errorMessage: state.errorUserName,
               colorBorder: AppColors.white,
               backgroundColor: AppColors.greyFB,
@@ -245,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
               contentPadding: EdgeInsets.symmetric(vertical: 16.h),
               errorMessage: state.errorPassword,
               onChanged: (value) => cubit.changeDataQuery(password: value),
-              hintText: "Mật Khẩu",
+              hintText: LocalizationsUtils.localizations.password,
               defaultValue: state.password,
               textStyleHint: AppTextStyle.textSm
                   .copyWith(color: AppColors.textPrimary.withOpacity(0.5)),
@@ -260,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () async {
                 await cubit.login();
               },
-              title: "Đăng nhập",
+              title: LocalizationsUtils.localizations.login,
               color: AppColors.blue,
               fontSize: 12.sp,
               heightText: 16.sp / 12.sp,
@@ -281,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
           child: Text(
-            "Chưa có tài khoản? Đăng ký ngay",
+            LocalizationsUtils.localizations.no_account_register,
             style: AppTextStyle.textSm.copyWith(color: AppColors.blue),
           ),
         ));
@@ -297,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12.h),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
           child: Text(
-            "Đăng nhập thử nghiệm",
+            LocalizationsUtils.localizations.trial_login,
             style: AppTextStyle.textSm.copyWith(color: AppColors.blue),
           ),
         ));

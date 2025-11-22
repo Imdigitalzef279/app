@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/search_type.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
 import 'package:solar_energy/data/dto/electric/chart_electric/chart_electric_request.dart';
@@ -175,7 +176,7 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
                       xValueMapper: (SalesData sales, _) => sales.year,
                       yValueMapper: (SalesData sales, _) => sales.sales,
                       color: AppColors.greenA1,
-                      name: 'Công suất tiêu thụ',
+                      name: LocalizationsUtils.localizations.consumed_energy,
                       // Enable data label
                       dataLabelSettings:
                           const DataLabelSettings(isVisible: false)),

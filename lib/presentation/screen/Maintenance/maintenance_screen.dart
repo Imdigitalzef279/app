@@ -4,7 +4,6 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
-import 'package:solar_energy/presentation/common_widgets/app_bottom_sheet.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
 import 'package:solar_energy/presentation/screen/Maintenance/widget/item_error.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -18,10 +17,10 @@ class MaintenanceScreen extends StatefulWidget {
 
 class _MaintenanceScreenState extends State<MaintenanceScreen> {
   final List<ChartData> chartData = [
-    ChartData('Cảnh báo', (1 / 9) * 100, const Color(0xFF48dbfb)),
-    ChartData('Thấp', (1 / 9) * 100, const Color(0xFFfeca57)),
-    ChartData('Cao', (3 / 9) * 100, const Color(0xFFff9f43)),
-    ChartData('Nghiêm trọng', (4 / 9) * 100, const Color(0xFFee5253)),
+    ChartData(LocalizationsUtils.localizations.warning, (1 / 9) * 100, const Color(0xFF48dbfb)),
+    ChartData(LocalizationsUtils.localizations.low, (1 / 9) * 100, const Color(0xFFfeca57)),
+    ChartData(LocalizationsUtils.localizations.high, (3 / 9) * 100, const Color(0xFFff9f43)),
+    ChartData(LocalizationsUtils.localizations.critical, (4 / 9) * 100, const Color(0xFFee5253)),
   ];
 
   @override
@@ -32,7 +31,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
         scrolledUnderElevation: 0,
         backgroundColor: AppColors.white,
         title: Text(
-          "Báo động",
+          LocalizationsUtils.localizations.alarm,
           style: AppTextStyle.textBase.copyWith(fontWeight: FontWeight.w600),
         ),
         elevation: 0,
@@ -78,7 +77,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                                     style: AppTextStyle.textSm,
                                   ),
                                   Text(
-                                    'Tổng',
+                                    LocalizationsUtils.localizations.total,
                                     style: AppTextStyle.textXs,
                                   ),
                                 ],
@@ -100,7 +99,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                               Expanded(
                                 child: itemInformation(
                                     color: const Color(0xFFee5253),
-                                    name: "Nghiêm trọng",
+                                    name: LocalizationsUtils.localizations.critical,
                                     quantity: 4),
                               ),
                               SizedBox(
@@ -109,7 +108,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                               Expanded(
                                 child: itemInformation(
                                     color: const Color(0xFFff9f43),
-                                    name: "Cao",
+                                    name: LocalizationsUtils.localizations.high,
                                     quantity: 3),
                               ),
                             ],
@@ -122,7 +121,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                               Expanded(
                                 child: itemInformation(
                                     color: const Color(0xFFfeca57),
-                                    name: "Thấp",
+                                    name: LocalizationsUtils.localizations.low,
                                     quantity: 1),
                               ),
                               SizedBox(
@@ -131,7 +130,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                               Expanded(
                                 child: itemInformation(
                                     color: const Color(0xFF48dbfb),
-                                    name: "Cảnh báo",
+                                    name: LocalizationsUtils.localizations.warning,
                                     quantity: 1),
                               ),
                             ],
@@ -152,15 +151,20 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                           flex: 8,
                           child: CustomLabelTextField(
                             backgroundColor: AppColors.greyFB,
-                            hintText: "Nhập tên báo động",
+                            hintText: LocalizationsUtils
+                                .localizations.enter_alarm_name,
                             textStyleHint: AppTextStyle.textXs
                                 .copyWith(color: AppColors.grey73),
                             contentPadding: EdgeInsets.symmetric(vertical: 8.h),
                             radius: 99.r,
                             prefixIcon: Assets.icons.search.svg(
-                                width: 16.w,
-                                height: 16.w,
-                                color: AppColors.textPrimary.withOpacity(0.7)),
+                              width: 16.w,
+                              height: 16.w,
+                              colorFilter: ColorFilter.mode(
+                                AppColors.textPrimary.withOpacity(0.7),
+                                BlendMode.srcIn,
+                              ),
+                            ),
                           )),
                       Expanded(
                           flex: 1,

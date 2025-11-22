@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/common_widgets/app_button.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -21,7 +22,7 @@ class BottomContactInfo extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "Thông tin liên hệ",
+            LocalizationsUtils.localizations.contact_information,
             style: AppTextStyle.textSm.copyWith(
                 color: AppColors.textPrimary, fontWeight: FontWeight.w600),
           ),

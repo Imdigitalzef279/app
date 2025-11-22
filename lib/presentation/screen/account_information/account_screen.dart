@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
@@ -50,9 +51,9 @@ class _AccountScreenState extends State<AccountScreen> {
             child: Column(
               children: [
                 BasicAccountWidget(
-                  email: state.request.data?.email ?? "Không có thông tin",
+                  email: state.request.data?.email ?? LocalizationsUtils.localizations.no_information,
                   userName:
-                      state.request.data?.userName ?? "Không có thông tin",
+                      state.request.data?.userName ?? LocalizationsUtils.localizations.no_information,
                   imageLink:
                       "https://cdn-icons-png.flaticon.com/512/149/149071.png",
                 ),
@@ -79,7 +80,9 @@ class _AccountScreenState extends State<AccountScreen> {
                         size: 22.w,
                       ),
                       optionName:
-                          state.request.data?.email ?? "Không có thông tin",
+                      (state.request.data?.email.isEmpty ?? true)
+                          ? LocalizationsUtils.localizations.no_information
+                          : state.request.data!.email,
                     ),
                     const Divider(
                       color: AppColors.greyFB,
@@ -89,8 +92,9 @@ class _AccountScreenState extends State<AccountScreen> {
                         Icons.phone_android,
                         size: 22.w,
                       ),
-                      optionName: state.request.data?.phoneNumber ??
-                          "Không có thông tin",
+                      optionName: (state.request.data?.phoneNumber.isEmpty ?? true)
+                          ? LocalizationsUtils.localizations.no_information
+                          : state.request.data!.phoneNumber,
                     ),
                     const Divider(
                       color: AppColors.greyFB,
@@ -102,19 +106,19 @@ class _AccountScreenState extends State<AccountScreen> {
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
                               title: Text(
-                                "⚠️ Cảnh báo",
+                                LocalizationsUtils.localizations.warning_alert,
                                 style: AppTextStyle.textBase,
                               ),
                               content: Text(
-                                'Tài khoản thử nghiệm không thể ngừng kích hoạt',
+                                LocalizationsUtils.localizations.trial_account_cannot_deactivate,
                                 style: AppTextStyle.textSm,
                               ),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () =>
-                                      Navigator.pop(context, 'Cancel'),
+                                      Navigator.pop(context, LocalizationsUtils.localizations.cancel),
                                   child: Text(
-                                    'Đã hiểu',
+                                    LocalizationsUtils.localizations.got_it,
                                     style: AppTextStyle.textSm,
                                   ),
                                 ),
@@ -127,19 +131,19 @@ class _AccountScreenState extends State<AccountScreen> {
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
                             title: Text(
-                              'Ngừng kích hoạt tài khoản',
+                              LocalizationsUtils.localizations.deactivate_account,
                               style: AppTextStyle.textSm,
                             ),
                             content: Text(
-                              'Xác nhận ngừng kích hoạt tài khoản này',
+                              LocalizationsUtils.localizations.confirm_deactivate_account,
                               style: AppTextStyle.textSm,
                             ),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () =>
-                                    Navigator.pop(context, 'Cancel'),
+                                    Navigator.pop(context, LocalizationsUtils.localizations.cancel),
                                 child: Text(
-                                  'Cancel',
+                                  LocalizationsUtils.localizations.cancel,
                                   style: AppTextStyle.textSm,
                                 ),
                               ),
@@ -154,7 +158,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     }
                                   },
                                   child: Text(
-                                    'Xác nhận',
+                                    LocalizationsUtils.localizations.confirm,
                                     style: AppTextStyle.textSm,
                                   )),
                             ],
@@ -166,7 +170,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           Icons.restore_from_trash,
                           size: 22.w,
                         ),
-                        optionName: "Ngừng kích hoạt tài khoản",
+                        optionName: LocalizationsUtils.localizations.deactivate_account,
                       ),
                     ),
                   ],
@@ -201,7 +205,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                           Expanded(
                               child: Text(
-                            "Đăng xuất",
+                            LocalizationsUtils.localizations.logout,
                             style: AppTextStyle.textSm.copyWith(
                                 fontWeight: FontWeight.w400,
                                 color: AppColors.red14),

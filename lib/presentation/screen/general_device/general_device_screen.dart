@@ -4,10 +4,10 @@ import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
-import 'package:solar_energy/presentation/common_widgets/common_under_development_dialog.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 
 import '../../../data/dto/power_station/response/power_station_response.dart';
@@ -48,7 +48,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         scrolledUnderElevation: 0,
         elevation: 0,
         title: Text(
-          "Nhà máy ${widget.project.name}",
+          "${LocalizationsUtils.localizations.factory} ${widget.project.name}",
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
@@ -73,7 +73,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Text("Xem hướng dẫn sử dụng",
+                          Text(LocalizationsUtils.localizations.instructions,
                               style: AppTextStyle.textSm.copyWith(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.w600)),
@@ -88,7 +88,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                 borderRadius: BorderRadius.circular(16.r),
                               ),
                               child: Text(
-                                "Bắt đầu",
+                                LocalizationsUtils.localizations.start,
                                 style: AppTextStyle.textSm
                                     .copyWith(color: AppColors.blueF8),
                               ),
@@ -126,7 +126,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Tính năng",
+                      LocalizationsUtils.localizations.features,
                       style: AppTextStyle.textSm.copyWith(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600),
@@ -147,7 +147,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                 height: 22.w,
                                 colorFilter: const ColorFilter.mode(
                                     AppColors.blueEA, BlendMode.srcIn)),
-                            name: "Nước sạch"),
+                            name: LocalizationsUtils.localizations.water),
                         itemService(
                             onTap: () {
                               Navigator.pushNamed(
@@ -161,7 +161,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                 height: 22.w,
                                 colorFilter: const ColorFilter.mode(
                                     AppColors.blueEA, BlendMode.srcIn)),
-                            name: "Tiết kiệm điện"),
+                            name:
+                                LocalizationsUtils.localizations.energy_saving),
                         itemService(
                             onTap: () {
                               Navigator.pushNamed(
@@ -175,7 +176,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                 height: 22.w,
                                 colorFilter: const ColorFilter.mode(
                                     AppColors.blueEA, BlendMode.srcIn)),
-                            name: "Điện mặt trời"),
+                            name: LocalizationsUtils.localizations.solar_power),
                         // itemService(
                         //     onTap: () {
                         //       showDialog(

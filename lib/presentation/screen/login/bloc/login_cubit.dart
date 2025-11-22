@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/data/dto/auth/request/auth_request.dart';
 import 'package:solar_energy/data/repositories/auth/auth_repository.dart';
@@ -44,7 +45,8 @@ class LoginCubit extends Cubit<LoginState> {
 
   bool checkUserName() {
     if (state.userName == "") {
-      emit(state.copyWith(errorUserName: "Không được để trống"));
+      emit(state.copyWith(
+          errorUserName: LocalizationsUtils.localizations.field_required));
       return false;
     }
     emit(state.copyWith(errorUserName: ""));
@@ -53,7 +55,8 @@ class LoginCubit extends Cubit<LoginState> {
 
   bool checkPassword() {
     if (state.password == "") {
-      emit(state.copyWith(errorPassword: "Không được để trống"));
+      emit(state.copyWith(
+          errorPassword: LocalizationsUtils.localizations.field_required));
       return false;
     }
     emit(state.copyWith(errorPassword: ""));
@@ -89,7 +92,9 @@ class LoginCubit extends Cubit<LoginState> {
             error: response.error));
         return;
       } catch (e) {
-        emit(state.copyWith(request: Result(status: LoadStatus.failure), error: "Đã có lỗi xảy ra vui lòng thao tac lại sau!"));
+        emit(state.copyWith(
+            request: Result(status: LoadStatus.failure),
+            error: LocalizationsUtils.localizations.an_error_occurred));
         return;
       }
     }
@@ -129,7 +134,9 @@ class LoginCubit extends Cubit<LoginState> {
           request: Result(status: LoadStatus.failure), error: response.error));
       return;
     } catch (e) {
-      emit(state.copyWith(request: Result(status: LoadStatus.failure), error: "Đã có lỗi xảy ra vui lòng thao tac lại sau!"));
+      emit(state.copyWith(
+          request: Result(status: LoadStatus.failure),
+          error: LocalizationsUtils.localizations.an_error_occurred));
       return;
     }
   }

@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -56,13 +57,13 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
       }
       emit(state.copyWith(
           resultChart:
-              Result(status: LoadStatus.failure, error: "Không có dữ liệu.")));
+              Result(status: LoadStatus.failure, error: LocalizationsUtils.localizations.no_value)));
       return;
     }
     emit(state.copyWith(
         resultChart: Result(
             status: LoadStatus.failure,
-            error: "đã xảy ra lỗi vui lòng liên hệ với quản trị viên.")));
+            error: LocalizationsUtils.localizations.errorContactAdmin)));
     return;
   }
 

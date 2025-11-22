@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 
 class CurrentlyWidget extends StatelessWidget {
@@ -43,7 +44,7 @@ class CurrentlyWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Dữ liệu hiện tại',
+              LocalizationsUtils.localizations.current_data,
               style: AppTextStyle.textSm.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -58,31 +59,31 @@ class CurrentlyWidget extends StatelessWidget {
                   item(context,
                       path: Assets.icons.square.path,
                       color: AppColors.green50,
-                      title: "Tổng sản lượng",
+                      title: LocalizationsUtils.localizations.total_output,
                       value: gridPower + productionPower,
                       unit: "MWH"),
                   item(context,
                       path: Assets.icons.thunderstormSun6854078.path,
                       color: AppColors.blueFF,
-                      title: "Cung cấp từ điện điên lưới",
+                      title: LocalizationsUtils.localizations.grid_supply,
                       value: gridPower,
                       unit: "MWH"),
                   item(context,
                       path: Assets.icons.solarPanelSun.path,
                       color: AppColors.orange43,
-                      title: "Cung cấp từ điện mặt trời",
+                      title: LocalizationsUtils.localizations.solar_supply,
                       value: productionPower,
                       unit: "MWH"),
                   item(context,
                       path: Assets.icons.thunderstormSun6854078.path,
                       color: AppColors.grey,
-                      title: "Công suất điện lưới tối đa",
+                      title: LocalizationsUtils.localizations.max_grid_power,
                       value: maxGridPower,
                       unit: "KW"),
                   item(context,
                       path: Assets.icons.thunderstormSun6854078.path,
                       color: AppColors.grey,
-                      title: "Công suất điện măt trời tối đa",
+                      title: LocalizationsUtils.localizations.max_solar_power,
                       value: maxProductionPower,
                       unit: "KW"),
                   // item(context,

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/alarm_water/widget/item_alarm_water.dart';
 
 class AllAlarmWaterScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _AllAlarmWaterScreenState extends State<AllAlarmWaterScreen> {
         scrolledUnderElevation: 0,
         elevation: 0,
         title: Text(
-          "Tất cả các cảnh báo",
+          LocalizationsUtils.localizations.allWarnings,
           style: AppTextStyle.textBase.copyWith(
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),

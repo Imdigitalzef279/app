@@ -8,7 +8,6 @@ import 'package:solar_energy/presentation/screen/account_information/account_scr
 import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.dart';
 import 'package:solar_energy/presentation/screen/home_page/home_page_widget.dart';
 import 'package:solar_energy/presentation/screen/service_solar/bottom_contact_info.dart';
-import 'package:solar_energy/presentation/screen/service_solar/widget/service_screen.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -60,13 +59,13 @@ class _HomeWidgetState extends State<HomeWidget> {
             ),
             label: LocalizationsUtils.localizations.home,
           ),
-          const NavigationDestination(
-            selectedIcon: Icon(Icons.developer_board, color: Colors.blue),
-            icon: Icon(
+           NavigationDestination(
+            selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
+            icon:const Icon(
               Icons.developer_board,
               color: AppColors.grey73,
             ),
-            label: "Dịch vụ",
+            label: LocalizationsUtils.localizations.service,
           ),
           NavigationDestination(
             selectedIcon: const Icon(Icons.account_circle, color: Colors.blue),

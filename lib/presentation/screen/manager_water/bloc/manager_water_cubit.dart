@@ -7,6 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/application/utils/toast_utils.dart';
 import 'package:solar_energy/data/dto/water/request/meter_water_request.dart';
@@ -63,7 +64,7 @@ class ManagerWaterCubit extends Cubit<ManagerWaterState> {
         if (response.data!.isEmpty) {
           emit(state.copyWith(
               values: Result(
-                  error: "Không có dữ liệu", status: LoadStatus.failure)));
+                  error: LocalizationsUtils.localizations.no_value, status: LoadStatus.failure)));
           return;
         }
 
@@ -99,7 +100,7 @@ class ManagerWaterCubit extends Cubit<ManagerWaterState> {
     } catch (e) {
       emit(state.copyWith(
           values: Result(
-              error: "đã có lỗi xảy ra vui lòng thử lại",
+              error: LocalizationsUtils.localizations.an_error_occurred,
               status: LoadStatus.failure)));
       return;
     }
@@ -115,7 +116,7 @@ class ManagerWaterCubit extends Cubit<ManagerWaterState> {
     List<WaterIndexModel> listSelected = [...state.listSelected];
     if (isAdd) {
       if (listSelected.length >= 4) {
-        ToastUtils.show('Hiển thị tối đa 4 chỉ số');
+        ToastUtils.show(LocalizationsUtils.localizations.showMax4Indicators);
         return;
       }
       listWaterIndex.remove(waterIndex);
