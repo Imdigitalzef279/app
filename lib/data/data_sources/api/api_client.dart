@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:solar_energy/data/dto/api_response/api_response.dart';
 import 'package:solar_energy/data/dto/auth/response/auth_response.dart';
+import 'package:solar_energy/data/dto/cbs/request/cbs_meter_request.dart';
 import 'package:solar_energy/data/dto/device/request/device_request.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/dto/electric/chart_electric/chart_electric_request.dart';
@@ -77,4 +78,8 @@ abstract class ApiClient {
   @GET("api/app/log-water/log-by-meter-detail-id")
   Future<List<MeterWaterResponse>> getChartWater(
       @Queries() MeterWaterRequest request);
+
+  @POST("cbs/api/set")
+  Future<String> controlCircuitBreaker (
+      @Body() CbsMeterRequest request);
 }

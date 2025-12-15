@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/storages_key.dart';
 import 'package:solar_energy/application/utils/navigation_utils.dart';
 import 'package:solar_energy/data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
@@ -29,34 +30,32 @@ class ApiInterceptors extends InterceptorsWrapper {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final response = err.response;
-    print(response.toString());
 
+    // if (err.response?.statusCode == 401) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+    //     AppToast.dismissAll();
+    //     AppToast.showToastNotify(title: LocalizationsUtils.localizations.loginExpired);
+    //     sharedPreferences.removeAccessToken();
+    //     NavigatorUtils.navigatorKey.currentState
+    //         ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
+    //     return;
+    //   });
+    // }
 
-    print("status code: ${err.response?.statusCode}");
+    // if (response?.statusCode != null) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+    //     AppToast.dismissAll();
+    //     AppToast.showToastNotify(title: LocalizationsUtils.localizations.loginExpired);
+    //     sharedPreferences.removeAccessToken();
+    //     NavigatorUtils.navigatorKey.currentState
+    //         ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
+    //     return;
+    //   });
+    // }
 
-    if (err.response?.statusCode == 401) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
-        AppToast.dismissAll();
-        AppToast.showToastNotify(title: "Phiên đăng nhập đã hết hạn");
-        sharedPreferences.removeAccessToken();
-        NavigatorUtils.navigatorKey.currentState
-            ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
-        return;
-      });
-    }
-
-    if (response?.statusCode != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
-        AppToast.dismissAll();
-        AppToast.showToastNotify(title: "Phiên đăng nhập đã hết hạn");
-        sharedPreferences.removeAccessToken();
-        NavigatorUtils.navigatorKey.currentState
-            ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
-        return;
-      });
-    }
+    handleHttpError(err);
 
     if (response != null) {
       final Map<String, dynamic> data = response.data;
@@ -73,6 +72,91 @@ class ApiInterceptors extends InterceptorsWrapper {
       }
     }
     super.onError(err, handler);
+  }
+
+
+  void handleHttpError(DioException err) {
+    final status = err.response?.statusCode;
+
+    if (status == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
+
+      switch (status) {
+        case 400:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.badRequest,
+          );
+          break;
+
+        case 401:
+          AppToast.dismissAll();
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.loginExpired,
+          );
+          sharedPreferences.removeAccessToken();
+          NavigatorUtils.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            RouteName.loginScreen,
+                (route) => false,
+          );
+          break;
+
+        case 403:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.forbidden,
+          );
+          break;
+
+        case 404:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.notFound,
+          );
+          break;
+
+        case 408:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.requestTimeout,
+          );
+          break;
+
+        case 409:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.conflictError,
+          );
+          break;
+
+        case 422:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.unprocessable,
+          );
+          break;
+
+        case 429:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.tooManyRequests,
+          );
+          break;
+
+        case 500:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.serverError,
+          );
+          break;
+
+        case 503:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.serverUnavailable,
+          );
+          break;
+
+        default:
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.unknownError,
+          );
+          break;
+      }
+    });
   }
 
 }

@@ -100,7 +100,6 @@ class AppToast {
     });
   }
 
-  /// ✅ Hàm gọi để đóng tất cả toast hiện tại
   static void dismissAll() {
     for (final entry in _toastEntries) {
       entry.remove();
