@@ -121,5 +121,17 @@
    "occurrenceTime": "Occurrence Time",
    "allWarnings": "All Warnings",
    "usernameNotMatchOrNotExist": "Username does not match or does not exist.",
-   "deleteAccountSuccess": "Account deleted successfully!!"
+   "deleteAccountSuccess": "Account deleted successfully!!",
+   "loginExpired": "The login session has expired",
+   "badRequest": "Bad request.",
+     "loginExpired": "Login session has expired.",
+     "forbidden": "You do not have permission.",
+     "notFound": "Resource not found.",
+     "requestTimeout": "Request timeout.",
+     "conflictError": "Data conflict.",
+     "unprocessable": "Unprocessable entity.",
+     "tooManyRequests": "Too many requests.",
+     "serverError": "Server error.",
+     "serverUnavailable": "Server unavailable.",
+     "unknownError": "An unknown error occurred."
 }

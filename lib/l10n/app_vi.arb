@@ -122,6 +122,18 @@
 
   "occurrenceTime": "Thời gian xảy ra",
   "allWarnings": "Tất cả các cảnh báo",
-    "usernameNotMatchOrNotExist": "Tên người dùng không khớp hoặc không tồn tại.",
-    "deleteAccountSuccess": "Xóa tài khoản thành công!!"
+  "usernameNotMatchOrNotExist": "Tên người dùng không khớp hoặc không tồn tại.",
+  "deleteAccountSuccess": "Xóa tài khoản thành công!!",
+  "loginExpired": "Phiên đăng nhập đã hết hạn",
+    "badRequest": "Yêu cầu không hợp lệ.",
+    "loginExpired": "Phiên đăng nhập đã hết hạn.",
+    "forbidden": "Bạn không có quyền truy cập.",
+    "notFound": "Không tìm thấy tài nguyên.",
+    "requestTimeout": "Yêu cầu đã hết thời gian.",
+    "conflictError": "Dữ liệu bị xung đột.",
+    "unprocessable": "Dữ liệu không thể xử lý.",
+    "tooManyRequests": "Bạn thao tác quá nhanh.",
+    "serverError": "Lỗi máy chủ.",
+    "serverUnavailable": "Máy chủ tạm thời không hoạt động.",
+    "unknownError": "Đã xảy ra lỗi không xác định."
 }

@@ -124,6 +124,7 @@ class LoginCubit extends Cubit<LoginState> {
       if (response.isSuccess) {
         if (response.data?.accessToken != null) {
           sharedPreferences.setAccessToken(response.data!.accessToken);
+          print(response.data!.accessToken);
           emit(state.copyWith(request: Result(status: LoadStatus.success)));
           return;
         }

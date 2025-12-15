@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 
+import '../enums/cbs_status.dart';
+
 extension DateTimeExtension on DateTime {
   String formatTime({String pattern = 'dd/MM/yyyy'}) {
     try {
@@ -58,3 +60,21 @@ extension DioExt on Dio {
     return this;
   }
 }
+
+extension LogStatusDevice on DeviceStatus {
+  String get text {
+    switch (this) {
+      case DeviceStatus.on:
+        return "ON";
+      case DeviceStatus.off:
+        return "OFF";
+      case DeviceStatus.maintenance:
+        return "Bảo trì";
+      case DeviceStatus.error:
+        return "Lỗi";
+      case DeviceStatus.unknown:
+        return "Không xác định";
+    }
+  }
+}
+
