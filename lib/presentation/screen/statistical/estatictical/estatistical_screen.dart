@@ -72,10 +72,6 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
         return Column(
           children: [
             _buildDateTime(),
-            // Gap(12.sp),
-            // _buildOutput(),
-            // Gap(12.sp),
-            // _buildUsed(),
             Gap(22.sp),
             _buildChart()
           ],
@@ -118,7 +114,7 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
   Widget _buildChart() {
     return Container(
         width: 1.sw,
-        margin: EdgeInsets.symmetric(horizontal: 8.sp),
+        //margin: EdgeInsets.symmetric(horizontal: 8.sp),
         decoration: const BoxDecoration(
           color: AppColors.white,
         ),
@@ -127,17 +123,19 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
             SfCartesianChart(
                 legend: const Legend(isVisible: false),
                 primaryXAxis: CategoryAxis(
+                  labelRotation: 45,
                   labelStyle: AppTextStyle.textXs.copyWith(
                       color: AppColors.textPrimary,
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400),
                 ),
                 primaryYAxis: NumericAxis(
+                  labelRotation: 45,
                   axisLabelFormatter: (AxisLabelRenderDetails details) {
                     return ChartAxisLabel(
                         details.value.toDouble().toKWhFormatted,
                         AppTextStyle.textXs.copyWith(
-                            fontSize: 12.sp,
+                            fontSize: 11.sp,
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w400));
                   },
@@ -169,7 +167,7 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
                     enablePanning: true,
                     enablePinching: true,
                     enableDoubleTapZooming: true,
-                    zoomMode: ZoomMode.x),
+                    zoomMode: ZoomMode.xy),
                 series: <CartesianSeries<SalesData, String>>[
                   SplineSeries<SalesData, String>(
                       dataSource: _cubit.state.loadPowers,
@@ -181,208 +179,10 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
                       dataLabelSettings:
                           const DataLabelSettings(isVisible: false)),
                 ]),
-            // Wrap(
-            //   runSpacing: 4.sp,
-            //   spacing: 8.sp,
-            //   children: [
-            //     DescriptionWidget(
-            //       color: const Color(0xFF1dd1a1),
-            //       name: 'Công suất PV',
-            //       selection: selectPV,
-            //       callback: () {
-            //         setState(() {
-            //           selectPV = !selectPV;
-            //         });
-            //       },
-            //     ),
-            //     DescriptionWidget(
-            //       color: AppColors.grey74,
-            //       name: 'Điện lưới',
-            //       callback: () {
-            //         setState(() {
-            //           selectNet = !selectNet;
-            //         });
-            //       },
-            //       selection: selectNet,
-            //     ),
-            //     DescriptionWidget(
-            //       color: AppColors.orange,
-            //       name: 'Điện tiêu thụ',
-            //       callback: () => setState(() {
-            //         selectConsumer = !selectConsumer;
-            //       }),
-            //       selection: selectConsumer,
-            //     ),
-            //   ],
-            // )
+
           ],
         ));
   }
-
-  // Widget _buildOutput() {
-  //   return Container(
-  //     height: 200.sp,
-  //     padding: EdgeInsets.symmetric(vertical: 8.sp),
-  //     margin: EdgeInsets.symmetric(horizontal: 12.sp),
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(12.sp),
-  //       color: AppColors.white,
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: AppColors.greyDF.withOpacity(0.5),
-  //           spreadRadius: 2,
-  //           blurRadius: 5,
-  //           offset: const Offset(0, 2),
-  //         )
-  //       ],
-  //     ),
-  //     child: _cubit.state.listOutput.isNotEmpty
-  //         ? SfCircularChart(
-  //             title: ChartTitle(
-  //               text: "Sản Lượng",
-  //               textStyle: AppTextStyle.textXs.copyWith(
-  //                   fontSize: 12.sp,
-  //                   color: AppColors.textPrimary,
-  //                   fontWeight: FontWeight.w600),
-  //               alignment: ChartAlignment.near,
-  //             ),
-  //             legend: Legend(
-  //               isVisible: true,
-  //               position: LegendPosition.right,
-  //               legendItemBuilder: (legendText, series, point, seriesIndex) {
-  //                 double value =
-  //                     (series as DoughnutSeries).dataSource?[seriesIndex].y;
-  //                 return Text(
-  //                   '$legendText: ${value.toKWorMW}',
-  //                   style: AppTextStyle.textSm.copyWith(
-  //                       fontSize: 14.sp,
-  //                       fontWeight: FontWeight.w500,
-  //                       color: _cubit.state.listOutput[seriesIndex].color),
-  //                 );
-  //               },
-  //             ),
-  //             tooltipBehavior: TooltipBehavior(enable: true),
-  //             annotations: <CircularChartAnnotation>[
-  //               CircularChartAnnotation(
-  //                 widget: Center(
-  //                   child: _cubit.state.listOutput.isNotEmpty
-  //                       ? Text(
-  //                           (_cubit.state.listOutput[0].y +
-  //                                   _cubit.state.listOutput[1].y)
-  //                               .toKWorMW,
-  //                           // Hiển thị tổng giá trị
-  //                           style: AppTextStyle.textSm.copyWith(
-  //                               color: AppColors.textPrimary,
-  //                               fontWeight: FontWeight.w500,
-  //                               fontSize: 14.sp),
-  //                         )
-  //                       : const SizedBox(),
-  //                 ),
-  //               ),
-  //             ],
-  //             series: <CircularSeries>[
-  //               DoughnutSeries<ChartData, String>(
-  //                 strokeColor: Colors.white,
-  //                 cornerStyle: CornerStyle.bothCurve,
-  //                 dataSource: _cubit.state.listOutput,
-  //                 xValueMapper: (ChartData data, _) => data.x,
-  //                 yValueMapper: (ChartData data, _) => data.y,
-  //                 radius: '100%',
-  //                 innerRadius: '80%',
-  //                 pointColorMapper: (ChartData data, _) => data.color,
-  //               ),
-  //             ],
-  //           )
-  //         : Center(
-  //             child: Text(
-  //               'Không có dữ liệu',
-  //               style: AppTextStyle.textXs
-  //                   .copyWith(fontSize: 12.sp, color: AppColors.textPrimary),
-  //             ),
-  //           ),
-  //   );
-  // }
-  //
-  // Widget _buildUsed() {
-  //   return Container(
-  //     height: 200.sp,
-  //     padding: EdgeInsets.symmetric(vertical: 8.sp),
-  //     margin: EdgeInsets.symmetric(horizontal: 12.sp),
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(12.sp),
-  //       color: AppColors.white,
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: AppColors.greyDF.withOpacity(0.5),
-  //           spreadRadius: 2,
-  //           blurRadius: 5,
-  //           offset: const Offset(0, 2),
-  //         )
-  //       ],
-  //     ),
-  //     child: _cubit.state.listUsed.isNotEmpty
-  //         ? SfCircularChart(
-  //             title: ChartTitle(
-  //               text: "Mức sử dụng",
-  //               textStyle: AppTextStyle.textXs.copyWith(
-  //                   fontSize: 12.sp,
-  //                   color: AppColors.textPrimary,
-  //                   fontWeight: FontWeight.w600),
-  //               alignment: ChartAlignment.near,
-  //             ),
-  //             legend: Legend(
-  //               isVisible: true,
-  //               position: LegendPosition.right,
-  //               legendItemBuilder: (legendText, series, point, seriesIndex) {
-  //                 double value =
-  //                     (series as DoughnutSeries).dataSource?[seriesIndex].y;
-  //                 return Text(
-  //                   '$legendText: ${value.toKWorMW}',
-  //                   style: AppTextStyle.textSm.copyWith(
-  //                     fontSize: 14.sp,
-  //                     fontWeight: FontWeight.w500,
-  //                     color: _cubit.state.listUsed[seriesIndex].color,
-  //                   ),
-  //                 );
-  //               },
-  //             ),
-  //             tooltipBehavior: TooltipBehavior(enable: true),
-  //             annotations: <CircularChartAnnotation>[
-  //               CircularChartAnnotation(
-  //                 widget: Center(
-  //                   child: _cubit.state.listUsed.isNotEmpty
-  //                       ? Text(
-  //                           (_cubit.state.listUsed[0].y).toKWorMW,
-  //                           style: AppTextStyle.textSm.copyWith(
-  //                               fontSize: 14.sp,
-  //                               fontWeight: FontWeight.w500,
-  //                               color: AppColors.textPrimary),
-  //                         )
-  //                       : const SizedBox(),
-  //                 ),
-  //               ),
-  //             ],
-  //             series: <CircularSeries>[
-  //               DoughnutSeries<ChartData, String>(
-  //                   strokeColor: Colors.white,
-  //                   cornerStyle: CornerStyle.bothCurve,
-  //                   dataSource: _cubit.state.listUsed,
-  //                   xValueMapper: (ChartData data, _) => data.x,
-  //                   yValueMapper: (ChartData data, _) => data.y,
-  //                   radius: '100%',
-  //                   innerRadius: '80%',
-  //                   pointColorMapper: (ChartData data, _) => data.color),
-  //             ],
-  //           )
-  //         : Center(
-  //             child: Text(
-  //               'Không có dữ liệu',
-  //               style: AppTextStyle.textXs
-  //                   .copyWith(fontSize: 12.sp, color: AppColors.textPrimary),
-  //             ),
-  //           ),
-  //   );
-  // }
 
   Future<void> showDatePicker(DateRangePickerView type) async {
     showDialog(

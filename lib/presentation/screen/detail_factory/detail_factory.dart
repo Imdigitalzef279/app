@@ -25,12 +25,14 @@ class DetailFactoryScreen extends StatefulWidget {
 class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   late int indexPage;
   late DeviceCubit cubit;
+  late List<bool> _tabLoaded;
   int meterId = 0;
 
   @override
   void initState() {
     super.initState();
     indexPage = (0);
+    _tabLoaded = [true, false, false];
     cubit = BlocProvider.of<DeviceCubit>(context);
     _loadInitialMeterId();
   }
@@ -48,6 +50,7 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
         onDestinationSelected: (index) {
           setState(() {
             indexPage = index;
+            _tabLoaded[index] = true;
           });
         },
         selectedIndex: indexPage,
@@ -100,9 +103,10 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
   }
 
   Widget _buildBody() {
-    switch (indexPage) {
-      case 0:
-        return widget.type.type == ElectricType.saveElectric
+    return IndexedStack(
+      index: indexPage,
+      children: [
+        _tabLoaded[0] ? (widget.type.type == ElectricType.saveElectric
             ? BlocProvider(
                 create: (context) => ElectricCubit(),
                 child: ElectricityScreen(
@@ -114,17 +118,14 @@ class _DetailFactoryScreenState extends State<DetailFactoryScreen> {
                 child: OverViewScreen(
                   type: widget.type.type,
                   project: widget.type.project,
-                ));
-      case 1:
-        return StatisticalScreen(argument: widget.type, meterId: meterId);
-      case 2:
-        return BlocProvider(
+                ))) : const SizedBox(),
+        _tabLoaded[1] ? StatisticalScreen(argument: widget.type, meterId: meterId) : const SizedBox(),
+        _tabLoaded[2] ? BlocProvider(
             create: (context) => DeviceCubit(),
             child: DevicesScreen(
               argument: widget.type,
-            ));
-      default:
-        return const SizedBox();
-    }
+            )) : const SizedBox(),
+      ],
+    );
   }
 }

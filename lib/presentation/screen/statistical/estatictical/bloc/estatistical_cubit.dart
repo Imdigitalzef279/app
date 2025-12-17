@@ -49,9 +49,9 @@ class EStatisticalCubit extends Cubit<EStatisticalState> {
           return SalesData(current.year, current.sales - prev.sales);
         }).toList();
         emit(state.copyWith(resultChart: response, loadPowers: gridPowers));
-        for (final item in state.loadPowers) {
-          print('Year: ${item.year}, Sales: ${item.sales}');
-        }
+        // for (final item in state.loadPowers) {
+        //   print('Year: ${item.year}, Sales: ${item.sales}');
+        // }
 
         return;
       }

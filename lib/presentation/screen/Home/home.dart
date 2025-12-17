@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
-import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
 import 'package:solar_energy/presentation/screen/account_information/account_screen.dart';
@@ -18,11 +17,15 @@ class HomeWidget extends StatefulWidget {
 
 class _HomeWidgetState extends State<HomeWidget> {
   late int indexPage;
+  late List<bool> _tabLoaded;
+
+
 
   @override
   void initState() {
     super.initState();
     indexPage = (0);
+    _tabLoaded = [true, false ,false];
   }
 
   @override
@@ -43,6 +46,7 @@ class _HomeWidgetState extends State<HomeWidget> {
           } else {
             setState(() {
               indexPage = index;
+              _tabLoaded[index] = true;
             });
           }
         },
@@ -59,9 +63,9 @@ class _HomeWidgetState extends State<HomeWidget> {
             ),
             label: LocalizationsUtils.localizations.home,
           ),
-           NavigationDestination(
+          NavigationDestination(
             selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
-            icon:const Icon(
+            icon: const Icon(
               Icons.developer_board,
               color: AppColors.grey73,
             ),
@@ -78,25 +82,16 @@ class _HomeWidgetState extends State<HomeWidget> {
     );
   }
 
-  _buildBody() {
-    switch (indexPage) {
-      case 0:
-        return BlocProvider(
-            create: (BuildContext context) => HomePageCubit(),
-            child: const HomePageWidget());
-      case 1:
-        return;
-      case 2:
-        return BlocProvider(
-          create: (context) => AccountCubit(),
-          child: const AccountScreen(),
-        );
-      default:
-        return Center(
-            child: Text(
-          LocalizationsUtils.localizations.home,
-          style: AppTextStyle.textXl,
-        ));
-    }
+  Widget _buildBody() {
+    return IndexedStack(index: indexPage, children: [
+      _tabLoaded[0] ? BlocProvider(
+          create: (BuildContext context) => HomePageCubit(),
+          child: const HomePageWidget()) : const SizedBox(),
+      const SizedBox(),
+      _tabLoaded[2] ? BlocProvider(
+        create: (context) => AccountCubit(),
+        child: const AccountScreen(),
+      ) : const SizedBox()
+    ]);
   }
 }

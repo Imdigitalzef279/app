@@ -77,33 +77,31 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
       child: Column(
         children: [
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
             margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(16.r)),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-              child: Column(
-                children: [
-                  rowItem(
-                      name: LocalizationsUtils.localizations.signal_type,
-                      value: getSignalType(widget.deviceResponse.meterTypeId)),
-                  const Divider(
-                    color: AppColors.greyFB,
-                  ),
-                  rowItem(
-                      name: LocalizationsUtils.localizations.signal_point, value: widget.deviceResponse.name),
-                  const Divider(
-                    color: AppColors.greyFB,
-                  ),
-                  rowItem(
-                    name: LocalizationsUtils.localizations.created_date,
-                    value: DateTime.parse(
-                            widget.deviceResponse.creationTime.toString())
-                        .formatTime(),
-                  ),
-                ],
-              ),
+            child: Column(
+              children: [
+                rowItem(
+                    name: LocalizationsUtils.localizations.signal_type,
+                    value: getSignalType(widget.deviceResponse.meterTypeId)),
+                const Divider(
+                  color: AppColors.greyFB,
+                ),
+                rowItem(
+                    name: LocalizationsUtils.localizations.signal_point, value: widget.deviceResponse.name),
+                const Divider(
+                  color: AppColors.greyFB,
+                ),
+                rowItem(
+                  name: LocalizationsUtils.localizations.created_date,
+                  value: DateTime.parse(
+                          widget.deviceResponse.creationTime.toString())
+                      .formatTime(),
+                ),
+              ],
             ),
           ),
           Container(
@@ -232,7 +230,6 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                     fontWeight: FontWeight.w500),
                 textAlign: TextAlign.right,
               ),
-              //Icon(Icons.chevron_right_rounded, color: AppColors.textPrimary.withOpacity(0.5), size: 15.w,)
             ],
           ),
         )

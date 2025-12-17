@@ -61,10 +61,6 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen> {
               color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         ),
       ),
-      body: _futureDeviceId == 0
-          ? _noDeviceWidget()
-          : _buildBody(
-              deviceIdFirst: _futureDeviceId, stationId: widget.station.id),
       bottomNavigationBar: _futureDeviceId != 0
           ? NavigationBar(
               onDestinationSelected: (index) {
@@ -92,6 +88,20 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen> {
               ],
             )
           : const SizedBox(),
+      body: _futureDeviceId == 0
+          ? _noDeviceWidget()
+          : IndexedStack(
+        index: indexPage,
+        children: [
+          OverviewWater(
+            deviceWater: _futureDeviceId,
+            stationId: widget.station.id,
+          ),
+          DeviceWaterScreen(
+            stationId: widget.station.id,
+          ),
+        ],
+      ),
     );
   }
 
@@ -109,12 +119,11 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen> {
   Widget _noDeviceWidget() {
     return Center(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 32.h,vertical: 32.h),
+        padding: EdgeInsets.symmetric(horizontal: 32.h, vertical: 32.h),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(99.r),
           color: AppColors.blueF8,
         ),
-
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
