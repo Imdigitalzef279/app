@@ -20,11 +20,13 @@ class DetailDeviceScreen extends StatefulWidget {
 
 class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
   late int indexPage;
+  late List<bool> _tabLoaded;
 
   @override
   void initState() {
     super.initState();
     indexPage = (0);
+    _tabLoaded = [true, false];
   }
 
   @override
@@ -45,6 +47,7 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
         onDestinationSelected: (index) {
           setState(() {
             indexPage = index;
+            _tabLoaded[index] = true;
           });
         },
         selectedIndex: indexPage,
@@ -80,20 +83,17 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
           ),
         ],
       ),
-      body: _buildBody(),
+      body: IndexedStack(
+        index: indexPage,
+        children: [
+          _tabLoaded[0]
+              ? InfoDeviceScreen(
+                  deviceResponse: widget.device,
+                )
+              : const SizedBox(),
+          _tabLoaded[1] ? const AlarmInfoScreen() : const SizedBox(),
+        ],
+      ),
     );
-  }
-
-  Widget _buildBody() {
-    switch (indexPage) {
-      case 0:
-        return const AlarmInfoScreen();
-      case 1:
-        return InfoDeviceScreen(
-          deviceResponse: widget.device,
-        );
-      default:
-        return const AlarmInfoScreen();
-    }
   }
 }
