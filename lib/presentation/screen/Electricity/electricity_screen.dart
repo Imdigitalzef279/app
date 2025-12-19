@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
+import 'package:solar_energy/gen/assets.gen.dart';
 
 import 'package:solar_energy/presentation/common_widgets/app_load_more.dart';
 
 import 'package:solar_energy/presentation/screen/Electricity/bloc/electric_cubit.dart';
-import 'package:solar_energy/presentation/screen/overview/widget/saving_energy.dart';
+import 'package:solar_energy/presentation/screen/Electricity/widget/item_data_electric.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import '../../../application/constants/app_color.dart';
@@ -65,11 +67,12 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                   BlocProvider.of<AppCubit>(context).hideShowLoading());
         },
         builder: (context, state) => AppLoadMore(
-          onRefresh: () => cubit.getElectric(widget.project.id),
+          // onRefresh: () => cubit.getElectric(widget.project.id),
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             child: Column(
               children: [
+                // overview
                 Container(
                   width: double.infinity,
                   padding:
@@ -100,6 +103,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                         height: 150,
                         child: Row(
                           children: [
+                            // Ua
                             Expanded(
                               child: SfRadialGauge(axes: <RadialAxis>[
                                 RadialAxis(
@@ -173,6 +177,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                 ),
                               ]),
                             ),
+                            // Ia
                             Expanded(
                               child: SfRadialGauge(axes: <RadialAxis>[
                                 RadialAxis(
@@ -243,7 +248,6 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                     ])
                               ]),
                             ),
-
                             // cos phi
                             Expanded(
                               child: SfRadialGauge(axes: <RadialAxis>[
@@ -347,61 +351,383 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                       // isPortrait ? 16.verticalSpace : 32.verticalSpace,
                       Row(
                         children: [
+                          // Expanded(
+                          //   child: Container(
+                          //     padding: EdgeInsets.symmetric(
+                          //         horizontal: 4.r, vertical: 4.r),
+                          //     decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(4.r)),
+                          //     child: Center(
+                          //       child: Text(
+                          //           '${state.response.data?.lastedLogData.thd ?? 0}% THD',
+                          //           style: AppTextStyle.tini.copyWith(
+                          //               color: AppColors.textPrimary)),
+                          //     ),
+                          //   ),
+                          // ),
                           Expanded(
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 4.r, vertical: 4.r),
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.r)),
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
                               child: Center(
-                                child: Text(
-                                    '${state.response.data?.lastedLogData.thd ?? 0}% THD',
-                                    style: AppTextStyle.tini.copyWith(
-                                        color: AppColors.textPrimary)),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: 'Tiêu thụ: ',
+                                        style: AppTextStyle.textXs.copyWith(
+                                          color: AppColors.textPrimary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: ((double.tryParse(state
+                                                            .response
+                                                            .data
+                                                            ?.lastedLogData
+                                                            .ct ??
+                                                        "0") ??
+                                                    0.0) *
+                                                (double.tryParse(state
+                                                            .response
+                                                            .data
+                                                            ?.lastedLogData
+                                                            .paramEpi ??
+                                                        "0") ??
+                                                    0.0))
+                                            .toStringAsFixed(2),
+                                        style: AppTextStyle.textXs.copyWith(
+                                          color: AppColors.textPrimary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: ' kWh',
+                                        style: AppTextStyle.tini.copyWith(
+                                          color: AppColors.textPrimary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                          8.horizontalSpace,
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 4.r, vertical: 4.r),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.r)),
-                              child: Center(
-                                child: Text(
-                                    '${(double.tryParse(state.response.data?.lastedLogData.ct ?? "0") ?? 0.0) * (double.tryParse(state.response.data?.lastedLogData.paramEpi ?? "0") ?? 0.0)} Kw/h',
-                                    style: AppTextStyle.tini.copyWith(
-                                        color: AppColors.textPrimary)),
-                              ),
-                            ),
-                          ),
-                          8.horizontalSpace,
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 4.r, vertical: 4.r),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.r)),
-                              child: Center(
-                                child: Text('50 Hz',
-                                    style: AppTextStyle.tini.copyWith(
-                                        color: AppColors.textPrimary)),
-                              ),
-                            ),
-                          )
+                          // Expanded(
+                          //   child: Container(
+                          //     padding: EdgeInsets.symmetric(
+                          //         horizontal: 4.r, vertical: 4.r),
+                          //     decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(4.r)),
+                          //     child: Center(
+                          //       child: Text('50 Hz',
+                          //           style: AppTextStyle.tini.copyWith(
+                          //               color: AppColors.textPrimary)),
+                          //     ),
+                          //   ),
+                          // )
                         ],
                       )
                     ],
                   ),
                 ),
                 12.verticalSpace,
-                const SavingEnergy()
+
+                //data
+                // itemContainerElectric(title: "⚡ Điện áp & Dòng điện"),
+                // 8.verticalSpace,
+                // itemContainerElectric(title: "🔌 Công suất"),
+                // 8.verticalSpace,
+                // itemContainerElectric(title: "🌀 Công suất phản kháng"),
+
+                // 3-phase specifications
+                Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(12.r),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        color: AppColors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.greyDF.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          )
+                        ]),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Thông số 3 pha: ",
+                            style: AppTextStyle.textSm.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary),
+                          ),
+                          Gap(12.h),
+                          Table(
+                            border: TableBorder.all(
+                              color: AppColors.greyDF.withOpacity(0.6),
+                              width: 1,
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            columnWidths: const {
+                              0: FlexColumnWidth(1.2),
+                              1: FlexColumnWidth(2),
+                              2: FlexColumnWidth(2),
+                              3: FlexColumnWidth(2),
+                            },
+                            children: [
+                              _buildTableRow(['', 'A', 'B', 'C'],
+                                  isHeader: true),
+                              _buildTableRow([
+                                'U',
+                                state.response.data?.lastedLogData.paramUa
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramUb
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramUc
+                                        .toString() ??
+                                    "0,0",
+                              ]),
+                              _buildTableRow([
+                                'I',
+                                state.response.data?.lastedLogData.paramIa
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramIb
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramIc
+                                        .toString() ??
+                                    "0,0",
+                              ]),
+                              _buildTableRow([
+                                'P',
+                                state.response.data?.lastedLogData.paramPa
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramPb
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramPc
+                                        .toString() ??
+                                    "0,0",
+                              ]),
+                              _buildTableRow([
+                                'Q',
+                                state.response.data?.lastedLogData.paramQa
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramQb
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramQc
+                                        .toString() ??
+                                    "0,0",
+                              ]),
+                            ],
+                          ),
+                          Gap(12.r),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                "P Tổng: ${state.response.data?.lastedLogData.paramP.toString() ?? "0,0"} kW",
+                                style: AppTextStyle.textXs.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary),
+                              ),
+                              Text(
+                                "Q Tổng: ${state.response.data?.lastedLogData.paramQ.toString() ?? "0,0"} kVAR",
+                                style: AppTextStyle.textXs.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary),
+                              ),
+                            ],
+                          )
+                        ])),
+
+                Gap(8.r),
+
+                // Harmonic wave
+                Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(12.r),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        color: AppColors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.greyDF.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          )
+                        ]),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Sóng hài: ",
+                            style: AppTextStyle.textSm.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary),
+                          ),
+                          Gap(12.h),
+                          Table(
+                            border: TableBorder.all(
+                              color: AppColors.greyDF.withOpacity(0.6),
+                              width: 1,
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            columnWidths: const {
+                              0: FlexColumnWidth(1.2),
+                              1: FlexColumnWidth(2),
+                              2: FlexColumnWidth(2),
+                              3: FlexColumnWidth(2),
+                            },
+                            children: [
+                              _buildTableRow(['THD', 'A', 'B', 'C'],
+                                  isHeader: true),
+                              _buildTableRow([
+                                'U',
+                                state.response.data?.lastedLogData.paramUa
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramUb
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramUc
+                                        .toString() ??
+                                    "0,0",
+                              ]),
+                              _buildTableRow([
+                                'I',
+                                state.response.data?.lastedLogData.paramIa
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramIb
+                                        .toString() ??
+                                    "0,0",
+                                state.response.data?.lastedLogData.paramIc
+                                        .toString() ??
+                                    "0,0",
+                              ]),
+                            ],
+                          ),
+                        ]))
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget itemContainerElectric({required String title}) {
+    return Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(12.r),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: AppColors.white,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.greyDF.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 2),
+              )
+            ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: AppTextStyle.textSm.copyWith(
+                  fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+            ),
+            Gap(12.h),
+            Wrap(
+                direction: Axis.horizontal,
+                runSpacing: 16.r,
+                spacing: 12.r,
+                children: [
+                  ItemDataElectric(
+                      path: Assets.icons.thunderstormSun6854078.path,
+                      color: AppColors.blueFF,
+                      title: LocalizationsUtils.localizations.peak_output,
+                      content: "2,37",
+                      unit: "Kw"),
+                  ItemDataElectric(
+                      path: Assets.icons.revenue.path,
+                      color: AppColors.orange43,
+                      title: LocalizationsUtils.localizations.off_peak_output,
+                      content: "12,43",
+                      unit: "Kw"),
+                  ItemDataElectric(
+                      path: Assets.icons.square.path,
+                      color: AppColors.green50,
+                      title: LocalizationsUtils.localizations.normal_output,
+                      content: "5,77",
+                      unit: "Kw"),
+                  ItemDataElectric(
+                      path: Assets.icons.thunderstormSun6854078.path,
+                      color: AppColors.grey,
+                      title: LocalizationsUtils.localizations.total_cost,
+                      content: "100,372",
+                      unit: "Dong"),
+                ])
+          ],
+        ));
+  }
+
+  Widget tableText(String text, {bool isHeader = false}) {
+    return Center(
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: AppTextStyle.textXs.copyWith(
+          fontWeight: isHeader ? FontWeight.w600 : FontWeight.w400,
+          color: AppColors.textPrimary,
+        ),
+      ),
+    );
+  }
+
+  TableRow _buildTableRow(
+    List<String> values, {
+    bool isHeader = false,
+  }) {
+    return TableRow(
+      decoration: isHeader
+          ? BoxDecoration(
+              color: AppColors.greenA1,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12.r),
+                  topRight: Radius.circular(12.r)))
+          : null,
+      children: values.map((e) {
+        return Container(
+          height: 36.h,
+          alignment: Alignment.center,
+          child: Text(
+            e,
+            textAlign: TextAlign.center,
+            style: AppTextStyle.textXs.copyWith(
+              fontWeight: isHeader ? FontWeight.w600 : FontWeight.w400,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }
