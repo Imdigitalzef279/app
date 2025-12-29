@@ -60,7 +60,7 @@ abstract class ApiClient {
 
   @GET('api/app/meter/with-log')
   Future<PaginationResponse<ElectricMeter>> getElectric(
-    @Query('ProjectId') int projectId,
+    @Query('PowerStationId') int powerStation,
   );
 
   @POST('api/identity/users')

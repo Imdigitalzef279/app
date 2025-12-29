@@ -34,6 +34,12 @@ class LastedLogDataResponse with _$LastedLogDataResponse {
     @JsonKey(name: 'PARAM_Q') @Default('') String paramQ,
     @JsonKey(name: 'THD') @Default('') String thd,
     @JsonKey(name: 'CT') @Default('') String ct,
+    @JsonKey(name: 'THD_UA') @Default('') String thdUa,
+    @JsonKey(name: 'THD_UB') @Default('') String thdUb,
+    @JsonKey(name: 'THD_UC') @Default('') String thdUc,
+    @JsonKey(name: 'THD_IA') @Default('') String thdIa,
+    @JsonKey(name: 'THD_IB') @Default('') String thdIb,
+    @JsonKey(name: 'THD_IC') @Default('') String thdIc,
   }) = _LastedLogDataResponse;
 
   factory LastedLogDataResponse.fromJson(Map<String, dynamic> json) =>

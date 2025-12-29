@@ -73,6 +73,18 @@ mixin _$LastedLogDataResponse {
   String get thd => throw _privateConstructorUsedError;
   @JsonKey(name: 'CT')
   String get ct => throw _privateConstructorUsedError;
+  @JsonKey(name: 'THD_UA')
+  String get thdUa => throw _privateConstructorUsedError;
+  @JsonKey(name: 'THD_UB')
+  String get thdUb => throw _privateConstructorUsedError;
+  @JsonKey(name: 'THD_UC')
+  String get thdUc => throw _privateConstructorUsedError;
+  @JsonKey(name: 'THD_IA')
+  String get thdIa => throw _privateConstructorUsedError;
+  @JsonKey(name: 'THD_IB')
+  String get thdIb => throw _privateConstructorUsedError;
+  @JsonKey(name: 'THD_IC')
+  String get thdIc => throw _privateConstructorUsedError;
 
   /// Serializes this LastedLogDataResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -115,7 +127,13 @@ abstract class $LastedLogDataResponseCopyWith<$Res> {
       @JsonKey(name: 'PARAM_QC') String paramQc,
       @JsonKey(name: 'PARAM_Q') String paramQ,
       @JsonKey(name: 'THD') String thd,
-      @JsonKey(name: 'CT') String ct});
+      @JsonKey(name: 'CT') String ct,
+      @JsonKey(name: 'THD_UA') String thdUa,
+      @JsonKey(name: 'THD_UB') String thdUb,
+      @JsonKey(name: 'THD_UC') String thdUc,
+      @JsonKey(name: 'THD_IA') String thdIa,
+      @JsonKey(name: 'THD_IB') String thdIb,
+      @JsonKey(name: 'THD_IC') String thdIc});
 }
 
 /// @nodoc
@@ -159,6 +177,12 @@ class _$LastedLogDataResponseCopyWithImpl<$Res,
     Object? paramQ = null,
     Object? thd = null,
     Object? ct = null,
+    Object? thdUa = null,
+    Object? thdUb = null,
+    Object? thdUc = null,
+    Object? thdIa = null,
+    Object? thdIb = null,
+    Object? thdIc = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -261,6 +285,30 @@ class _$LastedLogDataResponseCopyWithImpl<$Res,
           ? _value.ct
           : ct // ignore: cast_nullable_to_non_nullable
               as String,
+      thdUa: null == thdUa
+          ? _value.thdUa
+          : thdUa // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdUb: null == thdUb
+          ? _value.thdUb
+          : thdUb // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdUc: null == thdUc
+          ? _value.thdUc
+          : thdUc // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdIa: null == thdIa
+          ? _value.thdIa
+          : thdIa // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdIb: null == thdIb
+          ? _value.thdIb
+          : thdIb // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdIc: null == thdIc
+          ? _value.thdIc
+          : thdIc // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -299,7 +347,13 @@ abstract class _$$LastedLogDataResponseImplCopyWith<$Res>
       @JsonKey(name: 'PARAM_QC') String paramQc,
       @JsonKey(name: 'PARAM_Q') String paramQ,
       @JsonKey(name: 'THD') String thd,
-      @JsonKey(name: 'CT') String ct});
+      @JsonKey(name: 'CT') String ct,
+      @JsonKey(name: 'THD_UA') String thdUa,
+      @JsonKey(name: 'THD_UB') String thdUb,
+      @JsonKey(name: 'THD_UC') String thdUc,
+      @JsonKey(name: 'THD_IA') String thdIa,
+      @JsonKey(name: 'THD_IB') String thdIb,
+      @JsonKey(name: 'THD_IC') String thdIc});
 }
 
 /// @nodoc
@@ -341,6 +395,12 @@ class __$$LastedLogDataResponseImplCopyWithImpl<$Res>
     Object? paramQ = null,
     Object? thd = null,
     Object? ct = null,
+    Object? thdUa = null,
+    Object? thdUb = null,
+    Object? thdUc = null,
+    Object? thdIa = null,
+    Object? thdIb = null,
+    Object? thdIc = null,
   }) {
     return _then(_$LastedLogDataResponseImpl(
       id: null == id
@@ -443,6 +503,30 @@ class __$$LastedLogDataResponseImplCopyWithImpl<$Res>
           ? _value.ct
           : ct // ignore: cast_nullable_to_non_nullable
               as String,
+      thdUa: null == thdUa
+          ? _value.thdUa
+          : thdUa // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdUb: null == thdUb
+          ? _value.thdUb
+          : thdUb // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdUc: null == thdUc
+          ? _value.thdUc
+          : thdUc // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdIa: null == thdIa
+          ? _value.thdIa
+          : thdIa // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdIb: null == thdIb
+          ? _value.thdIb
+          : thdIb // ignore: cast_nullable_to_non_nullable
+              as String,
+      thdIc: null == thdIc
+          ? _value.thdIc
+          : thdIc // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -475,7 +559,13 @@ class _$LastedLogDataResponseImpl implements _LastedLogDataResponse {
       @JsonKey(name: 'PARAM_QC') this.paramQc = '',
       @JsonKey(name: 'PARAM_Q') this.paramQ = '',
       @JsonKey(name: 'THD') this.thd = '',
-      @JsonKey(name: 'CT') this.ct = ''});
+      @JsonKey(name: 'CT') this.ct = '',
+      @JsonKey(name: 'THD_UA') this.thdUa = '',
+      @JsonKey(name: 'THD_UB') this.thdUb = '',
+      @JsonKey(name: 'THD_UC') this.thdUc = '',
+      @JsonKey(name: 'THD_IA') this.thdIa = '',
+      @JsonKey(name: 'THD_IB') this.thdIb = '',
+      @JsonKey(name: 'THD_IC') this.thdIc = ''});
 
   factory _$LastedLogDataResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$LastedLogDataResponseImplFromJson(json);
@@ -557,10 +647,28 @@ class _$LastedLogDataResponseImpl implements _LastedLogDataResponse {
   @override
   @JsonKey(name: 'CT')
   final String ct;
+  @override
+  @JsonKey(name: 'THD_UA')
+  final String thdUa;
+  @override
+  @JsonKey(name: 'THD_UB')
+  final String thdUb;
+  @override
+  @JsonKey(name: 'THD_UC')
+  final String thdUc;
+  @override
+  @JsonKey(name: 'THD_IA')
+  final String thdIa;
+  @override
+  @JsonKey(name: 'THD_IB')
+  final String thdIb;
+  @override
+  @JsonKey(name: 'THD_IC')
+  final String thdIc;
 
   @override
   String toString() {
-    return 'LastedLogDataResponse(id: $id, updateTime: $updateTime, meterName: $meterName, status: $status, paramPf: $paramPf, paramEpi: $paramEpi, paramEpe: $paramEpe, paramEql: $paramEql, paramEqc: $paramEqc, paramUa: $paramUa, paramUb: $paramUb, paramUc: $paramUc, paramIa: $paramIa, paramIb: $paramIb, paramIc: $paramIc, paramPa: $paramPa, paramPb: $paramPb, paramPc: $paramPc, paramP: $paramP, paramQa: $paramQa, paramQb: $paramQb, paramQc: $paramQc, paramQ: $paramQ, thd: $thd, ct: $ct)';
+    return 'LastedLogDataResponse(id: $id, updateTime: $updateTime, meterName: $meterName, status: $status, paramPf: $paramPf, paramEpi: $paramEpi, paramEpe: $paramEpe, paramEql: $paramEql, paramEqc: $paramEqc, paramUa: $paramUa, paramUb: $paramUb, paramUc: $paramUc, paramIa: $paramIa, paramIb: $paramIb, paramIc: $paramIc, paramPa: $paramPa, paramPb: $paramPb, paramPc: $paramPc, paramP: $paramP, paramQa: $paramQa, paramQb: $paramQb, paramQc: $paramQc, paramQ: $paramQ, thd: $thd, ct: $ct, thdUa: $thdUa, thdUb: $thdUb, thdUc: $thdUc, thdIa: $thdIa, thdIb: $thdIb, thdIc: $thdIc)';
   }
 
   @override
@@ -598,7 +706,13 @@ class _$LastedLogDataResponseImpl implements _LastedLogDataResponse {
             (identical(other.paramQc, paramQc) || other.paramQc == paramQc) &&
             (identical(other.paramQ, paramQ) || other.paramQ == paramQ) &&
             (identical(other.thd, thd) || other.thd == thd) &&
-            (identical(other.ct, ct) || other.ct == ct));
+            (identical(other.ct, ct) || other.ct == ct) &&
+            (identical(other.thdUa, thdUa) || other.thdUa == thdUa) &&
+            (identical(other.thdUb, thdUb) || other.thdUb == thdUb) &&
+            (identical(other.thdUc, thdUc) || other.thdUc == thdUc) &&
+            (identical(other.thdIa, thdIa) || other.thdIa == thdIa) &&
+            (identical(other.thdIb, thdIb) || other.thdIb == thdIb) &&
+            (identical(other.thdIc, thdIc) || other.thdIc == thdIc));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -629,7 +743,13 @@ class _$LastedLogDataResponseImpl implements _LastedLogDataResponse {
         paramQc,
         paramQ,
         thd,
-        ct
+        ct,
+        thdUa,
+        thdUb,
+        thdUc,
+        thdIa,
+        thdIb,
+        thdIc
       ]);
 
   /// Create a copy of LastedLogDataResponse
@@ -651,31 +771,38 @@ class _$LastedLogDataResponseImpl implements _LastedLogDataResponse {
 
 abstract class _LastedLogDataResponse implements LastedLogDataResponse {
   const factory _LastedLogDataResponse(
-      {@JsonKey(name: 'ID') final int id,
-      @JsonKey(name: 'UPDATE_TIME') final DateTime? updateTime,
-      @JsonKey(name: 'METER_NAME') final String meterName,
-      @JsonKey(name: 'STATUS') final int status,
-      @JsonKey(name: 'PARAM_PF') final String paramPf,
-      @JsonKey(name: 'PARAM_EPI') final String paramEpi,
-      @JsonKey(name: 'PARAM_EPE') final String paramEpe,
-      @JsonKey(name: 'PARAM_EQL') final String paramEql,
-      @JsonKey(name: 'PARAM_EQC') final String paramEqc,
-      @JsonKey(name: 'PARAM_UA') final String paramUa,
-      @JsonKey(name: 'PARAM_UB') final String paramUb,
-      @JsonKey(name: 'PARAM_UC') final String paramUc,
-      @JsonKey(name: 'PARAM_IA') final String paramIa,
-      @JsonKey(name: 'PARAM_IB') final String paramIb,
-      @JsonKey(name: 'PARAM_IC') final String paramIc,
-      @JsonKey(name: 'PARAM_PA') final String paramPa,
-      @JsonKey(name: 'PARAM_PB') final String paramPb,
-      @JsonKey(name: 'PARAM_PC') final String paramPc,
-      @JsonKey(name: 'PARAM_P') final String paramP,
-      @JsonKey(name: 'PARAM_QA') final String paramQa,
-      @JsonKey(name: 'PARAM_QB') final String paramQb,
-      @JsonKey(name: 'PARAM_QC') final String paramQc,
-      @JsonKey(name: 'PARAM_Q') final String paramQ,
-      @JsonKey(name: 'THD') final String thd,
-      @JsonKey(name: 'CT') final String ct}) = _$LastedLogDataResponseImpl;
+          {@JsonKey(name: 'ID') final int id,
+          @JsonKey(name: 'UPDATE_TIME') final DateTime? updateTime,
+          @JsonKey(name: 'METER_NAME') final String meterName,
+          @JsonKey(name: 'STATUS') final int status,
+          @JsonKey(name: 'PARAM_PF') final String paramPf,
+          @JsonKey(name: 'PARAM_EPI') final String paramEpi,
+          @JsonKey(name: 'PARAM_EPE') final String paramEpe,
+          @JsonKey(name: 'PARAM_EQL') final String paramEql,
+          @JsonKey(name: 'PARAM_EQC') final String paramEqc,
+          @JsonKey(name: 'PARAM_UA') final String paramUa,
+          @JsonKey(name: 'PARAM_UB') final String paramUb,
+          @JsonKey(name: 'PARAM_UC') final String paramUc,
+          @JsonKey(name: 'PARAM_IA') final String paramIa,
+          @JsonKey(name: 'PARAM_IB') final String paramIb,
+          @JsonKey(name: 'PARAM_IC') final String paramIc,
+          @JsonKey(name: 'PARAM_PA') final String paramPa,
+          @JsonKey(name: 'PARAM_PB') final String paramPb,
+          @JsonKey(name: 'PARAM_PC') final String paramPc,
+          @JsonKey(name: 'PARAM_P') final String paramP,
+          @JsonKey(name: 'PARAM_QA') final String paramQa,
+          @JsonKey(name: 'PARAM_QB') final String paramQb,
+          @JsonKey(name: 'PARAM_QC') final String paramQc,
+          @JsonKey(name: 'PARAM_Q') final String paramQ,
+          @JsonKey(name: 'THD') final String thd,
+          @JsonKey(name: 'CT') final String ct,
+          @JsonKey(name: 'THD_UA') final String thdUa,
+          @JsonKey(name: 'THD_UB') final String thdUb,
+          @JsonKey(name: 'THD_UC') final String thdUc,
+          @JsonKey(name: 'THD_IA') final String thdIa,
+          @JsonKey(name: 'THD_IB') final String thdIb,
+          @JsonKey(name: 'THD_IC') final String thdIc}) =
+      _$LastedLogDataResponseImpl;
 
   factory _LastedLogDataResponse.fromJson(Map<String, dynamic> json) =
       _$LastedLogDataResponseImpl.fromJson;
@@ -756,6 +883,24 @@ abstract class _LastedLogDataResponse implements LastedLogDataResponse {
   @override
   @JsonKey(name: 'CT')
   String get ct;
+  @override
+  @JsonKey(name: 'THD_UA')
+  String get thdUa;
+  @override
+  @JsonKey(name: 'THD_UB')
+  String get thdUb;
+  @override
+  @JsonKey(name: 'THD_UC')
+  String get thdUc;
+  @override
+  @JsonKey(name: 'THD_IA')
+  String get thdIa;
+  @override
+  @JsonKey(name: 'THD_IB')
+  String get thdIb;
+  @override
+  @JsonKey(name: 'THD_IC')
+  String get thdIc;
 
   /// Create a copy of LastedLogDataResponse
   /// with the given fields replaced by the non-null parameter values.

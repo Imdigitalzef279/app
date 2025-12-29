@@ -104,52 +104,43 @@ class _ItemDeviceState extends State<ItemDevice> {
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w600),
                       ),
-                      Gap(12.sp),
                       // body
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 4,
-                            child: Text(
-                              LocalizationsUtils.localizations.device_code,
-                              style: AppTextStyle.textXs.copyWith(
-                                  color: AppColors.textPrimary.withOpacity(0.5),
-                                  fontSize: 12.sp),
-                            ),
-                          ),
-                          Gap(12.sp),
-                          Expanded(
-                            flex: 3,
-                            child: Text(
-                              widget.device.code,
-                              style: AppTextStyle.textXs.copyWith(
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12.sp),
-                            ),
-                          )
-                        ],
-                      )
                     ],
                   ),
                 ),
 
-                const Spacer(),
-
+                //const Spacer(),
                 Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Switch(
-                      value: getValues(widget.device.status),
-                      onChanged: (value) {
-                        _cubit.switchCbs(widget.device);
-                      },
+                    Container(
+                      constraints: const BoxConstraints(maxHeight: 20.0),
+                      child: Transform.scale(
+                        scale: 0.6,
+                        child: Switch(
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          value: getValues(widget.device.status),
+                          onChanged: (_) => _cubit.switchCbs(widget.device),
+
+                          activeColor: AppColors.blueF8,
+                          activeTrackColor: AppColors.greyEF,
+                          inactiveThumbColor: AppColors.blueF8,
+                          inactiveTrackColor: AppColors.greyEF,
+                        ),
+                      ),
                     ),
-                    Text(getStatus(widget.device.status).text)
+                    Text(getStatus(widget.device.status).text, style: AppTextStyle.tini.copyWith(
+                        color: widget.device.status == 1 ? AppColors.blueF8 : AppColors.textPrimary.withOpacity(0.5),),)
                   ],
                 )
               ],
             ),
-
+            const Divider(
+              color: AppColors.greyFB,
+            ),
+            rowItem(
+                name: LocalizationsUtils.localizations.device_code,
+                content: widget.device.code),
             const Divider(
               color: AppColors.greyFB,
             ),
