@@ -284,9 +284,10 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<PaginationResponse<ElectricMeter>> getElectric(int projectId) async {
+  Future<PaginationResponse<ElectricMeter>> getElectric(
+      int powerStation) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'ProjectId': projectId};
+    final queryParameters = <String, dynamic>{r'PowerStationId': powerStation};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<PaginationResponse<ElectricMeter>>(Options(

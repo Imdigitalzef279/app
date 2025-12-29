@@ -35,7 +35,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
     super.initState();
     cubit = BlocProvider.of<ElectricCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      cubit.getElectric(widget.project.projectId);
+      cubit.getElectric(widget.project.id);
       cosFi = double.tryParse(
               cubit.state.response.data?.lastedLogData.paramPf ?? "0") ??
           0;
@@ -69,7 +69,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
         builder: (context, state) => AppLoadMore(
           // onRefresh: () => cubit.getElectric(widget.project.id),
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             child: Column(
               children: [
                 // overview
@@ -377,7 +377,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: 'Tiêu thụ: ',
+                                        text: 'EPI: ',
                                         style: AppTextStyle.textXs.copyWith(
                                           color: AppColors.textPrimary,
                                           fontWeight: FontWeight.w600,
@@ -385,51 +385,71 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                       ),
                                       TextSpan(
                                         text: ((double.tryParse(state
-                                                            .response
-                                                            .data
-                                                            ?.lastedLogData
-                                                            .ct ??
-                                                        "0") ??
-                                                    0.0) *
-                                                (double.tryParse(state
-                                                            .response
-                                                            .data
-                                                            ?.lastedLogData
-                                                            .paramEpi ??
-                                                        "0") ??
-                                                    0.0))
+                                                        .response
+                                                        .data
+                                                        ?.lastedLogData
+                                                        .paramEpi ??
+                                                    "0") ??
+                                                0.0))
                                             .toStringAsFixed(2),
                                         style: AppTextStyle.textXs.copyWith(
                                           color: AppColors.textPrimary,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      TextSpan(
-                                        text: ' kWh',
-                                        style: AppTextStyle.tini.copyWith(
-                                          color: AppColors.textPrimary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
+                                      // TextSpan(
+                                      //   text: ' kWh',
+                                      //   style: AppTextStyle.tini.copyWith(
+                                      //     color: AppColors.textPrimary,
+                                      //     fontWeight: FontWeight.w600,
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                          // Expanded(
-                          //   child: Container(
-                          //     padding: EdgeInsets.symmetric(
-                          //         horizontal: 4.r, vertical: 4.r),
-                          //     decoration: BoxDecoration(
-                          //         borderRadius: BorderRadius.circular(4.r)),
-                          //     child: Center(
-                          //       child: Text('50 Hz',
-                          //           style: AppTextStyle.tini.copyWith(
-                          //               color: AppColors.textPrimary)),
-                          //     ),
-                          //   ),
-                          // )
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 4.r, vertical: 4.r),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                              child: Center(
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: 'CT: ',
+                                        style: AppTextStyle.textXs.copyWith(
+                                          color: AppColors.textPrimary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: state.response.data?.lastedLogData
+                                                .ct ??
+                                            "0",
+                                        style: AppTextStyle.textXs.copyWith(
+                                          color: AppColors.textPrimary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      // TextSpan(
+                                      //   text: ' kWh',
+                                      //   style: AppTextStyle.tini.copyWith(
+                                      //     color: AppColors.textPrimary,
+                                      //     fontWeight: FontWeight.w600,
+                                      //   ),
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       )
                     ],
@@ -598,25 +618,25 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                   isHeader: true),
                               _buildTableRow([
                                 'U',
-                                state.response.data?.lastedLogData.paramUa
+                                state.response.data?.lastedLogData.thdUa
                                         .toString() ??
                                     "0,0",
-                                state.response.data?.lastedLogData.paramUb
+                                state.response.data?.lastedLogData.thdUb
                                         .toString() ??
                                     "0,0",
-                                state.response.data?.lastedLogData.paramUc
+                                state.response.data?.lastedLogData.thdUc
                                         .toString() ??
                                     "0,0",
                               ]),
                               _buildTableRow([
                                 'I',
-                                state.response.data?.lastedLogData.paramIa
+                                state.response.data?.lastedLogData.thdIa
                                         .toString() ??
                                     "0,0",
-                                state.response.data?.lastedLogData.paramIb
+                                state.response.data?.lastedLogData.thdIb
                                         .toString() ??
                                     "0,0",
-                                state.response.data?.lastedLogData.paramIc
+                                state.response.data?.lastedLogData.thdIc
                                         .toString() ??
                                     "0,0",
                               ]),
@@ -709,7 +729,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
     return TableRow(
       decoration: isHeader
           ? BoxDecoration(
-              color: AppColors.greenA1,
+              color: AppColors.blueF8,
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12.r),
                   topRight: Radius.circular(12.r)))
@@ -723,7 +743,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
             textAlign: TextAlign.center,
             style: AppTextStyle.textXs.copyWith(
               fontWeight: isHeader ? FontWeight.w600 : FontWeight.w400,
-              color: AppColors.textPrimary,
+              color: isHeader ? AppColors.white : AppColors.textPrimary,
             ),
           ),
         );

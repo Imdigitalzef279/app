@@ -36,6 +36,12 @@ _$LastedLogDataResponseImpl _$$LastedLogDataResponseImplFromJson(
       paramQ: json['PARAM_Q'] as String? ?? '',
       thd: json['THD'] as String? ?? '',
       ct: json['CT'] as String? ?? '',
+      thdUa: json['THD_UA'] as String? ?? '',
+      thdUb: json['THD_UB'] as String? ?? '',
+      thdUc: json['THD_UC'] as String? ?? '',
+      thdIa: json['THD_IA'] as String? ?? '',
+      thdIb: json['THD_IB'] as String? ?? '',
+      thdIc: json['THD_IC'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$LastedLogDataResponseImplToJson(
@@ -66,4 +72,10 @@ Map<String, dynamic> _$$LastedLogDataResponseImplToJson(
       'PARAM_Q': instance.paramQ,
       'THD': instance.thd,
       'CT': instance.ct,
+      'THD_UA': instance.thdUa,
+      'THD_UB': instance.thdUb,
+      'THD_UC': instance.thdUc,
+      'THD_IA': instance.thdIa,
+      'THD_IB': instance.thdIb,
+      'THD_IC': instance.thdIc,
     };
