@@ -56,6 +56,19 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: [
           NavigationDestination(
+            selectedIcon: Assets.icons.info.svg(
+                width: 16.w,
+                height: 16.w,
+                colorFilter:
+                const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
+            icon: Assets.icons.infoLine.svg(
+                width: 16.w,
+                height: 16.w,
+                colorFilter:
+                const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+            label: LocalizationsUtils.localizations.device_information,
+          ),
+          NavigationDestination(
             selectedIcon: Assets.icons.bell.svg(
                 width: 16.w,
                 height: 16.w,
@@ -67,19 +80,6 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
                 colorFilter:
                     const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: LocalizationsUtils.localizations.alarm_information,
-          ),
-          NavigationDestination(
-            selectedIcon: Assets.icons.info.svg(
-                width: 16.w,
-                height: 16.w,
-                colorFilter:
-                    const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
-            icon: Assets.icons.infoLine.svg(
-                width: 16.w,
-                height: 16.w,
-                colorFilter:
-                    const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
-            label: LocalizationsUtils.localizations.device_information,
           ),
         ],
       ),

@@ -31,6 +31,7 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
   late final ValueNotifier<int> index;
   late final TabController controller;
   late final ElectricType meterType;
+  late int selectedIndex = 0;
 
   @override
   void initState() {
@@ -76,6 +77,7 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
     return SingleChildScrollView(
       child: Column(
         children: [
+          // device information
           Container(
             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
             margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -91,7 +93,8 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                   color: AppColors.greyFB,
                 ),
                 rowItem(
-                    name: LocalizationsUtils.localizations.signal_point, value: widget.deviceResponse.name),
+                    name: LocalizationsUtils.localizations.signal_point,
+                    value: widget.deviceResponse.name),
                 const Divider(
                   color: AppColors.greyFB,
                 ),
@@ -101,9 +104,92 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                           widget.deviceResponse.creationTime.toString())
                       .formatTime(),
                 ),
+                const Divider(
+                  color: AppColors.greyFB,
+                ),
+                rowItem(
+                  name: LocalizationsUtils.localizations.device_code,
+                  value: widget.deviceResponse.serialNumber.toString(),
+                ),
+                const Divider(
+                  color: AppColors.greyFB,
+                ),
+                rowItem(
+                  name: "Trạng thái",
+                  value: widget.deviceResponse.status == 1
+                      ? "Hoạt động"
+                      : "Ngừng hoạt động",
+                ),
+                const Divider(
+                  color: AppColors.greyFB,
+                ),
+                rowItem(
+                    name: "Đóng cắt thiết bị",
+                    value: "",
+                    widget: Container(
+                      constraints: const BoxConstraints(maxHeight: 20.0),
+                      child: Transform.scale(
+                        scale: 0.6,
+                        child: Switch(
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          value: true,
+                          onChanged: (_) => print(_),
+                          activeColor: AppColors.white,
+                          activeTrackColor: AppColors.blueF8,
+                          inactiveThumbColor: AppColors.white,
+                          inactiveTrackColor: AppColors.blueF8,
+                          trackOutlineColor:
+                              const WidgetStatePropertyAll(AppColors.blueF8),
+                        ),
+                      ),
+                    )),
               ],
             ),
           ),
+
+          Gap(12.r),
+
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  children: [
+                    const Spacer(),
+                    _tabItem(
+                      title: "Thông số",
+                      index: 0,
+                      selectedIndex: selectedIndex,
+                      onTap: () {
+                        setState(() => selectedIndex = 0);
+                      },
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: Text("/"),
+                    ),
+                    _tabItem(
+                      title: "Biểu đồ",
+                      index: 1,
+                      selectedIndex: selectedIndex,
+                      onTap: () {
+                        setState(() => selectedIndex = 1);
+                      },
+                    ),
+                  ],
+                ),
+                Container(
+                  width: 110,
+                  height: 1,
+                  color: AppColors.textPrimary.withOpacity(0.2),
+                ),
+              ],
+            ),
+          ),
+
+          // Statistical / Measurement
           Container(
             padding: EdgeInsets.symmetric(vertical: 12.sp),
             margin: EdgeInsets.all(12.sp),
@@ -170,6 +256,7 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                               visible: value == 0,
                               child: EStatisticalScreen(
                                 meterId: widget.deviceResponse.id,
+                                selectTab: selectedIndex,
                               ),
                             ),
                           ),
@@ -181,6 +268,7 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                               visible: value == 1,
                               child: EStatisticalScreen(
                                 meterId: widget.deviceResponse.id,
+                                selectTab: selectedIndex,
                               ),
                             ),
                           ),
@@ -192,6 +280,7 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                               visible: value == 2,
                               child: EStatisticalScreen(
                                 meterId: widget.deviceResponse.id,
+                                selectTab: selectedIndex,
                               ),
                             ),
                           )
@@ -206,7 +295,8 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
     );
   }
 
-  Widget rowItem({required String name, required String value}) {
+  Widget rowItem(
+      {required String name, required String value, Widget? widget}) {
     return Row(
       children: [
         Expanded(
@@ -220,20 +310,42 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
         ),
         Expanded(
           flex: 2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                value,
-                style: AppTextStyle.textSm.copyWith(
-                    color: AppColors.textPrimary.withOpacity(0.5),
-                    fontWeight: FontWeight.w500),
-                textAlign: TextAlign.right,
-              ),
-            ],
-          ),
+          child: widget != null
+              ? Align(
+                  alignment: Alignment.centerRight,
+                  child: widget,
+                )
+              : Text(
+                  value,
+                  style: AppTextStyle.textSm.copyWith(
+                      color: AppColors.textPrimary.withOpacity(0.5),
+                      fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.right,
+                ),
         )
       ],
+    );
+  }
+
+  Widget _tabItem({
+    required String title,
+    required int index,
+    required int selectedIndex,
+    required VoidCallback onTap,
+  }) {
+    final isSelected = index == selectedIndex;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Text(
+        title,
+        style: AppTextStyle.tini.copyWith(
+          color: isSelected
+              ? AppColors.blueF8
+              : AppColors.textPrimary.withOpacity(0.5),
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+        ),
+      ),
     );
   }
 }

@@ -10,7 +10,7 @@ part 'electric_meter_response.g.dart';
 class ElectricMeter with _$ElectricMeter {
   const factory ElectricMeter({
     @Default(MeterResponse()) MeterResponse meter,
-    @Default(LastedLogDataResponse()) LastedLogDataResponse lastedLogData, // Thêm field mới
+    @Default(LastedLogDataResponse()) LastedLogDataResponse lastedLogData,
   }) = _ElectricMeter;
 
   factory ElectricMeter.fromJson(Map<String, dynamic> json) =>

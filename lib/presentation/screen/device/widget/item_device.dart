@@ -118,19 +118,27 @@ class _ItemDeviceState extends State<ItemDevice> {
                       child: Transform.scale(
                         scale: 0.6,
                         child: Switch(
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                           value: getValues(widget.device.status),
                           onChanged: (_) => _cubit.switchCbs(widget.device),
-
-                          activeColor: AppColors.blueF8,
-                          activeTrackColor: AppColors.greyEF,
-                          inactiveThumbColor: AppColors.blueF8,
-                          inactiveTrackColor: AppColors.greyEF,
+                          trackOutlineColor:
+                              const WidgetStatePropertyAll(AppColors.blueF8),
+                          activeColor: AppColors.white,
+                          activeTrackColor: AppColors.blueF8,
+                          inactiveThumbColor: AppColors.white,
+                          inactiveTrackColor: AppColors.blueF8,
                         ),
                       ),
                     ),
-                    Text(getStatus(widget.device.status).text, style: AppTextStyle.tini.copyWith(
-                        color: widget.device.status == 1 ? AppColors.blueF8 : AppColors.textPrimary.withOpacity(0.5),),)
+                    Text(
+                      getStatus(widget.device.status).text,
+                      style: AppTextStyle.tini.copyWith(
+                        color: widget.device.status == 1
+                            ? AppColors.blueF8
+                            : AppColors.textPrimary.withOpacity(0.5),
+                      ),
+                    )
                   ],
                 )
               ],
