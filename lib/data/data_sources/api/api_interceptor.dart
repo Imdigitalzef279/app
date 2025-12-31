@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -15,45 +13,25 @@ import 'package:solar_energy/presentation/routes/route_name.dart';
 class ApiInterceptors extends InterceptorsWrapper {
   @override
   void onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
-    final sharePreferences = getIt<SharedPreferencesHelper>();
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    final prefs = getIt<SharedPreferencesHelper>();
+    final token = await prefs.getStringValue(StoragesKey.accessToken);
 
-    final userToken =
-        await sharePreferences.getStringValue(StoragesKey.accessToken);
-    if (userToken.isNotEmpty) {
-      options.headers['Authorization'] = 'Bearer $userToken';
+    //final isApiRequest = options.uri.host.contains(options.baseUrl);
+
+    if (token.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $token';
     }
-    print('Request URL: ${options.baseUrl}${options.path}');
-    return super.onRequest(options, handler);
+
+    debugPrint('➡️ ${options.method} ${options.uri}');
+    handler.next(options);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final response = err.response;
-
-    // if (err.response?.statusCode == 401) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
-    //     AppToast.dismissAll();
-    //     AppToast.showToastNotify(title: LocalizationsUtils.localizations.loginExpired);
-    //     sharedPreferences.removeAccessToken();
-    //     NavigatorUtils.navigatorKey.currentState
-    //         ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
-    //     return;
-    //   });
-    // }
-
-    // if (response?.statusCode != null) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
-    //     AppToast.dismissAll();
-    //     AppToast.showToastNotify(title: LocalizationsUtils.localizations.loginExpired);
-    //     sharedPreferences.removeAccessToken();
-    //     NavigatorUtils.navigatorKey.currentState
-    //         ?.pushNamedAndRemoveUntil(RouteName.loginScreen, (route) => false);
-    //     return;
-    //   });
-    // }
 
     handleHttpError(err);
 
@@ -74,7 +52,6 @@ class ApiInterceptors extends InterceptorsWrapper {
     super.onError(err, handler);
   }
 
-
   void handleHttpError(DioException err) {
     final status = err.response?.statusCode;
 
@@ -84,6 +61,17 @@ class ApiInterceptors extends InterceptorsWrapper {
       final sharedPreferences = GetIt.instance<SharedPreferencesHelper>();
 
       switch (status) {
+        case 302:
+          AppToast.dismissAll();
+          AppToast.showToastNotify(
+            title: LocalizationsUtils.localizations.loginExpired,
+          );
+          sharedPreferences.removeAccessToken();
+          NavigatorUtils.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            RouteName.loginScreen,
+            (route) => false,
+          );
+          break;
         case 400:
           AppToast.showToastNotify(
             title: LocalizationsUtils.localizations.badRequest,
@@ -98,7 +86,7 @@ class ApiInterceptors extends InterceptorsWrapper {
           sharedPreferences.removeAccessToken();
           NavigatorUtils.navigatorKey.currentState?.pushNamedAndRemoveUntil(
             RouteName.loginScreen,
-                (route) => false,
+            (route) => false,
           );
           break;
 
@@ -158,5 +146,4 @@ class ApiInterceptors extends InterceptorsWrapper {
       }
     });
   }
-
 }

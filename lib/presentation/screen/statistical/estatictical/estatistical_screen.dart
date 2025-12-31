@@ -5,6 +5,8 @@ import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 
 import 'package:solar_energy/application/extensions/extensions.dart';
+import 'package:solar_energy/data/dto/electric/response/electric_meter_response.dart';
+import 'package:solar_energy/data/dto/lasted_log_data/response/lasted_log_data_response.dart';
 import 'package:solar_energy/presentation/screen/statistical/estatictical/bloc/estatistical_cubit.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -17,9 +19,11 @@ import '../bloc/statistical_cubit.dart';
 import '../widget/descrip.dart';
 
 class EStatisticalScreen extends StatefulWidget {
-  const EStatisticalScreen({super.key, required this.meterId});
+  const EStatisticalScreen(
+      {super.key, required this.meterId, this.selectTab = 1});
 
   final int meterId;
+  final int selectTab;
 
   @override
   State<EStatisticalScreen> createState() => _EStatisticalScreenState();
@@ -28,23 +32,11 @@ class EStatisticalScreen extends StatefulWidget {
 class _EStatisticalScreenState extends State<EStatisticalScreen>
     with AutomaticKeepAliveClientMixin {
   late final EStatisticalCubit _cubit;
-  late bool selectThdUa;
-  late bool selectThdUb;
-  late bool selectThdUc;
-  late bool selectThdIa;
-  late bool selectThdIb;
-  late bool selectThdIc;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    selectThdUa = true;
-    selectThdUb = true;
-    selectThdUc = true;
-    selectThdIa = true;
-    selectThdIb = true;
-    selectThdIc = true;
+
     _cubit = BlocProvider.of<EStatisticalCubit>(context);
     WidgetsBinding.instance.addPostFrameCallback((duration) {
       DateTime now = DateTime.now();
@@ -71,58 +63,71 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
               });
         },
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             _buildDateTime(),
             Gap(22.sp),
-            BlocBuilder<EStatisticalCubit, EStatisticalState>(
-              buildWhen: (previous, current) =>
-                  previous.loadPowers != current.loadPowers,
-              builder: (context, state) =>
-                  _buildChartEPI(loadPowers: state.loadPowers),
+
+            Visibility(
+              visible: widget.selectTab == 0,
+              child: BlocBuilder<EStatisticalCubit, EStatisticalState>(
+                builder: (context, state) =>
+                    _measurementParameter(state.resultChart.data?.data.first),
+              ),
             ),
-            Gap(22.sp),
-            BlocBuilder<EStatisticalCubit, EStatisticalState>(
-              builder: (context, state) => _buildChartTHD(
-                  selectA: state.selectThdUa,
-                  selectB: state.selectThdUb,
-                  selectC: state.selectThdUc,
-                  thdA: state.thdUa,
-                  thdB: state.thdUb,
-                  thdC: state.thdUc,
-                  a: "THD UA",
-                  b: "THD UB",
-                  c: "THD UC",
-                  changeA: () {
-                    _cubit.changeSelect(selectThdUa: !state.selectThdUa);
-                  },
-                  changeB: () {
-                    _cubit.changeSelect(selectThdUb: !state.selectThdUb);
-                  },
-                  changeC: () {
-                    _cubit.changeSelect(selectThdUc: !state.selectThdUc);
-                  }),
-            ),
-            Gap(22.sp),
-            BlocBuilder<EStatisticalCubit, EStatisticalState>(
-              builder: (context, state) => _buildChartTHD(
-                  selectA: state.selectThdIa,
-                  selectB: state.selectThdIb,
-                  selectC: state.selectThdIc,
-                  thdA: state.thdIa,
-                  thdB: state.thdIb,
-                  thdC: state.thdIc,
-                  a: "THD IA",
-                  b: "THD IB",
-                  c: "THD IC",
-                  changeA: () {
-                    _cubit.changeSelect(selectThdIa: !state.selectThdIa);
-                  },
-                  changeB: () {
-                    _cubit.changeSelect(selectThdIb: !state.selectThdIb);
-                  },
-                  changeC: () {
-                    _cubit.changeSelect(selectThdIc: !state.selectThdIc);
-                  }),
+
+            Visibility(
+              visible: widget.selectTab == 1,
+              maintainState: true,
+              child: Column(
+                children: [
+                  BlocBuilder<EStatisticalCubit, EStatisticalState>(
+                    buildWhen: (p, c) => p.loadPowers != c.loadPowers,
+                    builder: (context, state) =>
+                        _buildChartEPI(loadPowers: state.loadPowers),
+                  ),
+                  Gap(22.sp),
+                  BlocBuilder<EStatisticalCubit, EStatisticalState>(
+                    builder: (context, state) => _buildChartTHD(
+                      selectA: state.selectThdUa,
+                      selectB: state.selectThdUb,
+                      selectC: state.selectThdUc,
+                      thdA: state.thdUa,
+                      thdB: state.thdUb,
+                      thdC: state.thdUc,
+                      a: "THD UA",
+                      b: "THD UB",
+                      c: "THD UC",
+                      changeA: () =>
+                          _cubit.changeSelect(selectThdUa: !state.selectThdUa),
+                      changeB: () =>
+                          _cubit.changeSelect(selectThdUb: !state.selectThdUb),
+                      changeC: () =>
+                          _cubit.changeSelect(selectThdUc: !state.selectThdUc),
+                    ),
+                  ),
+                  Gap(22.sp),
+                  BlocBuilder<EStatisticalCubit, EStatisticalState>(
+                    builder: (context, state) => _buildChartTHD(
+                      selectA: state.selectThdIa,
+                      selectB: state.selectThdIb,
+                      selectC: state.selectThdIc,
+                      thdA: state.thdIa,
+                      thdB: state.thdIb,
+                      thdC: state.thdIc,
+                      a: "THD IA",
+                      b: "THD IB",
+                      c: "THD IC",
+                      changeA: () =>
+                          _cubit.changeSelect(selectThdIa: !state.selectThdIa),
+                      changeB: () =>
+                          _cubit.changeSelect(selectThdIb: !state.selectThdIb),
+                      changeC: () =>
+                          _cubit.changeSelect(selectThdIc: !state.selectThdIc),
+                    ),
+                  ),
+                ],
+              ),
             )
           ],
         ));
@@ -180,13 +185,6 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(12.r)),
           color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Column(
           children: [
@@ -300,13 +298,13 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(12.r)),
           color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: Colors.black.withOpacity(0.08),
+          //     blurRadius: 8,
+          //     offset: const Offset(0, 2),
+          //   ),
+          // ],
         ),
         child: Column(
           children: [
@@ -372,6 +370,158 @@ class _EStatisticalScreenState extends State<EStatisticalScreen>
             )
           ],
         ));
+  }
+
+  Widget _measurementParameter(LastedLogDataResponse? lastedLogData) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // 3-phase specifications
+        Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.r),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                "Thông số 3 pha: ",
+                style: AppTextStyle.textSm.copyWith(
+                    fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+              ),
+              Gap(12.h),
+              Table(
+                border: TableBorder.all(
+                  color: AppColors.greyDF.withOpacity(0.6),
+                  width: 1,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                columnWidths: const {
+                  0: FlexColumnWidth(1.2),
+                  1: FlexColumnWidth(2),
+                  2: FlexColumnWidth(2),
+                  3: FlexColumnWidth(2),
+                },
+                children: [
+                  _buildTableRow(['', 'A', 'B', 'C'], isHeader: true),
+                  _buildTableRow([
+                    'U',
+                    lastedLogData?.paramUa.toString() ?? "0,0",
+                    lastedLogData?.paramUb.toString() ?? "0,0",
+                    lastedLogData?.paramUc.toString() ?? "0,0",
+                  ]),
+                  _buildTableRow([
+                    'I',
+                    lastedLogData?.paramIa.toString() ?? "0,0",
+                    lastedLogData?.paramIb.toString() ?? "0,0",
+                    lastedLogData?.paramIc.toString() ?? "0,0",
+                  ]),
+                  _buildTableRow([
+                    'P',
+                    lastedLogData?.paramPa.toString() ?? "0,0",
+                    lastedLogData?.paramPb.toString() ?? "0,0",
+                    lastedLogData?.paramPc.toString() ?? "0,0",
+                  ]),
+                  _buildTableRow([
+                    'Q',
+                    lastedLogData?.paramQa.toString() ?? "0,0",
+                    lastedLogData?.paramQb.toString() ?? "0,0",
+                    lastedLogData?.paramQc.toString() ?? "0,0",
+                  ]),
+                ],
+              ),
+              Gap(12.r),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    "P Tổng: ${lastedLogData?.paramP.toString() ?? "0,0"} kW",
+                    style: AppTextStyle.textXs.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary),
+                  ),
+                  Text(
+                    "Q Tổng: ${lastedLogData?.paramQ.toString() ?? "0,0"} kVAR",
+                    style: AppTextStyle.textXs.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary),
+                  ),
+                ],
+              )
+            ])),
+
+        Gap(8.r),
+
+        // Harmonic wave
+        Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.r),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                "Sóng hài: ",
+                style: AppTextStyle.textSm.copyWith(
+                    fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+              ),
+              Gap(12.h),
+              Table(
+                border: TableBorder.all(
+                  color: AppColors.greyDF.withOpacity(0.6),
+                  width: 1,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                columnWidths: const {
+                  0: FlexColumnWidth(1.2),
+                  1: FlexColumnWidth(2),
+                  2: FlexColumnWidth(2),
+                  3: FlexColumnWidth(2),
+                },
+                children: [
+                  _buildTableRow(['THD', 'A', 'B', 'C'], isHeader: true),
+                  _buildTableRow([
+                    'U',
+                    lastedLogData?.thdUa.toString() ?? "0,0",
+                    lastedLogData?.thdUb.toString() ?? "0,0",
+                    lastedLogData?.thdUc.toString() ?? "0,0",
+                  ]),
+                  _buildTableRow([
+                    'I',
+                    lastedLogData?.thdIa.toString() ?? "0,0",
+                    lastedLogData?.thdIb.toString() ?? "0,0",
+                    lastedLogData?.thdIc.toString() ?? "0,0",
+                  ]),
+                ],
+              ),
+            ]))
+      ],
+    );
+  }
+
+  TableRow _buildTableRow(
+    List<String> values, {
+    bool isHeader = false,
+  }) {
+    return TableRow(
+      decoration: isHeader
+          ? BoxDecoration(
+              color: AppColors.blueF8,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12.r),
+                  topRight: Radius.circular(12.r)))
+          : null,
+      children: values.map((e) {
+        return Container(
+          height: 36.h,
+          alignment: Alignment.center,
+          child: Text(
+            e,
+            textAlign: TextAlign.center,
+            style: AppTextStyle.textXs.copyWith(
+              fontWeight: isHeader ? FontWeight.w600 : FontWeight.w400,
+              color: isHeader ? AppColors.white : AppColors.textPrimary,
+            ),
+          ),
+        );
+      }).toList(),
+    );
   }
 
   Future<void> showDatePicker(DateRangePickerView type) async {

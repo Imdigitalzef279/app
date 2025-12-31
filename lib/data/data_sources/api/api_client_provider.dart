@@ -14,6 +14,7 @@ class ApiClientProvider {
 
     dio.options.connectTimeout = const Duration(seconds: 60);
     dio.options.receiveTimeout = const Duration(seconds: 60);
+    dio.options.followRedirects = false;
     dio.interceptors.addAll([
       ApiInterceptors(),
     ]);

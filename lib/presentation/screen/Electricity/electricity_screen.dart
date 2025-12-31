@@ -262,7 +262,6 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                                   minimum: -1,
                                   maximum: 1,
                                   labelOffset: 10,
-                                  // Mặc định cho các số bên trong
                                   axisLineStyle: const AxisLineStyle(
                                     thickness: 0,
                                     color: Colors.transparent,
@@ -707,19 +706,6 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                 ])
           ],
         ));
-  }
-
-  Widget tableText(String text, {bool isHeader = false}) {
-    return Center(
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: AppTextStyle.textXs.copyWith(
-          fontWeight: isHeader ? FontWeight.w600 : FontWeight.w400,
-          color: AppColors.textPrimary,
-        ),
-      ),
-    );
   }
 
   TableRow _buildTableRow(

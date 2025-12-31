@@ -80,6 +80,5 @@ abstract class ApiClient {
       @Queries() MeterWaterRequest request);
 
   @POST("cbs/api/set")
-  Future<String> controlCircuitBreaker (
-      @Body() CbsMeterRequest request);
+  Future<String> controlCircuitBreaker(@Body() CbsMeterRequest request);
 }
