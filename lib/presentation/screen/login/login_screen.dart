@@ -124,11 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Gap(12.h),
                       password(),
                       Gap(12.h),
-                      Row(
-                        children: [
-                          buttonRegister(),
-                        ],
-                      ),
+                      buttonRegister(),
                       Gap(32.h),
                       Column(
                         children: [
@@ -260,14 +256,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget buttonRegister() {
     return InkWell(
         borderRadius: BorderRadius.circular(4.r),
-        onTap: () {
-          Navigator.pushNamed(context, RouteName.registerWidget);
-        },
+        // onTap: () {
+        //   // Navigator.pushNamed(context, RouteName.registerWidget);
+        // },
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
           child: Text(
-            LocalizationsUtils.localizations.no_account_register,
+            // LocalizationsUtils.localizations.no_account_register,
+            "",
             style: AppTextStyle.textSm.copyWith(color: AppColors.blue),
           ),
         ));
@@ -276,14 +273,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget loginTest() {
     return InkWell(
         borderRadius: BorderRadius.circular(4.r),
-        onTap: () {
-          cubit.loginTest();
-        },
+        // onTap: () {
+        //   // cubit.loginTest();
+        // },
         child: Ink(
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12.h),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
           child: Text(
-            LocalizationsUtils.localizations.trial_login,
+            // LocalizationsUtils.localizations.trial_login,
+            "",
             style: AppTextStyle.textSm.copyWith(color: AppColors.blue),
           ),
         ));

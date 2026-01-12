@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
@@ -35,12 +38,47 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    checkForUpdate();
     if (!_isInit) {
       _cubit = BlocProvider.of<HomePageCubit>(context);
       _cubit.getProjects();
       _isInit = true;
     }
   }
+
+  Future<void> checkForUpdate() async {
+    try {
+      log('Checking for update...');
+
+      final AppUpdateInfo info = await InAppUpdate.checkForUpdate();
+
+      log('Update availability: ${info.updateAvailability}');
+      log('Allowed flexible: ${info.flexibleUpdateAllowed}');
+      log('Allowed immediate: ${info.immediateUpdateAllowed}');
+
+      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+        if (info.immediateUpdateAllowed) {
+          await InAppUpdate.performImmediateUpdate();
+        } else if (info.flexibleUpdateAllowed) {
+          await _startFlexibleUpdate();
+        }
+      }
+    } catch (e) {
+      log('Update error: $e');
+    }
+  }
+
+  Future<void> _startFlexibleUpdate() async {
+    try {
+      await InAppUpdate.startFlexibleUpdate();
+
+      await InAppUpdate.completeFlexibleUpdate();
+    } catch (e) {
+      log('Flexible update failed: $e');
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
