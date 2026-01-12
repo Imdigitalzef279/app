@@ -90,6 +90,7 @@ dependencies:
   cookie_jar: ^4.0.8
   dio_cookie_manager: ^3.2.0
   in_app_update: ^4.2.5
+  upgrader: ^11.5.1
 
 dev_dependencies:
   flutter_test:
