@@ -163,35 +163,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                     AppColors.blueEA, BlendMode.srcIn)),
                             name:
                                 LocalizationsUtils.localizations.energy_saving),
-                        itemService(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, RouteName.factoryDetail,
-                                  arguments: ElectricMeterArgument(
-                                      project: widget.project,
-                                      type: ElectricType.solarElectric));
-                            },
-                            icon: Assets.icons.solarPanelSun.svg(
-                                width: 22.w,
-                                height: 22.w,
-                                colorFilter: const ColorFilter.mode(
-                                    AppColors.blueEA, BlendMode.srcIn)),
-                            name: LocalizationsUtils.localizations.solar_power),
-                        // itemService(
-                        //     onTap: () {
-                        //       showDialog(
-                        //         context: context,
-                        //         builder: (context) =>
-                        //             const UnderDevelopmentDialog(
-                        //                 isLandscape: false),
-                        //       );
-                        //     },
-                        //     icon: Assets.icons.air.svg(
-                        //         width: 22.w,
-                        //         height: 22.w,
-                        //         colorFilter: const ColorFilter.mode(
-                        //             AppColors.blueEA, BlendMode.srcIn)),
-                        //     name: "Không khí"),
                       ],
                     )
                   ],
@@ -209,7 +180,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     return GestureDetector(
       onTap: () => onTap?.call(),
       child: SizedBox(
-        width: (1.sw - 80.w) / 3,
+        width: (1.sw - 68.w) / 2,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

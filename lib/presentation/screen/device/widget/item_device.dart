@@ -110,7 +110,7 @@ class _ItemDeviceState extends State<ItemDevice> {
                 ),
 
                 //const Spacer(),
-                Column(
+                widget.device.meterTypeId == 81 ? Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
@@ -122,12 +122,12 @@ class _ItemDeviceState extends State<ItemDevice> {
                               MaterialTapTargetSize.shrinkWrap,
                           value: getValues(widget.device.status),
                           onChanged: (_) => _cubit.switchCbs(widget.device),
-                          trackOutlineColor:
-                              const WidgetStatePropertyAll(AppColors.blueF8),
+                          trackOutlineColor: getValues(widget.device.status) ?
+                              const WidgetStatePropertyAll(AppColors.blueF8) : const WidgetStatePropertyAll(AppColors.grey),
                           activeColor: AppColors.white,
                           activeTrackColor: AppColors.blueF8,
                           inactiveThumbColor: AppColors.white,
-                          inactiveTrackColor: AppColors.blueF8,
+                          inactiveTrackColor: AppColors.grey,
                         ),
                       ),
                     ),
@@ -140,7 +140,7 @@ class _ItemDeviceState extends State<ItemDevice> {
                       ),
                     )
                   ],
-                )
+                ) : const SizedBox()
               ],
             ),
             const Divider(

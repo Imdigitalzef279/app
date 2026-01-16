@@ -10,6 +10,7 @@ import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
+import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../statistical/bloc/statistical_cubit.dart';
@@ -32,6 +33,7 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
   late final TabController controller;
   late final ElectricType meterType;
   late int selectedIndex = 0;
+  late DeviceCubit cubit;
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
     index = ValueNotifier(0);
     controller = TabController(length: 3, vsync: this);
     meterType = getTypeDevice(widget.deviceResponse.meterTypeId);
+    cubit = BlocProvider.of<DeviceCubit>(context);
   }
 
   String getSignalType(int meterTypeID) {
@@ -123,27 +126,34 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                 const Divider(
                   color: AppColors.greyFB,
                 ),
-                rowItem(
-                    name: "Đóng cắt thiết bị",
-                    value: "",
-                    widget: Container(
-                      constraints: const BoxConstraints(maxHeight: 20.0),
-                      child: Transform.scale(
-                        scale: 0.6,
-                        child: Switch(
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          value: true,
-                          onChanged: (_) => print(_),
-                          activeColor: AppColors.white,
-                          activeTrackColor: AppColors.blueF8,
-                          inactiveThumbColor: AppColors.white,
-                          inactiveTrackColor: AppColors.blueF8,
-                          trackOutlineColor:
-                              const WidgetStatePropertyAll(AppColors.blueF8),
-                        ),
-                      ),
-                    )),
+                widget.deviceResponse.meterTypeId == 81
+                    ? rowItem(
+                        name: "Đóng cắt thiết bị",
+                        value: "",
+                        widget: Container(
+                          constraints: const BoxConstraints(maxHeight: 20.0),
+                          child: Transform.scale(
+                            scale: 0.6,
+                            child: Switch(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              value: widget.deviceResponse.status == 1,
+                              onChanged: (_) =>
+                                  cubit.switchCbs(widget.deviceResponse),
+                              activeColor: AppColors.white,
+                              activeTrackColor: AppColors.blueF8,
+                              inactiveThumbColor: AppColors.white,
+                              inactiveTrackColor: AppColors.grey,
+                              trackOutlineColor:
+                                  widget.deviceResponse.status == 1
+                                      ? const WidgetStatePropertyAll(
+                                          AppColors.blueF8)
+                                      : const WidgetStatePropertyAll(
+                                          AppColors.grey),
+                            ),
+                          ),
+                        ))
+                    : const SizedBox(),
               ],
             ),
           ),
