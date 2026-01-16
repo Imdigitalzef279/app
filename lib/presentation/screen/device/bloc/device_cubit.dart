@@ -69,7 +69,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       final response = await _cbs.sendCbsCommand(CbsMeterRequest(
           stationId: device.powerStationId,
           cbsList: [
-            CbsItem(id: device.id.toString(), status: statusCbs(device.status))
+            CbsItem(id: device.code, status: statusCbs(device.status))
           ]));
       AppToast.showToastSuccess(title: response);
       emit(state.copyWith(resultDevices: state.resultDevices.copyWith(status: LoadStatus.success)));
@@ -82,6 +82,7 @@ class DeviceCubit extends Cubit<DeviceState> {
 
   ElectricType? fromMeterTypeId(int id) {
     switch (id) {
+      case 81:
       case 2:
         return ElectricType.saveElectric;
       case 21:

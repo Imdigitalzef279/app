@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/screen/alarm_infor/alarm_infor_screen.dart';
+import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
 import 'package:solar_energy/presentation/screen/infor_device/info_device_screen.dart';
 
 import '../../../data/dto/device/response/device_response.dart';
@@ -60,12 +62,12 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
                 width: 16.w,
                 height: 16.w,
                 colorFilter:
-                const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
+                    const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
             icon: Assets.icons.infoLine.svg(
                 width: 16.w,
                 height: 16.w,
                 colorFilter:
-                const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
+                    const ColorFilter.mode(AppColors.grey73, BlendMode.srcIn)),
             label: LocalizationsUtils.localizations.device_information,
           ),
           NavigationDestination(
@@ -87,8 +89,11 @@ class _DetailDeviceScreenState extends State<DetailDeviceScreen> {
         index: indexPage,
         children: [
           _tabLoaded[0]
-              ? InfoDeviceScreen(
-                  deviceResponse: widget.device,
+              ? BlocProvider(
+                  create: (BuildContext context) => DeviceCubit(),
+                  child: InfoDeviceScreen(
+                    deviceResponse: widget.device,
+                  ),
                 )
               : const SizedBox(),
           _tabLoaded[1] ? const AlarmInfoScreen() : const SizedBox(),
