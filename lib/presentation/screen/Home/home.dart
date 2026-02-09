@@ -64,6 +64,12 @@ class _HomeWidgetState extends State<HomeWidget> {
             label: LocalizationsUtils.localizations.home,
           ),
           NavigationDestination(
+            selectedIcon: const Icon(Icons.account_circle, color: Colors.blue),
+            icon: const Icon(Icons.account_circle_outlined,
+                color: AppColors.grey73),
+            label: LocalizationsUtils.localizations.me,
+          ),
+          NavigationDestination(
             selectedIcon: const Icon(Icons.developer_board, color: Colors.blue),
             icon: const Icon(
               Icons.developer_board,

@@ -163,6 +163,18 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                     AppColors.blueEA, BlendMode.srcIn)),
                             name:
                                 LocalizationsUtils.localizations.energy_saving),
+                        itemService(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, RouteName.aptomatScreen,
+                                  );
+                            },
+                            icon: Assets.icons.water.svg(
+                                width: 22.w,
+                                height: 22.w,
+                                colorFilter: const ColorFilter.mode(
+                                    AppColors.blueEA, BlendMode.srcIn)),
+                            name: "Aptomat"),
                       ],
                     )
                   ],

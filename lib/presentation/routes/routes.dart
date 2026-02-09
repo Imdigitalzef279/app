@@ -4,6 +4,8 @@ import 'package:solar_energy/application/enums/index_type.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
+import 'package:solar_energy/presentation/screen/Electricity/automat/automat_list_screen.dart';
+import 'package:solar_energy/presentation/screen/Electricity/automat/widget/model/automat_ui_model.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/alarm_water/all_alarm_water_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_device/detail_device_screen.dart';
@@ -20,7 +22,7 @@ import 'package:solar_energy/presentation/screen/manager_water/manager_water_scr
 import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
 import 'package:solar_energy/presentation/screen/register/Bloc/register_cubit.dart';
 import 'package:solar_energy/presentation/screen/register/register_widget.dart';
-
+import 'package:solar_energy/presentation/screen/Electricity/automat/automat_detail_screen.dart';
 import '../../data/dto/power_station/response/power_station_response.dart';
 
 class AppRouter {
@@ -34,6 +36,14 @@ class AppRouter {
     switch (routeSettings.name) {
       case RouteName.homeScreen:
         routeWidget = const HomeWidget();
+        break;
+      case RouteName.aptomatScreen:
+        routeWidget = const AutomatListScreen();
+        break;
+      case RouteName.automatDetail:
+        routeWidget = AutomatDetailScreen(
+        automat: arguments as AutomatUIModel,
+        );
         break;
       case RouteName.loginScreen:
         routeWidget = BlocProvider(

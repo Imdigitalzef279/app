@@ -16,6 +16,8 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../../application/constants/app_color.dart';
 import '../../../application/constants/app_text_style.dart';
 import '../../../application/cubit/app_cubit.dart';
+import 'automat/automat_list_screen.dart';
+
 
 class ElectricityScreen extends StatefulWidget {
   const ElectricityScreen({super.key, required this.project});
@@ -737,3 +739,4 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
     );
   }
 }
+
