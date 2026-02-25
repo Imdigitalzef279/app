@@ -5,7 +5,8 @@ import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/automat_list_screen.dart';
-import 'package:solar_energy/presentation/screen/Electricity/automat/widget/model/automat_ui_model.dart';
+import 'package:solar_energy/presentation/screen/Electricity/automat/automat_detail_screen.dart';
+import 'package:solar_energy/presentation/screen/Electricity/automat/bloc/atomat_detail_cubit.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/alarm_water/all_alarm_water_screen.dart';
 import 'package:solar_energy/presentation/screen/detail_device/detail_device_screen.dart';
@@ -22,90 +23,157 @@ import 'package:solar_energy/presentation/screen/manager_water/manager_water_scr
 import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
 import 'package:solar_energy/presentation/screen/register/Bloc/register_cubit.dart';
 import 'package:solar_energy/presentation/screen/register/register_widget.dart';
-import 'package:solar_energy/presentation/screen/Electricity/automat/automat_detail_screen.dart';
+import '../../application/enums/electric_type.dart';
 import '../../data/dto/power_station/response/power_station_response.dart';
+import '../screen/general_device/add_product_screen.dart';
 
 class AppRouter {
   Route onGenerateRoute(RouteSettings routeSettings) {
-    Widget initialWidget = BlocProvider(
-        create: (BuildContext context) => LoginCubit(),
-        child: const LoginScreen());
-    Widget routeWidget = initialWidget;
     final arguments = routeSettings.arguments;
 
+    Widget routeWidget = BlocProvider(
+      create: (_) => LoginCubit(),
+      child: const LoginScreen(),
+    );
+
     switch (routeSettings.name) {
+      /// ================= HOME =================
       case RouteName.homeScreen:
         routeWidget = const HomeWidget();
         break;
+
+      /// ================= APTOMAT LIST =================
       case RouteName.aptomatScreen:
-        routeWidget = const AutomatListScreen();
-        break;
-      case RouteName.automatDetail:
-        routeWidget = AutomatDetailScreen(
-        automat: arguments as AutomatUIModel,
+        if (arguments == null || arguments is! Map<String, dynamic>) {
+          routeWidget = const Scaffold(
+            body: Center(child: Text("Thiếu arguments cho Aptomat")),
+          );
+          break;
+        }
+
+        final args = arguments;
+        final powerStationId = args['powerStationId'];
+
+        routeWidget = MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => AtomatDetailCubit()),
+            BlocProvider(create: (_) => DeviceCubit()),
+          ],
+          child: AutomatListScreen(
+            powerStationId: powerStationId,
+          ),
         );
+
         break;
+    /// ================= Thêm sản phẩm =================
+      case RouteName.addProduct:
+        return MaterialPageRoute(
+          builder: (_) => const AddProductScreen(),
+        );
+      /// ================= APTOMAT DETAIL =================
+      case RouteName.automatDetail:
+        if (arguments == null || arguments is! DeviceResponse) {
+          routeWidget = const Scaffold(
+            body: Center(child: Text("Thiếu device để mở detail")),
+          );
+          break;
+        }
+
+        routeWidget = BlocProvider(
+            create: (context) => AtomatDetailCubit(),
+            child: AutomatDetailScreen(
+              device: arguments,
+            ));
+        break;
+
+      /// ================= LOGIN =================
       case RouteName.loginScreen:
         routeWidget = BlocProvider(
-            create: (BuildContext context) => LoginCubit(),
-            child: const LoginScreen());
+          create: (_) => LoginCubit(),
+          child: const LoginScreen(),
+        );
         break;
+
+      /// ================= ALARM WATER =================
       case RouteName.allAlarmWater:
         routeWidget = const AllAlarmWaterScreen();
         break;
+
+      /// ================= INDEX WARNING =================
       case RouteName.indexWarning:
         routeWidget = IndexWarningScreen(
           indexType: arguments as IndexType,
         );
         break;
+
+      /// ================= DETAIL DEVICE WATER =================
       case RouteName.detailDeviceWater:
         routeWidget = const DetailDeviceWaterScreen();
         break;
+
+      /// ================= REGISTER =================
       case RouteName.registerWidget:
         routeWidget = BlocProvider(
-          create: (context) => RegisterCubit(),
+          create: (_) => RegisterCubit(),
           child: const RegisterWidget(),
         );
         break;
+
+      /// ================= FACTORY DETAIL =================
       case RouteName.factoryDetail:
         routeWidget = MultiBlocProvider(
           providers: [
-            BlocProvider(create: (context) => OverviewCubit()),
-            BlocProvider(create: (context) => DeviceCubit()),
+            BlocProvider(create: (_) => OverviewCubit()),
+            BlocProvider(create: (_) => DeviceCubit()),
           ],
-          child: DetailFactoryScreen(type: arguments as ElectricMeterArgument),
+          child: DetailFactoryScreen(
+            type: arguments as ElectricMeterArgument,
+          ),
         );
         break;
+
+      /// ================= DEVICE INDEX =================
       case RouteName.deviceIndex:
         routeWidget = BlocProvider(
-            create: (context) => ManagerWaterCubit(),
-            child: const DeviceIndexScreen());
+          create: (_) => ManagerWaterCubit(),
+          child: const DeviceIndexScreen(),
+        );
         break;
+
+      /// ================= MANAGER WATER =================
       case RouteName.managerWater:
         routeWidget = MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (context) => ManagerWaterCubit()),
-              BlocProvider(create: (context) => DeviceCubit())
-            ],
-            child: ManagerWaterScreen(
-              station: arguments as PowerStationResponse,
-            ));
+          providers: [
+            BlocProvider(create: (_) => ManagerWaterCubit()),
+            BlocProvider(create: (_) => DeviceCubit()),
+          ],
+          child: ManagerWaterScreen(
+            station: arguments as PowerStationResponse,
+          ),
+        );
         break;
+
+      /// ================= GENERAL DEVICE =================
       case RouteName.generalDevice:
         routeWidget = GeneralDeviceScreen(
           project: arguments as PowerStationResponse,
         );
         break;
+
+      /// ================= DETAIL DEVICE =================
       case RouteName.detailDevice:
         routeWidget = DetailDeviceScreen(
           device: arguments as DeviceResponse,
         );
         break;
+
       default:
-        routeWidget = initialWidget;
         break;
     }
+
     return MaterialPageRoute(
-        builder: (_) => routeWidget, settings: routeSettings);
+      builder: (_) => routeWidget,
+      settings: routeSettings,
+    );
   }
 }

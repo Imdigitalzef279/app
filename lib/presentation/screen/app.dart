@@ -8,6 +8,7 @@ import 'package:solar_energy/presentation/common_widgets/app_loading_indicator.d
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:solar_energy/presentation/routes/routes.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -25,6 +26,13 @@ class _MyAppState extends State<MyApp> {
         minTextAdapt: true,
         designSize: const Size(375, 812),
         builder: (_, child) => MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            textTheme: GoogleFonts.interTextTheme(
+              Theme.of(context).textTheme,
+            ),
+            scaffoldBackgroundColor: const Color(0xFFF3F6FB),
+          ),
           debugShowCheckedModeBanner: false,
           navigatorObservers: [NavigatorUtils.navigatorObserver],
           navigatorKey: NavigatorUtils.navigatorKey,

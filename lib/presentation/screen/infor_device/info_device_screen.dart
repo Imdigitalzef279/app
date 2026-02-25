@@ -13,6 +13,7 @@ import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+import '../../widgets/password_dialog.dart';
 import '../statistical/bloc/statistical_cubit.dart';
 import '../statistical/estatictical/bloc/estatistical_cubit.dart';
 import '../statistical/estatictical/estatistical_screen.dart';
@@ -127,32 +128,62 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
                   color: AppColors.greyFB,
                 ),
                 widget.deviceResponse.meterTypeId == 81
-                    ? rowItem(
-                        name: "Đóng cắt thiết bị",
-                        value: "",
-                        widget: Container(
-                          constraints: const BoxConstraints(maxHeight: 20.0),
-                          child: Transform.scale(
-                            scale: 0.6,
-                            child: Switch(
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                              value: widget.deviceResponse.status == 1,
-                              onChanged: (_) =>
-                                  cubit.switchCbs(widget.deviceResponse),
-                              activeColor: AppColors.white,
-                              activeTrackColor: AppColors.blueF8,
-                              inactiveThumbColor: AppColors.white,
-                              inactiveTrackColor: AppColors.grey,
-                              trackOutlineColor:
-                                  widget.deviceResponse.status == 1
-                                      ? const WidgetStatePropertyAll(
-                                          AppColors.blueF8)
-                                      : const WidgetStatePropertyAll(
-                                          AppColors.grey),
-                            ),
+                    ? BlocBuilder<DeviceCubit, DeviceState>(
+                  builder: (context, state) {
+
+                    final updatedDevice = state.resultDevices.data
+                        ?.firstWhere(
+                          (d) => d.id == widget.deviceResponse.id,
+                      orElse: () => widget.deviceResponse,
+                    );
+
+                    final status = updatedDevice?.status ?? 0;
+
+                    return rowItem(
+                      name: "Đóng cắt thiết bị",
+                      value: "",
+                      widget: Container(
+                        constraints: const BoxConstraints(maxHeight: 20.0),
+                        child: Transform.scale(
+                          scale: 0.6,
+                          child: Switch(
+                            materialTapTargetSize:
+                            MaterialTapTargetSize.shrinkWrap,
+
+                            value: status == 1,
+
+                            onChanged: status == 2
+                                ? null
+                                : (_) async {
+
+                              if (updatedDevice == null) return;
+
+                              final password = await showPasswordDialog(context);
+                              if (password == null) return;
+
+                              await context.read<DeviceCubit>().togglePower(
+                                updatedDevice,
+                                password: password,
+                              );
+                            },
+
+                            activeColor: AppColors.white,
+                            activeTrackColor: AppColors.blueF8,
+                            inactiveThumbColor: AppColors.white,
+                            inactiveTrackColor: AppColors.grey,
+
+                            trackOutlineColor:
+                            status == 1
+                                ? const WidgetStatePropertyAll(
+                                AppColors.blueF8)
+                                : const WidgetStatePropertyAll(
+                                AppColors.grey),
                           ),
-                        ))
+                        ),
+                      ),
+                    );
+                  },
+                )
                     : const SizedBox(),
               ],
             ),
@@ -357,5 +388,6 @@ class _InfoDeviceScreenState extends State<InfoDeviceScreen>
         ),
       ),
     );
+
   }
 }

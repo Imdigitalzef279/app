@@ -20,10 +20,16 @@ class DeviceResponse with _$DeviceResponse {
     @Default('') String description,
     @Default('') String serialNumber,
     @Default('') String creator,
+    @Default(0) int parentId,   // thêm
+    @Default(0) int level,
     @Default("") String creationTime,
+    @Default('') String gatewayNumber,
     @Default(MeterTypeResponse()) MeterTypeResponse meterType,
     @Default(PowerStationResponse()) PowerStationResponse powerStation,
 
+
+    @JsonKey(name: "lastedLogData")
+    LastedLogDataResponse? lastedLogData,
   }) = _DeviceResponse;
 
   factory DeviceResponse.fromJson(Map<String, dynamic> json) =>

@@ -9,20 +9,21 @@ part of 'cbs_meter_request.dart';
 _$CbsMeterRequestImpl _$$CbsMeterRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$CbsMeterRequestImpl(
-      stationId: (json['stationId'] as num).toInt(),
-      typeId: (json['typeId'] as num?)?.toInt() ?? 81,
-      apiKey: json['apiKey'] as String? ?? "KRAPOWER_KEY",
-      cbsList: (json['cbsList'] as List<dynamic>?)
-              ?.map((e) => CbsItem.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
+      gatewaySn: json['gatewaySn'] as String,
+      breakerSn: json['breakerSn'] as String,
+      addr: json['addr'] as String,
+      commandValue: json['commandValue'] as String,
+      createdBy: json['createdBy'] as String? ?? "admin",
+      isForce: json['isForce'] as bool,
     );
 
 Map<String, dynamic> _$$CbsMeterRequestImplToJson(
         _$CbsMeterRequestImpl instance) =>
     <String, dynamic>{
-      'stationId': instance.stationId,
-      'typeId': instance.typeId,
-      'apiKey': instance.apiKey,
-      'cbsList': instance.cbsList,
+      'gatewaySn': instance.gatewaySn,
+      'breakerSn': instance.breakerSn,
+      'addr': instance.addr,
+      'commandValue': instance.commandValue,
+      'createdBy': instance.createdBy,
+      'isForce': instance.isForce,
     };

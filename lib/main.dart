@@ -11,6 +11,5 @@ Future<void> main() async {
 
   await EnvConfigs.init();
   ApiClientProvider.init();
-
   runApp(const MyApp());
 }

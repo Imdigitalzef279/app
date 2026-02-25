@@ -30,9 +30,15 @@ mixin _$DeviceResponse {
   String get description => throw _privateConstructorUsedError;
   String get serialNumber => throw _privateConstructorUsedError;
   String get creator => throw _privateConstructorUsedError;
+  int get parentId => throw _privateConstructorUsedError; // thêm
+  int get level => throw _privateConstructorUsedError;
   String get creationTime => throw _privateConstructorUsedError;
+  String get gatewayNumber => throw _privateConstructorUsedError;
   MeterTypeResponse get meterType => throw _privateConstructorUsedError;
   PowerStationResponse get powerStation => throw _privateConstructorUsedError;
+  @JsonKey(name: "lastedLogData")
+  LastedLogDataResponse? get lastedLogData =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this DeviceResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -61,12 +67,17 @@ abstract class $DeviceResponseCopyWith<$Res> {
       String description,
       String serialNumber,
       String creator,
+      int parentId,
+      int level,
       String creationTime,
+      String gatewayNumber,
       MeterTypeResponse meterType,
-      PowerStationResponse powerStation});
+      PowerStationResponse powerStation,
+      @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData});
 
   $MeterTypeResponseCopyWith<$Res> get meterType;
   $PowerStationResponseCopyWith<$Res> get powerStation;
+  $LastedLogDataResponseCopyWith<$Res>? get lastedLogData;
 }
 
 /// @nodoc
@@ -94,9 +105,13 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
     Object? description = null,
     Object? serialNumber = null,
     Object? creator = null,
+    Object? parentId = null,
+    Object? level = null,
     Object? creationTime = null,
+    Object? gatewayNumber = null,
     Object? meterType = null,
     Object? powerStation = null,
+    Object? lastedLogData = freezed,
   }) {
     return _then(_value.copyWith(
       meterTypeId: null == meterTypeId
@@ -139,9 +154,21 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
           ? _value.creator
           : creator // ignore: cast_nullable_to_non_nullable
               as String,
+      parentId: null == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
+              as int,
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
       creationTime: null == creationTime
           ? _value.creationTime
           : creationTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      gatewayNumber: null == gatewayNumber
+          ? _value.gatewayNumber
+          : gatewayNumber // ignore: cast_nullable_to_non_nullable
               as String,
       meterType: null == meterType
           ? _value.meterType
@@ -151,6 +178,10 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
           ? _value.powerStation
           : powerStation // ignore: cast_nullable_to_non_nullable
               as PowerStationResponse,
+      lastedLogData: freezed == lastedLogData
+          ? _value.lastedLogData
+          : lastedLogData // ignore: cast_nullable_to_non_nullable
+              as LastedLogDataResponse?,
     ) as $Val);
   }
 
@@ -171,6 +202,20 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
   $PowerStationResponseCopyWith<$Res> get powerStation {
     return $PowerStationResponseCopyWith<$Res>(_value.powerStation, (value) {
       return _then(_value.copyWith(powerStation: value) as $Val);
+    });
+  }
+
+  /// Create a copy of DeviceResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $LastedLogDataResponseCopyWith<$Res>? get lastedLogData {
+    if (_value.lastedLogData == null) {
+      return null;
+    }
+
+    return $LastedLogDataResponseCopyWith<$Res>(_value.lastedLogData!, (value) {
+      return _then(_value.copyWith(lastedLogData: value) as $Val);
     });
   }
 }
@@ -194,14 +239,20 @@ abstract class _$$DeviceResponseImplCopyWith<$Res>
       String description,
       String serialNumber,
       String creator,
+      int parentId,
+      int level,
       String creationTime,
+      String gatewayNumber,
       MeterTypeResponse meterType,
-      PowerStationResponse powerStation});
+      PowerStationResponse powerStation,
+      @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData});
 
   @override
   $MeterTypeResponseCopyWith<$Res> get meterType;
   @override
   $PowerStationResponseCopyWith<$Res> get powerStation;
+  @override
+  $LastedLogDataResponseCopyWith<$Res>? get lastedLogData;
 }
 
 /// @nodoc
@@ -227,9 +278,13 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
     Object? description = null,
     Object? serialNumber = null,
     Object? creator = null,
+    Object? parentId = null,
+    Object? level = null,
     Object? creationTime = null,
+    Object? gatewayNumber = null,
     Object? meterType = null,
     Object? powerStation = null,
+    Object? lastedLogData = freezed,
   }) {
     return _then(_$DeviceResponseImpl(
       meterTypeId: null == meterTypeId
@@ -272,9 +327,21 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
           ? _value.creator
           : creator // ignore: cast_nullable_to_non_nullable
               as String,
+      parentId: null == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
+              as int,
+      level: null == level
+          ? _value.level
+          : level // ignore: cast_nullable_to_non_nullable
+              as int,
       creationTime: null == creationTime
           ? _value.creationTime
           : creationTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      gatewayNumber: null == gatewayNumber
+          ? _value.gatewayNumber
+          : gatewayNumber // ignore: cast_nullable_to_non_nullable
               as String,
       meterType: null == meterType
           ? _value.meterType
@@ -284,6 +351,10 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
           ? _value.powerStation
           : powerStation // ignore: cast_nullable_to_non_nullable
               as PowerStationResponse,
+      lastedLogData: freezed == lastedLogData
+          ? _value.lastedLogData
+          : lastedLogData // ignore: cast_nullable_to_non_nullable
+              as LastedLogDataResponse?,
     ));
   }
 }
@@ -302,9 +373,13 @@ class _$DeviceResponseImpl implements _DeviceResponse {
       this.description = '',
       this.serialNumber = '',
       this.creator = '',
+      this.parentId = 0,
+      this.level = 0,
       this.creationTime = "",
+      this.gatewayNumber = '',
       this.meterType = const MeterTypeResponse(),
-      this.powerStation = const PowerStationResponse()});
+      this.powerStation = const PowerStationResponse(),
+      @JsonKey(name: "lastedLogData") this.lastedLogData});
 
   factory _$DeviceResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$DeviceResponseImplFromJson(json);
@@ -341,17 +416,30 @@ class _$DeviceResponseImpl implements _DeviceResponse {
   final String creator;
   @override
   @JsonKey()
+  final int parentId;
+// thêm
+  @override
+  @JsonKey()
+  final int level;
+  @override
+  @JsonKey()
   final String creationTime;
+  @override
+  @JsonKey()
+  final String gatewayNumber;
   @override
   @JsonKey()
   final MeterTypeResponse meterType;
   @override
   @JsonKey()
   final PowerStationResponse powerStation;
+  @override
+  @JsonKey(name: "lastedLogData")
+  final LastedLogDataResponse? lastedLogData;
 
   @override
   String toString() {
-    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, creationTime: $creationTime, meterType: $meterType, powerStation: $powerStation)';
+    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, parentId: $parentId, level: $level, creationTime: $creationTime, gatewayNumber: $gatewayNumber, meterType: $meterType, powerStation: $powerStation, lastedLogData: $lastedLogData)';
   }
 
   @override
@@ -374,12 +462,19 @@ class _$DeviceResponseImpl implements _DeviceResponse {
             (identical(other.serialNumber, serialNumber) ||
                 other.serialNumber == serialNumber) &&
             (identical(other.creator, creator) || other.creator == creator) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
+            (identical(other.level, level) || other.level == level) &&
             (identical(other.creationTime, creationTime) ||
                 other.creationTime == creationTime) &&
+            (identical(other.gatewayNumber, gatewayNumber) ||
+                other.gatewayNumber == gatewayNumber) &&
             (identical(other.meterType, meterType) ||
                 other.meterType == meterType) &&
             (identical(other.powerStation, powerStation) ||
-                other.powerStation == powerStation));
+                other.powerStation == powerStation) &&
+            (identical(other.lastedLogData, lastedLogData) ||
+                other.lastedLogData == lastedLogData));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -396,9 +491,13 @@ class _$DeviceResponseImpl implements _DeviceResponse {
       description,
       serialNumber,
       creator,
+      parentId,
+      level,
       creationTime,
+      gatewayNumber,
       meterType,
-      powerStation);
+      powerStation,
+      lastedLogData);
 
   /// Create a copy of DeviceResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -429,9 +528,14 @@ abstract class _DeviceResponse implements DeviceResponse {
       final String description,
       final String serialNumber,
       final String creator,
+      final int parentId,
+      final int level,
       final String creationTime,
+      final String gatewayNumber,
       final MeterTypeResponse meterType,
-      final PowerStationResponse powerStation}) = _$DeviceResponseImpl;
+      final PowerStationResponse powerStation,
+      @JsonKey(name: "lastedLogData")
+      final LastedLogDataResponse? lastedLogData}) = _$DeviceResponseImpl;
 
   factory _DeviceResponse.fromJson(Map<String, dynamic> json) =
       _$DeviceResponseImpl.fromJson;
@@ -457,11 +561,20 @@ abstract class _DeviceResponse implements DeviceResponse {
   @override
   String get creator;
   @override
+  int get parentId; // thêm
+  @override
+  int get level;
+  @override
   String get creationTime;
+  @override
+  String get gatewayNumber;
   @override
   MeterTypeResponse get meterType;
   @override
   PowerStationResponse get powerStation;
+  @override
+  @JsonKey(name: "lastedLogData")
+  LastedLogDataResponse? get lastedLogData;
 
   /// Create a copy of DeviceResponse
   /// with the given fields replaced by the non-null parameter values.

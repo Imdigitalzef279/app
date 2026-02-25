@@ -18,4 +18,5 @@ class RouteName {
   static const registerWidget = '/registerWidget';
   static const createStation = '/createStation';
   static const aptomatScreen = "/aptomatScreen";
+  static const addProduct = "/addProduct";
 }

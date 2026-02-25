@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:solar_energy/data/dto/api_response/api_response.dart';
+import 'package:solar_energy/data/dto/atomat/atomat_log_response.dart';
+import 'package:solar_energy/data/dto/atomat/atomat_request.dart';
 import 'package:solar_energy/data/dto/auth/response/auth_response.dart';
 import 'package:solar_energy/data/dto/cbs/request/cbs_meter_request.dart';
-import 'package:solar_energy/data/dto/device/request/device_request.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/dto/electric/chart_electric/chart_electric_request.dart';
 import 'package:solar_energy/data/dto/electric/response/electric_meter_response.dart';
@@ -14,7 +15,6 @@ import 'package:solar_energy/data/dto/power_station/request/power_station_reques
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 import 'package:solar_energy/data/dto/profile/profile_response.dart';
 import 'package:solar_energy/data/dto/register/request/user_request.dart';
-import 'package:solar_energy/data/dto/result/result.dart';
 import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_request.dart';
 import 'package:solar_energy/data/dto/solar_electric/response/solar_electric_response.dart';
 import 'package:solar_energy/data/dto/water/request/meter_water_request.dart';
@@ -26,26 +26,57 @@ part 'api_client.g.dart';
 abstract class ApiClient {
   factory ApiClient(Dio dio, {String? baseUrl}) = _ApiClient;
 
+  // ================= AUTH =================
+
   @POST('connect/token')
   @FormUrlEncoded()
   Future<AuthResponse> signIn(
-    @Field('grant_type') String grantType,
-    @Field('client_id') String clientId,
-    @Field('username') String username,
-    @Field('password') String password,
-    @Field('scope') String scope,
-  );
+      @Field('grant_type') String grantType,
+      @Field('client_id') String clientId,
+      @Field('username') String username,
+      @Field('password') String password,
+      @Field('scope') String scope,
+      );
+
+  // ================= SOLAR =================
 
   @GET('api/app/power-station/solar-power-chart')
   Future<PaginationResponse<SolarElectricResponse>> getSolarElectric(
       @Queries() SolarElectricRequest request);
 
+  // ================= ELECTRIC CHART =================
+
   @GET('api/app/log-meter/history-log-meter-by-group-type')
   Future<PaginationResponse<LastedLogDataResponse>> getChartElectric(
       @Queries() ChartElectricRequest request);
 
+  // ================= REALTIME ELECTRIC DETAIL (QUAN TRỌNG) =================
+
+  @GET('api/app/log-meter/top-log-meter')
+  Future<LastedLogDataResponse> getTopLogMeter(
+      @Query('meterId') int meterId,
+      );
+
+  // ================= DEVICE =================
+
   @GET('api/app/meter/meter-lookup/{id}')
-  Future<List<DeviceResponse>> getDevices(@Path("id") int powerStationID);
+  Future<List<DeviceResponse>> getDevices(
+      @Path("id") int powerStationID,
+      );
+
+  @GET('api/app/meter/with-log') /// con này log đồng hồ
+  Future<PaginationResponse<ElectricMeter>> getElectric(
+      @Query('PowerStationId') int powerStation,
+      );
+
+  /// api/app/log-meter-breaker/get-list api này để call log mcb
+  ///
+  @POST('api/app/log-meter-breaker/get-list') /// con này log atomat
+  Future<List<AtomatLogResponse>> getLogAtomat(
+      @Body()  AtomatRequest request,
+      );
+
+  // ================= PROFILE =================
 
   @GET('api/account/my-profile')
   Future<ProfileResponse> getProfile();
@@ -53,32 +84,43 @@ abstract class ApiClient {
   @DELETE('api/user/{uid}')
   Future<String> deleteAccount(@Path("uid") uid);
 
+  // ================= POWER STATION =================
+
   @GET('api/app/power-station/power-station-lookup/{projectId}')
   Future<List<PowerStationResponse>> getPowerStation(
-    @Path("projectId") int projectId,
-  );
-
-  @GET('api/app/meter/with-log')
-  Future<PaginationResponse<ElectricMeter>> getElectric(
-    @Query('PowerStationId') int powerStation,
-  );
-
-  @POST('api/identity/users')
-  Future<ProfileResponse> registerUser(
-    @Body() UserRequest request,
-  );
+      @Path("projectId") int projectId,
+      );
 
   @POST("api/app/power-station")
   Future<PowerStationResponse> createPowerStation(
-      @Body() PowerStationRequest request);
+      @Body() PowerStationRequest request,
+      );
+
+  // ================= METER =================
 
   @POST("api/app/meter")
-  Future<MeterResponse> createMeter(@Body() MeterRequest request);
+  Future<MeterResponse> createMeter(
+      @Body() MeterRequest request,
+      );
+
+  // ================= WATER =================
 
   @GET("api/app/log-water/log-by-meter-detail-id")
   Future<List<MeterWaterResponse>> getChartWater(
-      @Queries() MeterWaterRequest request);
+      @Queries() MeterWaterRequest request,
+      );
 
-  @POST("cbs/api/set")
-  Future<String> controlCircuitBreaker(@Body() CbsMeterRequest request);
+  // ================= BREAKER CONTROL =================
+
+  @POST("api/app/breaker-command")
+  Future<int> controlCircuitBreaker(
+      @Body() CbsMeterRequest request,
+      );
+
+  // ================= REGISTER =================
+
+  @POST('api/identity/users')
+  Future<ProfileResponse> registerUser(
+      @Body() UserRequest request,
+      );
 }

@@ -262,11 +262,23 @@ class $AssetsIconsGen {
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/Acrel ASCB1 display module.jpg
+  AssetGenImage get acrelASCB1DisplayModule =>
+      const AssetGenImage('assets/images/Acrel ASCB1 display module.jpg');
+
+  /// File path: assets/images/Acrel ASCB1-63-C 4P.j.webp
+  AssetGenImage get acrelASCB163C4PJ =>
+      const AssetGenImage('assets/images/Acrel ASCB1-63-C 4P.j.webp');
+
   /// File path: assets/images/AnimationLogin.json
   String get animationLogin => 'assets/images/AnimationLogin.json';
 
   /// File path: assets/images/animation.json
   String get animation => 'assets/images/animation.json';
+
+  /// File path: assets/images/ascb1_63.jpg
+  AssetGenImage get ascb163 =>
+      const AssetGenImage('assets/images/ascb1_63.jpg');
 
   /// File path: assets/images/electric_pole.png
   AssetGenImage get electricPole =>
@@ -295,8 +307,11 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<dynamic> get values => [
+        acrelASCB1DisplayModule,
+        acrelASCB163C4PJ,
         animationLogin,
         animation,
+        ascb163,
         electricPole,
         exclamationMark,
         exclamation,

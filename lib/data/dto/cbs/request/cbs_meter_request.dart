@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:solar_energy/data/dto/cbs/request/cbs_item.dart';
 part 'cbs_meter_request.g.dart';
 part 'cbs_meter_request.freezed.dart';
 
@@ -7,10 +6,13 @@ part 'cbs_meter_request.freezed.dart';
 class CbsMeterRequest with _$CbsMeterRequest {
   const factory CbsMeterRequest(
       {
-        required int stationId,
-        @Default(81) int typeId,
-        @Default("KRAPOWER_KEY") String apiKey,
-        @Default([]) List<CbsItem> cbsList,
+        required String gatewaySn,
+        required String breakerSn,
+        required String addr,
+        required String commandValue,
+        @Default("admin") String createdBy,
+        required bool isForce
+
       }) = _CbsMeterRequest;
 
   factory CbsMeterRequest.fromJson(Map<String, dynamic> json) =>

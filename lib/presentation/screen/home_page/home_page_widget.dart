@@ -240,7 +240,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     },
                     builder: (BuildContext context, HomePageState state) {
                       final items = state.resultProjects.data ?? [];
-
+                      // in ID
+                      // for (var e in items) {
+                      //   debugPrint("ID: ${e.id} - NAME: ${e.name}");
+                      // }
                       return Column(
                         children: [
                           for (int i = 0; i < items.length; i++) ...[

@@ -50,7 +50,35 @@ class _ItemDeviceState extends State<ItemDevice> {
       ),
     );
   }
+  Future<String?> _showPasswordDialog(BuildContext context) async {
+    String password = "";
 
+    return showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Xác thực"),
+          content: TextField(
+            obscureText: true,
+            onChanged: (value) => password = value,
+            decoration: const InputDecoration(
+              hintText: "Nhập mật khẩu",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Huỷ"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, password),
+              child: const Text("Xác nhận"),
+            ),
+          ],
+        );
+      },
+    );
+  }
   bool values = true;
 
   bool getValues(int status) {
@@ -110,37 +138,56 @@ class _ItemDeviceState extends State<ItemDevice> {
                 ),
 
                 //const Spacer(),
-                widget.device.meterTypeId == 81 ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      constraints: const BoxConstraints(maxHeight: 20.0),
-                      child: Transform.scale(
-                        scale: 0.6,
-                        child: Switch(
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          value: getValues(widget.device.status),
-                          onChanged: (_) => _cubit.switchCbs(widget.device),
-                          trackOutlineColor: getValues(widget.device.status) ?
-                              const WidgetStatePropertyAll(AppColors.blueF8) : const WidgetStatePropertyAll(AppColors.grey),
-                          activeColor: AppColors.white,
-                          activeTrackColor: AppColors.blueF8,
-                          inactiveThumbColor: AppColors.white,
-                          inactiveTrackColor: AppColors.grey,
+                widget.device.meterTypeId == 82
+                    ? BlocBuilder<DeviceCubit, DeviceState>(
+                  builder: (context, state) {
+
+                    final updatedDevice = state.resultDevices.data
+                        ?.firstWhere(
+                          (d) => d.id == widget.device.id,
+                      orElse: () => widget.device,
+                    );
+
+                    final status = updatedDevice?.status ?? 0;
+                    final isLoading = state.isForceLoading;
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Transform.scale(
+                          scale: 0.6,
+                          child: Switch(
+                            value: status == 1,
+                            onChanged: (status == 2 || isLoading)
+                                ? null
+                                : (_) async {
+                              final password =
+                              await _showPasswordDialog(context);
+                              if (password == null) return;
+
+                              await context.read<DeviceCubit>().togglePower(
+                                updatedDevice!,
+                                password: password,
+                              );
+                            },
+                            activeTrackColor: AppColors.blueF8,
+                          ),
                         ),
-                      ),
-                    ),
-                    Text(
-                      getStatus(widget.device.status).text,
-                      style: AppTextStyle.tini.copyWith(
-                        color: widget.device.status == 1
-                            ? AppColors.blueF8
-                            : AppColors.textPrimary.withOpacity(0.5),
-                      ),
-                    )
-                  ],
-                ) : const SizedBox()
+                        Text(
+                          getStatus(status).text,
+                          style: AppTextStyle.tini.copyWith(
+                            color: status == 1
+                                ? AppColors.blueF8
+                                : status == 2
+                                ? Colors.orange
+                                : AppColors.textPrimary.withOpacity(0.5),
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                )
+                    : const SizedBox(),
               ],
             ),
             const Divider(

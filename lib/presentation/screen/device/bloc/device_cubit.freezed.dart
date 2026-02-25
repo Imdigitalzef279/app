@@ -19,6 +19,7 @@ mixin _$DeviceState {
   Result<List<DeviceResponse>> get resultDevices =>
       throw _privateConstructorUsedError;
   LoadStatus get status => throw _privateConstructorUsedError;
+  bool get isForceLoading => throw _privateConstructorUsedError;
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +34,10 @@ abstract class $DeviceStateCopyWith<$Res> {
           DeviceState value, $Res Function(DeviceState) then) =
       _$DeviceStateCopyWithImpl<$Res, DeviceState>;
   @useResult
-  $Res call({Result<List<DeviceResponse>> resultDevices, LoadStatus status});
+  $Res call(
+      {Result<List<DeviceResponse>> resultDevices,
+      LoadStatus status,
+      bool isForceLoading});
 
   $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices;
 }
@@ -55,6 +59,7 @@ class _$DeviceStateCopyWithImpl<$Res, $Val extends DeviceState>
   $Res call({
     Object? resultDevices = null,
     Object? status = null,
+    Object? isForceLoading = null,
   }) {
     return _then(_value.copyWith(
       resultDevices: null == resultDevices
@@ -65,6 +70,10 @@ class _$DeviceStateCopyWithImpl<$Res, $Val extends DeviceState>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as LoadStatus,
+      isForceLoading: null == isForceLoading
+          ? _value.isForceLoading
+          : isForceLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -88,7 +97,10 @@ abstract class _$$DeviceStateImplCopyWith<$Res>
       __$$DeviceStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Result<List<DeviceResponse>> resultDevices, LoadStatus status});
+  $Res call(
+      {Result<List<DeviceResponse>> resultDevices,
+      LoadStatus status,
+      bool isForceLoading});
 
   @override
   $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices;
@@ -109,6 +121,7 @@ class __$$DeviceStateImplCopyWithImpl<$Res>
   $Res call({
     Object? resultDevices = null,
     Object? status = null,
+    Object? isForceLoading = null,
   }) {
     return _then(_$DeviceStateImpl(
       resultDevices: null == resultDevices
@@ -119,6 +132,10 @@ class __$$DeviceStateImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as LoadStatus,
+      isForceLoading: null == isForceLoading
+          ? _value.isForceLoading
+          : isForceLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -127,17 +144,22 @@ class __$$DeviceStateImplCopyWithImpl<$Res>
 
 class _$DeviceStateImpl implements _DeviceState {
   const _$DeviceStateImpl(
-      {required this.resultDevices, this.status = LoadStatus.initial});
+      {required this.resultDevices,
+      this.status = LoadStatus.initial,
+      this.isForceLoading = false});
 
   @override
   final Result<List<DeviceResponse>> resultDevices;
   @override
   @JsonKey()
   final LoadStatus status;
+  @override
+  @JsonKey()
+  final bool isForceLoading;
 
   @override
   String toString() {
-    return 'DeviceState(resultDevices: $resultDevices, status: $status)';
+    return 'DeviceState(resultDevices: $resultDevices, status: $status, isForceLoading: $isForceLoading)';
   }
 
   @override
@@ -147,11 +169,14 @@ class _$DeviceStateImpl implements _DeviceState {
             other is _$DeviceStateImpl &&
             (identical(other.resultDevices, resultDevices) ||
                 other.resultDevices == resultDevices) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.isForceLoading, isForceLoading) ||
+                other.isForceLoading == isForceLoading));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, resultDevices, status);
+  int get hashCode =>
+      Object.hash(runtimeType, resultDevices, status, isForceLoading);
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.
@@ -165,12 +190,15 @@ class _$DeviceStateImpl implements _DeviceState {
 abstract class _DeviceState implements DeviceState {
   const factory _DeviceState(
       {required final Result<List<DeviceResponse>> resultDevices,
-      final LoadStatus status}) = _$DeviceStateImpl;
+      final LoadStatus status,
+      final bool isForceLoading}) = _$DeviceStateImpl;
 
   @override
   Result<List<DeviceResponse>> get resultDevices;
   @override
   LoadStatus get status;
+  @override
+  bool get isForceLoading;
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.

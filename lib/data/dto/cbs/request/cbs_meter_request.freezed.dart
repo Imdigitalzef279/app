@@ -20,10 +20,12 @@ CbsMeterRequest _$CbsMeterRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CbsMeterRequest {
-  int get stationId => throw _privateConstructorUsedError;
-  int get typeId => throw _privateConstructorUsedError;
-  String get apiKey => throw _privateConstructorUsedError;
-  List<CbsItem> get cbsList => throw _privateConstructorUsedError;
+  String get gatewaySn => throw _privateConstructorUsedError;
+  String get breakerSn => throw _privateConstructorUsedError;
+  String get addr => throw _privateConstructorUsedError;
+  String get commandValue => throw _privateConstructorUsedError;
+  String get createdBy => throw _privateConstructorUsedError;
+  bool get isForce => throw _privateConstructorUsedError;
 
   /// Serializes this CbsMeterRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +43,13 @@ abstract class $CbsMeterRequestCopyWith<$Res> {
           CbsMeterRequest value, $Res Function(CbsMeterRequest) then) =
       _$CbsMeterRequestCopyWithImpl<$Res, CbsMeterRequest>;
   @useResult
-  $Res call({int stationId, int typeId, String apiKey, List<CbsItem> cbsList});
+  $Res call(
+      {String gatewaySn,
+      String breakerSn,
+      String addr,
+      String commandValue,
+      String createdBy,
+      bool isForce});
 }
 
 /// @nodoc
@@ -59,28 +67,38 @@ class _$CbsMeterRequestCopyWithImpl<$Res, $Val extends CbsMeterRequest>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? stationId = null,
-    Object? typeId = null,
-    Object? apiKey = null,
-    Object? cbsList = null,
+    Object? gatewaySn = null,
+    Object? breakerSn = null,
+    Object? addr = null,
+    Object? commandValue = null,
+    Object? createdBy = null,
+    Object? isForce = null,
   }) {
     return _then(_value.copyWith(
-      stationId: null == stationId
-          ? _value.stationId
-          : stationId // ignore: cast_nullable_to_non_nullable
-              as int,
-      typeId: null == typeId
-          ? _value.typeId
-          : typeId // ignore: cast_nullable_to_non_nullable
-              as int,
-      apiKey: null == apiKey
-          ? _value.apiKey
-          : apiKey // ignore: cast_nullable_to_non_nullable
+      gatewaySn: null == gatewaySn
+          ? _value.gatewaySn
+          : gatewaySn // ignore: cast_nullable_to_non_nullable
               as String,
-      cbsList: null == cbsList
-          ? _value.cbsList
-          : cbsList // ignore: cast_nullable_to_non_nullable
-              as List<CbsItem>,
+      breakerSn: null == breakerSn
+          ? _value.breakerSn
+          : breakerSn // ignore: cast_nullable_to_non_nullable
+              as String,
+      addr: null == addr
+          ? _value.addr
+          : addr // ignore: cast_nullable_to_non_nullable
+              as String,
+      commandValue: null == commandValue
+          ? _value.commandValue
+          : commandValue // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdBy: null == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String,
+      isForce: null == isForce
+          ? _value.isForce
+          : isForce // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -93,7 +111,13 @@ abstract class _$$CbsMeterRequestImplCopyWith<$Res>
       __$$CbsMeterRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int stationId, int typeId, String apiKey, List<CbsItem> cbsList});
+  $Res call(
+      {String gatewaySn,
+      String breakerSn,
+      String addr,
+      String commandValue,
+      String createdBy,
+      bool isForce});
 }
 
 /// @nodoc
@@ -109,28 +133,38 @@ class __$$CbsMeterRequestImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? stationId = null,
-    Object? typeId = null,
-    Object? apiKey = null,
-    Object? cbsList = null,
+    Object? gatewaySn = null,
+    Object? breakerSn = null,
+    Object? addr = null,
+    Object? commandValue = null,
+    Object? createdBy = null,
+    Object? isForce = null,
   }) {
     return _then(_$CbsMeterRequestImpl(
-      stationId: null == stationId
-          ? _value.stationId
-          : stationId // ignore: cast_nullable_to_non_nullable
-              as int,
-      typeId: null == typeId
-          ? _value.typeId
-          : typeId // ignore: cast_nullable_to_non_nullable
-              as int,
-      apiKey: null == apiKey
-          ? _value.apiKey
-          : apiKey // ignore: cast_nullable_to_non_nullable
+      gatewaySn: null == gatewaySn
+          ? _value.gatewaySn
+          : gatewaySn // ignore: cast_nullable_to_non_nullable
               as String,
-      cbsList: null == cbsList
-          ? _value._cbsList
-          : cbsList // ignore: cast_nullable_to_non_nullable
-              as List<CbsItem>,
+      breakerSn: null == breakerSn
+          ? _value.breakerSn
+          : breakerSn // ignore: cast_nullable_to_non_nullable
+              as String,
+      addr: null == addr
+          ? _value.addr
+          : addr // ignore: cast_nullable_to_non_nullable
+              as String,
+      commandValue: null == commandValue
+          ? _value.commandValue
+          : commandValue // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdBy: null == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String,
+      isForce: null == isForce
+          ? _value.isForce
+          : isForce // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -139,35 +173,33 @@ class __$$CbsMeterRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CbsMeterRequestImpl implements _CbsMeterRequest {
   const _$CbsMeterRequestImpl(
-      {required this.stationId,
-      this.typeId = 81,
-      this.apiKey = "KRAPOWER_KEY",
-      final List<CbsItem> cbsList = const []})
-      : _cbsList = cbsList;
+      {required this.gatewaySn,
+      required this.breakerSn,
+      required this.addr,
+      required this.commandValue,
+      this.createdBy = "admin",
+      required this.isForce});
 
   factory _$CbsMeterRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$CbsMeterRequestImplFromJson(json);
 
   @override
-  final int stationId;
+  final String gatewaySn;
+  @override
+  final String breakerSn;
+  @override
+  final String addr;
+  @override
+  final String commandValue;
   @override
   @JsonKey()
-  final int typeId;
+  final String createdBy;
   @override
-  @JsonKey()
-  final String apiKey;
-  final List<CbsItem> _cbsList;
-  @override
-  @JsonKey()
-  List<CbsItem> get cbsList {
-    if (_cbsList is EqualUnmodifiableListView) return _cbsList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_cbsList);
-  }
+  final bool isForce;
 
   @override
   String toString() {
-    return 'CbsMeterRequest(stationId: $stationId, typeId: $typeId, apiKey: $apiKey, cbsList: $cbsList)';
+    return 'CbsMeterRequest(gatewaySn: $gatewaySn, breakerSn: $breakerSn, addr: $addr, commandValue: $commandValue, createdBy: $createdBy, isForce: $isForce)';
   }
 
   @override
@@ -175,17 +207,22 @@ class _$CbsMeterRequestImpl implements _CbsMeterRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CbsMeterRequestImpl &&
-            (identical(other.stationId, stationId) ||
-                other.stationId == stationId) &&
-            (identical(other.typeId, typeId) || other.typeId == typeId) &&
-            (identical(other.apiKey, apiKey) || other.apiKey == apiKey) &&
-            const DeepCollectionEquality().equals(other._cbsList, _cbsList));
+            (identical(other.gatewaySn, gatewaySn) ||
+                other.gatewaySn == gatewaySn) &&
+            (identical(other.breakerSn, breakerSn) ||
+                other.breakerSn == breakerSn) &&
+            (identical(other.addr, addr) || other.addr == addr) &&
+            (identical(other.commandValue, commandValue) ||
+                other.commandValue == commandValue) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.isForce, isForce) || other.isForce == isForce));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, stationId, typeId, apiKey,
-      const DeepCollectionEquality().hash(_cbsList));
+  int get hashCode => Object.hash(runtimeType, gatewaySn, breakerSn, addr,
+      commandValue, createdBy, isForce);
 
   /// Create a copy of CbsMeterRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -206,22 +243,28 @@ class _$CbsMeterRequestImpl implements _CbsMeterRequest {
 
 abstract class _CbsMeterRequest implements CbsMeterRequest {
   const factory _CbsMeterRequest(
-      {required final int stationId,
-      final int typeId,
-      final String apiKey,
-      final List<CbsItem> cbsList}) = _$CbsMeterRequestImpl;
+      {required final String gatewaySn,
+      required final String breakerSn,
+      required final String addr,
+      required final String commandValue,
+      final String createdBy,
+      required final bool isForce}) = _$CbsMeterRequestImpl;
 
   factory _CbsMeterRequest.fromJson(Map<String, dynamic> json) =
       _$CbsMeterRequestImpl.fromJson;
 
   @override
-  int get stationId;
+  String get gatewaySn;
   @override
-  int get typeId;
+  String get breakerSn;
   @override
-  String get apiKey;
+  String get addr;
   @override
-  List<CbsItem> get cbsList;
+  String get commandValue;
+  @override
+  String get createdBy;
+  @override
+  bool get isForce;
 
   /// Create a copy of CbsMeterRequest
   /// with the given fields replaced by the non-null parameter values.

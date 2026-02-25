@@ -18,7 +18,10 @@ _$DeviceResponseImpl _$$DeviceResponseImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String? ?? '',
       serialNumber: json['serialNumber'] as String? ?? '',
       creator: json['creator'] as String? ?? '',
+      parentId: (json['parentId'] as num?)?.toInt() ?? 0,
+      level: (json['level'] as num?)?.toInt() ?? 0,
       creationTime: json['creationTime'] as String? ?? "",
+      gatewayNumber: json['gatewayNumber'] as String? ?? '',
       meterType: json['meterType'] == null
           ? const MeterTypeResponse()
           : MeterTypeResponse.fromJson(
@@ -27,6 +30,10 @@ _$DeviceResponseImpl _$$DeviceResponseImplFromJson(Map<String, dynamic> json) =>
           ? const PowerStationResponse()
           : PowerStationResponse.fromJson(
               json['powerStation'] as Map<String, dynamic>),
+      lastedLogData: json['lastedLogData'] == null
+          ? null
+          : LastedLogDataResponse.fromJson(
+              json['lastedLogData'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$DeviceResponseImplToJson(
@@ -42,7 +49,11 @@ Map<String, dynamic> _$$DeviceResponseImplToJson(
       'description': instance.description,
       'serialNumber': instance.serialNumber,
       'creator': instance.creator,
+      'parentId': instance.parentId,
+      'level': instance.level,
       'creationTime': instance.creationTime,
+      'gatewayNumber': instance.gatewayNumber,
       'meterType': instance.meterType,
       'powerStation': instance.powerStation,
+      'lastedLogData': instance.lastedLogData,
     };
