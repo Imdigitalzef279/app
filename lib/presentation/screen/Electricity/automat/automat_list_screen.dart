@@ -12,7 +12,7 @@ import '../../device/bloc/device_cubit.dart';
 import '../../device/widget/content_dialog.dart';
 import 'automat_detail_screen.dart';
 
-class AutomatListScreen extends StatelessWidget {
+class AutomatListScreen extends StatefulWidget {
   final int powerStationId;
 
   const AutomatListScreen({
@@ -20,7 +20,22 @@ class AutomatListScreen extends StatelessWidget {
     required this.powerStationId,
   });
 
-  // widget MCB
+  @override
+  State<AutomatListScreen> createState() => _AutomatListScreenState();
+}
+
+class _AutomatListScreenState extends State<AutomatListScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    context.read<DeviceCubit>().getAllDevices(
+      powerStationId: widget.powerStationId,
+    );
+  }
+
+  // ================= MCB CARD =================
   Widget buildMCBCard(BuildContext context, device) {
     final isOn = device.status == 1;
 
@@ -41,20 +56,25 @@ class AutomatListScreen extends StatelessWidget {
         contentPadding:
         const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
 
-        // ===== ICON =====
-        leading: CircleAvatar(
-          radius: 22,
-          backgroundColor:
-          isOn ? Colors.green.withOpacity(0.15)
-              : Colors.grey.withOpacity(0.15),
-          child: Icon(
-            Icons.electrical_services,
-            color: isOn ? Colors.green : Colors.grey,
-            size: 20,
+        leading: Container(
+          padding:
+          const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          decoration: BoxDecoration(
+            color: isOn
+                ? Colors.green.withOpacity(0.1)
+                : Colors.grey.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            "— CB —",
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: isOn ? Colors.green : Colors.grey,
+            ),
           ),
         ),
 
-        // ===== TITLE =====
         title: Text(
           device.name?.isNotEmpty == true
               ? device.name!
@@ -65,7 +85,6 @@ class AutomatListScreen extends StatelessWidget {
           ),
         ),
 
-        // ===== SUBTITLE =====
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
@@ -77,9 +96,8 @@ class AutomatListScreen extends StatelessWidget {
           ),
         ),
 
-        // ===== ACTIONS =====
         trailing: Row(
-          mainAxisSize: MainAxisSize.min, // 🔥 quan trọng
+          mainAxisSize: MainAxisSize.min,
           children: [
 
             IconButton(
@@ -94,7 +112,7 @@ class AutomatListScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => BlocProvider(
                       create: (_) => SwitchLogCubit(
-                        getIt<SwitchLogRepository>(), // nếu bạn dùng DI
+                        getIt<SwitchLogRepository>(),
                       )..fetchLogs(device.gatewayNumber ?? ''),
                       child: SwitchLogScreen(
                         gatewaySn: device.gatewayNumber ?? '',
@@ -131,11 +149,13 @@ class AutomatListScreen extends StatelessWidget {
             Transform.scale(
               scale: 0.8,
               child: Switch(
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                materialTapTargetSize:
+                MaterialTapTargetSize.shrinkWrap,
                 value: isOn,
                 activeColor: Colors.green,
                 onChanged: (value) async {
-                  final password = await showPasswordDialog(context);
+                  final password =
+                  await showPasswordDialog(context);
                   if (password == null) return;
 
                   await context.read<DeviceCubit>().togglePower(
@@ -155,12 +175,10 @@ class AutomatListScreen extends StatelessWidget {
               builder: (_) => MultiBlocProvider(
                 providers: [
                   BlocProvider.value(
-                    value:
-                    context.read<DeviceCubit>(),
+                    value: context.read<DeviceCubit>(),
                   ),
                   BlocProvider(
-                    create: (_) =>
-                        AtomatDetailCubit(),
+                    create: (_) => AtomatDetailCubit(),
                   ),
                 ],
                 child:
@@ -185,15 +203,16 @@ class AutomatListScreen extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       children: devices
-          .map((device) =>
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: buildMCBCard(context, device),
-          ))
+          .map((device) => Padding(
+        padding:
+        const EdgeInsets.only(left: 16),
+        child: buildMCBCard(context, device),
+      ))
           .toList(),
     );
   }
 
+  // ================= BUILD =================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,6 +221,7 @@ class AutomatListScreen extends StatelessWidget {
       ),
       body: BlocBuilder<DeviceCubit, DeviceState>(
         builder: (context, state) {
+
           if (state.resultDevices.status ==
               LoadStatus.loading) {
             return const Center(
@@ -216,7 +236,6 @@ class AutomatListScreen extends StatelessWidget {
                 child: Text("Không có thiết bị"));
           }
 
-          // Chia theo level
           final level3 = <dynamic>[];
           final level2 = <dynamic>[];
           final level1 = <dynamic>[];
@@ -230,18 +249,13 @@ class AutomatListScreen extends StatelessWidget {
               level1.add(devices[i]);
             }
           }
+
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-
-              buildPhaseGroup(
-                  context, "Xưởng 1", level3),
-
-              buildPhaseGroup(
-                  context, "Xưởng 2", level2),
-
-              buildPhaseGroup(
-                  context, "Xưởng 3", level1),
+              buildPhaseGroup(context, "Xưởng 1", level3),
+              buildPhaseGroup(context, "Xưởng 2", level2),
+              buildPhaseGroup(context, "Xưởng 3", level1),
             ],
           );
         },

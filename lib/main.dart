@@ -8,8 +8,6 @@ import 'di.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
-
   await EnvConfigs.init();
-  ApiClientProvider.init();
   runApp(const MyApp());
 }

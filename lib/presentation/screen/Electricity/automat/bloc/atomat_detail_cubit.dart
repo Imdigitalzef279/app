@@ -24,13 +24,17 @@ class AtomatDetailCubit  extends Cubit<AtomatDetailState>{
     try {
       emit(state.copyWith(load: LoadStatus.loading));
 
+      print("BREAKER SN: ${request.breakerSn}");
+      print("FROM: ${request.fromDate}");
+      print("TO: ${request.toDate}");
+
       final response = await _repo.getLogAtomat(request);
+
 
       if (response == null || response.isEmpty) {
         emit(state.copyWith(load: LoadStatus.failure));
         return;
       }
-
       emit(state.copyWith(
         load: LoadStatus.success,
         logData: response.last,
@@ -57,6 +61,7 @@ class AtomatDetailCubit  extends Cubit<AtomatDetailState>{
         breakerState: result,
       ));
     } catch (e) {
+      print("ERROR: $e");
       AppToast.showToastError(title: "Lỗi lấy trạng thái CB");
     }
   }

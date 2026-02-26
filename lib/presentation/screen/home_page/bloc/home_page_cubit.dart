@@ -23,51 +23,71 @@ class HomePageCubit extends Cubit<HomePageState> {
 
   Future<void> getProjects() async {
     try {
-      emit(state.copyWith(resultProjects: Result(status: LoadStatus.loading)));
+      if (isClosed) return;
+      emit(state.copyWith(
+        resultProjects: Result(status: LoadStatus.loading),
+      ));
+
       final token = await sharedPreferences.getAccessToken();
+
+      if (isClosed) return;
+
       if (token.isNotEmpty) {
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
         final projectId = decodedToken['ProjectId'];
 
-        if (projectId != null) {
-          if (projectId is List) {
-            int id = int.tryParse(projectId[0]) ?? 0;
-            final response = await _repo.getPowerStation(id);
-            if (response.isSuccess) {
-              emit(state.copyWith(
-                projectID: id,
-                  resultProjects: Result(
+        if (projectId != null && projectId is List) {
+          int id = int.tryParse(projectId[0]) ?? 0;
+
+          final response = await _repo.getPowerStation(id);
+
+          if (isClosed) return;
+
+          if (response.isSuccess) {
+            emit(state.copyWith(
+              projectID: id,
+              resultProjects: Result(
                 status: LoadStatus.success,
                 data: response.data,
-              ), allStation: response.data?.length ?? 0, active: response.data?.length ?? 0));
-              return;
-            }
-            emit(state.copyWith(
-                resultProjects: Result(
-                    status: LoadStatus.failure, error: LocalizationsUtils.localizations.noSuccess)));
+              ),
+              allStation: response.data?.length ?? 0,
+              active: response.data?.length ?? 0,
+            ));
             return;
           }
+
           emit(state.copyWith(
-              resultProjects: Result(
-                  status: LoadStatus.failure, error: "Project ko la list")));
+            resultProjects: Result(
+              status: LoadStatus.failure,
+              error: LocalizationsUtils.localizations.noSuccess,
+            ),
+          ));
           return;
         }
+
         emit(state.copyWith(
-            resultProjects:
-                Result(status: LoadStatus.failure, error: LocalizationsUtils.localizations.projectNull)));
+          resultProjects: Result(
+            status: LoadStatus.failure,
+            error: "Project ko la list",
+          ),
+        ));
         return;
       }
 
       emit(state.copyWith(
-          resultProjects: Result(
-              status: LoadStatus.failure,
-              error: LocalizationsUtils.localizations.an_error_occurred)));
-      return;
+        resultProjects: Result(
+          status: LoadStatus.failure,
+          error: LocalizationsUtils.localizations.an_error_occurred,
+        ),
+      ));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(
-          resultProjects: Result(
-              status: LoadStatus.failure,
-              error: LocalizationsUtils.localizations.an_error_occurred)));
+        resultProjects: Result(
+          status: LoadStatus.failure,
+          error: LocalizationsUtils.localizations.an_error_occurred,
+        ),
+      ));
     }
   }
 

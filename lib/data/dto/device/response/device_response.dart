@@ -3,6 +3,8 @@ import 'package:solar_energy/data/dto/lasted_log_data/response/lasted_log_data_r
 import 'package:solar_energy/data/dto/meter_type/response/meter_type_response.dart';
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 
+import '../../atomat/atomat_log_response.dart';
+
 part 'device_response.g.dart';
 
 part 'device_response.freezed.dart';
@@ -30,6 +32,7 @@ class DeviceResponse with _$DeviceResponse {
 
     @JsonKey(name: "lastedLogData")
     LastedLogDataResponse? lastedLogData,
+    AtomatLogResponse? realtimeLog,
   }) = _DeviceResponse;
 
   factory DeviceResponse.fromJson(Map<String, dynamic> json) =>

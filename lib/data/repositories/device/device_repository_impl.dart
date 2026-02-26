@@ -18,16 +18,39 @@ class DeviceRepositoryImpl extends BaseRepository implements DeviceRepository {
   @override
   Future<Result<List<DeviceResponse>>> getSolarElectric(int powerStationID) async {
     final result = Result<List<DeviceResponse>>();
-    try{
-      final List<DeviceResponse> data = await _api.getDevices(powerStationID);
-      return result.copyWith(data: data, status: LoadStatus.success);
-    }catch (e){
+
+    try {
+      final List<DeviceResponse> data =
+      await _api.getDevices(powerStationID);
+
+      return result.copyWith(
+        data: data,
+        status: LoadStatus.success,
+      );
+
+    } catch (e) {
+
+      // 🔥 THÊM ĐOẠN NÀY
+      if (e is DioException) {
+        print("========= DIO ERROR =========");
+        print("STATUS CODE: ${e.response?.statusCode}");
+        print("RESPONSE DATA: ${e.response?.data}");
+        print("MESSAGE: ${e.message}");
+        print("=============================");
+      }
+
       if (e is DioException && e.error is ErrorResponse) {
         final error = e.error as ErrorResponse;
         return result.copyWith(
-            status: LoadStatus.failure, error: error.message);
+          status: LoadStatus.failure,
+          error: error.message,
+        );
       }
-      return result.copyWith(status: LoadStatus.failure, error: e.toString());
+
+      return result.copyWith(
+        status: LoadStatus.failure,
+        error: e.toString(),
+      );
     }
   }
 

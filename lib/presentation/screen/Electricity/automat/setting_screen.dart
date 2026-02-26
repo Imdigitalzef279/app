@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../device/bloc/device_cubit.dart';
 
 class SettingScreen extends StatelessWidget {
-  final dynamic device;
+  final dynamic device; // GIỮ device như cũ
 
   const SettingScreen({
     super.key,
@@ -21,88 +19,137 @@ class SettingScreen extends StatelessWidget {
         child: Column(
           children: [
 
-            // ===== THÔNG TIN THIẾT BỊ =====
+            /// ===== THÔNG TIN THIẾT BỊ =====
             Card(
               child: ListTile(
                 leading: const Icon(Icons.electrical_services),
                 title: Text(device.name ?? device.code ?? ''),
-                subtitle: Text("Gateway: ${device.gatewayNumber ?? ''}"),
+                subtitle:
+                Text("Gateway: ${device.gatewayNumber ?? ''}"),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // ===== ĐỔI TÊN =====
-            ElevatedButton.icon(
-              icon: const Icon(Icons.edit),
-              label: const Text("Đổi tên thiết bị"),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => _RenameDialog(device: device),
-                );
-              },
-            ),
+            /// ===== BẢNG THÔNG SỐ =====
+            Expanded(
+              child: SingleChildScrollView(
+                child: Card(
+                  elevation: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Table(
+                      border: TableBorder.all(
+                          color: Colors.grey.shade300),
+                      columnWidths: const {
+                        0: FlexColumnWidth(2),
+                        1: FlexColumnWidth(1.2),
+                        2: FlexColumnWidth(1.5),
+                      },
+                      children: [
+                        const TableRow(
+                          decoration: BoxDecoration(
+                              color: Color(0xFFF0F0F0)),
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("Thông số",
+                                  style: TextStyle(
+                                      fontWeight:
+                                      FontWeight.bold)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("Mặc định",
+                                  style: TextStyle(
+                                      fontWeight:
+                                      FontWeight.bold)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Text("Người dùng",
+                                  style: TextStyle(
+                                      fontWeight:
+                                      FontWeight.bold)),
+                            ),
+                          ],
+                        ),
 
-            const SizedBox(height: 12),
-
-            // ===== RESET =====
-            ElevatedButton.icon(
-              icon: const Icon(Icons.restart_alt),
-              label: const Text("Reset thiết bị"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
+                        _buildRow("Quá dòng (A)", "63", "10", "100"),
+                        _buildRow("Quá áp (V)", "240", "200", "260"),
+                        _buildRow("Thấp áp (V)", "180", "150", "210"),
+                        _buildRow("Dòng dò (mA)", "30", "10", "100"),
+                        _buildRow("Quá công suất (kW)", "5", "1", "10"),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              onPressed: () {
-                // TODO: gọi API reset nếu có
-              },
             ),
+
+            const SizedBox(height: 20),
+
+            /// ===== SAVE BUTTON =====
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  // TODO: giữ logic save cũ
+                },
+                child: const Text(
+                  "Lưu cài đặt",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            )
           ],
         ),
       ),
     );
   }
-}
-class _RenameDialog extends StatefulWidget {
-  final dynamic device;
 
-  const _RenameDialog({required this.device});
-
-  @override
-  State<_RenameDialog> createState() => _RenameDialogState();
-}
-
-class _RenameDialogState extends State<_RenameDialog> {
-  late TextEditingController controller;
-
-  @override
-  void initState() {
-    controller =
-        TextEditingController(text: widget.device.name ?? '');
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Đổi tên thiết bị"),
-      content: TextField(
-        controller: controller,
-        decoration: const InputDecoration(
-          labelText: "Tên mới",
+  static TableRow _buildRow(
+      String name, String defaultValue, String min, String max) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(name),
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Hủy"),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            defaultValue,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Colors.blue,
+            ),
+          ),
         ),
-        ElevatedButton(
-          onPressed: () async {
-            // TODO: gọi update API nếu có
-            Navigator.pop(context);
-          },
-          child: const Text("Lưu"),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const TextField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  isDense: true,
+                  border: OutlineInputBorder(),
+                  hintText: "Nhập giá trị",
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "Min: $min | Max: $max",
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

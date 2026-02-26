@@ -112,14 +112,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Text(
-                          //   LocalizationsUtils.localizations.instructions,
-                          //   style: AppTextStyle.textSm.copyWith(
-                          //     color: AppColors.textPrimary,
-                          //     fontWeight: FontWeight.w600,
-                          //   ),
-                          // ),
-                          // 12.verticalSpace,
                         ],
                       ),
                     ),
@@ -218,10 +210,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               context,
                               MaterialPageRoute(
                                 builder: (_) => BlocProvider(
-                                  create: (_) => DeviceCubit()
-                                    ..getAllDevices(
-                                      powerStationId: widget.project.id!,
-                                    ),
+                                  create: (_) => DeviceCubit(),
                                   child: AutomatListScreen(
                                     powerStationId: widget.project.id!,
                                   ),

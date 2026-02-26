@@ -8,25 +8,34 @@ Future<String?> showPasswordDialog(BuildContext context) async {
     barrierDismissible: false,
     builder: (context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
         title: const Text("Xác thực"),
         content: TextField(
           controller: controller,
+          keyboardType: TextInputType.number,
+          maxLength: 4,
           obscureText: true,
-          autofocus: true,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            letterSpacing: 12,
+            fontSize: 20,
+          ),
           decoration: const InputDecoration(
-            hintText: "Nhập mật khẩu",
+            hintText: "Nhập mã PIN 4 số",
+            counterText: "",
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Huỷ"),
+            child: const Text("Hủy"),
           ),
           ElevatedButton(
             onPressed: () {
-              final password = controller.text.trim();
-              if (password.isEmpty) return;
-              Navigator.pop(context, password);
+              if (controller.text.length != 4) return;
+              Navigator.pop(context, controller.text);
             },
             child: const Text("Xác nhận"),
           ),

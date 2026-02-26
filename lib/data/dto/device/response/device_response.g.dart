@@ -34,6 +34,10 @@ _$DeviceResponseImpl _$$DeviceResponseImplFromJson(Map<String, dynamic> json) =>
           ? null
           : LastedLogDataResponse.fromJson(
               json['lastedLogData'] as Map<String, dynamic>),
+      realtimeLog: json['realtimeLog'] == null
+          ? null
+          : AtomatLogResponse.fromJson(
+              json['realtimeLog'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$DeviceResponseImplToJson(
@@ -56,4 +60,5 @@ Map<String, dynamic> _$$DeviceResponseImplToJson(
       'meterType': instance.meterType,
       'powerStation': instance.powerStation,
       'lastedLogData': instance.lastedLogData,
+      'realtimeLog': instance.realtimeLog,
     };

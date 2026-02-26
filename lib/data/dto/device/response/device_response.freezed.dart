@@ -39,6 +39,7 @@ mixin _$DeviceResponse {
   @JsonKey(name: "lastedLogData")
   LastedLogDataResponse? get lastedLogData =>
       throw _privateConstructorUsedError;
+  AtomatLogResponse? get realtimeLog => throw _privateConstructorUsedError;
 
   /// Serializes this DeviceResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -73,11 +74,13 @@ abstract class $DeviceResponseCopyWith<$Res> {
       String gatewayNumber,
       MeterTypeResponse meterType,
       PowerStationResponse powerStation,
-      @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData});
+      @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData,
+      AtomatLogResponse? realtimeLog});
 
   $MeterTypeResponseCopyWith<$Res> get meterType;
   $PowerStationResponseCopyWith<$Res> get powerStation;
   $LastedLogDataResponseCopyWith<$Res>? get lastedLogData;
+  $AtomatLogResponseCopyWith<$Res>? get realtimeLog;
 }
 
 /// @nodoc
@@ -112,6 +115,7 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
     Object? meterType = null,
     Object? powerStation = null,
     Object? lastedLogData = freezed,
+    Object? realtimeLog = freezed,
   }) {
     return _then(_value.copyWith(
       meterTypeId: null == meterTypeId
@@ -182,6 +186,10 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
           ? _value.lastedLogData
           : lastedLogData // ignore: cast_nullable_to_non_nullable
               as LastedLogDataResponse?,
+      realtimeLog: freezed == realtimeLog
+          ? _value.realtimeLog
+          : realtimeLog // ignore: cast_nullable_to_non_nullable
+              as AtomatLogResponse?,
     ) as $Val);
   }
 
@@ -218,6 +226,20 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
       return _then(_value.copyWith(lastedLogData: value) as $Val);
     });
   }
+
+  /// Create a copy of DeviceResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $AtomatLogResponseCopyWith<$Res>? get realtimeLog {
+    if (_value.realtimeLog == null) {
+      return null;
+    }
+
+    return $AtomatLogResponseCopyWith<$Res>(_value.realtimeLog!, (value) {
+      return _then(_value.copyWith(realtimeLog: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -245,7 +267,8 @@ abstract class _$$DeviceResponseImplCopyWith<$Res>
       String gatewayNumber,
       MeterTypeResponse meterType,
       PowerStationResponse powerStation,
-      @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData});
+      @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData,
+      AtomatLogResponse? realtimeLog});
 
   @override
   $MeterTypeResponseCopyWith<$Res> get meterType;
@@ -253,6 +276,8 @@ abstract class _$$DeviceResponseImplCopyWith<$Res>
   $PowerStationResponseCopyWith<$Res> get powerStation;
   @override
   $LastedLogDataResponseCopyWith<$Res>? get lastedLogData;
+  @override
+  $AtomatLogResponseCopyWith<$Res>? get realtimeLog;
 }
 
 /// @nodoc
@@ -285,6 +310,7 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
     Object? meterType = null,
     Object? powerStation = null,
     Object? lastedLogData = freezed,
+    Object? realtimeLog = freezed,
   }) {
     return _then(_$DeviceResponseImpl(
       meterTypeId: null == meterTypeId
@@ -355,6 +381,10 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
           ? _value.lastedLogData
           : lastedLogData // ignore: cast_nullable_to_non_nullable
               as LastedLogDataResponse?,
+      realtimeLog: freezed == realtimeLog
+          ? _value.realtimeLog
+          : realtimeLog // ignore: cast_nullable_to_non_nullable
+              as AtomatLogResponse?,
     ));
   }
 }
@@ -379,7 +409,8 @@ class _$DeviceResponseImpl implements _DeviceResponse {
       this.gatewayNumber = '',
       this.meterType = const MeterTypeResponse(),
       this.powerStation = const PowerStationResponse(),
-      @JsonKey(name: "lastedLogData") this.lastedLogData});
+      @JsonKey(name: "lastedLogData") this.lastedLogData,
+      this.realtimeLog});
 
   factory _$DeviceResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$DeviceResponseImplFromJson(json);
@@ -436,10 +467,12 @@ class _$DeviceResponseImpl implements _DeviceResponse {
   @override
   @JsonKey(name: "lastedLogData")
   final LastedLogDataResponse? lastedLogData;
+  @override
+  final AtomatLogResponse? realtimeLog;
 
   @override
   String toString() {
-    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, parentId: $parentId, level: $level, creationTime: $creationTime, gatewayNumber: $gatewayNumber, meterType: $meterType, powerStation: $powerStation, lastedLogData: $lastedLogData)';
+    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, parentId: $parentId, level: $level, creationTime: $creationTime, gatewayNumber: $gatewayNumber, meterType: $meterType, powerStation: $powerStation, lastedLogData: $lastedLogData, realtimeLog: $realtimeLog)';
   }
 
   @override
@@ -474,7 +507,9 @@ class _$DeviceResponseImpl implements _DeviceResponse {
             (identical(other.powerStation, powerStation) ||
                 other.powerStation == powerStation) &&
             (identical(other.lastedLogData, lastedLogData) ||
-                other.lastedLogData == lastedLogData));
+                other.lastedLogData == lastedLogData) &&
+            (identical(other.realtimeLog, realtimeLog) ||
+                other.realtimeLog == realtimeLog));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -497,7 +532,8 @@ class _$DeviceResponseImpl implements _DeviceResponse {
       gatewayNumber,
       meterType,
       powerStation,
-      lastedLogData);
+      lastedLogData,
+      realtimeLog);
 
   /// Create a copy of DeviceResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -535,7 +571,8 @@ abstract class _DeviceResponse implements DeviceResponse {
       final MeterTypeResponse meterType,
       final PowerStationResponse powerStation,
       @JsonKey(name: "lastedLogData")
-      final LastedLogDataResponse? lastedLogData}) = _$DeviceResponseImpl;
+      final LastedLogDataResponse? lastedLogData,
+      final AtomatLogResponse? realtimeLog}) = _$DeviceResponseImpl;
 
   factory _DeviceResponse.fromJson(Map<String, dynamic> json) =
       _$DeviceResponseImpl.fromJson;
@@ -575,6 +612,8 @@ abstract class _DeviceResponse implements DeviceResponse {
   @override
   @JsonKey(name: "lastedLogData")
   LastedLogDataResponse? get lastedLogData;
+  @override
+  AtomatLogResponse? get realtimeLog;
 
   /// Create a copy of DeviceResponse
   /// with the given fields replaced by the non-null parameter values.

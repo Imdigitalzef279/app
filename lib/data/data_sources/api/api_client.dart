@@ -73,6 +73,7 @@ abstract class ApiClient {
   ///
   @POST('api/app/log-meter-breaker/get-list') /// con này log atomat
   Future<List<AtomatLogResponse>> getLogAtomat(
+
       @Body()  AtomatRequest request,
       );
 

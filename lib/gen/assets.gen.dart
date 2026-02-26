@@ -262,23 +262,11 @@ class $AssetsIconsGen {
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// File path: assets/images/Acrel ASCB1 display module.jpg
-  AssetGenImage get acrelASCB1DisplayModule =>
-      const AssetGenImage('assets/images/Acrel ASCB1 display module.jpg');
-
-  /// File path: assets/images/Acrel ASCB1-63-C 4P.j.webp
-  AssetGenImage get acrelASCB163C4PJ =>
-      const AssetGenImage('assets/images/Acrel ASCB1-63-C 4P.j.webp');
-
   /// File path: assets/images/AnimationLogin.json
   String get animationLogin => 'assets/images/AnimationLogin.json';
 
   /// File path: assets/images/animation.json
   String get animation => 'assets/images/animation.json';
-
-  /// File path: assets/images/ascb1_63.jpg
-  AssetGenImage get ascb163 =>
-      const AssetGenImage('assets/images/ascb1_63.jpg');
 
   /// File path: assets/images/electric_pole.png
   AssetGenImage get electricPole =>
@@ -298,6 +286,29 @@ class $AssetsImagesGen {
   /// File path: assets/images/logo.png
   AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
 
+  /// File path: assets/images/mccb_3p.png
+  AssetGenImage get mccb3p => const AssetGenImage('assets/images/mccb_3p.png');
+
+  /// File path: assets/images/mm50h_1p.png
+  AssetGenImage get mm50h1p =>
+      const AssetGenImage('assets/images/mm50h_1p.png');
+
+  /// File path: assets/images/mm50h_2p.png
+  AssetGenImage get mm50h2p =>
+      const AssetGenImage('assets/images/mm50h_2p.png');
+
+  /// File path: assets/images/mm50h_3p.png
+  AssetGenImage get mm50h3p =>
+      const AssetGenImage('assets/images/mm50h_3p.png');
+
+  /// File path: assets/images/mm50h_4p.png
+  AssetGenImage get mm50h4p =>
+      const AssetGenImage('assets/images/mm50h_4p.png');
+
+  /// File path: assets/images/rcbo_2p_4p.png
+  AssetGenImage get rcbo2p4p =>
+      const AssetGenImage('assets/images/rcbo_2p_4p.png');
+
   /// File path: assets/images/solar_energy.png
   AssetGenImage get solarEnergy =>
       const AssetGenImage('assets/images/solar_energy.png');
@@ -307,16 +318,19 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<dynamic> get values => [
-        acrelASCB1DisplayModule,
-        acrelASCB163C4PJ,
         animationLogin,
         animation,
-        ascb163,
         electricPole,
         exclamationMark,
         exclamation,
         factory,
         logo,
+        mccb3p,
+        mm50h1p,
+        mm50h2p,
+        mm50h3p,
+        mm50h4p,
+        rcbo2p4p,
         solarEnergy,
         waterLottie
       ];

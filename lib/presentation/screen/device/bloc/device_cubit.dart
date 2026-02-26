@@ -9,6 +9,7 @@ import 'package:solar_energy/data/repositories/cbs/cbs_repository.dart';
 import 'package:solar_energy/data/repositories/device/device_repository.dart';
 import 'package:solar_energy/di.dart';
 
+import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
 import '../../../common_widgets/app_toast.dart';
 
@@ -76,25 +77,60 @@ class DeviceCubit extends Cubit<DeviceState> {
   Future<void> getAllDevices({
     required int powerStationId,
   }) async {
+
+    print("=== CALL getAllDevices ===");
+    print("PowerStationId: $powerStationId");
+
     emit(state.copyWith(
       resultDevices: Result(status: LoadStatus.loading),
     ));
 
-    final response = await _repo.getSolarElectric(powerStationId);
+    try {
 
-    if (response.data?.isEmpty ?? true) {
+      print("➡️ Calling API...");
+      final response = await _repo.getSolarElectric(powerStationId);
+
+      print("⬅️ API Response:");
+      print("Status: ${response.status}");
+      print("Data: ${response.data}");
+      print("Error: ${response.error}");
+
+      if (response.status != LoadStatus.success ||
+          response.data == null ||
+          response.data!.isEmpty) {
+
+        print("❌ API FAIL OR EMPTY");
+
+        emit(state.copyWith(
+          resultDevices: Result(
+            status: LoadStatus.failure,
+            error: response.error.isNotEmpty
+                ? response.error
+                : "Không có thiết bị",
+          ),
+        ));
+        return;
+      }
+
+      print("✅ API SUCCESS - EMIT SUCCESS");
+
+      emit(state.copyWith(
+        resultDevices: response,
+      ));
+
+    } catch (e, stack) {
+
+      print("🔥 EXCEPTION:");
+      print(e);
+      print(stack);
+
       emit(state.copyWith(
         resultDevices: Result(
           status: LoadStatus.failure,
-          error: "Không có thiết bị",
+          error: e.toString(),
         ),
       ));
-      return;
     }
-
-    emit(state.copyWith(
-      resultDevices: response.copyWith(status: LoadStatus.success),
-    ));
   }
 
   // ============================================================
@@ -222,8 +258,8 @@ class DeviceCubit extends Cubit<DeviceState> {
     if (authType == "none") return true;
 
     if (authType == "password") {
-      if (password == null || password.isEmpty) return false;
-      return password == "123456";
+      if (password == null || password.length != 4) return false;
+      return password == "9999"; // 🔥 PIN mới
     }
 
     if (authType == "email") {
@@ -290,5 +326,24 @@ class DeviceCubit extends Cubit<DeviceState> {
         return null;
     }
   }
+  void updateRealtimeLog(int deviceId, AtomatLogResponse log) {
+    final currentList = state.resultDevices.data;
 
+    if (currentList == null) return;
+
+    final updatedList = currentList.map((device) {
+      if (device.id == deviceId) {
+        return device.copyWith(
+          realtimeLog: log, // 👈 bạn cần thêm field này nếu chưa có
+        );
+      }
+      return device;
+    }).toList();
+
+    emit(
+      state.copyWith(
+        resultDevices: state.resultDevices.copyWith(data: updatedList),
+      ),
+    );
+  }
 }

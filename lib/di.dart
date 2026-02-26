@@ -1,6 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
-import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/repositories/atomat_repo/atomat_repository.dart';
 import 'package:solar_energy/data/repositories/atomat_repo/atomat_repository_impl.dart';
 import 'package:solar_energy/data/repositories/auth/auth_repository.dart';
@@ -17,6 +15,7 @@ import 'package:solar_energy/data/repositories/solar_electric/solar_electric_rep
 import 'package:solar_energy/data/repositories/water/water_repository.dart';
 import 'package:solar_energy/data/repositories/water/water_repository_impl.dart';
 import 'application/configs/env_configs.dart';
+import 'application/utils/navigation_utils.dart';
 import 'data/data_sources/mcb/mcb_mock_datasource.dart';
 import 'data/data_sources/mcb/mcb_remote_datasource.dart';
 import 'data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
@@ -28,19 +27,61 @@ import 'package:dio/dio.dart';
 import 'data/repositories/switch_log/switch_log_repository.dart';
 import 'data/repositories/switch_log/switch_log_repository_impl.dart';
 import 'domain/mcb/repositories/mcb_repository.dart';
+import 'data/data_sources/api/api_client.dart';
+import 'navigation_service.dart';
+
 final getIt = GetIt.instance;
 
 void configureDependencies() {
-  getIt.registerLazySingleton<Dio>(
-        () => Dio(
+  getIt.registerLazySingleton<Dio>(() {
+    final dio = Dio(
       BaseOptions(
-        baseUrl: EnvConfigs.baseUrl, // nếu bạn có config
+        baseUrl: EnvConfigs.baseUrl,
         headers: {
           "Content-Type": "application/json",
         },
       ),
-    ),
-  );
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final prefs = getIt<SharedPreferencesHelper>();
+          final token = await prefs.getAccessToken();
+
+          if (token != null && token.isNotEmpty) {
+            options.headers["Authorization"] = "Bearer $token";
+          }
+
+          print("REQUEST: ${options.uri}");
+          print("HEADERS: ${options.headers}");
+
+          return handler.next(options);
+        },
+        onError: (e, handler) async {
+          print("========== DIO ERROR ==========");
+          print("STATUS: ${e.response?.statusCode}");
+
+          if (e.response?.statusCode == 401) {
+            print("TOKEN HẾT HẠN → LOGOUT");
+
+            final prefs = getIt<SharedPreferencesHelper>();
+            await prefs.removeAccessToken();
+
+            NavigatorUtils.navigatorKey.currentState
+                ?.pushNamedAndRemoveUntil(
+              '/login',
+                  (route) => false,
+            );
+          }
+
+          return handler.next(e);
+        },
+      ),
+    );
+
+    return dio;
+  });
   // shared preferences
   getIt.registerLazySingleton<SharedPreferencesHelper>(
       () => SharedPreferencesHelper());
@@ -72,5 +113,8 @@ void configureDependencies() {
   );
   getIt.registerLazySingleton<SwitchLogRepository>(
         () => SwitchLogRepositoryImpl(getIt<Dio>()),
+  );
+  getIt.registerLazySingleton<ApiClient>(
+        () => ApiClient(getIt<Dio>()),
   );
 }

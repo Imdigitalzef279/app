@@ -21,13 +21,29 @@ class ProjectRepositoryImpl extends BaseRepository
     try{
       final List<PowerStationResponse> data = await _api.getPowerStation(projectID);
       return result.copyWith(data: data, status: LoadStatus.success);
-    }catch (e){
+    }catch (e) {
+
+      // 🔥 THÊM DEBUG Ở ĐÂY
+      if (e is DioException) {
+        print("========= POWER STATION ERROR =========");
+        print("STATUS CODE: ${e.response?.statusCode}");
+        print("RESPONSE DATA: ${e.response?.data}");
+        print("MESSAGE: ${e.message}");
+        print("=======================================");
+      }
+
       if (e is DioException && e.error is ErrorResponse) {
         final error = e.error as ErrorResponse;
         return result.copyWith(
-            status: LoadStatus.failure, error: error.message);
+          status: LoadStatus.failure,
+          error: error.message,
+        );
       }
-      return result.copyWith(status: LoadStatus.failure, error: e.toString());
+
+      return result.copyWith(
+        status: LoadStatus.failure,
+        error: e.toString(),
+      );
     }
   }
 
