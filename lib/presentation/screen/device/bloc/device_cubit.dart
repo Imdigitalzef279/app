@@ -168,12 +168,8 @@ class DeviceCubit extends Cubit<DeviceState> {
       DeviceResponse device, {
         required String password,
       }) async {
-    final current =
-    state.resultDevices.data?.firstWhere((d) => d.id == device.id);
-    if (current == null) return;
 
-    // Không cho bật/tắt khi đang bảo trì
-    if (current.status == 2) return;
+    if (state.isForceLoading) return;
 
     final isValid = await _verifyForceAuth(password: password);
     if (!isValid) {
@@ -184,23 +180,55 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(isForceLoading: true));
 
     try {
-      final isTurningOn = current.status == 0;
 
-      await switchCbsWithForce(
+      /// 🔥 Toggle theo relay thật
+      final currentRelay = device.rlyRepSta; // int
+      final commandValue = currentRelay == 0 ? 1 : 0;
+
+      print("Current relay: $currentRelay");
+      print("Send switch: $commandValue");
+
+      final success = await switchCbsWithForce(
         device,
-        isTurningOn ? "1" : "0",
+        commandValue.toString(),
         false,
       );
 
-      _updateLocalStatus(device.id, isTurningOn ? 1 : 0);
+      if (!success) {
+        emit(state.copyWith(isForceLoading: false));
+        AppToast.showToastError(title: "Không ON/OFF được");
+        return;
+      }
+
+      /// ✅ Optimistic update theo relay
+      final currentList = state.resultDevices.data ?? [];
+
+      final updatedList = currentList.map((d) {
+        if (d.id == device.id) {
+          return d.copyWith(
+            rlyRepSta: commandValue,
+          );
+        }
+        return d;
+      }).toList();
+
+      emit(state.copyWith(
+        resultDevices: state.resultDevices.copyWith(
+          data: updatedList,
+        ),
+        isForceLoading: false,
+      ));
+
+      /// Reload nền
+      await getAllDevices(
+        powerStationId: device.powerStationId,
+      );
 
     } catch (e) {
+      emit(state.copyWith(isForceLoading: false));
       AppToast.showToastError(title: "Có lỗi xảy ra");
     }
-
-    emit(state.copyWith(isForceLoading: false));
   }
-
   // ============================================================
 // TOGGLE MAINTENANCE
 // ============================================================
@@ -208,9 +236,8 @@ class DeviceCubit extends Cubit<DeviceState> {
       DeviceResponse device, {
         required String password,
       }) async {
-    final current =
-    state.resultDevices.data?.firstWhere((d) => d.id == device.id);
-    if (current == null) return;
+
+    if (state.isForceLoading) return;
 
     final isValid = await _verifyForceAuth(password: password);
     if (!isValid) {
@@ -221,91 +248,105 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(isForceLoading: true));
 
     try {
-      final isEnable = current.status != 2;
 
-      // Nếu bật bảo trì mà đang ON → tắt trước
-      if (isEnable && current.status == 1) {
-        await switchCbsWithForce(device, "0", false);
+      final isMaintenance = device.rlyRepSta == "1";
+      final commandValue = isMaintenance ? "0" : "1";
+
+      final success = await switchCbsWithForce(
+        device,
+        commandValue,
+        true, // maintenance luôn force
+      );
+
+      if (!success) {
+        AppToast.showToastError(title: "Không đổi bảo trì được");
+        emit(state.copyWith(isForceLoading: false));
+        return;
       }
 
-      await switchCbsWithForce(
-        device,
-        isEnable ? "0" : "1",
-        isEnable,
-      );
+      await getAllDevices(powerStationId: device.powerStationId);
 
-      _updateLocalStatus(device.id, isEnable ? 2 : 1);
-
-      AppToast.showToastSuccess(
-        title: isEnable
-            ? "Đã bật chế độ bảo trì"
-            : "Đã tắt chế độ bảo trì",
-      );
-    } catch (e) {
+    } catch (_) {
       AppToast.showToastError(title: "Có lỗi xảy ra");
     }
 
     emit(state.copyWith(isForceLoading: false));
   }
+  Future<void> forcePower(
+      DeviceResponse device, {
+        required String password,
+      }) async {
 
+    if (state.isForceLoading) return;
 
-  Future<bool> _verifyForceAuth({
-    String? password,
-    bool emailVerified = false,
-  }) async {
-    const authType = "password";
-
-    if (authType == "none") return true;
-
-    if (authType == "password") {
-      if (password == null || password.length != 4) return false;
-      return password == "9999"; // 🔥 PIN mới
+    final isValid = await _verifyForceAuth(password: password);
+    if (!isValid) {
+      AppToast.showToastError(title: "Sai mật khẩu");
+      return;
     }
 
-    if (authType == "email") {
-      return emailVerified;
+    emit(state.copyWith(isForceLoading: true));
+
+    try {
+      final currentStatus = device.status ?? 0;
+      final commandValue = currentStatus == 1 ? "0" : "1";
+
+      final success = await switchCbsWithForce(
+        device,
+        commandValue,
+        true, // ✅ force
+      );
+
+      if (!success) {
+        AppToast.showToastError(title: "Force thất bại");
+        emit(state.copyWith(isForceLoading: false));
+        return;
+      }
+
+      await getAllDevices(powerStationId: device.powerStationId);
+
+    } catch (_) {
+      AppToast.showToastError(title: "Có lỗi xảy ra");
     }
 
-    return false;
+    emit(state.copyWith(isForceLoading: false));
   }
-
   // ============================================================
   // TÍnh năng đóng cắt
   // ============================================================
 
-  Future<void> switchCbsWithForce(
+  Future<bool> switchCbsWithForce(
       DeviceResponse device,
       String commandValue,
       bool isForce,
       ) async {
     try {
+      print("===== SWITCH DEBUG =====");
+      print("serialNumber: ${device.serialNumber}");
+      print("breakerSn: ${device.code}");
+      print("gatewaySn: ${device.gatewayNumber}");
+      print("commandValue: $commandValue");
+      print("isForce: $isForce");
+      print("========================");
+
       final response = await _cbs.sendCbsCommand(
         CbsMeterRequest(
           addr: device.serialNumber,
           breakerSn: device.code,
           gatewaySn: device.gatewayNumber,
-          commandValue: commandValue, // truyền trực tiếp
+          commandValue: commandValue,
           isForce: isForce,
         ),
       );
 
-      if (response == -1) {
-        AppToast.showToastError(title: "Lỗi, không đóng/cắt được");
-        return;
-      }
+      print("RESPONSE: $response");
 
-      AppToast.showToastSuccess(
-        title: isForce
-            ? "Thành công (Force Mode)"
-            : "Thành công",
-      );
+      if (response == -1) return false;
 
-      await getAllDevices(
-        powerStationId: device.powerStationId,
-      );
-
+      return true;
     } catch (e) {
-      AppToast.showToastError(title: "Có lỗi xảy ra");
+      print("ERROR SWITCH: $e");
+      return false;
     }
   }
   // ============================================================
@@ -326,24 +367,45 @@ class DeviceCubit extends Cubit<DeviceState> {
         return null;
     }
   }
-  void updateRealtimeLog(int deviceId, AtomatLogResponse log) {
+  void updateRealtimeLogByCode(String code, AtomatLogResponse log) {
     final currentList = state.resultDevices.data;
-
     if (currentList == null) return;
 
     final updatedList = currentList.map((device) {
-      if (device.id == deviceId) {
-        return device.copyWith(
-          realtimeLog: log, // 👈 bạn cần thêm field này nếu chưa có
-        );
+      if (device.code == code) {
+        return device.copyWith(realtimeLog: log);
       }
       return device;
     }).toList();
-
+    void setSwitching(bool value) {
+      emit(state.copyWith(isForceLoading: value));
+    }
     emit(
       state.copyWith(
         resultDevices: state.resultDevices.copyWith(data: updatedList),
       ),
     );
+  }
+  void setSwitching(bool value) {
+    emit(state.copyWith(isForceLoading: value));
+  }
+  Future<bool> _verifyForceAuth({
+    String? password,
+    bool emailVerified = false,
+  }) async {
+    const authType = "password";
+
+    if (authType == "none") return true;
+
+    if (authType == "password") {
+      if (password == null || password.length != 4) return false;
+      return password == "9999";
+    }
+
+    if (authType == "email") {
+      return emailVerified;
+    }
+
+    return false;
   }
 }

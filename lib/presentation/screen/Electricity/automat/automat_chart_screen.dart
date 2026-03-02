@@ -44,9 +44,9 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
 
                 _section("Phase Current (A)",
                     [
-                      _line(logs, (e) => e.ia, Colors.blue),
-                      _line(logs, (e) => e.ib, Colors.green),
-                      _line(logs, (e) => e.ic, Colors.red),
+                      _line(logs, (e) => e.ia ?? 0, Colors.blue),
+                      _line(logs, (e) => e.ib ?? 0, Colors.green),
+                      _line(logs, (e) => e.ic ?? 0, Colors.red),
                     ],
                     maxY: 50),
 
@@ -54,9 +54,9 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
 
                 _section("Phase Voltage (V)",
                     [
-                      _line(logs, (e) => e.ua, Colors.orange),
-                      _line(logs, (e) => e.ub, Colors.purple),
-                      _line(logs, (e) => e.uc, Colors.teal),
+                      _line(logs, (e) => e.ua ?? 0, Colors.orange),
+                      _line(logs, (e) => e.ub ?? 0, Colors.purple),
+                      _line(logs, (e) => e.uc ?? 0, Colors.teal),
                     ],
                     maxY: 260),
 
@@ -64,7 +64,7 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
 
                 _section("Leakage Current (mA)",
                     [
-                      _line(logs, (e) => e.i0, Colors.red),
+                      _line(logs, (e) => e.i0 ?? 0, Colors.red),
                     ],
                     maxY: 100),
 
@@ -72,9 +72,9 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
 
                 _section("Temperature (°C)",
                     [
-                      _line(logs, (e) => e.temp1, Colors.blue),
-                      _line(logs, (e) => e.temp2, Colors.green),
-                      _line(logs, (e) => e.temp3, Colors.red),
+                      _line(logs, (e) => e.temp1 ?? 0, Colors.blue),
+                      _line(logs, (e) => e.temp2 ?? 0, Colors.green),
+                      _line(logs, (e) => e.temp3 ?? 0, Colors.red),
                     ],
                     maxY: 120),
               ],

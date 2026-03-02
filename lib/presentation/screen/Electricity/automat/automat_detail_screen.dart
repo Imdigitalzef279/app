@@ -1,20 +1,19 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:solar_energy/data/dto/atomat/atomat_request.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
-import 'package:solar_energy/application/enums/load_status.dart';
+
 import 'package:solar_energy/presentation/screen/Electricity/automat/bloc/atomat_detail_cubit.dart';
-import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/switch_log_screen.dart';
+
 import '../../../../application/meter_realtime/meter_realtime_cubit.dart';
-import '../../../../application/switch_log/switch_log_cubit.dart';
+
 import '../../../../data/dto/atomat/atomat_log_response.dart';
-import '../../../../data/repositories/switch_log/switch_log_repository.dart';
+
 import '../../../../data/services/signalr_service.dart';
-import '../../../../di.dart';
+
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart_screen.dart';
 
@@ -42,10 +41,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
-    print("code: ${currentDevice.code}");
-    print("serial: ${currentDevice.serialNumber}");
-    print("gateway: ${currentDevice.gatewayNumber}");
-    // ===== LOAD LOG NGÀY HÔM NAY (GIỮ NGUYÊN) =====
+
     final now = DateTime.now();
     final from = DateTime(now.year, now.month, now.day, 0, 0, 0);
     final to = DateTime(now.year, now.month, now.day, 23, 59, 59);
@@ -58,30 +54,63 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
 
-    // ===== 🔥 CONNECT REALTIME =====
-    SignalRService().connect(
-      meterCode: currentDevice.gatewayNumber,
-      onData: (data) {
-        _handleRealtime(data);
-      },
+    final signalR = SignalRService();
+
+    // 🔥 CONNECT
+    signalR.connect(
+      meterCode: currentDevice.code ?? "",
     );
+
+    // 🔥 LISTEN REALTIME
+    signalR.stream.listen(_handleRealtime);
+  }
+  @override
+  void dispose() {
+    SignalRService().disconnect();
+    super.dispose();
   }
   void _handleRealtime(Map<String, dynamic> data) {
-    print("📡 Detail realtime: $data");
-
     try {
-      // 🔥 chỉ xử lý khi có dữ liệu điện
-      if (!data.containsKey("breakerMeterDataDto")) {
+      final event = data["event"];
+      if (event == "ReceiveCommand") {
+        if (data["status"] == 1) {
+          context.read<DeviceCubit>().setSwitching(false);
+        }
         return;
       }
+      if (event != "ReceiveChart" && event != "ReceiveLog") {
 
-      final meterData =
-      Map<String, dynamic>.from(data["breakerMeterDataDto"]);
+        return;
+      }
+      final dto = data["breakerMeterDataDto"];
+      if (dto == null) {
+        return;
+      }
+      final raw = Map<String, dynamic>.from(dto);
+      // =========================================================
+      // 3️⃣ DEBUG REALTIME STATE
+      // =========================================================
 
-      final log = AtomatLogResponse.fromJson(meterData);
+      // Convert String number -> num
+      raw.updateAll((key, value) {
+        if (value is String) {
+          final numValue = num.tryParse(value);
+          return numValue ?? value;
+        }
+        return value;
+      });
 
-      context.read<DeviceCubit>().updateRealtimeLog(
-        currentDevice.id,
+      raw["updatedAt"] = data["updatedAt"];
+
+      final log = AtomatLogResponse.fromJson(raw);
+
+
+
+      // =========================================================
+      // 4️⃣ UPDATE DEVICE
+      // =========================================================
+      context.read<DeviceCubit>().updateRealtimeLogByCode(
+        currentDevice.code,
         log,
       );
 
@@ -221,266 +250,305 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<DeviceCubit, DeviceState>(
-      listener: (context, state) {
-        if (state.resultDevices.status == LoadStatus.success) {
-          final list = state.resultDevices.data;
+    return BlocBuilder<DeviceCubit, DeviceState>(
+      builder: (context, deviceState) {
 
-          if (list != null) {
-            final updated =
-            list.where((d) => d.id == currentDevice.id).toList();
+        final device = deviceState.resultDevices.data
+            ?.firstWhere(
+              (d) => d.id == widget.device.id,
+          orElse: () => widget.device,
+        );
 
-            if (updated.isNotEmpty) {
-              setState(() {
-                currentDevice = updated.first;
-              });
-            }
-          }
-        }
-      },
-      child: BlocBuilder<AtomatDetailCubit, AtomatDetailState>(
-        builder: (context, atomatState) {
-
-          final deviceState = context.watch<DeviceCubit>().state;
-
-          final updatedDevice = deviceState.resultDevices.data
-              ?.firstWhere((d) => d.id == currentDevice.id,
-              orElse: () => currentDevice);
-
-          final relayStatus = updatedDevice?.status ?? 0;
-
-          final isMaintenance = relayStatus == 2;
-          final isOn = relayStatus == 1;
-          final isOff = relayStatus == 0;
-          final isForceLoading = deviceState.isForceLoading;
-
-          if (atomatState.load == LoadStatus.loading) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          final realtimeDevice = deviceState.resultDevices.data
-              ?.firstWhere(
-                (d) => d.id == currentDevice.id,
-            orElse: () => currentDevice,
+        if (device == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
           );
+        }
+        print("UI STATUS: ${device?.status}");
+        print("UI RLYREP: ${device?.rlyRepSta}");
+        print("===== BUILD DEBUG =====");
+        print("BUILD STATUS: ${device.status}");
+        final int status = device.status ?? 0;
+        final isMaintenance = status == 2;
+        final isTurningOn = status == 1;
+        final isSwitching = deviceState.isForceLoading;
+        final log = context.watch<AtomatDetailCubit>().state.logData;
+        final isOn = device.rlyRepSta == 0;
+        return Scaffold(
+          backgroundColor: const Color(0xFFF3F6FB),
+          appBar: AppBar(
+            elevation: 0,
+            centerTitle: true,
+            title: const Text("Chi tiết thiết bị"),
+          ),
+          body: ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
 
-          final log = realtimeDevice?.realtimeLog;
+              const SizedBox(height: 16),
 
-
-          return Scaffold(
-            backgroundColor: const Color(0xFFF3F6FB),
-            appBar: AppBar(
-              elevation: 0,
-              centerTitle: true,
-              title: const Text("Chi tiết thiết bị"),
-            ),
-            body: ListView(
-              padding: const EdgeInsets.all(20),
+              /// ================= HEADER BUTTONS =================
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // ================= HEADER =================
-                const SizedBox(height: 16),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-
-                    /// ===== TOGGLE POWER =====
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isOn
-                            ? Colors.green
-                            : Colors.red,
+                /// ===== ON / OFF (THƯỜNG) =====
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      onPressed: (isMaintenance || isForceLoading)
-                          ? null
-                          : () async {
-                        final password = await _showPasswordDialog(context);
-                        if (password == null) return;
-
-                        await context.read<DeviceCubit>().togglePower(
-                          currentDevice,
-                          password: password,
-                        );
-                      },
-                      child: Text(
-                        isOn ? "Đóng" : "Cắt",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      backgroundColor: isSwitching
+                          ? Colors.grey
+                          : isOn
+                          ? Colors.red
+                          : const Color(0xFF2E7D32),          // OFF → xám
+                      foregroundColor: Colors.white,
                     ),
+                    onPressed: (isSwitching || isMaintenance)
+                        ? null
+                        : () async {
+                      final password = await _showPasswordDialog(context);
+                      if (password == null) return;
 
-                    /// ===== TOGGLE MAINTENANCE =====
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isMaintenance
-                            ? Colors.white
-                            : const Color(0xFFFFF3E0), // cam rất nhạt
-                        foregroundColor: isMaintenance
-                            ? Colors.red
-                            : const Color(0xFFFB8C00), // cam đậm hơn chữ
-                        side: isMaintenance
-                            ? const BorderSide(color: Colors.red)
-                            : BorderSide.none,
-                        elevation: 0,
-                      ),
-                      onPressed: isForceLoading
-                          ? null
-                          : () async {
-                        final password = await _showPasswordDialog(context);
-                        if (password == null) return;
-
-                        // 🔥 Nếu đang bảo trì -> delay 10 giây trước khi thoát
-                        if (isMaintenance) {
-                          await Future.delayed(const Duration(seconds: 13));
-                        }
-
-                        await context.read<DeviceCubit>().toggleMaintenance(
-                          currentDevice,
-                          password: password,
-                        );
-                      },
-                      child: Text(
-                        isMaintenance ? "Thoát bảo trì" : "Bảo trì",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-
-                ElevatedButton.icon(
-                  onPressed: log == null
-                      ? null
-                      : () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider(
-                          create: (_) => MeterRealtimeCubit(SignalRService()),
-                          child: AutomatChartScreen(
-                            meterCode: atomatState.logData?.breakerSn ?? "",
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.show_chart),
-                  label: const Text("Xem biểu đồ"),
-                ),
-
-                Card(
-                  elevation: 4,
-                  shadowColor: Colors.black.withOpacity(0.08),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
+                      await context.read<DeviceCubit>().togglePower(
+                        device,
+                        password: password,
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _deviceImage(),
-                        const SizedBox(height: 16),
-
-// ===== DEVICE NAME =====
-                        MediaQuery(
-                          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                          child: Text(
-                            currentDevice.name.isNotEmpty
-                                ? currentDevice.name
-                                : currentDevice.code,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
-                              height: 1.2,
-                              color: Color(0xFF1C1C1E),
-                            ),
-                          ),
+                        Icon(
+                          isOn ? Icons.flash_on : Icons.power_off,
+                          size: 18,
                         ),
-
-                        const SizedBox(height: 4),
-
-// ===== DEVICE CODE SUBTITLE =====
+                        const SizedBox(width: 6),
                         Text(
-                          currentDevice.code ?? '',
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF8E8E93),
-                            letterSpacing: 0.3,
-                          ),
+                          isOn ? "OFF" : "ON",
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-
-                            /// ===== LUÔN HIỂN THỊ =====
-                            _infoRow("Tên thiết bị", currentDevice.name),
-                            _infoRow("Sơ đồ mạch điện", currentDevice.code ?? ''),
-
-                            _infoRow(
-                              "Trạng thái",
-                              "",
-                              valueWidget: _buildStatusWidget(relayStatus),
-                            ),
-
-                            _infoRow(
-                              "Alarm",
-                              log?.alrRcrCnt?.toString() ?? "--",
-                            ),
-
-                            _infoRow(
-                              "Updated",
-                              log?.updatedAt ?? "--",
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            /// ===== CHỈ PHẦN REALTIME MỚI PHỤ THUỘC LOG =====
-                            if (log != null) ...[
-                              _infoRow("Điện áp định mức", log.ua.toString()),
-                              _infoRow("Dòng điện định mức", log.ia.toString()),
-                              _infoRow("Alarm", log.alrRcrCnt.toString()),
-                              _infoRow("Updated", log.updatedAt),
-                            ] else ...[
-                              const Text(
-                                "Không có dữ liệu realtime",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ],
-                        ),
-
-                        const SizedBox(height: 12),
-                        const SizedBox(height: 10),
-                        _buildRealtimeMini(log),
                       ],
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 24),
-                // l,ic
+                const SizedBox(width: 12),
 
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      backgroundColor: isSwitching
+                          ? Colors.grey
+                          : device.status == 1
+                          ? const Color(0xFF2E7D32) // đang OFF → sẽ Force ON (xanh lá)
+                          : const Color(0xFFC62828), // đang ON → sẽ Force OFF (đỏ)
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: isSwitching
+                        ? null // ❌ KHÔNG check isMaintenance
+                        : () async {
+                      final password = await _showPasswordDialog(context);
+                      if (password == null) return;
+
+                      // Toggle force theo trạng thái hiện tại
+                      final newStatus = device.status == 1 ? 0 : 1;
+
+                      await context.read<DeviceCubit>().forcePower(
+                        device.copyWith(status: newStatus),
+                        password: password,
+                      );
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.flash_on, size: 18),
+                        SizedBox(width: 6),
+                        Text(
+                          "Force",
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                /// ===== MAINTENANCE =====
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                    isMaintenance ? Colors.white : const Color(0xFFF57C00),
+                    foregroundColor:
+                    isMaintenance ? Colors.red : Colors.white,
+                    side: isMaintenance
+                        ? const BorderSide(color: Colors.red)
+                        : BorderSide.none,
+                  ),
+                  onPressed: isSwitching
+                      ? null
+                      : () async {
+                    final password = await _showPasswordDialog(context);
+                    if (password == null) return;
+
+                    await context.read<DeviceCubit>().toggleMaintenance(
+                      device,
+                      password: password,
+                    );
+                  },
+                  child: Text(
+                    isMaintenance ? "Thoát bảo trì" : "Bảo trì",
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
               ],
-            ),
-          );
-        },
-      ),
+              ),
+
+              const SizedBox(height: 20),
+
+              /// ===== CHART BUTTON =====
+              ElevatedButton.icon(
+                onPressed: log == null
+                    ? null
+                    : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (_) =>
+                            MeterRealtimeCubit(SignalRService()),
+                        child: AutomatChartScreen(
+                          meterCode: device.code ?? "",
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.show_chart),
+                label: const Text("Xem biểu đồ"),
+              ),
+
+              /// ================= DEVICE CARD =================
+              Card(
+                elevation: 4,
+                shadowColor: Colors.black.withOpacity(0.08),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+
+                      _deviceImage(),
+                      const SizedBox(height: 16),
+
+                      /// DEVICE NAME
+                      MediaQuery(
+                        data: MediaQuery.of(context)
+                            .copyWith(textScaleFactor: 1.0),
+                        child: Text(
+                          device.name.isNotEmpty
+                              ? device.name
+                              : device.code ?? "",
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            height: 1.2,
+                            color: Color(0xFF1C1C1E),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      /// DEVICE CODE
+                      Text(
+                        device.code ?? '',
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF8E8E93),
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      /// INFO SECTION
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+
+                          _infoRow("Tên thiết bị", device.name),
+                          _infoRow("Sơ đồ mạch điện", device.code ?? ""),
+
+                          _infoRow(
+                            "Trạng thái",
+                            "",
+                            valueWidget: _buildStatusWidget(
+                              status: device.status,
+                              rlyRepSta: device.rlyRepSta,
+                            ),
+                          ),
+
+                          _infoRow(
+                            "Alarm",
+                            log?.alrRcrCnt?.toString() ?? "--",
+                          ),
+
+                          _infoRow(
+                            "Updated",
+                            log?.updatedAt?.toString() ?? "-",
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          if (log != null) ...[
+                            _infoRow("Điện áp định mức",
+                                log.ua?.toString() ?? "--"),
+                            _infoRow("Dòng điện định mức",
+                                log.ia?.toString() ?? "--"),
+                          ] else ...[
+                            const Text(
+                              "Không có dữ liệu realtime",
+                              style:
+                              TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      _buildRealtimeMini(log),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+            ],
+          ),
+        );
+      },
+
     );
+
   }
 
   // ================= GRID SECTION =================
@@ -692,50 +760,32 @@ Widget _infoRow(
     ),
   );
 }
-Widget _buildStatusWidget(int status) {
+Widget _buildStatusWidget({
+  required int status,
+  required int rlyRepSta,
+}) {
+
+  final bool isMaintenance = rlyRepSta == "1";
+  final bool isOn = status == 1;
+
   String text;
-  Color bgColor;
-  Color textColor;
+  Color color;
 
-  switch (status) {
-
-  /// 1 = ĐÓNG (ON)
-    case 1:
-      text = "Đóng";
-      bgColor = Colors.green.withOpacity(0.15);
-      textColor = Colors.green;
-      break;
-
-  /// 0 = CẮT (OFF)
-    case 0:
-      text = "Cắt";
-      bgColor = Colors.red.withOpacity(0.15);
-      textColor = Colors.red;
-      break;
-
-  /// 2 = BẢO TRÌ
-    case 2:
-      text = "Chế độ bảo trì";
-      bgColor = Colors.red.withOpacity(0.1);
-      textColor = Colors.red;
-      break;
-
-    case 3:
-      text = "Ngoại tuyến";
-      bgColor = Colors.grey.withOpacity(0.15);
-      textColor = Colors.grey;
-      break;
-
-    default:
-      text = "Không xác định";
-      bgColor = Colors.grey.withOpacity(0.15);
-      textColor = Colors.grey;
+  if (isMaintenance) {
+    text = "Đang bảo trì";
+    color = const Color(0xFFF57C00); // Cam giống nút bảo trì
+  } else if (isOn) {
+    text = "ON";
+    color = const Color(0xFF2E7D32); // Xanh giống nút ON
+  } else {
+    text = "OFF";
+    color = const Color(0xFFC62828); // Đỏ giống nút OFF
   }
 
   return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
     decoration: BoxDecoration(
-      color: bgColor,
+      color: color.withOpacity(0.15),
       borderRadius: BorderRadius.circular(20),
     ),
     child: Text(
@@ -743,7 +793,7 @@ Widget _buildStatusWidget(int status) {
       style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: textColor,
+        color: color,
       ),
     ),
   );

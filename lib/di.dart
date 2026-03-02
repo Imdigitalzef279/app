@@ -21,6 +21,8 @@ import 'data/data_sources/mcb/mcb_remote_datasource.dart';
 import 'data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 import 'data/repositories/electric/electric_repository_impl.dart';
 import 'data/repositories/mcb_repository_impl.dart';
+import 'data/repositories/meter_config/meter_config_repository.dart';
+import 'data/repositories/meter_config/meter_config_repository_impl.dart';
 import 'data/repositories/register/register_repository.dart';
 import 'data/repositories/register/register_repository_impl.dart';
 import 'package:dio/dio.dart';
@@ -33,6 +35,7 @@ import 'navigation_service.dart';
 final getIt = GetIt.instance;
 
 void configureDependencies() {
+  print("🔥 BASE URL: ${EnvConfigs.baseUrl}");
   getIt.registerLazySingleton<Dio>(() {
     final dio = Dio(
       BaseOptions(
@@ -48,23 +51,19 @@ void configureDependencies() {
         onRequest: (options, handler) async {
           final prefs = getIt<SharedPreferencesHelper>();
           final token = await prefs.getAccessToken();
-
+          print("TOKEN: $token");
           if (token != null && token.isNotEmpty) {
             options.headers["Authorization"] = "Bearer $token";
           }
 
-          print("REQUEST: ${options.uri}");
-          print("HEADERS: ${options.headers}");
 
           return handler.next(options);
         },
         onError: (e, handler) async {
-          print("========== DIO ERROR ==========");
-          print("STATUS: ${e.response?.statusCode}");
-
+          if (e.type == DioExceptionType.unknown) {
+            print("🚨 NETWORK ERROR - CHECK BASE URL OR INTERNET");
+          }
           if (e.response?.statusCode == 401) {
-            print("TOKEN HẾT HẠN → LOGOUT");
-
             final prefs = getIt<SharedPreferencesHelper>();
             await prefs.removeAccessToken();
 
@@ -76,6 +75,11 @@ void configureDependencies() {
           }
 
           return handler.next(e);
+        },
+        onResponse: (response, handler) {
+
+
+          return handler.next(response);
         },
       ),
     );
@@ -116,5 +120,8 @@ void configureDependencies() {
   );
   getIt.registerLazySingleton<ApiClient>(
         () => ApiClient(getIt<Dio>()),
+  );
+  GetIt.instance.registerLazySingleton<MeterConfigRepository>(
+        () => MeterConfigRepositoryImpl(),
   );
 }

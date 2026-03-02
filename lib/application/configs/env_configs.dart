@@ -2,7 +2,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class EnvConfigs {
-  static final String baseUrl = dotenv.get('BASE_URL', fallback: '');
+
+  static String get baseUrl =>
+      dotenv.get('BASE_URL', fallback: '');
 
   static Future<void> init() async {
     final packageInfo = await PackageInfo.fromPlatform();

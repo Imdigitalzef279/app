@@ -45,8 +45,8 @@ class SwitchLogScreen extends StatelessWidget {
 Widget _buildLogItem(SwitchLogModel log) {
   final isOn = log.action == "ĐÓNG";
 
-  final statusText = _mapStatus(log.status ?? "");
-  final statusColor = _mapStatusColor(log.status ?? "");
+  final statusText = _mapStatus(log.status);
+  final statusColor = _mapStatusColor(log.status);
 
   return Container(
     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -127,26 +127,23 @@ Widget _buildLogItem(SwitchLogModel log) {
   );
 }
 
-String _mapStatus(String status) {
-  switch (status.toUpperCase()) {
-    case "SENT":
-      return "Đã gửi";
-    case "DONE":
-      return "Hoàn thành";
-    case "FAILED":
+String _mapStatus(int status) {
+  switch (status) {
+    case 0:
+      return "Thành công";
+    case 1:
       return "Thất bại";
     default:
-      return status;
+      return "Không xác định";
   }
 }
 
-Color _mapStatusColor(String status) {
-  switch (status.toUpperCase()) {
-    case "SENT":
-      return Colors.orange;
-    case "DONE":
+
+Color _mapStatusColor(int status) {
+  switch (status) {
+    case 0:
       return Colors.green;
-    case "FAILED":
+    case 1:
       return Colors.red;
     default:
       return Colors.grey;

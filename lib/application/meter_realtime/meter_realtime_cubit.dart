@@ -10,27 +10,40 @@ class MeterRealtimeCubit extends Cubit<List<AtomatLogResponse>> {
   Future<void> connect(String meterCode) async {
     await _signalRService.connect(
       meterCode: meterCode,
-      onData: (data) {
-        try {
-          print("📦 Raw realtime data: $data");
-
-          final model = AtomatLogResponse.fromJson(data);
-
-          final updated = List<AtomatLogResponse>.from(state);
-          updated.add(model);
-
-          if (updated.length > 50) {
-            updated.removeAt(0);
-          }
-
-          print("📈 Emit logs length: ${updated.length}");
-
-          emit(updated);
-        } catch (e) {
-          print("❌ Parse realtime error: $e");
-        }
-      },
     );
+
+    _signalRService.stream.listen((data) {
+      try {
+        final dto = data["breakerMeterDataDto"];
+        if (dto == null) return;
+
+        final raw = Map<String, dynamic>.from(dto);
+
+        raw.updateAll((key, value) {
+          if (value is String) {
+            final numValue = num.tryParse(value);
+            return numValue ?? value;
+          }
+          return value;
+        });
+
+        raw["updatedAt"] = data["updatedAt"];
+
+        final log = AtomatLogResponse.fromJson(raw);
+
+        final updated = List<AtomatLogResponse>.from(state);
+        updated.insert(0, log);
+
+        if (updated.length > 30) {
+          updated.removeLast();
+        }
+
+        emit(updated);
+
+      } catch (e) {
+        print("❌ Parse realtime error: $e");
+      }
+    });
   }
 
   @override

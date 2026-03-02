@@ -38,6 +38,7 @@ _$DeviceResponseImpl _$$DeviceResponseImplFromJson(Map<String, dynamic> json) =>
           ? null
           : AtomatLogResponse.fromJson(
               json['realtimeLog'] as Map<String, dynamic>),
+      rlyRepSta: (json['rlyRepSta'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$DeviceResponseImplToJson(
@@ -61,4 +62,5 @@ Map<String, dynamic> _$$DeviceResponseImplToJson(
       'powerStation': instance.powerStation,
       'lastedLogData': instance.lastedLogData,
       'realtimeLog': instance.realtimeLog,
+      'rlyRepSta': instance.rlyRepSta,
     };

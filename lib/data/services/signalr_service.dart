@@ -10,14 +10,14 @@ enum SignalRStatus {
 }
 
 class SignalRService {
-  // ================= SINGLETON =================
   static final SignalRService _instance = SignalRService._internal();
   factory SignalRService() => _instance;
   SignalRService._internal();
 
-  // ================= VARIABLES =================
   HubConnection? _connection;
   SignalRStatus _status = SignalRStatus.disconnected;
+
+  String? _currentMeterCode;
 
   final StreamController<Map<String, dynamic>> _dataController =
   StreamController.broadcast();
@@ -33,12 +33,16 @@ class SignalRService {
   bool get isConnected =>
       _connection?.state == HubConnectionState.connected;
 
+  bool get isConnecting =>
+      _connection?.state == HubConnectionState.connecting;
+
   // ================= CONNECT =================
   Future<void> connect({
     required String meterCode,
-    Function(Map<String, dynamic>)? onData,
   }) async {
-    if (isConnected) return;
+    if (isConnected || isConnecting) return;
+
+    _currentMeterCode = meterCode;
 
     _updateStatus(SignalRStatus.connecting);
 
@@ -46,7 +50,6 @@ class SignalRService {
         .withUrl(
       "https://krapower.vn/signalr-logmeter",
       HttpConnectionOptions(
-        skipNegotiation: false,
         transport: HttpTransportType.webSockets,
       ),
     )
@@ -54,7 +57,33 @@ class SignalRService {
         .build();
 
     _registerLifecycle();
+    _registerEvents();
 
+    await _connection!.start();
+
+    await _joinMeter();
+
+    _updateStatus(SignalRStatus.connected);
+    print("🟢 SignalR Connected");
+  }
+
+  // ================= JOIN =================
+  Future<void> _joinMeter() async {
+    if (_currentMeterCode == null) return;
+
+    try {
+      print("🔥🔥🔥 JOIN METER: $_currentMeterCode 🔥🔥🔥"); // 👈 THÊM DÒNG NÀY
+
+      await _connection!.invoke("JoinMeter", args: [_currentMeterCode]);
+
+      print("🟢 Joined meter: $_currentMeterCode");
+    } catch (e) {
+      print("❌ JoinMeter error: $e");
+    }
+  }
+
+  // ================= EVENTS =================
+  void _registerEvents() {
     void listenEvent(String eventName, List<Object?>? data) {
       if (data == null || data.isEmpty) return;
 
@@ -73,38 +102,22 @@ class SignalRService {
 
         payload["event"] = eventName;
 
-        // 🔥 giữ logic cũ
-        if (onData != null) {
-          onData(payload);
-        }
-
-        // 🔥 vẫn push stream cho màn khác nếu cần
         _dataController.add(payload);
       } catch (e) {
-        print("Parse error: $e");
+        print("❌ Parse error [$eventName]: $e");
       }
     }
 
-    _connection!.on("ReceiveLog", (data) {
-      print("🔥 ReceiveLog RAW: $data");
-      listenEvent("ReceiveLog", data);
-    });
+    _connection!.on("ReceiveLog",
+            (data) => listenEvent("ReceiveLog", data));
 
-    _connection!.on("ReceiveChart", (data) {
-      print("🔥 ReceiveChart RAW: $data");
-      listenEvent("ReceiveChart", data);
-    });
+    _connection!.on("ReceiveChart",
+            (data) => listenEvent("ReceiveChart", data));
 
     _connection!.on("ReceiveCommand", (data) {
-      print("🔥 ReceiveCommand RAW: $data");
+      print("🔥 ReceiveCommand RAW: $data"); // 👈 THÊM
       listenEvent("ReceiveCommand", data);
     });
-
-    await _connection!.start();
-    _updateStatus(SignalRStatus.connected);
-    print("🟢 SignalR Connected");
-    await _connection!.invoke("JoinMeter", args: [meterCode]);
-    print("🟢 Joined meter: $meterCode");
   }
 
   // ================= LIFECYCLE =================
@@ -119,52 +132,12 @@ class SignalRService {
       _updateStatus(SignalRStatus.reconnecting);
     });
 
-    _connection!.onreconnected((connectionId) {
+    _connection!.onreconnected((connectionId) async {
       print("🟢 Reconnected: $connectionId");
+
+      await _joinMeter(); // 🔥 QUAN TRỌNG
+
       _updateStatus(SignalRStatus.connected);
-    });
-  }
-
-  // ================= EVENTS =================
-  void _registerEvents() {
-    void listenEvent(String eventName, List<Object?>? data) {
-      print("🔥 [$eventName] RAW => $data");
-
-      if (data == null || data.isEmpty) return;
-
-      final raw = data.first;
-
-      try {
-        Map<String, dynamic> payload;
-
-        if (raw is String) {
-          payload = jsonDecode(raw);
-        } else if (raw is Map) {
-          payload = Map<String, dynamic>.from(raw);
-        } else {
-          print("⚠ Unknown data type: ${raw.runtimeType}");
-          return;
-        }
-
-        payload["event"] = eventName;
-        payload["timestamp"] = DateTime.now().toIso8601String();
-
-        _dataController.add(payload);
-      } catch (e) {
-        print("❌ [$eventName] Parse error: $e");
-      }
-    }
-
-    _connection!.on("ReceiveLog", (data) {
-      listenEvent("ReceiveLog", data);
-    });
-
-    _connection!.on("ReceiveChart", (data) {
-      listenEvent("ReceiveChart", data);
-    });
-
-    _connection!.on("ReceiveCommand", (data) {
-      listenEvent("ReceiveCommand", data);
     });
   }
 
@@ -172,14 +145,11 @@ class SignalRService {
   Future<void> disconnect() async {
     if (_connection == null) return;
 
-    try {
-      await _connection!.stop();
-      print("🔴 SignalR Disconnected");
-    } catch (e) {
-      print("❌ Disconnect error: $e");
-    }
+    await _connection!.stop();
+    _connection = null;
 
     _updateStatus(SignalRStatus.disconnected);
+    print("🔴 SignalR Disconnected");
   }
 
   // ================= STATUS =================
@@ -188,7 +158,6 @@ class SignalRService {
     _statusController.add(newStatus);
   }
 
-  // ================= DISPOSE (OPTIONAL) =================
   void dispose() {
     _dataController.close();
     _statusController.close();

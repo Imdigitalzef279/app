@@ -33,6 +33,7 @@ class DeviceResponse with _$DeviceResponse {
     @JsonKey(name: "lastedLogData")
     LastedLogDataResponse? lastedLogData,
     AtomatLogResponse? realtimeLog,
+    @Default(0) int rlyRepSta,
   }) = _DeviceResponse;
 
   factory DeviceResponse.fromJson(Map<String, dynamic> json) =>

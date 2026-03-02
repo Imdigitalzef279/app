@@ -4,7 +4,7 @@ class SwitchLogModel {
   final String method;
   final DateTime time;
   final String? user;
-  final String status;
+  final int status;
   SwitchLogModel({
     required this.id,
     required this.action,

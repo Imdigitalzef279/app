@@ -19,7 +19,8 @@ import 'package:solar_energy/data/dto/solar_electric/request/solar_electric_requ
 import 'package:solar_energy/data/dto/solar_electric/response/solar_electric_response.dart';
 import 'package:solar_energy/data/dto/water/request/meter_water_request.dart';
 import 'package:solar_energy/data/dto/water/response/meter_water_response.dart';
-
+import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
+import 'package:solar_energy/data/dto/meter_config/response/meter_config_response.dart';
 part 'api_client.g.dart';
 
 @RestApi(baseUrl: '')
@@ -123,5 +124,16 @@ abstract class ApiClient {
   @POST('api/identity/users')
   Future<ProfileResponse> registerUser(
       @Body() UserRequest request,
+      );
+  // ================= METER CONFIG =================
+
+  @GET('api/app/meter-config/by-meter-id/{meterId}')
+  Future<List<MeterConfigResponse>> getMeterConfigByMeterId(
+      @Path('meterId') int meterId,
+      );
+
+  @POST('api/app/meter-config')
+  Future<MeterConfigResponse> createMeterConfig(
+      @Body() MeterConfigRequest request,
       );
 }
