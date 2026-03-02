@@ -5,8 +5,10 @@ import 'package:solar_energy/presentation/screen/Electricity/automat/setting_scr
 import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/switch_log_screen.dart';
 import '../../../../application/enums/load_status.dart';
 import '../../../../application/switch_log/switch_log_cubit.dart';
+import '../../../../data/repositories/breaker/breaker_repository.dart';
 import '../../../../data/repositories/switch_log/switch_log_repository.dart';
 import '../../../../di.dart';
+import '../../../breaker_history/cubit/breaker_history_cubit.dart';
 import '../../../widgets/password_dialog.dart';
 import '../../device/bloc/device_cubit.dart';
 import '../../device/widget/content_dialog.dart';
@@ -101,22 +103,14 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
           children: [
 
             IconButton(
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              splashRadius: 18,
               icon: const Icon(Icons.history, size: 20),
-              color: Colors.black54,
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => BlocProvider(
-                      create: (_) => SwitchLogCubit(
-                        getIt<SwitchLogRepository>(),
-                      )..fetchLogs(device.gatewayNumber ?? ''),
-                      child: SwitchLogScreen(
-                        gatewaySn: device.gatewayNumber ?? '',
-                      ),
+                    builder: (_) => SwitchLogScreen(
+                      gatewaySn: device.gatewayNumber ?? '',
+                      breakerSn: device.code ?? '',
                     ),
                   ),
                 );

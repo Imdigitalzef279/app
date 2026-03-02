@@ -19,6 +19,7 @@ import 'application/utils/navigation_utils.dart';
 import 'data/data_sources/mcb/mcb_mock_datasource.dart';
 import 'data/data_sources/mcb/mcb_remote_datasource.dart';
 import 'data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
+import 'data/repositories/breaker/breaker_repository.dart';
 import 'data/repositories/electric/electric_repository_impl.dart';
 import 'data/repositories/mcb_repository_impl.dart';
 import 'data/repositories/meter_config/meter_config_repository.dart';
@@ -51,7 +52,6 @@ void configureDependencies() {
         onRequest: (options, handler) async {
           final prefs = getIt<SharedPreferencesHelper>();
           final token = await prefs.getAccessToken();
-          print("TOKEN: $token");
           if (token != null && token.isNotEmpty) {
             options.headers["Authorization"] = "Bearer $token";
           }
@@ -123,5 +123,8 @@ void configureDependencies() {
   );
   GetIt.instance.registerLazySingleton<MeterConfigRepository>(
         () => MeterConfigRepositoryImpl(),
+  );
+  getIt.registerLazySingleton<BreakerRepository>(
+        () => BreakerRepository(getIt<Dio>()),
   );
 }

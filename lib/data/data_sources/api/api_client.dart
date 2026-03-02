@@ -21,6 +21,8 @@ import 'package:solar_energy/data/dto/water/request/meter_water_request.dart';
 import 'package:solar_energy/data/dto/water/response/meter_water_response.dart';
 import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
 import 'package:solar_energy/data/dto/meter_config/response/meter_config_response.dart';
+
+import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 part 'api_client.g.dart';
 
 @RestApi(baseUrl: '')
@@ -70,14 +72,6 @@ abstract class ApiClient {
       @Query('PowerStationId') int powerStation,
       );
 
-  /// api/app/log-meter-breaker/get-list api này để call log mcb
-  ///
-  @POST('api/app/log-meter-breaker/get-list') /// con này log atomat
-  Future<List<AtomatLogResponse>> getLogAtomat(
-
-      @Body()  AtomatRequest request,
-      );
-
   // ================= PROFILE =================
 
   @GET('api/account/my-profile')
@@ -118,7 +112,16 @@ abstract class ApiClient {
   Future<int> controlCircuitBreaker(
       @Body() CbsMeterRequest request,
       );
-
+  // ================= BREAKER log =================
+  @GET('api/app/log-meter-breaker')
+  Future<PaginationResponse<AtomatLogResponse>> getBreakerLog(
+      @Query('breakerSn') String breakerSn,
+      );
+  // ================= BREAKER chart =================
+  @GET('api/app/log-meter-breaker/chart-data')
+  Future<List<BreakerChartResponse>> getBreakerChartData(
+      @Query('breakerSn') String breakerSn,
+      );
   // ================= REGISTER =================
 
   @POST('api/identity/users')

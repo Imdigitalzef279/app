@@ -15,6 +15,7 @@ import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/services/signalr_service.dart';
 
 import '../../device/bloc/device_cubit.dart';
+import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'automat_chart_screen.dart';
 
 class AutomatDetailScreen extends StatefulWidget {
@@ -41,32 +42,27 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
+    cubit.getBreakerLog(currentDevice.code ?? "");
 
-    final now = DateTime.now();
-    final from = DateTime(now.year, now.month, now.day, 0, 0, 0);
-    final to = DateTime(now.year, now.month, now.day, 23, 59, 59);
-
-    cubit.getLogAtomat(
-      AtomatRequest(
-        breakerSn: currentDevice.code,
-        fromDate: from.toIso8601String(),
-        toDate: to.toIso8601String(),
-      ),
-    );
-
+    // ===== SignalR giữ nguyên nếu cần realtime =====
     final signalR = SignalRService();
 
-    // 🔥 CONNECT
     signalR.connect(
       meterCode: currentDevice.code ?? "",
     );
 
-    // 🔥 LISTEN REALTIME
     signalR.stream.listen(_handleRealtime);
+
+    // ⏱ AUTO REFRESH 5 PHÚT
+    _timer = Timer.periodic(
+      const Duration(minutes: 5),
+          (_) => cubit.getBreakerLog(currentDevice.code ?? ""),
+    );
   }
+
   @override
   void dispose() {
-    SignalRService().disconnect();
+    _timer?.cancel();
     super.dispose();
   }
   void _handleRealtime(Map<String, dynamic> data) {
@@ -170,16 +166,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     );
   }
   void _reloadRealTime() {
-    final now = DateTime.now();
-    final from = now.subtract(const Duration(minutes: 30));
-
-    cubit.getLogAtomat(
-      AtomatRequest(
-        breakerSn: currentDevice.code,
-        fromDate: from.toIso8601String(),
-        toDate: now.toIso8601String(),
-      ),
-    );
+    cubit.getBreakerLog(currentDevice.code ?? "");
   }
   Future<String?> _showPasswordDialog(BuildContext context) async {
     return showDialog<String>(
@@ -269,11 +256,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         print("===== BUILD DEBUG =====");
         print("BUILD STATUS: ${device.status}");
         final int status = device.status ?? 0;
-        final isMaintenance = status == 2;
         final isTurningOn = status == 1;
-        final isSwitching = deviceState.isForceLoading;
         final log = context.watch<AtomatDetailCubit>().state.logData;
-        final isOn = device.rlyRepSta == 0;
+        final isOn = device.status == 1;
+        final isMaintenance = device.rlyRepSta == 1;
+        final isSwitching = context.watch<DeviceCubit>().state.isForceLoading;
         return Scaffold(
           backgroundColor: const Color(0xFFF3F6FB),
           appBar: AppBar(
@@ -305,7 +292,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                           ? Colors.grey
                           : isOn
                           ? Colors.red
-                          : const Color(0xFF2E7D32),          // OFF → xám
+                          : const Color(0xFF2E7D32),
                       foregroundColor: Colors.white,
                     ),
                     onPressed: (isSwitching || isMaintenance)
@@ -323,7 +310,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          isOn ? Icons.flash_on : Icons.power_off,
+                          isOn ? Icons.power_off : Icons.flash_on,
                           size: 18,
                         ),
                         const SizedBox(width: 6),
@@ -349,21 +336,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                       backgroundColor: isSwitching
                           ? Colors.grey
                           : device.status == 1
-                          ? const Color(0xFF2E7D32) // đang OFF → sẽ Force ON (xanh lá)
-                          : const Color(0xFFC62828), // đang ON → sẽ Force OFF (đỏ)
+                          ? const Color(0xFFC62828) // đang ON → force OFF
+                          : const Color(0xFF2E7D32), // đang OFF → force ON
                       foregroundColor: Colors.white,
                     ),
                     onPressed: isSwitching
-                        ? null // ❌ KHÔNG check isMaintenance
+                        ? null
                         : () async {
                       final password = await _showPasswordDialog(context);
                       if (password == null) return;
 
-                      // Toggle force theo trạng thái hiện tại
-                      final newStatus = device.status == 1 ? 0 : 1;
-
                       await context.read<DeviceCubit>().forcePower(
-                        device.copyWith(status: newStatus),
+                        device, //
                         password: password,
                       );
                     },
@@ -382,32 +366,32 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 ),
 
                 /// ===== MAINTENANCE =====
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    isMaintenance ? Colors.white : const Color(0xFFF57C00),
-                    foregroundColor:
-                    isMaintenance ? Colors.red : Colors.white,
-                    side: isMaintenance
-                        ? const BorderSide(color: Colors.red)
-                        : BorderSide.none,
-                  ),
-                  onPressed: isSwitching
-                      ? null
-                      : () async {
-                    final password = await _showPasswordDialog(context);
-                    if (password == null) return;
-
-                    await context.read<DeviceCubit>().toggleMaintenance(
-                      device,
-                      password: password,
-                    );
-                  },
-                  child: Text(
-                    isMaintenance ? "Thoát bảo trì" : "Bảo trì",
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
+                // ElevatedButton(
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor:
+                //     isMaintenance ? Colors.white : const Color(0xFFF57C00),
+                //     foregroundColor:
+                //     isMaintenance ? Colors.red : Colors.white,
+                //     side: isMaintenance
+                //         ? const BorderSide(color: Colors.red)
+                //         : BorderSide.none,
+                //   ),
+                //   onPressed: isSwitching
+                //       ? null
+                //       : () async {
+                //     final password = await _showPasswordDialog(context);
+                //     if (password == null) return;
+                //
+                //     await context.read<DeviceCubit>().toggleMaintenance(
+                //       device,
+                //       password: password,
+                //     );
+                //   },
+                //   child: Text(
+                //     isMaintenance ? "Thoát bảo trì" : "Bảo trì",
+                //     style: const TextStyle(fontWeight: FontWeight.w600),
+                //   ),
+                // ),
               ],
               ),
 
@@ -422,8 +406,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => BlocProvider(
-                        create: (_) =>
-                            MeterRealtimeCubit(SignalRService()),
+                        create: (_) => AutomatChartCubit(),
                         child: AutomatChartScreen(
                           meterCode: device.code ?? "",
                         ),
@@ -760,12 +743,14 @@ Widget _infoRow(
     ),
   );
 }
+
 Widget _buildStatusWidget({
+
   required int status,
   required int rlyRepSta,
 }) {
 
-  final bool isMaintenance = rlyRepSta == "1";
+  final bool isMaintenance = rlyRepSta == 1;
   final bool isOn = status == 1;
 
   String text;

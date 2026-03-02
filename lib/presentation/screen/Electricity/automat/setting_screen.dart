@@ -312,6 +312,7 @@ class _SettingScreenState extends State<SettingScreen> {
             value: overVoltage,
             min: 200,
             max: 280,
+            isVoltage: true, // 👈 thêm dòng này
             onChanged: (v) => setState(() => overVoltage = v),
           ),
 
@@ -323,6 +324,7 @@ class _SettingScreenState extends State<SettingScreen> {
             value: underVoltage,
             min: 180,
             max: 240,
+            isVoltage: true, // 👈 thêm dòng này
             onChanged: (v) => setState(() => underVoltage = v),
           ),
 
@@ -372,44 +374,124 @@ class _SettingScreenState extends State<SettingScreen> {
     required double min,
     required double max,
     required Function(double) onChanged,
+    bool isVoltage = false,
   }) {
+    final percent = (value - min) / (max - min);
+
+    Color valueColor;
+    if (!isVoltage) {
+      valueColor = kPrimaryColor;
+    } else {
+      if (percent < 0.5) {
+        valueColor = const Color(0xFF1ABC9C);
+      } else if (percent < 0.8) {
+        valueColor = const Color(0xFFFF9800);
+      } else {
+        valueColor = const Color(0xFFE53935);
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
+        /// TITLE
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title),
-            Text(
-              "${value.toInt()} $unit",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: kPrimaryColor,
+            Text(title, style: const TextStyle(fontSize: 14)),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: valueColor.withOpacity(.12),
+                borderRadius: BorderRadius.circular(20),
               ),
-            ),
+              child: Text(
+                "${value.toInt()} $unit",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: valueColor,
+                ),
+              ),
+            )
           ],
         ),
 
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: kPrimaryColor,
-            thumbColor: kPrimaryColor,
-            inactiveTrackColor: kPrimaryColor.withOpacity(.2),
-            overlayColor: kPrimaryColor.withOpacity(.1),
-          ),
-          child: Slider(
-            value: value,
-            min: min,
-            max: max,
-            divisions: (max - min).toInt(),
-            onChanged: onChanged,
-          ),
+        const SizedBox(height: 12),
+
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final activeWidth = width * percent;
+
+            return Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+
+                /// BACKGROUND TRACK (xám)
+                Container(
+                  height: 6,
+                  width: width,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE0E0E0),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+
+                /// GRADIENT ACTIVE TRACK (chỉ điện áp)
+                if (isVoltage)
+                  Container(
+                    height: 6,
+                    width: activeWidth,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF1ABC9C),
+                          Color(0xFFFFB74D),
+                          Color(0xFFE57373),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                    ),
+                  )
+                else
+                  Container(
+                    height: 6,
+                    width: activeWidth,
+                    decoration: BoxDecoration(
+                      color: kPrimaryColor,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+
+                /// SLIDER
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 6,
+                    activeTrackColor: Colors.transparent,
+                    inactiveTrackColor: Colors.transparent,
+                    thumbShape: const _ModernThumbShape(),
+                    overlayColor: valueColor.withOpacity(.08),
+                    overlayShape:
+                    const RoundSliderOverlayShape(overlayRadius: 18),
+                  ),
+                  child: Slider(
+                    value: value,
+                    min: min,
+                    max: max,
+                    divisions: (max - min).toInt(),
+                    onChanged: onChanged,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
 
+        const SizedBox(height: 6),
+
         Text(
-          "Min: ${min.toInt()} | Max: ${max.toInt()}",
+          "Min ${min.toInt()}        Max ${max.toInt()}",
           style: const TextStyle(fontSize: 11, color: Colors.grey),
         ),
       ],
@@ -445,5 +527,113 @@ class _SettingScreenState extends State<SettingScreen> {
         ],
       ),
     );
+  }
+
+}
+class _ShadowThumbShape extends SliderComponentShape {
+  final double thumbRadius;
+
+  const _ShadowThumbShape({this.thumbRadius = 12});
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
+    return Size.fromRadius(thumbRadius);
+  }
+
+  @override
+  void paint(
+      PaintingContext context,
+      Offset center, {
+        required Animation<double> activationAnimation,
+        required Animation<double> enableAnimation,
+        required bool isDiscrete,
+        required TextPainter labelPainter,
+        required RenderBox parentBox,
+        required SliderThemeData sliderTheme,
+        required TextDirection textDirection,
+        required double value,
+        required double textScaleFactor,
+        required Size sizeWithOverflow,
+      }) {
+    final canvas = context.canvas;
+
+    /// Shadow
+    canvas.drawShadow(
+      Path()..addOval(Rect.fromCircle(center: center, radius: thumbRadius)),
+      Colors.black.withOpacity(.3),
+      6,
+      true,
+    );
+
+    /// White thumb
+    final paint = Paint()..color = Colors.white;
+    canvas.drawCircle(center, thumbRadius, paint);
+  }
+}
+Color _getValueColor(double value, double min, double max, bool isVoltage) {
+  if (!isVoltage) return kPrimaryColor;
+
+  final percent = (value - min) / (max - min);
+
+  if (percent < 0.4) {
+    return const Color(0xFF1ABC9C); // an toàn
+  } else if (percent < 0.75) {
+    return const Color(0xFFFFB74D); // cảnh báo
+  } else {
+    return const Color(0xFFE57373); // nguy hiểm
+  }
+}
+class _RoundedTrackShape extends RoundedRectSliderTrackShape {
+  @override
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double trackHeight = sliderTheme.trackHeight ?? 6;
+    final double trackLeft = offset.dx;
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+  }
+}
+class _ModernThumbShape extends SliderComponentShape {
+  final double radius;
+  const _ModernThumbShape({this.radius = 9});
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
+    return Size.fromRadius(radius);
+  }
+
+  @override
+  void paint(
+      PaintingContext context,
+      Offset center, {
+        required Animation<double> activationAnimation,
+        required Animation<double> enableAnimation,
+        required bool isDiscrete,
+        required TextPainter labelPainter,
+        required RenderBox parentBox,
+        required SliderThemeData sliderTheme,
+        required TextDirection textDirection,
+        required double value,
+        required double textScaleFactor,
+        required Size sizeWithOverflow,
+      }) {
+    final canvas = context.canvas;
+
+    canvas.drawShadow(
+      Path()..addOval(Rect.fromCircle(center: center, radius: radius)),
+      Colors.black.withOpacity(.25),
+      4,
+      true,
+    );
+
+    final paint = Paint()..color = Colors.white;
+    canvas.drawCircle(center, radius, paint);
   }
 }

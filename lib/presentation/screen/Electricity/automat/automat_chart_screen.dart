@@ -2,8 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../application/meter_realtime/meter_realtime_cubit.dart';
-import '../../../../data/dto/atomat/atomat_log_response.dart';
+import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
+import 'automat_chart/bloc/automat_chart_cubit.dart';
 
 class AutomatChartScreen extends StatefulWidget {
   final String meterCode;
@@ -22,8 +22,7 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
   @override
   void initState() {
     super.initState();
-    print("📌 MeterCode gửi lên: ${widget.meterCode}");
-    context.read<MeterRealtimeCubit>().connect(widget.meterCode);
+    context.read<AutomatChartCubit>().loadChart(widget.meterCode);
   }
 
   @override
@@ -32,7 +31,7 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
       appBar: AppBar(title: const Text("Biểu đồ MCB")),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: BlocBuilder<MeterRealtimeCubit, List<AtomatLogResponse>>(
+        child: BlocBuilder<AutomatChartCubit, List<BreakerChartResponse>>(
           builder: (context, logs) {
 
             if (logs.isEmpty) {
@@ -42,41 +41,33 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
             return ListView(
               children: [
 
-                _section("Phase Current (A)",
-                    [
-                      _line(logs, (e) => e.ia ?? 0, Colors.blue),
-                      _line(logs, (e) => e.ib ?? 0, Colors.green),
-                      _line(logs, (e) => e.ic ?? 0, Colors.red),
-                    ],
-                    maxY: 50),
+                _section("Phase Current (A)", [
+                  _line(logs, (e) => (e.ia ?? 0).toDouble(), Colors.blue),
+                  _line(logs, (e) => (e.ib ?? 0).toDouble(), Colors.green),
+                  _line(logs, (e) => (e.ic ?? 0).toDouble(), Colors.red),
+                ], maxY: 50),
 
                 const SizedBox(height: 30),
 
-                _section("Phase Voltage (V)",
-                    [
-                      _line(logs, (e) => e.ua ?? 0, Colors.orange),
-                      _line(logs, (e) => e.ub ?? 0, Colors.purple),
-                      _line(logs, (e) => e.uc ?? 0, Colors.teal),
-                    ],
-                    maxY: 260),
+                _section("Phase Voltage (V)", [
+                  _line(logs, (e) => (e.ua ?? 0).toDouble(), Colors.orange),
+                  _line(logs, (e) => (e.ub ?? 0).toDouble(), Colors.purple),
+                  _line(logs, (e) => (e.uc ?? 0).toDouble(), Colors.teal),
+                ], maxY: 260),
 
                 const SizedBox(height: 30),
 
-                _section("Leakage Current (mA)",
-                    [
-                      _line(logs, (e) => e.i0 ?? 0, Colors.red),
-                    ],
-                    maxY: 100),
+                _section("Leakage Current (mA)", [
+                  _line(logs, (e) => (e.lg ?? 0).toDouble(), Colors.red),
+                ], maxY: 100),
 
                 const SizedBox(height: 30),
 
-                _section("Temperature (°C)",
-                    [
-                      _line(logs, (e) => e.temp1 ?? 0, Colors.blue),
-                      _line(logs, (e) => e.temp2 ?? 0, Colors.green),
-                      _line(logs, (e) => e.temp3 ?? 0, Colors.red),
-                    ],
-                    maxY: 120),
+                _section("Temperature (°C)", [
+                  _line(logs, (e) => (e.temp1 ?? 0).toDouble(), Colors.blue),
+                  _line(logs, (e) => (e.temp2 ?? 0).toDouble(), Colors.green),
+                  _line(logs, (e) => (e.temp3 ?? 0).toDouble(), Colors.red),
+                ], maxY: 120),
               ],
             );
           },
@@ -117,8 +108,8 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
   }
 
   LineChartBarData _line(
-      List<AtomatLogResponse> data,
-      double Function(AtomatLogResponse) selector,
+      List<BreakerChartResponse> data,
+      double Function(BreakerChartResponse) selector,
       Color color,
       ) {
     return LineChartBarData(

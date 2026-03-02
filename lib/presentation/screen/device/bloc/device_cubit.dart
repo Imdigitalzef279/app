@@ -181,17 +181,16 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     try {
 
-      /// 🔥 Toggle theo relay thật
-      final currentRelay = device.rlyRepSta; // int
-      final commandValue = currentRelay == 0 ? 1 : 0;
+      final currentSwitch = device.status; // ✅ dùng status
+      final commandValue = currentSwitch == 1 ? 0 : 1;
 
-      print("Current relay: $currentRelay");
+      print("Current status: $currentSwitch");
       print("Send switch: $commandValue");
 
       final success = await switchCbsWithForce(
         device,
         commandValue.toString(),
-        false,
+        false, // ❗ isForce = false cho ON/OFF
       );
 
       if (!success) {
@@ -200,14 +199,12 @@ class DeviceCubit extends Cubit<DeviceState> {
         return;
       }
 
-      /// ✅ Optimistic update theo relay
+      /// Optimistic update đúng field
       final currentList = state.resultDevices.data ?? [];
 
       final updatedList = currentList.map((d) {
         if (d.id == device.id) {
-          return d.copyWith(
-            rlyRepSta: commandValue,
-          );
+          return d.copyWith(status: commandValue); // ✅ cập nhật status
         }
         return d;
       }).toList();
@@ -219,7 +216,6 @@ class DeviceCubit extends Cubit<DeviceState> {
         isForceLoading: false,
       ));
 
-      /// Reload nền
       await getAllDevices(
         powerStationId: device.powerStationId,
       );
@@ -272,6 +268,9 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     emit(state.copyWith(isForceLoading: false));
   }
+  // ============================================================
+  // Force on off
+  // ============================================================
   Future<void> forcePower(
       DeviceResponse device, {
         required String password,
@@ -288,13 +287,14 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(isForceLoading: true));
 
     try {
-      final currentStatus = device.status ?? 0;
+
+      final currentStatus = device.status;
       final commandValue = currentStatus == 1 ? "0" : "1";
 
       final success = await switchCbsWithForce(
         device,
         commandValue,
-        true, // ✅ force
+        true,
       );
 
       if (!success) {
@@ -303,13 +303,27 @@ class DeviceCubit extends Cubit<DeviceState> {
         return;
       }
 
-      await getAllDevices(powerStationId: device.powerStationId);
+      /// Optimistic update
+      final updatedList = (state.resultDevices.data ?? []).map((d) {
+        if (d.id == device.id) {
+          return d.copyWith(status: int.parse(commandValue));
+        }
+        return d;
+      }).toList();
+
+      emit(state.copyWith(
+        resultDevices: state.resultDevices.copyWith(
+          data: updatedList,
+        ),
+        isForceLoading: false,
+      ));
+
+      /// ❌ KHÔNG reload API ở đây nữa
 
     } catch (_) {
       AppToast.showToastError(title: "Có lỗi xảy ra");
+      emit(state.copyWith(isForceLoading: false));
     }
-
-    emit(state.copyWith(isForceLoading: false));
   }
   // ============================================================
   // TÍnh năng đóng cắt

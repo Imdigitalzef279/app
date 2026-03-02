@@ -20,29 +20,29 @@ class AtomatDetailCubit  extends Cubit<AtomatDetailState>{
   final _repo = GetIt.instance<AtomatRepository>();
   final _mcbRepo = GetIt.instance<McbRepository>();
 
-  Future<void> getLogAtomat(AtomatRequest request) async {
+  Future<void> getBreakerLog(String breakerSn) async {
     try {
       emit(state.copyWith(load: LoadStatus.loading));
 
-      print("BREAKER SN: ${request.breakerSn}");
-      print("FROM: ${request.fromDate}");
-      print("TO: ${request.toDate}");
+      final response = await _repo.getBreakerLog(breakerSn);
 
-      final response = await _repo.getLogAtomat(request);
+      final logs = response.data;
 
-
-      if (response == null || response.isEmpty) {
+      if (logs.isEmpty) {
         emit(state.copyWith(load: LoadStatus.failure));
         return;
       }
+
+      final latest = logs.first;
+
       emit(state.copyWith(
         load: LoadStatus.success,
-        logData: response.last,
-        logList: response,// LẤY LOG REALTIME
+        logData: latest,
+        logList: logs,
       ));
     } catch (e) {
       emit(state.copyWith(load: LoadStatus.failure));
-      AppToast.showToastError(title: "Lỗi!!!");
+      AppToast.showToastError(title: "Lỗi load log");
     }
   }
   Future<void> loadBreakerState({

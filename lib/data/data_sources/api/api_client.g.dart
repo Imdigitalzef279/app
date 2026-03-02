@@ -252,43 +252,6 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<List<AtomatLogResponse>> getLogAtomat(AtomatRequest request) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<List<AtomatLogResponse>>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          'api/app/log-meter-breaker/get-list',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<List<dynamic>>(_options);
-    late List<AtomatLogResponse> _value;
-    try {
-      _value = _result.data!
-          .map((dynamic i) =>
-              AtomatLogResponse.fromJson(i as Map<String, dynamic>))
-          .toList();
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
   Future<ProfileResponse> getProfile() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -524,6 +487,81 @@ class _ApiClient implements ApiClient {
     late int _value;
     try {
       _value = _result.data!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<PaginationResponse<AtomatLogResponse>> getBreakerLog(
+      String breakerSn) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'breakerSn': breakerSn};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options =
+        _setStreamType<PaginationResponse<AtomatLogResponse>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'api/app/log-meter-breaker',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late PaginationResponse<AtomatLogResponse> _value;
+    try {
+      _value = PaginationResponse<AtomatLogResponse>.fromJson(
+        _result.data!,
+        (json) => AtomatLogResponse.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<List<BreakerChartResponse>> getBreakerChartData(
+      String breakerSn) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'breakerSn': breakerSn};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<List<BreakerChartResponse>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'api/app/log-meter-breaker/chart-data',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<BreakerChartResponse> _value;
+    try {
+      _value = _result.data!
+          .map((dynamic i) =>
+              BreakerChartResponse.fromJson(i as Map<String, dynamic>))
+          .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
