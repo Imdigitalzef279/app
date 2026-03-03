@@ -10,4 +10,5 @@ Future<void> main() async {
   await EnvConfigs.init();
   configureDependencies();
   runApp(const MyApp());
+  print("BASE URL: ${EnvConfigs.baseUrl}");
 }

@@ -4,14 +4,8 @@ import 'package:solar_energy/presentation/screen/Electricity/automat/bloc/atomat
 import 'package:solar_energy/presentation/screen/Electricity/automat/setting_screen.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/switch_log_screen.dart';
 import '../../../../application/enums/load_status.dart';
-import '../../../../application/switch_log/switch_log_cubit.dart';
-import '../../../../data/repositories/breaker/breaker_repository.dart';
-import '../../../../data/repositories/switch_log/switch_log_repository.dart';
-import '../../../../di.dart';
-import '../../../breaker_history/cubit/breaker_history_cubit.dart';
 import '../../../widgets/password_dialog.dart';
 import '../../device/bloc/device_cubit.dart';
-import '../../device/widget/content_dialog.dart';
 import 'automat_detail_screen.dart';
 
 class AutomatListScreen extends StatefulWidget {
