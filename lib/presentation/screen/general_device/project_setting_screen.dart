@@ -8,7 +8,11 @@ enum AccountType {
   webPaid,
   appFree,
 }
-
+enum PackageType {
+  basic,
+  pro,
+  enterprise,
+}
 class ProjectSettingScreen extends StatefulWidget {
   final PowerStationResponse project;
 
@@ -26,7 +30,7 @@ class _ProjectSettingScreenState
     extends State<ProjectSettingScreen> {
 
   late TextEditingController nameController;
-
+  PackageType selectedPackage = PackageType.basic;
   AccountType selectedType = AccountType.user;
 
   bool isLoading = false;
@@ -116,7 +120,8 @@ class _ProjectSettingScreenState
             const SizedBox(height: 24),
 
             _buildPermissionSection(),
-
+            const SizedBox(height: 24),
+            _buildPackageSection(),
             const SizedBox(height: 30),
 
             _buildSaveButton(),
@@ -273,76 +278,101 @@ class _ProjectSettingScreenState
       String subtitle,
       AccountType type,
       ) {
-    final bool isSelected =
-        selectedType == type;
+    final bool isSelected = selectedType == type;
+
+    Color roleColor;
+    Color selectedBg;
+
+    switch (type) {
+      case AccountType.admin:
+        roleColor = const Color(0xFF0E9F6E); // xanh đậm
+        selectedBg = const Color(0xFFE7F6EF);
+        break;
+
+      case AccountType.webPaid:
+        roleColor = const Color(0xFFF59E0B); // cam
+        selectedBg = const Color(0xFFFFF4E5);
+        break;
+
+      case AccountType.technician:
+        roleColor = const Color(0xFF6B7280); // xám
+        selectedBg = const Color(0xFFF3F4F6);
+        break;
+
+      case AccountType.user:
+      default:
+        roleColor = const Color(0xFF1ABC9C); // xanh mint
+        selectedBg = const Color(0xFFEAF8F5);
+        break;
+    }
+
+    IconData? icon;
+    if (type == AccountType.user) {
+      icon = Icons.remove_red_eye_outlined;
+    }
 
     return GestureDetector(
-      onTap: () =>
-          _handleAccountTypeChange(type),
+      onTap: () => _handleAccountTypeChange(type),
       child: AnimatedContainer(
-        duration:
-        const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFE6F4F1)
-              : Colors.white,
-          borderRadius:
-          BorderRadius.circular(22),
+          color: isSelected ? selectedBg : Colors.white,
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF1ABC9C)
-                : Colors.transparent,
-            width: 1.5,
+            color: isSelected ? roleColor : Colors.grey.shade200,
+            width: 1.2,
           ),
-          boxShadow: [
-            BoxShadow(
-              color:
-              Colors.black.withOpacity(0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: Column(
-          crossAxisAlignment:
-          CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
+            /// Badge
             Container(
-              padding:
-              const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFF1ABC9C)
-                    .withOpacity(0.15)
-                    : const Color(0xFFF0F2F5),
-                borderRadius:
-                BorderRadius.circular(20),
+                    ? roleColor.withOpacity(0.15)
+                    : const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(30),
               ),
               child: Text(
                 title,
                 style: TextStyle(
                   fontSize: 13,
-                  fontWeight:
-                  FontWeight.w600,
-                  color: isSelected
-                      ? const Color(0xFF1ABC9C)
-                      : Colors.black87,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? roleColor : Colors.black87,
                 ),
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
 
-            Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF8E8E93),
-              ),
+            /// Subtitle + optional icon
+            Row(
+              children: [
+                if (icon != null) ...[
+                  Icon(
+                    icon,
+                    size: 16,
+                    color: isSelected ? roleColor : Colors.grey,
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                Expanded(
+                  child: Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      color: Color(0xFF9AA0A6),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -407,46 +437,187 @@ class _ProjectSettingScreenState
       ),
     );
   }
+  // ================= PACKAGE SECTION =================
 
+  Widget _buildPackageSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          const Text(
+            "Gói dịch vụ",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+
+          const SizedBox(height: 18),
+
+          Row(
+            children: [
+              Expanded(
+                child: _packageCard(
+                  "Basic",
+                  "Miễn phí",
+                  PackageType.basic,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _packageCard(
+                  "Pro",
+                  "299k/tháng",
+                  PackageType.pro,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _packageCard(
+                  "Enterprise",
+                  "Theo hợp đồng",
+                  PackageType.enterprise,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _packageCard(
+      String title,
+      String subtitle,
+      PackageType type,
+      ) {
+    final bool isSelected = selectedPackage == type;
+
+    Color roleColor;
+    Color selectedBg;
+
+    switch (type) {
+      case PackageType.basic:
+        roleColor = const Color(0xFF1ABC9C);
+        selectedBg = const Color(0xFFEAF8F5);
+        break;
+
+      case PackageType.pro:
+        roleColor = const Color(0xFFF59E0B);
+        selectedBg = const Color(0xFFFFF4E5);
+        break;
+
+      case PackageType.enterprise:
+        roleColor = const Color(0xFF111827);
+        selectedBg = const Color(0xFFF3F4F6);
+        break;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedPackage = type;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: 90, // 🔥 ÉP CAO BẰNG NHAU
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? selectedBg : const Color(0xFFF7F7FA),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: isSelected ? roleColor : Colors.grey.shade200,
+            width: 1.2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // 🔥 CĂN GIỮA
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: roleColor,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFF9AA0A6),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   // ================= SAVE BUTTON =================
 
   Widget _buildSaveButton() {
-    return SizedBox(
-      height: 52,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius:
-          BorderRadius.circular(30),
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFF1ABC9C),
-              Color(0xFF16A085),
-            ],
-          ),
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(40),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF6ED7C3), // xanh nhạt
+            Color(0xFF1ABC9C), // xanh chính
+            Color(0xFF0E9F6E), // xanh đậm
+          ],
         ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-            Colors.transparent,
-            shadowColor:
-            Colors.transparent,
-            shape:
-            RoundedRectangleBorder(
-              borderRadius:
-              BorderRadius.circular(
-                  30),
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1ABC9C).withOpacity(0.35),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
-          onPressed:
-          isLoading ? null : _handleSave,
-          child: isLoading
-              ? const CircularProgressIndicator(
-              color: Colors.white)
-              : const Text(
-            "Lưu thay đổi",
-            style: TextStyle(
-                fontWeight:
-                FontWeight.w600),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(40),
+          onTap: isLoading ? null : _handleSave,
+          child: Center(
+            child: isLoading
+                ? const SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2.5,
+              ),
+            )
+                : const Text(
+              "Lưu thay đổi",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 17, // 🔥 to hơn
+                fontWeight: FontWeight.w700, // 🔥 đậm hơn
+                letterSpacing: 0.5,
+              ),
+            ),
           ),
         ),
       ),

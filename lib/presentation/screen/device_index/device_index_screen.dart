@@ -133,7 +133,7 @@ class _DeviceIndexScreenState extends State<DeviceIndexScreen> {
                 ],
               ),
             ),
-            Gap(12.sp),
+            Gap(8.sp),
             SvgPicture.asset(
               waterIndex.icon,
               width: 20.sp,

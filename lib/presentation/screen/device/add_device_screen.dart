@@ -47,7 +47,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiết thiết bị')),
+      appBar: AppBar(title: const Text('Thông số')),
       body: FutureBuilder<ElectricMeter?>(
         future: future,
         builder: (context, snapshot) {

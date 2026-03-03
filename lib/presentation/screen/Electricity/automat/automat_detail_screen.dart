@@ -1,14 +1,14 @@
 import 'dart:async';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:solar_energy/data/dto/atomat/atomat_request.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 
 import 'package:solar_energy/presentation/screen/Electricity/automat/bloc/atomat_detail_cubit.dart';
 
-import '../../../../application/meter_realtime/meter_realtime_cubit.dart';
+import '../../../../application/enums/chart_range.dart';
 
 import '../../../../data/dto/atomat/atomat_log_response.dart';
 
@@ -32,8 +32,10 @@ class AutomatDetailScreen extends StatefulWidget {
 
 class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   bool isForceMode = false;
+  ChartRange _selectedRange = ChartRange.day;
   late DeviceResponse currentDevice;
   late AtomatDetailCubit cubit;
+
   final formatted = DateFormat("yyyy-MM-dd'T'00:00:00");
   Timer? _timer;
   @override
@@ -43,7 +45,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
     cubit.getBreakerLog(currentDevice.code ?? "");
-
     // ===== SignalR giữ nguyên nếu cần realtime =====
     final signalR = SignalRService();
 
@@ -225,7 +226,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     return Image.asset(
       path,
-      height: 130,
       fit: BoxFit.contain,
       errorBuilder: (_, __, ___) => const Icon(
         Icons.electrical_services,
@@ -234,7 +234,394 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+  Widget _buildOverviewSection(
+      BuildContext context,
+      AtomatLogResponse? log,
+      DeviceResponse device,
+      ) {
+    if (log == null) return const SizedBox();
 
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4F7F8),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          /// ===== HEADER + RANGE =====
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+
+              /// ⚡ Icon + Title
+              const Icon(Icons.bolt, color: Color(0xFF1ABC9C)),
+              const SizedBox(width: 6),
+              const Text(
+                "Grid Overview",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+
+              const Spacer(),
+
+              /// 📅 RANGE TABS
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: ChartRange.values.map((range) {
+                    final isActive = range == _selectedRange;
+
+                    String label;
+                    switch (range) {
+                      case ChartRange.day:
+                        label = "1D";
+                        break;
+                      case ChartRange.month:
+                        label = "1T";
+                        break;
+                      case ChartRange.quarter:
+                        label = "1Q";
+                        break;
+                      case ChartRange.year:
+                        label = "1N";
+                        break;
+                    }
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedRange = range;
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isActive ? Colors.white : Colors.transparent,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: FittedBox(
+                          child: Text(
+                            label,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: isActive
+                                  ? const Color(0xFF1ABC9C)
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              const SizedBox(width: 8),
+
+              /// ⛶ Nút mở rộng
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (_) => AutomatChartCubit(),
+                        child: AutomatChartScreen(
+                          meterCode: device.code ?? "",
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                child: const Icon(
+                  Icons.open_in_full,
+                  size: 18,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          /// ===== CHART =====
+          SizedBox(
+            height: 240,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: LineChart(
+                LineChartData(
+                  minY: 0,
+                  maxY: 200,
+                  gridData: FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
+
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: 50,
+                        reservedSize: 32,
+                        getTitlesWidget: (value, _) {
+                          return Text(
+                            "${value.toInt()} A",
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: 1,
+                        getTitlesWidget: (value, _) {
+                          return Text(
+                            "-9:${(value * 10).toInt()}",
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    rightTitles: const AxisTitles(),
+                    topTitles: const AxisTitles(),
+                  ),
+
+                  lineBarsData: [
+                    LineChartBarData(
+                      isCurved: true,
+                      barWidth: 3,
+                      color: const Color(0xFF1ABC9C),
+                      dotData: const FlDotData(show: false),
+                      spots: const [
+                        FlSpot(0, 20),
+                        FlSpot(1, 60),
+                        FlSpot(2, 45),
+                        FlSpot(3, 120),
+                        FlSpot(4, 160),
+                      ],
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFF1ABC9C).withOpacity(0.4),
+                            Color(0xFF1ABC9C).withOpacity(0.05),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          /// ===== METRIC CARDS =====
+          Row(
+            children: [
+              Expanded(
+                child: _overviewCard(
+                  "Điện áp",
+                  "${log.ua?.toStringAsFixed(1) ?? '--'} V",
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _overviewCard(
+                  "Dòng điện",
+                  "${log.ia?.toStringAsFixed(2) ?? '--'} A",
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              Expanded(
+                child: _overviewCard(
+                  "Công suất",
+                  "${log.p?.toStringAsFixed(3) ?? '--'} W",
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _overviewCard(
+                  "Hệ số",
+                  "${log.pf?.toStringAsFixed(3) ?? '--'}",
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildTopDeviceCard(DeviceResponse device) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFFFFFFF),
+            Color(0xFFF6F7FB),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+
+          /// ===== IMAGE BOX =====
+          Container(
+            height: 72,
+            width: 72,
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: _deviceImage(),
+            ),
+          ),
+
+          const SizedBox(width: 14),
+
+          /// ===== TEXT =====
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  device.name.isNotEmpty
+                      ? device.name
+                      : device.code ?? "",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  device.code ?? "",
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          /// ===== ACTION BUTTONS =====
+          _circleIconPremium(
+            icon: Icons.power_settings_new,
+            bgColor: const Color(0xFF5F9E8C),
+          ),
+
+          const SizedBox(width: 8),
+
+          _circleIconPremium(
+            icon: Icons.build,
+            bgColor: const Color(0xFFFF8C42),
+          ),
+
+          const SizedBox(width: 8),
+
+          _circleIconPremium(
+            icon: Icons.settings,
+            bgColor: const Color(0xFFB8B8C7),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _circleIconPremium({
+    required IconData icon,
+    required Color bgColor,
+  }) {
+    return Container(
+      height: 44,
+      width: 44,
+      decoration: BoxDecoration(
+        color: bgColor,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: bgColor.withOpacity(0.25),
+            blurRadius: 6,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Icon(
+        icon,
+        color: Colors.white,
+        size: 20,
+      ),
+    );
+  }
+  Widget _circleIcon({
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      height: 40,
+      width: 40,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        icon,
+        color: color,
+        size: 20,
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DeviceCubit, DeviceState>(
@@ -271,152 +658,95 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           body: ListView(
             padding: const EdgeInsets.all(20),
             children: [
-
+              _buildTopDeviceCard(device),
               const SizedBox(height: 16),
 
               /// ================= HEADER BUTTONS =================
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
+              Row(
+                children: [
 
-                /// ===== ON / OFF (THƯỜNG) =====
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  /// ===== ĐÓNG / CẮT =====
+                  Expanded(
+                    child: _actionButton(
+                      text: "Đóng/Cắt",
+                      icon: Icons.flash_on,
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFF4FA89E),
+                          Color(0xFF6CC3B8),
+                        ],
                       ),
-                      backgroundColor: isSwitching
-                          ? Colors.grey
-                          : isOn
-                          ? Colors.red
-                          : const Color(0xFF2E7D32),
-                      foregroundColor: Colors.white,
-                    ),
-                    onPressed: (isSwitching || isMaintenance)
-                        ? null
-                        : () async {
-                      final password = await _showPasswordDialog(context);
-                      if (password == null) return;
+                      onTap: (isSwitching || isMaintenance)
+                          ? null
+                          : () async {
+                        final password = await _showPasswordDialog(context);
+                        if (password == null) return;
 
-                      await context.read<DeviceCubit>().togglePower(
-                        device,
-                        password: password,
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          isOn ? Icons.power_off : Icons.flash_on,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          isOn ? "OFF" : "ON",
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                        await context.read<DeviceCubit>().togglePower(
+                          device,
+                          password: password,
+                        );
+                      },
                     ),
                   ),
-                ),
 
-                const SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  /// ===== BẢO TRÌ =====
+                  Expanded(
+                    child: _actionButton(
+                      text: "Bảo trì",
+                      icon: Icons.build,
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFFF9A3E),
+                          Color(0xFFFFB56B),
+                        ],
                       ),
-                      backgroundColor: isSwitching
-                          ? Colors.grey
-                          : device.status == 1
-                          ? const Color(0xFFC62828) // đang ON → force OFF
-                          : const Color(0xFF2E7D32), // đang OFF → force ON
-                      foregroundColor: Colors.white,
-                    ),
-                    onPressed: isSwitching
-                        ? null
-                        : () async {
-                      final password = await _showPasswordDialog(context);
-                      if (password == null) return;
+                      onTap: isSwitching
+                          ? null
+                          : () async {
+                        final password = await _showPasswordDialog(context);
+                        if (password == null) return;
 
-                      await context.read<DeviceCubit>().forcePower(
-                        device, //
-                        password: password,
-                      );
-                    },
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.flash_on, size: 18),
-                        SizedBox(width: 6),
-                        Text(
-                          "Force",
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                        await context.read<DeviceCubit>().toggleMaintenance(
+                          device,
+                          password: password,
+                        );
+                      },
                     ),
                   ),
-                ),
 
-                /// ===== MAINTENANCE =====
-                // ElevatedButton(
-                //   style: ElevatedButton.styleFrom(
-                //     backgroundColor:
-                //     isMaintenance ? Colors.white : const Color(0xFFF57C00),
-                //     foregroundColor:
-                //     isMaintenance ? Colors.red : Colors.white,
-                //     side: isMaintenance
-                //         ? const BorderSide(color: Colors.red)
-                //         : BorderSide.none,
-                //   ),
-                //   onPressed: isSwitching
-                //       ? null
-                //       : () async {
-                //     final password = await _showPasswordDialog(context);
-                //     if (password == null) return;
-                //
-                //     await context.read<DeviceCubit>().toggleMaintenance(
-                //       device,
-                //       password: password,
-                //     );
-                //   },
-                //   child: Text(
-                //     isMaintenance ? "Thoát bảo trì" : "Bảo trì",
-                //     style: const TextStyle(fontWeight: FontWeight.w600),
-                //   ),
-                // ),
-              ],
+                  const SizedBox(width: 12),
+
+                  /// ===== FORCE =====
+                  Expanded(
+                    child: _actionButton(
+                      text: "Force",
+                      icon: Icons.power_settings_new,
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFFF6B6B),
+                          Color(0xFFFF8E8E),
+                        ],
+                      ),
+                      onTap: isSwitching
+                          ? null
+                          : () async {
+                        final password = await _showPasswordDialog(context);
+                        if (password == null) return;
+
+                        await context.read<DeviceCubit>().forcePower(
+                          device,
+                          password: password,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 20),
-
-              /// ===== CHART BUTTON =====
-              ElevatedButton.icon(
-                onPressed: log == null
-                    ? null
-                    : () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                        create: (_) => AutomatChartCubit(),
-                        child: AutomatChartScreen(
-                          meterCode: device.code ?? "",
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.show_chart),
-                label: const Text("Xem biểu đồ"),
-              ),
 
               /// ================= DEVICE CARD =================
               Card(
@@ -426,12 +756,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
 
-                      _deviceImage(),
-                      const SizedBox(height: 16),
+                      _buildOverviewSection(context, log, device),
+                      const SizedBox(height: 20),
 
                       /// DEVICE NAME
                       MediaQuery(
@@ -570,6 +900,109 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+  Widget _actionButton({
+    required String text,
+    required IconData icon,
+    required Gradient gradient,
+    required VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 46,
+        decoration: BoxDecoration(
+          gradient: onTap == null
+              ? LinearGradient(
+            colors: [
+              Colors.grey.shade400,
+              Colors.grey.shade400,
+            ],
+          )
+              : gradient,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            if (onTap != null)
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 6),
+              ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 6),
+            Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildRangeTabs() {
+    final labels = {
+      ChartRange.day: "Ngày",
+      ChartRange.month: "Tháng",
+      ChartRange.quarter: "Quý",
+      ChartRange.year: "Năm",
+    };
+
+    return SizedBox(
+      height: 32,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: labels.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 6),
+        itemBuilder: (context, index) {
+          final type = labels.keys.elementAt(index);
+          final label = labels[type]!;
+          final isActive = type == _selectedRange;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedRange = type;
+              });
+
+              /// 👉 Sau này call API theo type ở đây
+              print("Selected range: $type");
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: isActive
+                    ? const Color(0xFF1ABC9C).withOpacity(0.15)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isActive
+                      ? const Color(0xFF1ABC9C)
+                      : Colors.grey,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
   Widget _miniRow(List<Widget> children) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -703,6 +1136,42 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+}
+
+
+
+Widget _overviewCard(String title, String value) {
+  return Container(
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.08),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 Widget _infoRow(
     String title,

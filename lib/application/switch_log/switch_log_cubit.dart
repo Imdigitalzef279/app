@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dio/dio.dart';
 import '../../data/repositories/aptomat_log/switch_log_model.dart';
 import '../../data/repositories/switch_log/switch_log_repository.dart';
 

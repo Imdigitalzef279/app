@@ -11,7 +11,6 @@ import 'package:solar_energy/presentation/common_widgets/app_button.dart';
 import 'package:solar_energy/presentation/common_widgets/app_lable_text_field.dart';
 import 'package:solar_energy/presentation/common_widgets/app_loading.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
-import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/login/bloc/login_cubit.dart';
 
