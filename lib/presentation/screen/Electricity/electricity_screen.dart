@@ -102,7 +102,7 @@ class _ElectricityScreenState extends State<ElectricityScreen> {
                       8.verticalSpace,
                       Container(
                         padding: EdgeInsets.only(bottom: 8.h),
-                        height: 150,
+                        height: 190,
                         child: Row(
                           children: [
                             // Ua

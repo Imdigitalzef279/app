@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 
 import 'package:solar_energy/presentation/screen/Electricity/automat/bloc/atomat_detail_cubit.dart';
+import 'package:solar_energy/presentation/screen/Electricity/automat/setting_screen.dart';
+import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/switch_log_screen.dart';
 
 import '../../../../application/enums/chart_range.dart';
 
@@ -272,13 +274,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           /// ===== CHART =====
           SizedBox(
-            height: 150,
+            height: 170,
             child: Padding(
               padding: const EdgeInsets.only(right: 4),
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: 200,
+                  maxY: 220,
                   barTouchData: BarTouchData(enabled: false),
 
                   gridData: FlGridData(
@@ -479,6 +481,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 _tabItem("Tổng quan", true),
                 _tabItem("Thông số", false),
                 _tabItem("Lịch sử", false),
+                _tabItem("Home", false, isHome: true, context: context),
               ],
             ),
           ),
@@ -508,59 +511,74 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   BarChartGroupData _bar(int x, double y1, double y2) {
     return BarChartGroupData(
       x: x,
-      barsSpace: 4,
+      barsSpace: 4, // khoảng cách giữa 2 cột (nhỏ lại để sát nhau)
       barRods: [
 
-        /// CỘT 1
+        /// cột nhạt
         BarChartRodData(
           toY: y1,
-          width: 10,
-          borderRadius: BorderRadius.circular(6),
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFFB9E3DC),
-              Color(0xFF4FA89E),
-            ],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-          ),
+          width: 22, // làm cột to
+          borderRadius: BorderRadius.zero, // bỏ bo góc -> thành hình chữ nhật
+          color: const Color(0xFFAEDDD6),
         ),
 
-        /// CỘT 2
+        /// cột đậm
         BarChartRodData(
           toY: y2,
-          width: 10,
-          borderRadius: BorderRadius.circular(6),
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFF8ED1C8),
-              Color(0xFF1ABC9C),
-            ],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-          ),
+          width: 22,
+          borderRadius: BorderRadius.zero,
+          color: const Color(0xFF4FA89E),
         ),
       ],
     );
   }
-  Widget _tabItem(String text, bool active) {
+  Widget _tabItem(
+      String text,
+      bool active, {
+        bool isHome = false,
+        BuildContext? context,
+      }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: active ? const Color(0xFF1ABC9C) : Colors.transparent,
-              width: 2,
+      child: GestureDetector(
+        onTap: () {
+          if (isHome && context != null) {
+            Navigator.popUntil(context, (route) => route.isFirst);
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: active
+                    ? const Color(0xFF1ABC9C)
+                    : Colors.transparent,
+                width: 2,
+              ),
             ),
           ),
-        ),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: active ? Colors.black : Colors.grey,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+
+              if (isHome)
+                const Icon(
+                  Icons.home,
+                  size: 16,
+                  color: Colors.grey,
+                ),
+
+              if (isHome) const SizedBox(width: 4),
+
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: active ? Colors.black : Colors.grey,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -644,17 +662,44 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           ),
 
           /// HISTORY
-          _circleIconPremium(
-            icon: Icons.history,
-            bgColor: const Color(0xFF1ABC9C),
+          /// HISTORY
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SwitchLogScreen(
+                    gatewaySn: device.gatewayNumber ?? '',
+                    breakerSn: device.code ?? "",
+                  ),
+                ),
+              );
+            },
+            child: _circleIconPremium(
+              icon: Icons.history,
+              bgColor: const Color(0xFF1ABC9C),
+            ),
           ),
 
           const SizedBox(width: 10),
 
           /// SETTINGS
-          _circleIconPremium(
-            icon: Icons.settings,
-            bgColor: const Color(0xFFB8B8C7),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<DeviceCubit>(),
+                    child: SettingScreen(device: device),
+                  ),
+                ),
+              );
+            },
+            child: _circleIconPremium(
+              icon: Icons.settings,
+              bgColor: const Color(0xFFB8B8C7),
+            ),
           ),
         ],
       ),
@@ -1024,8 +1069,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
                   /// GRID OVERVIEW
                   _buildOverviewSection(context, log, device),
-                  const SizedBox(height: 10),
-                  _goHomeButton(context),
                 ],
               ),
             ),
