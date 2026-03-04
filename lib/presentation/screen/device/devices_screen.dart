@@ -73,8 +73,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
             );
           },
           builder: (context, state) {
-            final devices = state.resultDevices.data;
+            final devices = state.resultDevices.data ?? [];
 
+            print("DEVICE COUNT: ${devices.length}");
+
+            for (var d in devices) {
+              print("${d.code} - ${d.gatewayNumber}");
+            }
             if (devices != null && devices.isNotEmpty) {
               return ListView.separated(
                 padding: EdgeInsets.all(12.sp),

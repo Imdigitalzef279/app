@@ -115,51 +115,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       print("❌ Parse realtime error: $e");
     }
   }
-  void _showForceOffOptions(
-      BuildContext context,
-      DeviceResponse device,
-      ) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-
-              ListTile(
-                title: const Text("Nhập mật khẩu"),
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: mở dialog password
-                },
-              ),
-
-              ListTile(
-                title: const Text("Xác nhận Email"),
-                onTap: () async {
-                  Navigator.pop(context);
-
-                  await context
-                      .read<DeviceCubit>();
-                },
-              ),
-
-              ListTile(
-                title: const Text("Không cần xác thực"),
-                onTap: () async {
-                  Navigator.pop(context);
-
-                  await context
-                      .read<DeviceCubit>();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   Future<void> _reloadDevice() async {
     await context.read<DeviceCubit>().getAllDevices(
@@ -244,7 +199,14 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F7F8),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0,6),
+          )
+        ],
         borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
@@ -253,87 +215,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           /// ===== HEADER + RANGE =====
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
 
-              /// ⚡ Icon + Title
-              const Icon(Icons.bolt, color: Color(0xFF1ABC9C)),
-              const SizedBox(width: 6),
-              const Text(
-                "Grid Overview",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                ),
-              ),
-
-              const Spacer(),
-
-              /// 📅 RANGE TABS
-              Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: ChartRange.values.map((range) {
-                    final isActive = range == _selectedRange;
-
-                    String label;
-                    switch (range) {
-                      case ChartRange.day:
-                        label = "1D";
-                        break;
-                      case ChartRange.month:
-                        label = "1T";
-                        break;
-                      case ChartRange.quarter:
-                        label = "1Q";
-                        break;
-                      case ChartRange.year:
-                        label = "1N";
-                        break;
-                    }
-
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedRange = range;
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isActive ? Colors.white : Colors.transparent,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: FittedBox(
-                          child: Text(
-                            label,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: isActive
-                                  ? const Color(0xFF1ABC9C)
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-
-              const SizedBox(width: 8),
-
-              /// ⛶ Nút mở rộng
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -349,202 +232,406 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   );
                 },
                 child: const Icon(
-                  Icons.open_in_full,
-                  size: 18,
-                  color: Colors.grey,
+                  Icons.bolt,
+                  color: Color(0xFF1ABC9C),
+                ),
+              ),
+
+              const SizedBox(width: 6),
+
+              const Text(
+                "Grid Overview",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 17,
+                ),
+              ),
+
+              const Spacer(),
+
+              /// RANGE SELECTOR
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F3F5),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    _rangeChipActive("1D"),
+                    _rangeChip("7D"),
+                    _rangeChip("30D"),
+                    _rangeChip("1Y"),
+                  ],
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           /// ===== CHART =====
           SizedBox(
-            height: 240,
+            height: 150,
             child: Padding(
               padding: const EdgeInsets.only(right: 4),
-              child: LineChart(
-                LineChartData(
-                  minY: 0,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
                   maxY: 200,
-                  gridData: FlGridData(show: false),
-                  borderData: FlBorderData(show: false),
+                  barTouchData: BarTouchData(enabled: false),
+
+                  gridData: FlGridData(
+                    show: true,
+                    horizontalInterval: 50,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: Colors.grey.withOpacity(0.25),
+                        strokeWidth: 1,
+                        dashArray: [6,4], // dashed giống design
+                      );
+                    },
+                  ),
 
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         interval: 50,
-                        reservedSize: 32,
-                        getTitlesWidget: (value, _) {
+                        reservedSize: 42, // tăng chiều rộng trục Y
+                        getTitlesWidget: (value, meta) {
                           return Text(
-                            "${value.toInt()} A",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey,
-                            ),
+                            "${value.toInt()} kW",
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                              style: const TextStyle(
+                                fontSize: 9,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              )
                           );
                         },
                       ),
                     ),
+
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: 1,
-                        getTitlesWidget: (value, _) {
+                        getTitlesWidget: (value, meta) {
+                          const labels = [
+                            "-10:24",
+                            "-9:54",
+                            "-9:34",
+                            "-9:24",
+                          ];
                           return Text(
-                            "-9:${(value * 10).toInt()}",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey,
-                            ),
+                            labels[value.toInt()],
+                            style: const TextStyle(fontSize: 10),
                           );
                         },
                       ),
                     ),
-                    rightTitles: const AxisTitles(),
+
                     topTitles: const AxisTitles(),
+                    rightTitles: const AxisTitles(),
                   ),
 
-                  lineBarsData: [
-                    LineChartBarData(
-                      isCurved: true,
-                      barWidth: 3,
-                      color: const Color(0xFF1ABC9C),
-                      dotData: const FlDotData(show: false),
-                      spots: const [
-                        FlSpot(0, 20),
-                        FlSpot(1, 60),
-                        FlSpot(2, 45),
-                        FlSpot(3, 120),
-                        FlSpot(4, 160),
-                      ],
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xFF1ABC9C).withOpacity(0.4),
-                            Color(0xFF1ABC9C).withOpacity(0.05),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
+                  borderData: FlBorderData(show: false),
+
+                  barGroups: [
+                    _bar(0, 150, 120),
+                    _bar(1, 180, 140),
+                    _bar(2, 160, 130),
+                    _bar(3, 190, 150),
+                  ],
+                ),
+              )
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          Row(
+            children: [
+              Expanded(
+                child: _metricCard(
+                  "Điện áp",
+                  "${log.ua?.toStringAsFixed(0) ?? '--'}",
+                  "V",
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _metricCard(
+                  "Dòng điện",
+                  "${log.ia?.toStringAsFixed(0) ?? '--'}",
+                  "A",
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          Row(
+            children: [
+              Expanded(
+                child: _metricCard(
+                  "Công suất",
+                  "${log.p?.toStringAsFixed(1) ?? '--'}",
+                  "kW",
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _metricCard(
+                  "Điện năng",
+                  "${log.epi?.toStringAsFixed(0) ?? '--'}",
+                  "kWh",
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0,4),
+                )
+              ],
+            ),
+            child: Row(
+              children: [
+
+                /// ICON
+                const Icon(
+                  Icons.savings,
+                  color: Color(0xFFFFB300),
+                  size: 28,
+                ),
+
+                const SizedBox(width: 10),
+
+                /// TEXT
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Thành tiền hôm nay",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
                         ),
+                      ),
+                      Text(
+                        "182.0 kWh • 198đ/kWh",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                /// PRICE
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "36,000 đ",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "+2,000",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 12,
                       ),
                     ),
                   ],
-                ),
-              ),
+                )
+              ],
             ),
           ),
+          const SizedBox(height: 8),
 
-          const SizedBox(height: 20),
-
-          /// ===== METRIC CARDS =====
-          Row(
-            children: [
-              Expanded(
-                child: _overviewCard(
-                  "Điện áp",
-                  "${log.ua?.toStringAsFixed(1) ?? '--'} V",
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _overviewCard(
-                  "Dòng điện",
-                  "${log.ia?.toStringAsFixed(2) ?? '--'} A",
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          Row(
-            children: [
-              Expanded(
-                child: _overviewCard(
-                  "Công suất",
-                  "${log.p?.toStringAsFixed(3) ?? '--'} W",
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _overviewCard(
-                  "Hệ số",
-                  "${log.pf?.toStringAsFixed(3) ?? '--'}",
-                ),
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                _tabItem("Tổng quan", true),
+                _tabItem("Thông số", false),
+                _tabItem("Lịch sử", false),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
-  Widget _buildTopDeviceCard(DeviceResponse device) {
+
+  Widget _rangeChipActive(String text) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFFFFFFFF),
-            Color(0xFFF6F7FB),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        color: const Color(0xFFE7F6F3),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF1ABC9C),
         ),
-        borderRadius: BorderRadius.circular(24),
+      ),
+    );
+  }
+  BarChartGroupData _bar(int x, double y1, double y2) {
+    return BarChartGroupData(
+      x: x,
+      barsSpace: 4,
+      barRods: [
+
+        /// CỘT 1
+        BarChartRodData(
+          toY: y1,
+          width: 10,
+          borderRadius: BorderRadius.circular(6),
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFFB9E3DC),
+              Color(0xFF4FA89E),
+            ],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
+        ),
+
+        /// CỘT 2
+        BarChartRodData(
+          toY: y2,
+          width: 10,
+          borderRadius: BorderRadius.circular(6),
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF8ED1C8),
+              Color(0xFF1ABC9C),
+            ],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
+        ),
+      ],
+    );
+  }
+  Widget _tabItem(String text, bool active) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: active ? const Color(0xFF1ABC9C) : Colors.transparent,
+              width: 2,
+            ),
+          ),
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: active ? Colors.black : Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _rangeChip(String text) {
+    return Container(
+      margin: const EdgeInsets.only(left: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0F2F6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+  Widget _buildTopDeviceCard(DeviceResponse device, AtomatLogResponse? log) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Row(
         children: [
 
-          /// ===== IMAGE BOX =====
+          /// ICON DEVICE
           Container(
-            height: 72,
-            width: 72,
+            height: 48,
+            width: 48,
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              color: const Color(0xFFF2F3F7),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: _deviceImage(),
-            ),
+            child: _deviceImage(),
           ),
 
-          const SizedBox(width: 14),
+          const SizedBox(width: 6),
 
-          /// ===== TEXT =====
+          /// NAME + CODE
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
                 Text(
                   device.name.isNotEmpty
                       ? device.name
                       : device.code ?? "",
                   style: const TextStyle(
-                    fontWeight: FontWeight.w700,
                     fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 4),
+
+                const SizedBox(height: 2),
+
                 Text(
                   device.code ?? "",
                   style: const TextStyle(
@@ -556,24 +643,155 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             ),
           ),
 
-          /// ===== ACTION BUTTONS =====
+          /// HISTORY
           _circleIconPremium(
-            icon: Icons.power_settings_new,
-            bgColor: const Color(0xFF5F9E8C),
+            icon: Icons.history,
+            bgColor: const Color(0xFF1ABC9C),
           ),
 
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
 
-          _circleIconPremium(
-            icon: Icons.build,
-            bgColor: const Color(0xFFFF8C42),
-          ),
-
-          const SizedBox(width: 8),
-
+          /// SETTINGS
           _circleIconPremium(
             icon: Icons.settings,
             bgColor: const Color(0xFFB8B8C7),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _miniMetric(String label, String value) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 11,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+  Widget _buildBigStatusCard(DeviceResponse device) {
+    final bool isMaintenance = device.rlyRepSta == 1;
+    final bool isOn = device.status == 1;
+
+    String statusText;
+    IconData icon;
+    List<Color> gradientColors;
+
+    if (isMaintenance) {
+      statusText = "ĐANG BẢO TRÌ";
+      icon = Icons.build_circle;
+      gradientColors = [
+        const Color(0xFFFFB74D),
+        const Color(0xFFFF9800),
+      ];
+    } else if (isOn) {
+      statusText = "ĐANG ĐÓNG";
+      icon = Icons.power;
+      gradientColors = [
+        const Color(0xFF9EDAD2),
+        const Color(0xFF4FA89E),
+      ];
+    } else {
+      statusText = "ĐANG NGẮT";
+      icon = Icons.power_off;
+      gradientColors = [
+        const Color(0xFFE57373),
+        const Color(0xFFD32F2F),
+      ];
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            gradientColors.first,
+            gradientColors.last,
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: gradientColors.last.withOpacity(0.25),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          )
+        ],
+      ),
+      child: Stack(
+        children: [
+
+
+          /// noise texture
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.06,
+              child: Image.asset(
+                "assets/images/noise.png",
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
+          Row(
+            children: [
+              Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.35),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 26,
+                ),
+              ),
+
+              const SizedBox(width: 6),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "TRẠNG THÁI",
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      statusText,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -584,15 +802,15 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     required Color bgColor,
   }) {
     return Container(
-      height: 44,
-      width: 44,
+      height: 40,
+      width: 40,
       decoration: BoxDecoration(
         color: bgColor,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: bgColor.withOpacity(0.25),
-            blurRadius: 6,
+            color: bgColor.withOpacity(0.3),
+            blurRadius: 8,
             offset: const Offset(0, 4),
           ),
         ],
@@ -604,31 +822,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  Widget _circleIcon({
-    required IconData icon,
-    required Color color,
-  }) {
-    return Container(
-      height: 40,
-      width: 40,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        icon,
-        color: color,
-        size: 20,
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DeviceCubit, DeviceState>(
       builder: (context, deviceState) {
 
-        final device = deviceState.resultDevices.data
-            ?.firstWhere(
+        final device = deviceState.resultDevices.data?.firstWhere(
               (d) => d.id == widget.device.id,
           orElse: () => widget.device,
         );
@@ -638,265 +837,243 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        print("UI STATUS: ${device?.status}");
-        print("UI RLYREP: ${device?.rlyRepSta}");
-        print("===== BUILD DEBUG =====");
-        print("BUILD STATUS: ${device.status}");
-        final int status = device.status ?? 0;
-        final isTurningOn = status == 1;
+
         final log = context.watch<AtomatDetailCubit>().state.logData;
-        final isOn = device.status == 1;
         final isMaintenance = device.rlyRepSta == 1;
         final isSwitching = context.watch<DeviceCubit>().state.isForceLoading;
+
         return Scaffold(
           backgroundColor: const Color(0xFFF3F6FB),
+
           appBar: AppBar(
             elevation: 0,
             centerTitle: true,
-            title: const Text("Chi tiết thiết bị"),
-          ),
-          body: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              _buildTopDeviceCard(device),
-              const SizedBox(height: 16),
+            title: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
 
-              /// ================= HEADER BUTTONS =================
-              Row(
+                /// DEVICE NAME
+                Text(
+                  device.name.isNotEmpty
+                      ? device.name
+                      : device.code ?? "",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+
+                const SizedBox(height: 2),
+
+                /// CODE + STATUS
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+
+                    Text(
+                      device.code ?? "",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+
+                    const SizedBox(width: 6),
+
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF2ECC71),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+
+                    const SizedBox(width: 4),
+
+                    const Text(
+                      "Online",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF2ECC71),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          body: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+
                 children: [
 
-                  /// ===== ĐÓNG / CẮT =====
-                  Expanded(
-                    child: _actionButton(
-                      text: "Đóng/Cắt",
-                      icon: Icons.flash_on,
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFF4FA89E),
-                          Color(0xFF6CC3B8),
-                        ],
-                      ),
-                      onTap: (isSwitching || isMaintenance)
-                          ? null
-                          : () async {
-                        final password = await _showPasswordDialog(context);
-                        if (password == null) return;
+                  /// TOP DEVICE CARD
+                  _buildTopDeviceCard(device, log),
 
-                        await context.read<DeviceCubit>().togglePower(
-                          device,
-                          password: password,
-                        );
-                      },
-                    ),
-                  ),
+                  const SizedBox(height: 16),
 
-                  const SizedBox(width: 12),
+                  /// STATUS CARD
+                  _buildBigStatusCard(device),
 
-                  /// ===== BẢO TRÌ =====
-                  Expanded(
-                    child: _actionButton(
-                      text: "Bảo trì",
-                      icon: Icons.build,
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFFF9A3E),
-                          Color(0xFFFFB56B),
-                        ],
-                      ),
-                      onTap: isSwitching
-                          ? null
-                          : () async {
-                        final password = await _showPasswordDialog(context);
-                        if (password == null) return;
+                  const SizedBox(height: 16),
 
-                        await context.read<DeviceCubit>().toggleMaintenance(
-                          device,
-                          password: password,
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  /// ===== FORCE =====
-                  Expanded(
-                    child: _actionButton(
-                      text: "Force",
-                      icon: Icons.power_settings_new,
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFFF6B6B),
-                          Color(0xFFFF8E8E),
-                        ],
-                      ),
-                      onTap: isSwitching
-                          ? null
-                          : () async {
-                        final password = await _showPasswordDialog(context);
-                        if (password == null) return;
-
-                        await context.read<DeviceCubit>().forcePower(
-                          device,
-                          password: password,
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              /// ================= DEVICE CARD =================
-              Card(
-                elevation: 4,
-                shadowColor: Colors.black.withOpacity(0.08),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
+                  /// HEADER ACTION BUTTONS
+                  Row(
                     children: [
 
-                      _buildOverviewSection(context, log, device),
-                      const SizedBox(height: 20),
-
-                      /// DEVICE NAME
-                      MediaQuery(
-                        data: MediaQuery.of(context)
-                            .copyWith(textScaleFactor: 1.0),
-                        child: Text(
-                          device.name.isNotEmpty
-                              ? device.name
-                              : device.code ?? "",
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            height: 1.2,
-                            color: Color(0xFF1C1C1E),
+                      /// ON / OFF
+                      Expanded(
+                        child: _actionButton(
+                          text: "Đóng/Cắt",
+                          icon: Icons.flash_on,
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF4FA89E),
+                              Color(0xFF6CC3B8),
+                            ],
                           ),
+                          onTap: (isSwitching || isMaintenance)
+                              ? null
+                              : () async {
+
+                            final password =
+                            await _showPasswordDialog(context);
+
+                            if (password == null) return;
+
+                            await context.read<DeviceCubit>().togglePower(
+                              device,
+                              password: password,
+                            );
+                          },
                         ),
                       ),
 
-                      const SizedBox(height: 4),
+                      const SizedBox(width: 12),
 
-                      /// DEVICE CODE
-                      Text(
-                        device.code ?? '',
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF8E8E93),
-                          letterSpacing: 0.3,
+                      /// MAINTENANCE
+                      Expanded(
+                        child: _actionButton(
+                          text: "Bảo trì",
+                          icon: Icons.build,
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFFF9A3E),
+                              Color(0xFFFFB56B),
+                            ],
+                          ),
+                          onTap: isSwitching
+                              ? null
+                              : () async {
+
+                            final password =
+                            await _showPasswordDialog(context);
+
+                            if (password == null) return;
+
+                            await context
+                                .read<DeviceCubit>()
+                                .toggleMaintenance(
+                              device,
+                              password: password,
+                            );
+                          },
                         ),
                       ),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(width: 12),
 
-                      /// INFO SECTION
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-
-                          _infoRow("Tên thiết bị", device.name),
-                          _infoRow("Sơ đồ mạch điện", device.code ?? ""),
-
-                          _infoRow(
-                            "Trạng thái",
-                            "",
-                            valueWidget: _buildStatusWidget(
-                              status: device.status,
-                              rlyRepSta: device.rlyRepSta,
-                            ),
+                      /// FORCE
+                      Expanded(
+                        child: _actionButton(
+                          text: "Force",
+                          icon: Icons.power_settings_new,
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFFF6B6B),
+                              Color(0xFFFF8E8E),
+                            ],
                           ),
+                          onTap: isSwitching
+                              ? null
+                              : () async {
 
-                          _infoRow(
-                            "Alarm",
-                            log?.alrRcrCnt?.toString() ?? "--",
-                          ),
+                            final password =
+                            await _showPasswordDialog(context);
 
-                          _infoRow(
-                            "Updated",
-                            log?.updatedAt?.toString() ?? "-",
-                          ),
+                            if (password == null) return;
 
-                          const SizedBox(height: 10),
-
-                          if (log != null) ...[
-                            _infoRow("Điện áp định mức",
-                                log.ua?.toString() ?? "--"),
-                            _infoRow("Dòng điện định mức",
-                                log.ia?.toString() ?? "--"),
-                          ] else ...[
-                            const Text(
-                              "Không có dữ liệu realtime",
-                              style:
-                              TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ],
+                            await context.read<DeviceCubit>().forcePower(
+                              device,
+                              password: password,
+                            );
+                          },
+                        ),
                       ),
-
-                      const SizedBox(height: 12),
-
-                      _buildRealtimeMini(log),
                     ],
                   ),
-                ),
-              ),
 
-              const SizedBox(height: 24),
-            ],
+                  const SizedBox(height: 10),
+
+                  /// GRID OVERVIEW
+                  _buildOverviewSection(context, log, device),
+                  const SizedBox(height: 10),
+                  _goHomeButton(context),
+                ],
+              ),
+            ),
           ),
         );
       },
-
     );
-
   }
 
   // ================= GRID SECTION =================
-  Widget _buildRealtimeMini(AtomatLogResponse? log) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-
-          _miniRow([
-            _miniMetric("Ua", log?.ua, "V"),
-            _miniMetric("Ub", log?.ub, "V"),
-            _miniMetric("Uc", log?.uc, "V"),
-          ]),
-
-          const SizedBox(height: 8),
-
-          _miniRow([
-            _miniMetric("Ia", log?.ia, "A"),
-            _miniMetric("Ib", log?.ib, "A"),
-            _miniMetric("Ic", log?.ic, "A"),
-          ]),
-
-          const SizedBox(height: 8),
-
-          _miniRow([
-            _miniMetric("P", log?.p, "W"),
-            _miniMetric("kWh", log?.epi, ""),
-            _miniMetric("PF", log?.pf, ""),
-          ]),
-        ],
+  Widget _goHomeButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.popUntil(context, (route) => route.isFirst);
+      },
+      child: Container(
+        height: 52,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF4FA89E),
+              Color(0xFF6CC3B8),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.home, color: Colors.white),
+            SizedBox(width: 8),
+            Text(
+              "Quay về Home",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -909,7 +1086,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 46,
+        height: 36, // ↓ nhỏ lại
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
           gradient: onTap == null
               ? LinearGradient(
@@ -919,27 +1097,31 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             ],
           )
               : gradient,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(22), // bo tròn hơn
           boxShadow: [
             if (onTap != null)
               BoxShadow(
                 color: Colors.black.withOpacity(0.08),
-                blurRadius: 10,
-                offset: const Offset(0, 6),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
               ),
           ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white, size: 18),
-            const SizedBox(width: 6),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 16, // ↓ icon nhỏ
+            ),
+            const SizedBox(width: 4), // ↓ khoảng cách nhỏ
             Text(
               text,
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
+                fontSize: 12, // ↓ chữ nhỏ
               ),
             ),
           ],
@@ -947,272 +1129,81 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  Widget _buildRangeTabs() {
-    final labels = {
-      ChartRange.day: "Ngày",
-      ChartRange.month: "Tháng",
-      ChartRange.quarter: "Quý",
-      ChartRange.year: "Năm",
-    };
-
-    return SizedBox(
-      height: 32,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: labels.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 6),
-        itemBuilder: (context, index) {
-          final type = labels.keys.elementAt(index);
-          final label = labels[type]!;
-          final isActive = type == _selectedRange;
-
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedRange = type;
-              });
-
-              /// 👉 Sau này call API theo type ở đây
-              print("Selected range: $type");
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: isActive
-                    ? const Color(0xFF1ABC9C).withOpacity(0.15)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: isActive
-                      ? const Color(0xFF1ABC9C)
-                      : Colors.grey,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-  Widget _miniRow(List<Widget> children) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: children,
-    );
-  }
-
-  Widget _miniMetric(String label, dynamic value, String unit) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value != null ? "$value $unit" : "--",
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _buildPhaseSection(String title,
-      List<_MetricItem> items,) {
-    if (items.isEmpty) return const SizedBox();
-
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: items.length,
-          gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 1.8,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-          ),
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return _metricCard(
-              item.label,
-              item.value ?? "-",
-              item.unit,
-            );
-          },
-        ),
-
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
-
   Widget _metricCard(String label, String value, String unit) {
     return Container(
-      constraints: const BoxConstraints(minHeight: 80),
+      height: 64, // ↓ giảm chiều dài ô
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0,3),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
+        padding: const EdgeInsets.symmetric(horizontal: 10), // ↓ padding nhỏ
+        child: Row(
           children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF9E9E9E),
-                letterSpacing: 0.3,
+
+            Container(
+              height: 24,
+              width: 24,
+              decoration: const BoxDecoration(
+                color: Color(0xFFE7F6F3),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.bolt,
+                size: 14, // ↓ icon nhỏ
+                color: Color(0xFF1ABC9C),
               ),
             ),
-            const SizedBox(height: 6),
-            Flexible(
-              child: Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1C1C1E),
-                  height: 1.1,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (unit.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Text(
-                  unit,
+
+            const SizedBox(width: 8),
+
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                Text(
+                  label,
                   style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF8E8E93),
+                    fontSize: 11, // ↓ nhỏ hơn
+                    color: Colors.grey,
                   ),
                 ),
-              ),
+
+                Row(
+                  children: [
+                    Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 16, // ↓ nhỏ hơn
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      unit,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-
-
-Widget _overviewCard(String title, String value) {
-  return Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.08),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-Widget _infoRow(
-    String title,
-    String value, {
-      Widget? valueWidget,
-    }) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: valueWidget ??
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
 Widget _buildStatusWidget({
 
   required int status,

@@ -5,9 +5,8 @@ import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
 import 'package:solar_energy/presentation/screen/account_information/account_screen.dart';
 import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.dart';
-import 'package:solar_energy/presentation/screen/home_page/home_page_widget.dart';
 import 'package:solar_energy/presentation/screen/service_solar/bottom_contact_info.dart';
-import 'package:solar_energy/presentation/screen/device/add_device_screen.dart';
+
 
 import '../../../application/enums/load_status.dart';
 import '../general_device/general_device_screen.dart';
