@@ -23,7 +23,7 @@ import 'package:solar_energy/presentation/screen/manager_water/manager_water_scr
 import 'package:solar_energy/presentation/screen/overview/bloc/overview_cubit.dart';
 import 'package:solar_energy/presentation/screen/register/Bloc/register_cubit.dart';
 import 'package:solar_energy/presentation/screen/register/register_widget.dart';
-import '../../application/enums/electric_type.dart';
+
 import '../../data/dto/power_station/response/power_station_response.dart';
 import '../screen/general_device/add_product_screen.dart';
 

@@ -11,7 +11,7 @@ class BreakerChartResponse {
   final double? temp2;
   final double? temp3;
   final double? temp4;
-
+  final double? p;
   BreakerChartResponse({
     this.updatedAt,
     this.ia,
@@ -21,6 +21,7 @@ class BreakerChartResponse {
     this.ub,
     this.uc,
     this.lg,
+    this.p,
     this.temp1,
     this.temp2,
     this.temp3,
@@ -37,6 +38,7 @@ class BreakerChartResponse {
       ub: (json['ub'] as num?)?.toDouble(),
       uc: (json['uc'] as num?)?.toDouble(),
       lg: (json['lg'] as num?)?.toDouble(),
+      p: (json['p'] as num?)?.toDouble(),
       temp1: (json['temp1'] as num?)?.toDouble(),
       temp2: (json['temp2'] as num?)?.toDouble(),
       temp3: (json['temp3'] as num?)?.toDouble(),

@@ -13,7 +13,7 @@ _$CbsMeterRequestImpl _$$CbsMeterRequestImplFromJson(
       breakerSn: json['breakerSn'] as String,
       addr: json['addr'] as String,
       commandValue: json['commandValue'] as String,
-      createdBy: json['createdBy'] as String? ?? "admin",
+      createdBy: json['createdBy'] as String,
       isForce: json['isForce'] as bool,
     );
 

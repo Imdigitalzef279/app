@@ -25,11 +25,7 @@ class ProjectRepositoryImpl extends BaseRepository
 
       // 🔥 THÊM DEBUG Ở ĐÂY
       if (e is DioException) {
-        print("========= POWER STATION ERROR =========");
-        print("STATUS CODE: ${e.response?.statusCode}");
-        print("RESPONSE DATA: ${e.response?.data}");
-        print("MESSAGE: ${e.message}");
-        print("=======================================");
+
       }
 
       if (e is DioException && e.error is ErrorResponse) {

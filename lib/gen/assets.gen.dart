@@ -305,6 +305,9 @@ class $AssetsImagesGen {
   AssetGenImage get mm50h4p =>
       const AssetGenImage('assets/images/mm50h_4p.png');
 
+  /// File path: assets/images/noise.png
+  AssetGenImage get noise => const AssetGenImage('assets/images/noise.png');
+
   /// File path: assets/images/rcbo_2p_4p.png
   AssetGenImage get rcbo2p4p =>
       const AssetGenImage('assets/images/rcbo_2p_4p.png');
@@ -330,6 +333,7 @@ class $AssetsImagesGen {
         mm50h2p,
         mm50h3p,
         mm50h4p,
+        noise,
         rcbo2p4p,
         solarEnergy,
         waterLottie

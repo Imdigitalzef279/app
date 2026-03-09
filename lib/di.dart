@@ -31,7 +31,6 @@ import 'data/repositories/switch_log/switch_log_repository.dart';
 import 'data/repositories/switch_log/switch_log_repository_impl.dart';
 import 'domain/mcb/repositories/mcb_repository.dart';
 import 'data/data_sources/api/api_client.dart';
-import 'navigation_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -43,6 +42,7 @@ void configureDependencies() {
         baseUrl: EnvConfigs.baseUrl,
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
       ),
     );
@@ -96,7 +96,9 @@ void configureDependencies() {
   getIt.registerLazySingleton<ProjectRepository>(() => ProjectRepositoryImpl());
   getIt.registerLazySingleton<ElectricRepository>(() => ElectricRepositoryImpl());
   getIt.registerLazySingleton<RegisterRepository>(() => RegisterRepositoryImpl());
-  getIt.registerLazySingleton<CbsRepository>(() => CbsRepositoryImpl());
+  getIt.registerLazySingleton<CbsRepository>(
+        () => CbsRepositoryImpl(getIt<ApiClient>()),
+  );
   getIt.registerLazySingleton<WaterRepository>(() => WaterRepositoryImpl());
   getIt.registerLazySingleton<AtomatRepository>(() => AtomatRepositoryImpl());
   // MCB Datasource

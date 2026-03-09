@@ -22,6 +22,7 @@ import 'package:solar_energy/data/dto/water/response/meter_water_response.dart';
 import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
 import 'package:solar_energy/data/dto/meter_config/response/meter_config_response.dart';
 
+import '../../dto/Price/price_config_response.dart';
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 part 'api_client.g.dart';
 
@@ -112,6 +113,12 @@ abstract class ApiClient {
   Future<int> controlCircuitBreaker(
       @Body() CbsMeterRequest request,
       );
+  // ================= BREAKER MAINTENANCE =================
+
+  @POST("api/app/breaker-command/set-maintaince")
+  Future<int> setBreakerMaintenance(
+      @Body() CbsMeterRequest request,
+      );
   // ================= BREAKER log =================
   @GET('api/app/log-meter-breaker')
   Future<PaginationResponse<AtomatLogResponse>> getBreakerLog(
@@ -134,7 +141,11 @@ abstract class ApiClient {
   Future<List<MeterConfigResponse>> getMeterConfigByMeterId(
       @Path('meterId') int meterId,
       );
-
+  // ================= Tính tiền điện =================
+  @GET('api/app/price-config/by-meter-id/{meterId}')
+  Future<List<PriceConfigResponse>> getPriceConfig(
+      @Path('meterId') int meterId,
+      );
   @POST('api/app/meter-config')
   Future<MeterConfigResponse> createMeterConfig(
       @Body() MeterConfigRequest request,

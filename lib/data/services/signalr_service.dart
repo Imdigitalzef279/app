@@ -104,7 +104,7 @@ class SignalRService {
 
         _dataController.add(payload);
       } catch (e) {
-        print("❌ Parse error [$eventName]: $e");
+
       }
     }
 
@@ -115,7 +115,7 @@ class SignalRService {
             (data) => listenEvent("ReceiveChart", data));
 
     _connection!.on("ReceiveCommand", (data) {
-      print("🔥 ReceiveCommand RAW: $data"); // 👈 THÊM
+
       listenEvent("ReceiveCommand", data);
     });
   }
@@ -123,17 +123,17 @@ class SignalRService {
   // ================= LIFECYCLE =================
   void _registerLifecycle() {
     _connection!.onclose((error) {
-      print("🔴 Connection closed: $error");
+
       _updateStatus(SignalRStatus.disconnected);
     });
 
     _connection!.onreconnecting((error) {
-      print("🟡 Reconnecting...");
+
       _updateStatus(SignalRStatus.reconnecting);
     });
 
     _connection!.onreconnected((connectionId) async {
-      print("🟢 Reconnected: $connectionId");
+
 
       await _joinMeter(); // 🔥 QUAN TRỌNG
 

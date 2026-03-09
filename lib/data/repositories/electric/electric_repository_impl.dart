@@ -103,5 +103,14 @@ class ElectricRepositoryImpl extends BaseRepository
         error: e.toString(),
       );
     }
+  }  // ============================================================
+  // get api tính tiền điện
+  // ============================================================
+  @override
+  double calculateElectricCost({
+    required double kwh,
+    required double price,
+  }) {
+    return kwh * price;
   }
 }

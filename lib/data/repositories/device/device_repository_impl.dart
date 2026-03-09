@@ -10,6 +10,7 @@ import 'package:solar_energy/data/repositories/device/device_repository.dart';
 
 import '../../../application/enums/load_status.dart';
 import '../../data_sources/api/api_client.dart';
+import '../../dto/atomat/atomat_log_response.dart';
 
 class DeviceRepositoryImpl extends BaseRepository implements DeviceRepository {
 
@@ -22,6 +23,11 @@ class DeviceRepositoryImpl extends BaseRepository implements DeviceRepository {
     try {
       final List<DeviceResponse> data =
       await _api.getDevices(powerStationID);
+      print("===== DEVICE LIST =====");
+      for (var d in data) {
+        print(d.toJson());
+      }
+      print("=======================");
 
       return result.copyWith(
         data: data,
@@ -30,14 +36,6 @@ class DeviceRepositoryImpl extends BaseRepository implements DeviceRepository {
 
     } catch (e) {
 
-      // 🔥 THÊM ĐOẠN NÀY
-      if (e is DioException) {
-        print("========= DIO ERROR =========");
-        print("STATUS CODE: ${e.response?.statusCode}");
-        print("RESPONSE DATA: ${e.response?.data}");
-        print("MESSAGE: ${e.message}");
-        print("=============================");
-      }
 
       if (e is DioException && e.error is ErrorResponse) {
         final error = e.error as ErrorResponse;
@@ -53,7 +51,29 @@ class DeviceRepositoryImpl extends BaseRepository implements DeviceRepository {
       );
     }
   }
+  @override
+  Future<Result<List<AtomatLogResponse>>> getBreakerLog(String breakerSn) async {
 
+    final result = Result<List<AtomatLogResponse>>();
+
+    try {
+
+      final response = await _api.getBreakerLog(breakerSn);
+
+      return result.copyWith(
+        data: response.data ?? [],
+        status: LoadStatus.success,
+      );
+
+    } catch (e) {
+
+      return result.copyWith(
+        status: LoadStatus.failure,
+        error: e.toString(),
+      );
+
+    }
+  }
   @override
   Future<Result<MeterResponse>> createElectricMeter(MeterRequest request) async {
     final result = Result<MeterResponse>();

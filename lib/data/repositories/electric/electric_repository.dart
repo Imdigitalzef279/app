@@ -8,14 +8,17 @@ import '../../dto/result/result.dart';
 
 abstract class ElectricRepository {
 
-  /// API cũ - lấy danh sách electric theo PowerStationId
   Future<Result<PaginationResponse<ElectricMeter>>> getElectric(int request);
 
-  /// Tạo meter mới
   Future<Result<MeterResponse>> createElectricMeter(MeterRequest request);
 
-  /// 🔥 API mới - Lấy log realtime theo meterId
   Future<Result<LastedLogDataResponse>> getTopLogMeter({
     required int meterId,
+  });
+
+  /// 🔥 thêm hàm tính tiền điện
+  double calculateElectricCost({
+    required double kwh,
+    required double price,
   });
 }

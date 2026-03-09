@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
 import 'package:solar_energy/data/repositories/meter_config/meter_config_repository.dart';
 
+import 'device_info_screen/device_info_screen.dart';
+
 const kPrimaryColor = Color(0xFF1ABC9C);
 const kBackgroundColor = Color(0xFFF4F7F8);
 class SettingScreen extends StatefulWidget {
@@ -184,7 +186,21 @@ class _SettingScreenState extends State<SettingScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        title: Text(widget.device.name ?? widget.device.code ?? "Cài đặt"),
+        title: Text(widget.device.name ?? widget.device.code ?? "Thông tin"),
+
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.device_hub),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DeviceInfoScreen(device: widget.device),
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

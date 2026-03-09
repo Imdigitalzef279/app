@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
@@ -9,19 +12,40 @@ import 'package:solar_energy/data/repositories/cbs/cbs_repository.dart';
 import 'package:solar_energy/data/repositories/device/device_repository.dart';
 import 'package:solar_energy/di.dart';
 
+import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
+import '../../../../data/dto/profile/profile_response.dart';
+import '../../../../data/repositories/auth/auth_repository.dart';
 import '../../../common_widgets/app_toast.dart';
 
 part 'device_state.dart';
 part 'device_cubit.freezed.dart';
 
 class DeviceCubit extends Cubit<DeviceState> {
+
   DeviceCubit() : super(DeviceState.init());
   final _repo = getIt.get<DeviceRepository>();
+  String? _cachedUserName;
+  final _api = GetIt.instance<ApiClient>();
   final _cbs = getIt.get<CbsRepository>();
-  void _updateLocalStatus(int deviceId, int newStatus) {
-    final updatedDevices = state.resultDevices.data?.map((d) {
+  final _authRepo = getIt.get<AuthRepository>();
+  ProfileResponse? profile;
+
+  double calculateElectricCost(DeviceResponse device, {double price = 3200}) {
+    final kwh = device.realtimeLog?.epi ?? 0;
+    return kwh * price;
+  }
+  // lấy usernaemn cho api đóng cắt
+  void setProfile(ProfileResponse profileResponse) {
+    profile = profileResponse;
+  }
+  // Cập nhật trạng thái thiết bị ngay trên UI mà không cần chờ API trả về.
+  void updateLocalStatus(int deviceId, int newStatus) {
+
+    final currentDevices = state.resultDevices.data ?? [];
+
+    final updatedDevices = currentDevices.map((d) {
       if (d.id == deviceId) {
         return d.copyWith(status: newStatus);
       }
@@ -34,6 +58,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       ),
     ));
   }
+
   // ============================================================
   // LOAD DEVICES THEO TYPE
   // ============================================================
@@ -169,7 +194,7 @@ class DeviceCubit extends Cubit<DeviceState> {
         required String password,
       }) async {
 
-    if (state.isForceLoading) return;
+    if (state.isSwitching || state.isForceLoading) return;
 
     final isValid = await _verifyForceAuth(password: password);
     if (!isValid) {
@@ -177,52 +202,45 @@ class DeviceCubit extends Cubit<DeviceState> {
       return;
     }
 
-    emit(state.copyWith(isForceLoading: true));
+    emit(state.copyWith(isSwitching: true));
 
     try {
 
-      final currentSwitch = device.status; // ✅ dùng status
-      final commandValue = currentSwitch == 1 ? 0 : 1;
+      final latestDevice = state.resultDevices.data
+          ?.firstWhere((d) => d.id == device.id);
 
-      print("Current status: $currentSwitch");
-      print("Send switch: $commandValue");
+      if (latestDevice == null) return;
+
+      final currentSwitch =
+          state.breakerLog?.rlySta ??
+              latestDevice.status ??
+              0;
+
+      final commandValue = currentSwitch == 1 ? "0" : "1";
 
       final success = await switchCbsWithForce(
-        device,
-        commandValue.toString(),
-        false, // ❗ isForce = false cho ON/OFF
+        latestDevice,
+        commandValue,
+        false,
       );
 
       if (!success) {
-        emit(state.copyWith(isForceLoading: false));
         AppToast.showToastError(title: "Không ON/OFF được");
         return;
       }
 
-      /// Optimistic update đúng field
-      final currentList = state.resultDevices.data ?? [];
+      /// update UI ngay
+      updateLocalStatus(latestDevice.id, int.parse(commandValue));
 
-      final updatedList = currentList.map((d) {
-        if (d.id == device.id) {
-          return d.copyWith(status: commandValue); // ✅ cập nhật status
-        }
-        return d;
-      }).toList();
-
-      emit(state.copyWith(
-        resultDevices: state.resultDevices.copyWith(
-          data: updatedList,
-        ),
-        isForceLoading: false,
-      ));
-
-      await getAllDevices(
-        powerStationId: device.powerStationId,
+      await waitBreakerState(
+        device.code,
+        int.parse(commandValue),
       );
 
     } catch (e) {
-      emit(state.copyWith(isForceLoading: false));
       AppToast.showToastError(title: "Có lỗi xảy ra");
+    } finally {
+      emit(state.copyWith(isSwitching: false));
     }
   }
   // ============================================================
@@ -245,20 +263,31 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     try {
 
-      final isMaintenance = device.rlyRepSta == "1";
+      final isMaintenance = device.rlyRepSta == 1;
       final commandValue = isMaintenance ? "0" : "1";
-
-      final success = await switchCbsWithForce(
-        device,
-        commandValue,
-        true, // maintenance luôn force
+      final username = profile?.userName ?? "";
+      final response = await _cbs.setBreakerMaintenance(
+        CbsMeterRequest(
+          addr: state.breakerLog?.addr ?? device.serialNumber,
+          breakerSn: device.code,
+          gatewaySn: device.gatewayNumber,
+          commandValue: commandValue,
+          createdBy: "mobile_app",
+          isForce: true,
+        ),
       );
+
+      final success = response != -1;
 
       if (!success) {
         AppToast.showToastError(title: "Không đổi bảo trì được");
         emit(state.copyWith(isForceLoading: false));
         return;
       }
+      await waitBreakerState(
+        device.code,
+        int.parse(commandValue),
+      );
 
       await getAllDevices(powerStationId: device.powerStationId);
 
@@ -288,11 +317,20 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     try {
 
-      final currentStatus = device.status;
+      /// lấy device mới nhất trong state
+      final latestDevice = state.resultDevices.data
+          ?.firstWhere((d) => d.id == device.id);
+
+      if (latestDevice == null) {
+        emit(state.copyWith(isForceLoading: false));
+        return;
+      }
+
+      final currentStatus = latestDevice.status ?? 0;
       final commandValue = currentStatus == 1 ? "0" : "1";
 
       final success = await switchCbsWithForce(
-        device,
+        latestDevice,
         commandValue,
         true,
       );
@@ -302,67 +340,156 @@ class DeviceCubit extends Cubit<DeviceState> {
         emit(state.copyWith(isForceLoading: false));
         return;
       }
-
-      /// Optimistic update
+      await Future.delayed(const Duration(seconds: 3));
+      await loadBreakerLog(device.code);
+      /// update local device
       final updatedList = (state.resultDevices.data ?? []).map((d) {
-        if (d.id == device.id) {
+        if (d.id == latestDevice.id) {
           return d.copyWith(status: int.parse(commandValue));
         }
         return d;
       }).toList();
 
       emit(state.copyWith(
-        resultDevices: state.resultDevices.copyWith(
-          data: updatedList,
+        resultDevices: state.resultDevices.copyWith(data: updatedList),
+
+        /// update breaker log luôn
+        breakerLog: state.breakerLog?.copyWith(
+          rlySta: int.parse(commandValue),
         ),
+
         isForceLoading: false,
       ));
 
-      /// ❌ KHÔNG reload API ở đây nữa
-
-    } catch (_) {
+    } catch (e) {
       AppToast.showToastError(title: "Có lỗi xảy ra");
       emit(state.copyWith(isForceLoading: false));
     }
   }
   // ============================================================
+  // Gọi addr
+  // ============================================================
+  Future<void> loadBreakerLog(String breakerSn) async {
+    try {
+
+      final response = await _repo.getBreakerLog(breakerSn);
+
+      if (response.data == null || response.data!.isEmpty) {
+        print("Breaker log empty");
+        return;
+      }
+
+      final log = response.data!.first;
+
+      emit(
+        state.copyWith(
+          breakerLog: log,
+        ),
+      );
+
+    } catch (e) {
+      print("LOAD LOG ERROR: $e");
+    }
+  }
+  // ============================================================
   // TÍnh năng đóng cắt
   // ============================================================
-
   Future<bool> switchCbsWithForce(
       DeviceResponse device,
       String commandValue,
       bool isForce,
       ) async {
     try {
-      print("===== SWITCH DEBUG =====");
-      print("serialNumber: ${device.serialNumber}");
-      print("breakerSn: ${device.code}");
-      print("gatewaySn: ${device.gatewayNumber}");
-      print("commandValue: $commandValue");
-      print("isForce: $isForce");
-      print("========================");
+
+      final addr =
+          state.breakerLog?.addr ??
+              device.realtimeLog?.addr ??
+              device.serialNumber ??
+              "";
+
+      final username = profile?.userName ?? "mobile_app";
+
+      print("DEVICE CODE: ${device.code}");
+      print("GATEWAY: ${device.gatewayNumber}");
+      print("ADDR: $addr");
+      print("COMMAND: $commandValue");
+
+      if (addr.isEmpty) {
+        print("ADDR NULL → không gửi API");
+        return false;
+      }
 
       final response = await _cbs.sendCbsCommand(
         CbsMeterRequest(
-          addr: device.serialNumber,
-          breakerSn: device.code,
+          addr: addr,
+          breakerSn: device.serialNumber,
           gatewaySn: device.gatewayNumber,
           commandValue: commandValue,
+          createdBy: username,
           isForce: isForce,
         ),
       );
 
-      print("RESPONSE: $response");
-
       if (response == -1) return false;
 
       return true;
+
     } catch (e) {
       print("ERROR SWITCH: $e");
       return false;
     }
   }
+  // Future<void> waitBreakerState(
+  //     String breakerSn,
+  //     int expectedState,
+  //     ) async {
+  //
+  //   for (int i = 0; i < 10; i++) {
+  //
+  //     await Future.delayed(const Duration(seconds: 2));
+  //
+  //     await loadBreakerLog(breakerSn);
+  //
+  //     final current = state.breakerLog?.rlySta;
+  //
+  //     if (current == expectedState) {
+  //       break;
+  //     }
+  //   }
+  // }
+  Future<void> waitBreakerState(
+      String breakerSn,
+      int expectedState,
+      ) async {
+
+    int countdown = 15;
+
+    while (countdown > 0) {
+
+      emit(state.copyWith(
+        switchCountdown: countdown,
+      ));
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      countdown--;
+
+      await loadBreakerLog(breakerSn);
+
+      final current = state.breakerLog?.rlySta;
+
+      if (current == expectedState) {
+        break;
+      }
+    }
+
+    emit(state.copyWith(
+      switchCountdown: 0,
+    ));
+  }
+  // ============================================================
+  // Tính tiền điện
+  // ============================================================
   // ============================================================
   // HELPER
   // ============================================================
@@ -387,13 +514,14 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     final updatedList = currentList.map((device) {
       if (device.code == code) {
-        return device.copyWith(realtimeLog: log);
+        return device.copyWith(
+          realtimeLog: log,
+          status: log.rlySta ?? device.status,
+        );
       }
       return device;
     }).toList();
-    void setSwitching(bool value) {
-      emit(state.copyWith(isForceLoading: value));
-    }
+
     emit(
       state.copyWith(
         resultDevices: state.resultDevices.copyWith(data: updatedList),
@@ -401,7 +529,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     );
   }
   void setSwitching(bool value) {
-    emit(state.copyWith(isForceLoading: value));
+    emit(state.copyWith(isSwitching: value));
   }
   Future<bool> _verifyForceAuth({
     String? password,

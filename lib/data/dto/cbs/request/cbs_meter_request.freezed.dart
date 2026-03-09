@@ -177,7 +177,7 @@ class _$CbsMeterRequestImpl implements _CbsMeterRequest {
       required this.breakerSn,
       required this.addr,
       required this.commandValue,
-      this.createdBy = "admin",
+      required this.createdBy,
       required this.isForce});
 
   factory _$CbsMeterRequestImpl.fromJson(Map<String, dynamic> json) =>
@@ -192,7 +192,6 @@ class _$CbsMeterRequestImpl implements _CbsMeterRequest {
   @override
   final String commandValue;
   @override
-  @JsonKey()
   final String createdBy;
   @override
   final bool isForce;
@@ -247,7 +246,7 @@ abstract class _CbsMeterRequest implements CbsMeterRequest {
       required final String breakerSn,
       required final String addr,
       required final String commandValue,
-      final String createdBy,
+      required final String createdBy,
       required final bool isForce}) = _$CbsMeterRequestImpl;
 
   factory _CbsMeterRequest.fromJson(Map<String, dynamic> json) =

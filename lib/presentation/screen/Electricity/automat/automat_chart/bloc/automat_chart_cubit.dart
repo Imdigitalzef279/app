@@ -10,9 +10,15 @@ class AutomatChartCubit extends Cubit<List<BreakerChartResponse>> {
 
   Future<void> loadChart(String breakerSn) async {
     try {
+
+      emit([]); // clear old data
+
       final result = await _api.getBreakerChartData(breakerSn);
+
       emit(result);
+
     } catch (e) {
+      print("Chart error $e");
       emit([]);
     }
   }

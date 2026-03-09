@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import '../../../domain/mcb/entities/breaker_command.dart';
 import '../../dto/electric/breaker_state_response.dart';
 import 'package:dio/dio.dart';

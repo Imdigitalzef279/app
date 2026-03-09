@@ -74,7 +74,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
           },
           builder: (context, state) {
             final devices = state.resultDevices.data ?? [];
-
+            print(devices.length);
+            print(devices.map((e) => e.code).toList());
             print("DEVICE COUNT: ${devices.length}");
 
             for (var d in devices) {
