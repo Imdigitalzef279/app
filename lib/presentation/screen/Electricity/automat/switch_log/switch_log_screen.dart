@@ -285,11 +285,11 @@ class SwitchLogScreen extends StatelessWidget {
           Row(
             children: [
 
-              _badge(Icons.flash_on, "Admin", Colors.green),
+              _badge(Icons.flash_on, log.createdBy, Colors.green),
 
               const SizedBox(width: 6),
 
-              _badge(Icons.settings, "System", Colors.teal),
+              _badge(Icons.settings, log.method, Colors.teal),
 
               const Spacer(),
 
@@ -307,9 +307,9 @@ class SwitchLogScreen extends StatelessWidget {
 
           /// title
           Text(
-            isClose
-                ? "MCB đã đóng thiết bị thành công"
-                : "MCB đã mở thiết bị",
+            log.isClose
+                ? "MCB đã đóng thiết bị"
+                : "MCB đã cắt thiết bị",
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -332,9 +332,9 @@ class SwitchLogScreen extends StatelessWidget {
             children: [
 
               Icon(
-                Icons.bolt,
+                log.isClose ? Icons.power : Icons.power_off,
                 size: 16,
-                color: isClose ? Colors.green : Colors.red,
+                color: log.isClose ? Colors.green : Colors.red,
               ),
 
               const SizedBox(width: 6),

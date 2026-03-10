@@ -28,6 +28,7 @@ class _SettingScreenState extends State<SettingScreen> {
   double overVoltage = 240;
   double underVoltage = 220;
   double overPower = 5;
+  double overTemperature = 70;
   bool phaseLoss = false;
   bool customThreshold = false;
   bool notifyApp = false;
@@ -88,6 +89,9 @@ class _SettingScreenState extends State<SettingScreen> {
           case 'export_report':
             exportReport = e.configValue == 'true';
             break;
+          case 'over_temperature':
+            overTemperature = double.parse(e.configValue);
+            break;
         }
       }
     } catch (e) {
@@ -132,7 +136,7 @@ class _SettingScreenState extends State<SettingScreen> {
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "phase_loss",
-          configValue: customThreshold ? 1 : 0,
+          configValue: phaseLoss ? 1 : 0,
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
@@ -158,6 +162,11 @@ class _SettingScreenState extends State<SettingScreen> {
           meterId: widget.device.id,
           configKey: "export_report",
           configValue: exportReport ? 1 : 0,
+        ),
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "over_temperature",
+          configValue: overTemperature.toInt(),
         ),
       ];
 
@@ -354,7 +363,16 @@ class _SettingScreenState extends State<SettingScreen> {
             max: 20,
             onChanged: (v) => setState(() => overPower = v),
           ),
+          const SizedBox(height: 25),
 
+          _buildSliderTile(
+            title: "Quá nhiệt",
+            unit: "°C",
+            value: overTemperature,
+            min: 40,
+            max: 120,
+            onChanged: (v) => setState(() => overTemperature = v),
+          ),
           const SizedBox(height: 30),
 
           const Divider(),
