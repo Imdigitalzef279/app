@@ -25,6 +25,10 @@ enum ChartType {
   power,
   energy,
 }
+enum ChartDisplayType {
+  line,
+  bar,
+}
 class AutomatDetailScreen extends StatefulWidget {
   final DeviceResponse device;
   const AutomatDetailScreen({
@@ -36,7 +40,8 @@ class AutomatDetailScreen extends StatefulWidget {
 }
 class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   bool isForceMode = false;
-  ChartRange _selectedRange = ChartRange.day;
+  ChartRange _selectedRange = ChartRange.month;
+  ChartDisplayType chartDisplayType = ChartDisplayType.line;
   late DeviceResponse currentDevice;
   late AtomatDetailCubit cubit;
   ChartType chartType = ChartType.power;
@@ -47,16 +52,17 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   double realtimeCost = 0;
   int maintenanceCountdown = 0;
   Timer? maintenanceTimer;
-  int switchCountdown = 0;
-  int switchCooldown = 0;
-  Timer? switchCooldownTimer;
-  Timer? switchCountdownTimer;
   final formatted = DateFormat("yyyy-MM-dd'T'00:00:00");
   Timer? _timer;
   @override
   void initState() {
     super.initState();
-
+    _timer = Timer.periodic(
+      const Duration(seconds: 5),
+          (_) {
+        setState(() {});
+      },
+    );
     currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
 
@@ -70,8 +76,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     context.read<DeviceCubit>().loadBreakerLog(currentDevice.code);
 
     /// chart
-    context.read<AutomatChartCubit>()
-        .loadChart(currentDevice.code ?? "");
+    context.read<AutomatChartCubit>().loadChart(
+      currentDevice.code ?? "",
+      _selectedRange,
+    );
 
     final signalR = SignalRService();
 
@@ -81,65 +89,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     signalR.stream.listen(_handleRealtime);
   }
-  void startSwitchCountdown() {
 
-    setState(() {
-      switchCountdown = 3;
-    });
-
-    switchCooldownTimer?.cancel();
-
-    switchCooldownTimer = Timer.periodic(
-      const Duration(seconds: 1),
-          (timer) {
-        if (switchCountdown == 0) {
-          timer.cancel();
-        } else {
-          setState(() {
-            switchCountdown--;
-          });
-        }
-      },
-    );
-  }
   /// Huỷ timer khi thoát màn hình
   @override
   void dispose() {
     _timer?.cancel();
     maintenanceTimer?.cancel();
-    switchCooldownTimer?.cancel();
-    switchCountdownTimer?.cancel();
     super.dispose();
-  }
-  void startCooldown() {
-
-    setState(() {
-      switchCooldown = 3;
-    });
-
-    switchCountdownTimer?.cancel();
-
-    switchCountdownTimer = Timer.periodic(
-      const Duration(seconds: 1),
-          (timer) {
-
-        if (switchCooldown <= 1) {
-
-          timer.cancel();
-
-          setState(() {
-            switchCooldown = 0;
-          });
-
-        } else {
-
-          setState(() {
-            switchCooldown--;
-          });
-
-        }
-      },
-    );
   }
   void startMaintenanceCountdown() {
 
@@ -168,9 +124,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
       /// command response từ server
       if (event == "ReceiveCommand") {
-        if (data["status"] == 1) {
-          context.read<DeviceCubit>().setSwitching(false);
-        }
         return;
       }
 
@@ -348,9 +301,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ) {
     final chartData = context.watch<AutomatChartCubit>().state;
 
-    final maxValue = chartData.isEmpty
-        ? 5
-        : chartData.map((e) => e.p ?? 0).reduce((a, b) => a > b ? a : b);
+    final double maxValue = chartData.isEmpty
+        ? 5.0
+        : chartData
+        .map((e) => (e.p ?? 0).toDouble())
+        .reduce((a, b) => a > b ? a : b);
     if (log == null) return const SizedBox();
 
     return Container(
@@ -376,26 +331,27 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                        create: (_) => AutomatChartCubit(),
-                        child: AutomatChartScreen(
-                          meterCode: device.code ?? "",
-                        ),
-                      ),
-                    ),
-                  );
+                  setState(() {
+                    chartType = chartType == ChartType.power
+                        ? ChartType.energy
+                        : ChartType.power;
+                  });
                 },
-                child: const Icon(
-                  Icons.bolt,
-                  color: Color(0xFF1ABC9C),
+                child: Icon(
+                  chartType == ChartType.power
+                      ? Icons.bolt
+                      : Icons.battery_charging_full,
+                  color: const Color(0xFF1ABC9C),
                 ),
               ),
 
               const SizedBox(width: 6),
 
+
+              Row(
+                children: [
+                ],
+              ),
               const Text(
                 "Phân tích năng lượng",
                 style: TextStyle(
@@ -416,10 +372,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 child: Row(
                   children: [
                     /// UI button chọn range chart (1D / 7D / 30D)
-                    _rangeChipActive("1D"),
-                    _rangeChip("7D"),
-                    _rangeChip("30D"),
-                    _rangeChip("1Y"),
+                    _rangeChip("1D", ChartRange.day),
+                    _rangeChip("7D", ChartRange.week),
+                    _rangeChip("1M", ChartRange.month),
+                    _rangeChip("1Y", ChartRange.year),
                   ],
                 ),
               ),
@@ -430,123 +386,49 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           /// ===== CHART =====
           SizedBox(
-            height: 170,
+            height: 230,
             child: Padding(
-              padding: const EdgeInsets.only(right: 4),
+            padding: const EdgeInsets.fromLTRB(4, 10, 4, 10),
 
-              child: LineChart(
-
-                LineChartData(
-
-                  minX: 0,
-                  maxX: (chartData.length - 1).toDouble(),
-
-                  minY: 0,
-                  maxY: maxValue + 0.5,
-
-                  lineTouchData: LineTouchData(enabled: false),
-
-                  gridData: FlGridData(
-                    show: true,
-                    horizontalInterval: 0.5,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: Colors.grey.withOpacity(0.25),
-                        strokeWidth: 1,
-                        dashArray: [6,4],
-                      );
-                    },
-                  ),
-
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: 0.5,
-                        reservedSize: 42, // tăng chiều rộng trục Y
-                        getTitlesWidget: (value, meta) {
-                          return Text(
-                            "${value.toStringAsFixed(1)} kW",
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.visible,
-                              style: const TextStyle(
-                                fontSize: 9,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              )
-                          );
-                        },
-                      ),
-                    ),
-
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                          getTitlesWidget: (value, meta) {
-
-                            final index = value.toInt();
-
-                            if (index >= chartData.length) {
-                              return const SizedBox();
-                            }
-
-                            if (index % 5 != 0) {
-                              return const SizedBox();
-                            }
-
-                            final time = DateFormat("HH:mm")
-                                .format(chartData[index].updatedAt ?? DateTime.now());
-
-                            return Text(
-                              time,
-                              style: const TextStyle(fontSize: 10),
-                            );
-                          }
-                      ),
-                    ),
-
-                    topTitles: const AxisTitles(),
-                    rightTitles: const AxisTitles(),
-                  ),
-
-                  borderData: FlBorderData(show: false),
-
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: List.generate(chartData.length, (i) {
-                        final item = chartData[i];
-                        return FlSpot(
-                          i.toDouble(),
-                          item.p ?? 0,
-                        );
-                      }),
-
-                      isCurved: true,
-                      curveSmoothness: 0.25,
-
-                      barWidth: 3,
-
-                      color: const Color(0xFF1ABC9C),
-
-                      dotData: const FlDotData(show: false),
-
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            const Color(0xFF1ABC9C).withOpacity(0.18),
-                            const Color(0xFF1ABC9C).withOpacity(0.02),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              )
+              child: chartDisplayType == ChartDisplayType.line
+                  ? _buildLineChart(chartData, maxValue.toDouble())
+                  : _buildBarChart(chartData, maxValue.toDouble()),
             ),
+          ),
+          const SizedBox(height: 6),
+
+          Row(
+            children: [
+
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    chartDisplayType =
+                    chartDisplayType == ChartDisplayType.line
+                        ? ChartDisplayType.bar
+                        : ChartDisplayType.line;
+                  });
+                },
+
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE7F6F3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+
+                  child: Icon(
+                    chartDisplayType == ChartDisplayType.line
+                        ? Icons.show_chart
+                        : Icons.bar_chart,
+                    size: 18,
+                    color: const Color(0xFF1ABC9C),
+                  ),
+                ),
+              ),
+
+            ],
           ),
           const SizedBox(height: 10),
           /// Card hiển thị thông số
@@ -694,15 +576,15 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   Widget _rangeChipActive(String text) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
         color: const Color(0xFFE7F6F3),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         text,
         style: const TextStyle(
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: FontWeight.w600,
           color: Color(0xFF1ABC9C),
         ),
@@ -785,19 +667,42 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  Widget _rangeChip(String text) {
-    return Container(
-      margin: const EdgeInsets.only(left: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF0F2F6),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
+  Widget _rangeChip(String text, ChartRange range) {
+    final bool active = _selectedRange == range;
+
+    return GestureDetector(
+      onTap: () {
+
+        setState(() {
+          _selectedRange = range;
+        });
+
+        context.read<AutomatChartCubit>().loadChart(
+          currentDevice.code ?? "",
+          _selectedRange,
+        );
+      },
+
+      child: Container(
+        margin: const EdgeInsets.only(left: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+
+        decoration: BoxDecoration(
+          color: active
+              ? const Color(0xFFE7F6F3)
+              : const Color(0xFFF0F2F6),
+          borderRadius: BorderRadius.circular(10),
+        ),
+
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: active
+                ? const Color(0xFF1ABC9C)
+                : Colors.black,
+          ),
         ),
       ),
     );
@@ -927,60 +832,329 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ],
     );
   }
+  Widget _buildBarChart(List chartData, double maxValue) {
+
+    return BarChart(
+      BarChartData(
+
+        maxY: maxValue * 1.25,
+
+        borderData: FlBorderData(show: false),
+
+        gridData: FlGridData(
+          show: true,
+          horizontalInterval: maxValue == 0 ? 1 : maxValue / 4,
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (value) {
+            return FlLine(
+              color: Colors.grey.withOpacity(0.2),
+              strokeWidth: 1,
+            );
+          },
+        ),
+
+        titlesData: FlTitlesData(
+
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 32,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  value.toStringAsFixed(1),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                  ),
+                );
+              },
+            ),
+          ),
+
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: chartData.length < 4 ? 1 : chartData.length / 4,
+              getTitlesWidget: (value, meta) {
+
+                final index = value.toInt();
+
+                if (index >= chartData.length) {
+                  return const SizedBox();
+                }
+
+                final time = DateFormat("HH:mm")
+                    .format(chartData[index].updatedAt);
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    time,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+
+          topTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+        ),
+
+        barGroups: List.generate(chartData.length, (i) {
+
+          final item = chartData[i];
+
+          final y = chartType == ChartType.power
+              ? (item.p ?? 0)
+              : (item.epi ?? 0);
+
+          return BarChartGroupData(
+            x: i,
+            barRods: [
+
+              BarChartRodData(
+                toY: y.toDouble(),
+                width: 12,
+
+                borderRadius: BorderRadius.circular(6),
+
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF1ABC9C),
+                    Color(0xFF6CC3B8),
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+            ],
+          );
+
+        }),
+      ),
+    );
+  }
+  Widget _buildLineChart(List chartData, double maxValue) {
+    return LineChart(
+      LineChartData(
+
+        minX: 0,
+        maxX: (chartData.length - 1).toDouble(),
+
+        minY: 0,
+        maxY: maxValue * 1.25,
+
+        borderData: FlBorderData(show: false),
+
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: maxValue == 0 ? 1 : maxValue / 4,
+          getDrawingHorizontalLine: (value) {
+            return FlLine(
+              color: Colors.grey.withOpacity(0.15),
+              strokeWidth: 1,
+              dashArray: [6,4],
+            );
+          },
+        ),
+
+        titlesData: FlTitlesData(
+
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 34,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  value.toStringAsFixed(1),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                  ),
+                );
+              },
+            ),
+          ),
+
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: chartData.length < 4 ? 1 : chartData.length / 4,
+              getTitlesWidget: (value, meta) {
+
+                final index = value.toInt();
+                if (index >= chartData.length) {
+                  return const SizedBox();
+                }
+
+                final time = DateFormat("HH:mm")
+                    .format(chartData[index].updatedAt);
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    time,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+
+          topTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+        ),
+
+        lineBarsData: [
+          LineChartBarData(
+
+            spots: List.generate(chartData.length, (i) {
+              final item = chartData[i];
+
+              final y = chartType == ChartType.power
+                  ? (item.p ?? 0)
+                  : (item.epi ?? 0);
+
+              return FlSpot(i.toDouble(), y.toDouble());
+            }),
+
+            isCurved: true,
+            curveSmoothness: 0.35,
+
+            barWidth: 4,
+
+            color: const Color(0xFF1ABC9C),
+
+            dotData: const FlDotData(
+              show: false,
+            ),
+
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF1ABC9C).withOpacity(0.35),
+                  Colors.transparent
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+        ],
+
+        lineTouchData: LineTouchData(
+          enabled: true,
+          touchTooltipData: LineTouchTooltipData(
+            tooltipRoundedRadius: 10,
+            tooltipBgColor: Colors.black87,
+            getTooltipItems: (spots) {
+              return spots.map((spot) {
+
+                final index = spot.x.toInt();
+                final item = chartData[index];
+
+                final time = DateFormat("HH:mm")
+                    .format(item.updatedAt);
+
+                final unit = chartType == ChartType.power ? "kW" : "kWh";
+
+                return LineTooltipItem(
+                  "$time\n$unit: ${spot.y.toStringAsFixed(2)}",
+                  const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                );
+
+              }).toList();
+            },
+          ),
+        ),
+      ),
+    );
+  }
   Widget _buildBigStatusCard(DeviceResponse device, AtomatLogResponse? log) {
 
-    /// trạng thái thật của thiết bị
-
-
-    final bool isMaintenance = device.rlyRepSta == 1;
-    final realStatus =
-    getRealStatus(device, context.watch<DeviceCubit>().state.breakerLog);
-    final bool isOn = realStatus == 1;
+    final realStatus = getRealStatus(device, log);
 
     String statusText;
     IconData icon;
     List<Color> gradientColors;
 
-    if (isMaintenance) {
-      statusText = "ĐANG BẢO TRÌ";
-      icon = Icons.build_circle;
+    switch (realStatus) {
 
-      gradientColors = [
-        BreakerColors.maintenance,
-        BreakerColors.exitMaintenance,
-      ];
-    }
-    else if (isOn) {
-      statusText = "Đóng";
-      icon = Icons.power;
+    /// OFFLINE
+      case -1:
+        statusText = "Ngoại tuyến";
+        icon = Icons.cloud_off;
 
-      gradientColors = [
-        BreakerColors.on.withOpacity(0.7),
-        BreakerColors.on,
-      ];
-    }
-    else {
-      statusText = "Cắt";
-      icon = Icons.power_off;
+        gradientColors = [
+          Colors.grey.shade400,
+          Colors.grey.shade600,
+        ];
+        break;
 
-      gradientColors = [
-        BreakerColors.off.withOpacity(0.7),
-        BreakerColors.off,
-      ];
+    /// MAINTENANCE
+      case 2:
+        statusText = "Bảo trì";
+        icon = Icons.build;
+
+        gradientColors = [
+          BreakerColors.maintenance.withOpacity(0.8),
+          BreakerColors.maintenance,
+        ];
+        break;
+
+    /// ON
+      case 1:
+        statusText = "Đóng";
+        icon = Icons.flash_on;
+
+        gradientColors = [
+          BreakerColors.on.withOpacity(0.7),
+          BreakerColors.on,
+        ];
+        break;
+
+    /// OFF
+      default:
+        statusText = "Cắt";
+        icon = Icons.power_off;
+
+        gradientColors = [
+          BreakerColors.off.withOpacity(0.7),
+          BreakerColors.off,
+        ];
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
       decoration: BoxDecoration(
-
         borderRadius: BorderRadius.circular(22),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            gradientColors.first,
-            gradientColors.last,
-          ],
+          colors: gradientColors,
         ),
         boxShadow: [
           BoxShadow(
@@ -990,65 +1164,51 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           )
         ],
       ),
-      child: Stack(
+      child: Row(
         children: [
 
-
-          /// noise texture
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.06,
-              child: Image.asset(
-                "assets/images/noise.png",
-                fit: BoxFit.cover,
-              ),
+          Container(
+            height: 48,
+            width: 48,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.35),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 26,
             ),
           ),
 
-          Row(
-            children: [
-              Container(
-                height: 48,
-                width: 48,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.35),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 26,
-                ),
-              ),
+          const SizedBox(width: 10),
 
-              const SizedBox(width: 6),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "TRẠNG THÁI",
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      statusText,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "TRẠNG THÁI",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1,
+                  ),
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 4),
+
+                Text(
+                  statusText,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -1094,15 +1254,19 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        final log = context.watch<AtomatDetailCubit>().state.logData;
-        final realStatus =
-        getRealStatus(device, context.watch<DeviceCubit>().state.breakerLog);
+
+
+        final deviceCubit = context.watch<DeviceCubit>();
+        final state = deviceCubit.state;
+
+        final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+        final realStatus = getRealStatus(device, log);
+
         final bool isOn = realStatus == 1;
-        final isMaintenance = device.rlyRepSta == 1;
-        final isSwitching = context.watch<DeviceCubit>().state.isSwitching;
-        final state = context.watch<DeviceCubit>().state;
-        final countdown = context.watch<DeviceCubit>().state.switchCountdown;
-        final int status = device.status ?? 0;
+        final bool isOffline = realStatus == -1;
+        final bool isMaintenance = realStatus == 2;
+        final countdown = state.switchCountdowns[device.id] ?? 0;
+        final isSwitching = deviceCubit.isDeviceSwitching(device.id);
         return Scaffold(
           backgroundColor: const Color(0xFFF3F6FB),
 
@@ -1142,19 +1306,19 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF2ECC71),
+                      decoration: BoxDecoration(
+                        color: isOffline ? Colors.grey : const Color(0xFF2ECC71),
                         shape: BoxShape.circle,
                       ),
                     ),
 
                     const SizedBox(width: 4),
 
-                    const Text(
-                      "Online",
-                      style: TextStyle(
+                    Text(
+                      isOffline ? "Offline" : "Online",
+                      style:  TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF2ECC71),
+                        color: isOffline ? Colors.grey : const Color(0xFF2ECC71),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1206,11 +1370,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                             backgroundColor: isOn
-                                ? BreakerColors.on
-                                : BreakerColors.off,        // đang OFF → nút ĐÓNG (đỏ)
+                                ? BreakerColors.off
+                                : BreakerColors.on,
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: (isSwitching || isMaintenance || countdown > 0)
+                          onPressed: (isMaintenance || isSwitching || countdown > 0)
                               ? null
                               : () async {
 
@@ -1221,22 +1385,21 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                               device,
                               password: password,
                             );
-
-                            startCooldown();
                           },
-                          child: Row(
+                          child: countdown > 0
+                              ? Text(
+                            "$countdown s",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                              : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                isOn ? Icons.power_off : Icons.flash_on,
-                                size: 18,
-                              ),
+                              Icon(isOn ? Icons.power_off : Icons.flash_on),
                               const SizedBox(width: 6),
-                              Text(
-                                countdown > 0
-                                    ? "${countdown}s"
-                                    : (isOn ? "Đóng" : "Cắt"),
-                              ),
+                              Text(isOn ? "Cắt" : "Đóng"),
                             ],
                           ),
                         ),
@@ -1256,7 +1419,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                             backgroundColor: BreakerColors.off, // Force ĐÓNG (xanh dương nhạt)
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: (isSwitching || switchCooldown > 0 || isMaintenance)
+                          onPressed: (isMaintenance || isSwitching || countdown > 0)
                               ? null
                               : () async {
 
@@ -1267,19 +1430,21 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                               device,
                               password: password,
                             );
-
-                            startCooldown();
                           },
-                          child: Row(
+                          child: countdown > 0
+                              ? Text(
+                            "$countdown s",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                              : const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.flash_on, size: 18),
-                              const SizedBox(width: 6),
-                              Text(
-                                switchCooldown > 0
-                                    ? "${switchCooldown}s"
-                                    : "Force",
-                              ),
+                              Icon(Icons.flash_on, size: 18),
+                              SizedBox(width: 6),
+                              Text("Force"),
                             ],
                           ),
                         ),
@@ -1301,27 +1466,21 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                                 : BreakerColors.maintenance,
                             foregroundColor: Colors.white,
                           ),
-
                           onPressed: state.isForceLoading || maintenanceCountdown > 0
                               ? null
                               : () async {
-
                             final password = await _showPasswordDialog(context);
                             if (password == null) return;
-
                             final wasMaintenance = isMaintenance;
-
                             await context.read<DeviceCubit>().toggleMaintenance(
                               device,
                               password: password,
                             );
-
                             /// chỉ countdown khi THOÁT bảo trì
                             if (wasMaintenance) {
                               startMaintenanceCountdown();
                             }
                           },
-
                           child: state.isForceLoading
                               ? const SizedBox(
                             height: 18,
@@ -1526,7 +1685,29 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
 }
 int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
-  return log?.rlySta ?? device.status ?? 0;
+
+  if (log == null) {
+    return device.status ?? 0;
+  }
+
+  if (log.updatedAt != null) {
+
+    final logTime = DateTime.tryParse(log.updatedAt!);
+
+    if (logTime != null) {
+      final diff = DateTime.now().difference(logTime).inSeconds;
+
+      if (diff > 120) {
+        return -1;
+      }
+    }
+  }
+
+  if (log?.rlyRepSta == 1) {
+    return 2;
+  }
+
+  return log.rlySta ?? device.status ?? 0;
 }
 class BreakerColors {
 
@@ -1534,10 +1715,8 @@ class BreakerColors {
   static const off = Color(0xFFD32F2F); // đỏ
 
   static const maintenance = Color(0xFFFF9800); // cam
-  static const exitMaintenance = Color(0xFFFF9800); // cam
+  static const exitMaintenance = Color(0xFFFF9800);
 
-  static const forceOn = Color(0xFFD32F2F); // đỏ
-  static const forceOff = Color(0xFFD32F2F); // đỏ
 }
 Widget buildStatusCard(
     DeviceResponse device,
@@ -1546,7 +1725,8 @@ Widget buildStatusCard(
 
   final realStatus = getRealStatus(device, log);
 
-  final bool isMaintenance = device.rlyRepSta == 1;
+
+  final bool isMaintenance = log?.rlyRepSta == 1;
   final bool isOn = realStatus == 1;
 
   String text;

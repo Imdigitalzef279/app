@@ -19,16 +19,17 @@ mixin _$DeviceState {
   Result<List<DeviceResponse>> get resultDevices =>
       throw _privateConstructorUsedError;
   LoadStatus get status => throw _privateConstructorUsedError;
-
-  /// loading cho FORCE
   bool get isForceLoading => throw _privateConstructorUsedError;
 
-  /// loading cho ON/OFF
-  bool get isSwitching => throw _privateConstructorUsedError;
+  /// switching theo device
+  Map<int, bool> get switchingDevices => throw _privateConstructorUsedError;
 
-  /// countdown cho breaker
-  int get switchCountdown => throw _privateConstructorUsedError;
-  AtomatLogResponse? get breakerLog => throw _privateConstructorUsedError;
+  /// countdown theo device
+  Map<int, int> get switchCountdowns => throw _privateConstructorUsedError;
+
+  /// log theo breakerSn
+  Map<String, AtomatLogResponse> get breakerLogs =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.
@@ -47,12 +48,11 @@ abstract class $DeviceStateCopyWith<$Res> {
       {Result<List<DeviceResponse>> resultDevices,
       LoadStatus status,
       bool isForceLoading,
-      bool isSwitching,
-      int switchCountdown,
-      AtomatLogResponse? breakerLog});
+      Map<int, bool> switchingDevices,
+      Map<int, int> switchCountdowns,
+      Map<String, AtomatLogResponse> breakerLogs});
 
   $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices;
-  $AtomatLogResponseCopyWith<$Res>? get breakerLog;
 }
 
 /// @nodoc
@@ -73,9 +73,9 @@ class _$DeviceStateCopyWithImpl<$Res, $Val extends DeviceState>
     Object? resultDevices = null,
     Object? status = null,
     Object? isForceLoading = null,
-    Object? isSwitching = null,
-    Object? switchCountdown = null,
-    Object? breakerLog = freezed,
+    Object? switchingDevices = null,
+    Object? switchCountdowns = null,
+    Object? breakerLogs = null,
   }) {
     return _then(_value.copyWith(
       resultDevices: null == resultDevices
@@ -90,18 +90,18 @@ class _$DeviceStateCopyWithImpl<$Res, $Val extends DeviceState>
           ? _value.isForceLoading
           : isForceLoading // ignore: cast_nullable_to_non_nullable
               as bool,
-      isSwitching: null == isSwitching
-          ? _value.isSwitching
-          : isSwitching // ignore: cast_nullable_to_non_nullable
-              as bool,
-      switchCountdown: null == switchCountdown
-          ? _value.switchCountdown
-          : switchCountdown // ignore: cast_nullable_to_non_nullable
-              as int,
-      breakerLog: freezed == breakerLog
-          ? _value.breakerLog
-          : breakerLog // ignore: cast_nullable_to_non_nullable
-              as AtomatLogResponse?,
+      switchingDevices: null == switchingDevices
+          ? _value.switchingDevices
+          : switchingDevices // ignore: cast_nullable_to_non_nullable
+              as Map<int, bool>,
+      switchCountdowns: null == switchCountdowns
+          ? _value.switchCountdowns
+          : switchCountdowns // ignore: cast_nullable_to_non_nullable
+              as Map<int, int>,
+      breakerLogs: null == breakerLogs
+          ? _value.breakerLogs
+          : breakerLogs // ignore: cast_nullable_to_non_nullable
+              as Map<String, AtomatLogResponse>,
     ) as $Val);
   }
 
@@ -113,20 +113,6 @@ class _$DeviceStateCopyWithImpl<$Res, $Val extends DeviceState>
     return $ResultCopyWith<List<DeviceResponse>, $Res>(_value.resultDevices,
         (value) {
       return _then(_value.copyWith(resultDevices: value) as $Val);
-    });
-  }
-
-  /// Create a copy of DeviceState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $AtomatLogResponseCopyWith<$Res>? get breakerLog {
-    if (_value.breakerLog == null) {
-      return null;
-    }
-
-    return $AtomatLogResponseCopyWith<$Res>(_value.breakerLog!, (value) {
-      return _then(_value.copyWith(breakerLog: value) as $Val);
     });
   }
 }
@@ -143,14 +129,12 @@ abstract class _$$DeviceStateImplCopyWith<$Res>
       {Result<List<DeviceResponse>> resultDevices,
       LoadStatus status,
       bool isForceLoading,
-      bool isSwitching,
-      int switchCountdown,
-      AtomatLogResponse? breakerLog});
+      Map<int, bool> switchingDevices,
+      Map<int, int> switchCountdowns,
+      Map<String, AtomatLogResponse> breakerLogs});
 
   @override
   $ResultCopyWith<List<DeviceResponse>, $Res> get resultDevices;
-  @override
-  $AtomatLogResponseCopyWith<$Res>? get breakerLog;
 }
 
 /// @nodoc
@@ -169,9 +153,9 @@ class __$$DeviceStateImplCopyWithImpl<$Res>
     Object? resultDevices = null,
     Object? status = null,
     Object? isForceLoading = null,
-    Object? isSwitching = null,
-    Object? switchCountdown = null,
-    Object? breakerLog = freezed,
+    Object? switchingDevices = null,
+    Object? switchCountdowns = null,
+    Object? breakerLogs = null,
   }) {
     return _then(_$DeviceStateImpl(
       resultDevices: null == resultDevices
@@ -186,18 +170,18 @@ class __$$DeviceStateImplCopyWithImpl<$Res>
           ? _value.isForceLoading
           : isForceLoading // ignore: cast_nullable_to_non_nullable
               as bool,
-      isSwitching: null == isSwitching
-          ? _value.isSwitching
-          : isSwitching // ignore: cast_nullable_to_non_nullable
-              as bool,
-      switchCountdown: null == switchCountdown
-          ? _value.switchCountdown
-          : switchCountdown // ignore: cast_nullable_to_non_nullable
-              as int,
-      breakerLog: freezed == breakerLog
-          ? _value.breakerLog
-          : breakerLog // ignore: cast_nullable_to_non_nullable
-              as AtomatLogResponse?,
+      switchingDevices: null == switchingDevices
+          ? _value._switchingDevices
+          : switchingDevices // ignore: cast_nullable_to_non_nullable
+              as Map<int, bool>,
+      switchCountdowns: null == switchCountdowns
+          ? _value._switchCountdowns
+          : switchCountdowns // ignore: cast_nullable_to_non_nullable
+              as Map<int, int>,
+      breakerLogs: null == breakerLogs
+          ? _value._breakerLogs
+          : breakerLogs // ignore: cast_nullable_to_non_nullable
+              as Map<String, AtomatLogResponse>,
     ));
   }
 }
@@ -209,36 +193,61 @@ class _$DeviceStateImpl implements _DeviceState {
       {required this.resultDevices,
       this.status = LoadStatus.initial,
       this.isForceLoading = false,
-      this.isSwitching = false,
-      this.switchCountdown = 0,
-      this.breakerLog});
+      final Map<int, bool> switchingDevices = const {},
+      final Map<int, int> switchCountdowns = const {},
+      final Map<String, AtomatLogResponse> breakerLogs = const {}})
+      : _switchingDevices = switchingDevices,
+        _switchCountdowns = switchCountdowns,
+        _breakerLogs = breakerLogs;
 
   @override
   final Result<List<DeviceResponse>> resultDevices;
   @override
   @JsonKey()
   final LoadStatus status;
-
-  /// loading cho FORCE
   @override
   @JsonKey()
   final bool isForceLoading;
 
-  /// loading cho ON/OFF
-  @override
-  @JsonKey()
-  final bool isSwitching;
+  /// switching theo device
+  final Map<int, bool> _switchingDevices;
 
-  /// countdown cho breaker
+  /// switching theo device
   @override
   @JsonKey()
-  final int switchCountdown;
+  Map<int, bool> get switchingDevices {
+    if (_switchingDevices is EqualUnmodifiableMapView) return _switchingDevices;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_switchingDevices);
+  }
+
+  /// countdown theo device
+  final Map<int, int> _switchCountdowns;
+
+  /// countdown theo device
   @override
-  final AtomatLogResponse? breakerLog;
+  @JsonKey()
+  Map<int, int> get switchCountdowns {
+    if (_switchCountdowns is EqualUnmodifiableMapView) return _switchCountdowns;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_switchCountdowns);
+  }
+
+  /// log theo breakerSn
+  final Map<String, AtomatLogResponse> _breakerLogs;
+
+  /// log theo breakerSn
+  @override
+  @JsonKey()
+  Map<String, AtomatLogResponse> get breakerLogs {
+    if (_breakerLogs is EqualUnmodifiableMapView) return _breakerLogs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_breakerLogs);
+  }
 
   @override
   String toString() {
-    return 'DeviceState(resultDevices: $resultDevices, status: $status, isForceLoading: $isForceLoading, isSwitching: $isSwitching, switchCountdown: $switchCountdown, breakerLog: $breakerLog)';
+    return 'DeviceState(resultDevices: $resultDevices, status: $status, isForceLoading: $isForceLoading, switchingDevices: $switchingDevices, switchCountdowns: $switchCountdowns, breakerLogs: $breakerLogs)';
   }
 
   @override
@@ -251,17 +260,23 @@ class _$DeviceStateImpl implements _DeviceState {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.isForceLoading, isForceLoading) ||
                 other.isForceLoading == isForceLoading) &&
-            (identical(other.isSwitching, isSwitching) ||
-                other.isSwitching == isSwitching) &&
-            (identical(other.switchCountdown, switchCountdown) ||
-                other.switchCountdown == switchCountdown) &&
-            (identical(other.breakerLog, breakerLog) ||
-                other.breakerLog == breakerLog));
+            const DeepCollectionEquality()
+                .equals(other._switchingDevices, _switchingDevices) &&
+            const DeepCollectionEquality()
+                .equals(other._switchCountdowns, _switchCountdowns) &&
+            const DeepCollectionEquality()
+                .equals(other._breakerLogs, _breakerLogs));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, resultDevices, status,
-      isForceLoading, isSwitching, switchCountdown, breakerLog);
+  int get hashCode => Object.hash(
+      runtimeType,
+      resultDevices,
+      status,
+      isForceLoading,
+      const DeepCollectionEquality().hash(_switchingDevices),
+      const DeepCollectionEquality().hash(_switchCountdowns),
+      const DeepCollectionEquality().hash(_breakerLogs));
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.
@@ -277,28 +292,28 @@ abstract class _DeviceState implements DeviceState {
       {required final Result<List<DeviceResponse>> resultDevices,
       final LoadStatus status,
       final bool isForceLoading,
-      final bool isSwitching,
-      final int switchCountdown,
-      final AtomatLogResponse? breakerLog}) = _$DeviceStateImpl;
+      final Map<int, bool> switchingDevices,
+      final Map<int, int> switchCountdowns,
+      final Map<String, AtomatLogResponse> breakerLogs}) = _$DeviceStateImpl;
 
   @override
   Result<List<DeviceResponse>> get resultDevices;
   @override
   LoadStatus get status;
-
-  /// loading cho FORCE
   @override
   bool get isForceLoading;
 
-  /// loading cho ON/OFF
+  /// switching theo device
   @override
-  bool get isSwitching;
+  Map<int, bool> get switchingDevices;
 
-  /// countdown cho breaker
+  /// countdown theo device
   @override
-  int get switchCountdown;
+  Map<int, int> get switchCountdowns;
+
+  /// log theo breakerSn
   @override
-  AtomatLogResponse? get breakerLog;
+  Map<String, AtomatLogResponse> get breakerLogs;
 
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.

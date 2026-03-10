@@ -234,8 +234,7 @@ class _$BreakerStateResponseImpl implements _BreakerStateResponse {
   final String state;
   @override
   @JsonKey(name: 'rlySta')
-  final
-  int rlySta;
+  final int rlySta;
   @override
   @JsonKey(name: 'rlyRepSta')
   final int rlyRepSta;

@@ -9,24 +9,26 @@ class DeviceState with _$DeviceState {
     @Default(LoadStatus.initial)
     LoadStatus status,
 
-    /// loading cho FORCE
     @Default(false)
     bool isForceLoading,
 
-    /// loading cho ON/OFF
-    @Default(false)
-    bool isSwitching,
+    /// switching theo device
+    @Default({})
+    Map<int, bool> switchingDevices,
 
-    /// countdown cho breaker
-    @Default(0)
-    int switchCountdown,
+    /// countdown theo device
+    @Default({})
+    Map<int, int> switchCountdowns,
 
-    AtomatLogResponse? breakerLog,
+    /// log theo breakerSn
+    @Default({})
+    Map<String, AtomatLogResponse> breakerLogs,
 
   }) = _DeviceState;
 
   factory DeviceState.init() => DeviceState(
     resultDevices: Result<List<DeviceResponse>>(),
     status: LoadStatus.initial,
+    breakerLogs: {},
   );
 }

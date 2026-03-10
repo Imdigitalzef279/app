@@ -37,21 +37,52 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
     final isOn = device.status == 1;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-          color: const Color(0xFFF1F3F5),
+    return InkWell(
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            spreadRadius: 1,
-            offset: const Offset(0, 3),
-          )
-        ],
-      ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => MultiBlocProvider(
+                providers: [
+
+                  /// dùng lại DeviceCubit
+                  BlocProvider.value(
+                    value: context.read<DeviceCubit>(),
+                  ),
+
+                  /// cubit detail
+                  BlocProvider(
+                    create: (_) => AtomatDetailCubit(),
+                  ),
+
+                  /// cubit chart
+                  BlocProvider(
+                    create: (_) => AutomatChartCubit(),
+                  ),
+
+                ],
+                child: AutomatDetailScreen(device: device),
+              ),
+            ),
+          );
+        },
+
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F3F5),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 12,
+                spreadRadius: 1,
+                offset: const Offset(0, 3),
+              )
+            ],
+          ),
 
       child: Row(
         children: [
@@ -197,6 +228,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
         ],
       ),
+        )
     );
   }
 

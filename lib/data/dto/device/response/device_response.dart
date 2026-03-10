@@ -22,7 +22,7 @@ class DeviceResponse with _$DeviceResponse {
     @Default('') String description,
     @Default('') String serialNumber,
     @Default('') String creator,
-    @Default(0) int parentId,   // thêm
+    @Default(0) int parentId,
     @Default(0) int level,
     @Default("") String creationTime,
     @Default('') String gatewayNumber,

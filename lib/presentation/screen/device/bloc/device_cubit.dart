@@ -193,8 +193,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       DeviceResponse device, {
         required String password,
       }) async {
-
-    if (state.isSwitching || state.isForceLoading) return;
+    if (state.isForceLoading) return;
 
     final isValid = await _verifyForceAuth(password: password);
     if (!isValid) {
@@ -202,19 +201,22 @@ class DeviceCubit extends Cubit<DeviceState> {
       return;
     }
 
-    emit(state.copyWith(isSwitching: true));
+    final newMap = Map<int, bool>.from(state.switchingDevices);
+    newMap[device.id] = true;
+
+    emit(state.copyWith(switchingDevices: newMap));
 
     try {
-
-      final latestDevice = state.resultDevices.data
-          ?.firstWhere((d) => d.id == device.id);
+      final latestDevice =
+      state.resultDevices.data?.firstWhere((d) => d.id == device.id);
 
       if (latestDevice == null) return;
 
+      /// Lấy trạng thái hiện tại
       final currentSwitch =
-          state.breakerLog?.rlySta ??
-              latestDevice.status ??
-              0;
+          latestDevice.realtimeLog?.rlySta ??
+              state.breakerLogs[latestDevice.code]?.rlySta ??
+              latestDevice.status ?? 0;
 
       final commandValue = currentSwitch == 1 ? "0" : "1";
 
@@ -229,18 +231,45 @@ class DeviceCubit extends Cubit<DeviceState> {
         return;
       }
 
-      /// update UI ngay
-      updateLocalStatus(latestDevice.id, int.parse(commandValue));
+      /// Update UI ngay lập tức (optimistic update)
+      final newStatus = int.parse(commandValue);
 
+      final updatedDevices = (state.resultDevices.data ?? []).map((d) {
+        if (d.id == latestDevice.id) {
+          return d.copyWith(
+            status: newStatus,
+            realtimeLog: d.realtimeLog?.copyWith(rlySta: newStatus),
+          );
+        }
+        return d;
+      }).toList();
+
+      final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
+
+      logs[latestDevice.code!] =
+          (logs[latestDevice.code] ?? latestDevice.realtimeLog!)
+              .copyWith(rlySta: newStatus);
+
+      emit(state.copyWith(
+        resultDevices: state.resultDevices.copyWith(data: updatedDevices),
+        breakerLogs: logs,
+      ));
+      /// Chờ gateway update
       await waitBreakerState(
+        device.id,
         device.code,
-        int.parse(commandValue),
+        newStatus,
       );
 
+      /// Reload log server
+      await loadBreakerLog(device.code);
     } catch (e) {
       AppToast.showToastError(title: "Có lỗi xảy ra");
     } finally {
-      emit(state.copyWith(isSwitching: false));
+      final newMap = Map<int, bool>.from(state.switchingDevices);
+      newMap.remove(device.id);
+
+      emit(state.copyWith(switchingDevices: newMap));
     }
   }
   // ============================================================
@@ -262,36 +291,60 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(isForceLoading: true));
 
     try {
+      final username = profile?.userName ?? "mobile_app";
+      String addr =
+          state.breakerLogs[device.code]?.addr ??
+              device.realtimeLog?.addr ??
+              device.serialNumber ??
+              "";
 
-      final isMaintenance = device.rlyRepSta == 1;
+      if (addr.contains("_")) {
+        addr = addr.split("_").first;
+      }
+
+      print("MAINTENANCE ADDR: $addr");
+      print("DEVICE: ${device.code}");
+      print("GATEWAY: ${device.gatewayNumber}");
+      print("ADDR: $addr");
+      print("======================");
+
+      if (addr.isEmpty) {
+        print("ADDR NULL → không gửi API");
+        return;
+      }
+      final isMaintenance =
+          state.breakerLogs[device.code]?.rlyRepSta == 1;
+
       final commandValue = isMaintenance ? "0" : "1";
-      final username = profile?.userName ?? "";
+
       final response = await _cbs.setBreakerMaintenance(
         CbsMeterRequest(
-          addr: state.breakerLog?.addr ?? device.serialNumber,
+          addr: addr,
           breakerSn: device.code,
           gatewaySn: device.gatewayNumber,
           commandValue: commandValue,
-          createdBy: "mobile_app",
+          createdBy: username,
           isForce: true,
         ),
       );
 
-      final success = response != -1;
-
-      if (!success) {
+      if (response == -1) {
         AppToast.showToastError(title: "Không đổi bảo trì được");
         emit(state.copyWith(isForceLoading: false));
         return;
       }
+
+      /// 🔥 chờ breaker update
       await waitBreakerState(
+        device.id,
         device.code,
-        int.parse(commandValue),
+        commandValue == "1" ? 2 : 0,
       );
 
-      await getAllDevices(powerStationId: device.powerStationId);
+      /// reload breaker log
+      await loadBreakerLog(device.code);
 
-    } catch (_) {
+    } catch (e) {
       AppToast.showToastError(title: "Có lỗi xảy ra");
     }
 
@@ -350,20 +403,66 @@ class DeviceCubit extends Cubit<DeviceState> {
         return d;
       }).toList();
 
+      final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
+
+      logs[device.code!] =
+          (logs[device.code] ?? device.realtimeLog!)
+              .copyWith(rlySta: int.parse(commandValue));
+
       emit(state.copyWith(
         resultDevices: state.resultDevices.copyWith(data: updatedList),
-
-        /// update breaker log luôn
-        breakerLog: state.breakerLog?.copyWith(
-          rlySta: int.parse(commandValue),
-        ),
-
+        breakerLogs: logs,
         isForceLoading: false,
       ));
 
     } catch (e) {
       AppToast.showToastError(title: "Có lỗi xảy ra");
       emit(state.copyWith(isForceLoading: false));
+    }
+  }
+  // ============================================================
+  // TÍnh năng đóng cắt
+  // ============================================================
+  Future<bool> switchCbsWithForce(
+      DeviceResponse device,
+      String commandValue,
+      bool isForce,
+      ) async {
+    try {
+      final addr =
+          device.realtimeLog?.addr ??
+              device.serialNumber ??
+              "";
+      final username = profile?.userName ?? "mobile_app";
+
+      print("DEVICE CODE: ${device.code}");
+      print("GATEWAY: ${device.gatewayNumber}");
+      print("ADDR: $addr");
+      print("COMMAND: $commandValue");
+
+      if (addr.isEmpty) {
+        print("ADDR NULL → không gửi API");
+        return false;
+      }
+
+      final response = await _cbs.sendCbsCommand(
+        CbsMeterRequest(
+          addr: addr,
+          breakerSn: device.code,
+          gatewaySn: device.gatewayNumber,
+          commandValue: commandValue,
+          createdBy: username,
+          isForce: isForce,
+        ),
+      );
+
+      if (response == -1) return false;
+
+      return true;
+
+    } catch (e) {
+      print("ERROR SWITCH: $e");
+      return false;
     }
   }
   // ============================================================
@@ -381,93 +480,32 @@ class DeviceCubit extends Cubit<DeviceState> {
 
       final log = response.data!.first;
 
-      emit(
-        state.copyWith(
-          breakerLog: log,
-        ),
-      );
+      final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
+      logs[breakerSn] = log;
+
+      emit(state.copyWith(
+        breakerLogs: logs,
+      ));
 
     } catch (e) {
       print("LOAD LOG ERROR: $e");
     }
   }
-  // ============================================================
-  // TÍnh năng đóng cắt
-  // ============================================================
-  Future<bool> switchCbsWithForce(
-      DeviceResponse device,
-      String commandValue,
-      bool isForce,
-      ) async {
-    try {
-
-      final addr =
-          state.breakerLog?.addr ??
-              device.realtimeLog?.addr ??
-              device.serialNumber ??
-              "";
-
-      final username = profile?.userName ?? "mobile_app";
-
-      print("DEVICE CODE: ${device.code}");
-      print("GATEWAY: ${device.gatewayNumber}");
-      print("ADDR: $addr");
-      print("COMMAND: $commandValue");
-
-      if (addr.isEmpty) {
-        print("ADDR NULL → không gửi API");
-        return false;
-      }
-
-      final response = await _cbs.sendCbsCommand(
-        CbsMeterRequest(
-          addr: addr,
-          breakerSn: device.serialNumber,
-          gatewaySn: device.gatewayNumber,
-          commandValue: commandValue,
-          createdBy: username,
-          isForce: isForce,
-        ),
-      );
-
-      if (response == -1) return false;
-
-      return true;
-
-    } catch (e) {
-      print("ERROR SWITCH: $e");
-      return false;
-    }
-  }
-  // Future<void> waitBreakerState(
-  //     String breakerSn,
-  //     int expectedState,
-  //     ) async {
-  //
-  //   for (int i = 0; i < 10; i++) {
-  //
-  //     await Future.delayed(const Duration(seconds: 2));
-  //
-  //     await loadBreakerLog(breakerSn);
-  //
-  //     final current = state.breakerLog?.rlySta;
-  //
-  //     if (current == expectedState) {
-  //       break;
-  //     }
-  //   }
-  // }
   Future<void> waitBreakerState(
+      int deviceId,
       String breakerSn,
       int expectedState,
       ) async {
 
-    int countdown = 15;
+    int countdown = 10;
 
     while (countdown > 0) {
 
+      final map = Map<int,int>.from(state.switchCountdowns);
+      map[deviceId] = countdown;
+
       emit(state.copyWith(
-        switchCountdown: countdown,
+        switchCountdowns: map,
       ));
 
       await Future.delayed(const Duration(seconds: 1));
@@ -476,15 +514,22 @@ class DeviceCubit extends Cubit<DeviceState> {
 
       await loadBreakerLog(breakerSn);
 
-      final current = state.breakerLog?.rlySta;
 
+      final log = state.breakerLogs[breakerSn];
+      final current =
+      expectedState == 2
+          ? state.breakerLogs[breakerSn]?.rlyRepSta
+          : state.breakerLogs[breakerSn]?.rlySta;
       if (current == expectedState) {
         break;
       }
     }
 
+    final map = Map<int,int>.from(state.switchCountdowns);
+    map.remove(deviceId);
+
     emit(state.copyWith(
-      switchCountdown: 0,
+      switchCountdowns: map,
     ));
   }
   // ============================================================
@@ -493,7 +538,9 @@ class DeviceCubit extends Cubit<DeviceState> {
   // ============================================================
   // HELPER
   // ============================================================
-
+  bool isDeviceSwitching(int deviceId) {
+    return state.switchCountdowns.containsKey(deviceId);
+  }
   ElectricType? fromMeterTypeId(int id) {
     switch (id) {
       case 81:
@@ -516,7 +563,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       if (device.code == code) {
         return device.copyWith(
           realtimeLog: log,
-          status: log.rlySta ?? device.status,
+          status: log.rlySta ?? device.realtimeLog?.rlySta ?? device.status,
         );
       }
       return device;
@@ -528,9 +575,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       ),
     );
   }
-  void setSwitching(bool value) {
-    emit(state.copyWith(isSwitching: value));
-  }
+
   Future<bool> _verifyForceAuth({
     String? password,
     bool emailVerified = false,

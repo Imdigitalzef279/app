@@ -2,5 +2,5 @@ enum ChartRange {
   day,
   month,
   quarter,
-  year,
+  year, week,
 }

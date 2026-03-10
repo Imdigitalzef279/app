@@ -14,8 +14,8 @@ class CbsRepositoryImpl implements CbsRepository {
   }
 
   @override
-  Future<int> setBreakerMaintenance(CbsMeterRequest request) {
-    return _apiClient.setBreakerMaintenance(request);
+  Future<int> setBreakerMaintenance(CbsMeterRequest request) async {
+    await _apiClient.setBreakerMaintenance(request);
+    return 1;
   }
-
 }

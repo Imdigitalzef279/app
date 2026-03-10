@@ -30,7 +30,7 @@ mixin _$DeviceResponse {
   String get description => throw _privateConstructorUsedError;
   String get serialNumber => throw _privateConstructorUsedError;
   String get creator => throw _privateConstructorUsedError;
-  int get parentId => throw _privateConstructorUsedError; // thêm
+  int get parentId => throw _privateConstructorUsedError;
   int get level => throw _privateConstructorUsedError;
   String get creationTime => throw _privateConstructorUsedError;
   String get gatewayNumber => throw _privateConstructorUsedError;
@@ -462,7 +462,6 @@ class _$DeviceResponseImpl implements _DeviceResponse {
   @override
   @JsonKey()
   final int parentId;
-// thêm
   @override
   @JsonKey()
   final int level;
@@ -620,7 +619,7 @@ abstract class _DeviceResponse implements DeviceResponse {
   @override
   String get creator;
   @override
-  int get parentId; // thêm
+  int get parentId;
   @override
   int get level;
   @override

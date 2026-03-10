@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../application/enums/chart_range.dart';
 import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 
@@ -19,10 +20,14 @@ class AutomatChartScreen extends StatefulWidget {
 
 class _AutomatChartScreenState extends State<AutomatChartScreen> {
 
+  ChartRange _selectedRange = ChartRange.month;
+
   @override
   void initState() {
     super.initState();
-    context.read<AutomatChartCubit>().loadChart(widget.meterCode);
+
+    context.read<AutomatChartCubit>()
+        .loadChart(widget.meterCode, _selectedRange);
   }
 
   @override
@@ -89,20 +94,27 @@ class _AutomatChartScreenState extends State<AutomatChartScreen> {
           height: 220,
           child: LineChart(
             LineChartData(
+
+              minX: 0,
+              maxX: lines.first.spots.length.toDouble() - 1,
+
               minY: 0,
               maxY: maxY,
+
               gridData: FlGridData(show: true),
               borderData: FlBorderData(show: false),
+
               titlesData: FlTitlesData(
-                topTitles:
-                AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles:
-                AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false)),
+                rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false)),
               ),
+
               lineBarsData: lines,
             ),
           ),
-        ),
+        )
       ],
     );
   }

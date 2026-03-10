@@ -1,25 +1,37 @@
 import 'package:bloc/bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:solar_energy/data/data_sources/api/api_client.dart';
+
+import '../../../../../../application/enums/chart_range.dart';
+import '../../../../../../data/data_sources/api/api_client.dart';
 import '../../../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 
 class AutomatChartCubit extends Cubit<List<BreakerChartResponse>> {
+
   final _api = GetIt.instance<ApiClient>();
 
   AutomatChartCubit() : super([]);
 
-  Future<void> loadChart(String breakerSn) async {
+  Future<void> loadChart(String meterCode, ChartRange range) async {
+
     try {
 
-      emit([]); // clear old data
+      emit([]);
 
-      final result = await _api.getBreakerChartData(breakerSn);
+      final result = await _api.getBreakerChartData(
+        meterCode,
+        // range.name,
+      );
 
       emit(result);
 
     } catch (e) {
+
       print("Chart error $e");
+
       emit([]);
+
     }
+
   }
+
 }
