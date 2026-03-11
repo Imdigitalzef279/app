@@ -7,6 +7,8 @@ import 'package:solar_energy/presentation/screen/account_information/account_scr
 import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.dart';
 import 'package:solar_energy/presentation/screen/service_solar/bottom_contact_info.dart';
 import '../../../application/enums/load_status.dart';
+import '../Electricity/automat/automat_list_screen.dart';
+import '../device/bloc/device_cubit.dart';
 import '../general_device/general_device_screen.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -47,7 +49,8 @@ class _HomeWidgetState extends State<HomeWidget> {
     return IndexedStack(
       index: indexPage,
       children: [
-        // HOME – Nhà máy
+
+        /// TAB 0 - TRANG CHỦ
         _tabLoaded[0]
             ? BlocProvider(
           create: (_) => HomePageCubit()..getProjects(),
@@ -74,16 +77,21 @@ class _HomeWidgetState extends State<HomeWidget> {
         )
             : const SizedBox(),
 
-        // ACCOUNT
-        _tabLoaded[2]
+        /// TAB 1 - THIẾT BỊ
+        _tabLoaded[1]
             ? BlocProvider(
-          create: (_) => AccountCubit(),
-          child: const AccountScreen(),
+          create: (_) => DeviceCubit(),
+          child: AutomatListScreen(
+            powerStationId: 181,
+          ),
         )
             : const SizedBox(),
 
-        // MARKET (chưa làm)
-        const SizedBox(),
+        /// TAB 2 - THÔNG BÁO
+        const Center(child: Text("Thông báo")),
+
+        /// TAB 3 - GIỎ HÀNG
+        const Center(child: Text("Giỏ hàng")),
       ],
     );
   }
@@ -95,51 +103,44 @@ class _HomeWidgetState extends State<HomeWidget> {
       selectedIndex: indexPage,
       backgroundColor: Colors.white,
       indicatorColor: Colors.blue.withOpacity(0.2),
-      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-      onDestinationSelected: (index) {
-        if (index == 1) {
-          // 👉 TAB SERVICE → mở bottom sheet
-          showModalBottomSheet(
-            context: context,
-            backgroundColor: Colors.transparent,
-            builder: (_) => const BottomContactInfo(),
-          );
-          return;
-        }
 
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+
+      onDestinationSelected: (index) {
         setState(() {
           indexPage = index;
           _tabLoaded[index] = true;
         });
       },
-      destinations: [
+
+      destinations: const [
+
+        /// HOME
         NavigationDestination(
-          selectedIcon:
-          const Icon(Icons.home_rounded, color: Colors.blue),
-          icon: const Icon(Icons.home_outlined,
-              color: AppColors.grey73),
-          label: LocalizationsUtils.localizations.home,
+          selectedIcon: Icon(Icons.home, color: Colors.blue),
+          icon: Icon(Icons.home_outlined, color: AppColors.grey73),
+          label: "Trang chủ",
         ),
+
+        /// DEVICE
         NavigationDestination(
-          selectedIcon:
-          const Icon(Icons.developer_board, color: Colors.blue),
-          icon: const Icon(Icons.developer_board,
-              color: AppColors.grey73),
-          label: LocalizationsUtils.localizations.service,
+          selectedIcon: Icon(Icons.grid_view, color: Colors.blue),
+          icon: Icon(Icons.grid_view_outlined, color: AppColors.grey73),
+          label: "Thiết bị",
         ),
+
+        /// NOTIFICATION
         NavigationDestination(
-          selectedIcon:
-          const Icon(Icons.account_circle, color: Colors.blue),
-          icon: const Icon(Icons.account_circle_outlined,
-              color: AppColors.grey73),
-          label: LocalizationsUtils.localizations.me,
+          selectedIcon: Icon(Icons.notifications, color: Colors.blue),
+          icon: Icon(Icons.notifications_none, color: AppColors.grey73),
+          label: "Thông báo",
         ),
-        const NavigationDestination(
-          selectedIcon:
-          Icon(Icons.shopping_cart, color: Colors.blue),
-          icon: Icon(Icons.shopping_cart_outlined,
-              color: AppColors.grey73),
-          label: 'Market',
+
+        /// CART
+        NavigationDestination(
+          selectedIcon: Icon(Icons.shopping_cart, color: Colors.blue),
+          icon: Icon(Icons.shopping_cart_outlined, color: AppColors.grey73),
+          label: "Giỏ hàng",
         ),
       ],
     );

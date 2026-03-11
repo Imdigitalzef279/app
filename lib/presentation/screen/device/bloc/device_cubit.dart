@@ -298,15 +298,13 @@ class DeviceCubit extends Cubit<DeviceState> {
               device.serialNumber ??
               "";
 
-      if (addr.contains("_")) {
-        addr = addr.split("_").first;
-      }
-
       print("MAINTENANCE ADDR: $addr");
       print("DEVICE: ${device.code}");
       print("GATEWAY: ${device.gatewayNumber}");
       print("ADDR: $addr");
       print("======================");
+      print("MQTT STATE: ${state.breakerLogs[device.code]?.rlyRepSta}");
+      print("TYPE: ${state.breakerLogs[device.code]?.rlyRepSta.runtimeType}");
 
       if (addr.isEmpty) {
         print("ADDR NULL → không gửi API");
@@ -327,7 +325,7 @@ class DeviceCubit extends Cubit<DeviceState> {
           isForce: true,
         ),
       );
-
+      print("API RESPONSE: $response");
       if (response == -1) {
         AppToast.showToastError(title: "Không đổi bảo trì được");
         emit(state.copyWith(isForceLoading: false));
@@ -338,7 +336,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       await waitBreakerState(
         device.id,
         device.code,
-        commandValue == "1" ? 2 : 0,
+        commandValue == "1" ? 1 : 0,
       );
 
       /// reload breaker log

@@ -12,6 +12,7 @@ import '../../../../application/enums/chart_range.dart';
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/services/signalr_service.dart';
+import '../../../common_widgets/app_toast.dart';
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'automat_chart_screen.dart';
@@ -300,11 +301,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       DeviceResponse device,
       ) {
     final chartData = context.watch<AutomatChartCubit>().state;
+    final yAxisLabel = chartType == ChartType.power ? "Power (kW)" : "Energy (kWh)";
+    final xAxisLabel = "Time";
+    final limitedData = chartData.length > 18
+        ? chartData.sublist(chartData.length - 18)
+        : chartData;
 
-    final double maxValue = chartData.isEmpty
+    final double maxValue = limitedData.isEmpty
         ? 5.0
-        : chartData
-        .map((e) => (e.p ?? 0).toDouble())
+        : limitedData
+        .map((e) => chartType == ChartType.power
+        ? (e.p ?? 0).toDouble()
+        : (e.epi ?? 0).toDouble())
         .reduce((a, b) => a > b ? a : b);
     if (log == null) return const SizedBox();
 
@@ -337,11 +345,16 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                         : ChartType.power;
                   });
                 },
-                child: Icon(
-                  chartType == ChartType.power
-                      ? Icons.bolt
-                      : Icons.battery_charging_full,
-                  color: const Color(0xFF1ABC9C),
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Icon(
+                    chartType == ChartType.power
+                        ? Icons.bolt
+                        : Icons.battery_charging_full,
+                    color: const Color(0xFF1ABC9C),
+                    size: 20,
+                  ),
                 ),
               ),
 
@@ -387,12 +400,44 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           /// ===== CHART =====
           SizedBox(
             height: 230,
-            child: Padding(
-            padding: const EdgeInsets.fromLTRB(4, 10, 4, 10),
+            child: Column(
+              children: [
 
-              child: chartDisplayType == ChartDisplayType.line
-                  ? _buildLineChart(chartData, maxValue.toDouble())
-                  : _buildBarChart(chartData, maxValue.toDouble()),
+                /// Y axis label
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    yAxisLabel,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                    child: chartDisplayType == ChartDisplayType.line
+                        ? _buildLineChart(limitedData, maxValue.toDouble())
+                        : _buildBarChart(limitedData, maxValue),
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                /// X axis label
+                Text(
+                  xAxisLabel,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 6),
@@ -834,31 +879,39 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   Widget _buildBarChart(List chartData, double maxValue) {
 
+    /// Giới hạn tối đa 24 cột để tránh sọc
+    final limitedData = chartData.length > 18
+        ? chartData.sublist(chartData.length - 18)
+        : chartData;
+
     return BarChart(
       BarChartData(
-
-        maxY: maxValue * 1.25,
-
+        alignment: BarChartAlignment.spaceAround,
+        groupsSpace: 4,
+        maxY: maxValue == 0 ? 5 : maxValue * 1.25,
         borderData: FlBorderData(show: false),
 
+        /// GRID
         gridData: FlGridData(
           show: true,
-          horizontalInterval: maxValue == 0 ? 1 : maxValue / 4,
           drawVerticalLine: false,
+          horizontalInterval: maxValue == 0 ? 1 : maxValue / 4,
           getDrawingHorizontalLine: (value) {
             return FlLine(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withOpacity(0.15),
               strokeWidth: 1,
             );
           },
         ),
 
+        /// TITLES
         titlesData: FlTitlesData(
 
+          /// LEFT AXIS
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 32,
+              reservedSize: 34,
               getTitlesWidget: (value, meta) {
                 return Text(
                   value.toStringAsFixed(1),
@@ -871,32 +924,43 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             ),
           ),
 
+          /// BOTTOM TIME
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: chartData.length < 4 ? 1 : chartData.length / 4,
-              getTitlesWidget: (value, meta) {
+              reservedSize: 22,
+              interval: limitedData.length < 6
+                  ? 1
+                  : (limitedData.length / 5).floorToDouble(),
+                getTitlesWidget: (value, meta) {
 
-                final index = value.toInt();
+                  final index = value.toInt();
 
-                if (index >= chartData.length) {
-                  return const SizedBox();
-                }
+                  if (index >= limitedData.length) {
+                    return const SizedBox();
+                  }
 
-                final time = DateFormat("HH:mm")
-                    .format(chartData[index].updatedAt);
+                  /// chỉ hiển thị 5 mốc
+                  final step = (limitedData.length / 5).ceil();
 
-                return Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text(
-                    time,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: Colors.grey,
+                  if (index % step != 0 && index != limitedData.length - 1) {
+                    return const SizedBox();
+                  }
+
+                  final time = DateFormat("HH:mm")
+                      .format(limitedData[index].updatedAt);
+
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      time,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                }
             ),
           ),
 
@@ -909,9 +973,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           ),
         ),
 
-        barGroups: List.generate(chartData.length, (i) {
+        /// BAR DATA
+        barGroups: List.generate(limitedData.length, (i) {
 
-          final item = chartData[i];
+          final item = limitedData[i];
+
 
           final y = chartType == ChartType.power
               ? (item.p ?? 0)
@@ -919,13 +985,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           return BarChartGroupData(
             x: i,
+            barsSpace: 4,
             barRods: [
 
               BarChartRodData(
                 toY: y.toDouble(),
-                width: 12,
-
-                borderRadius: BorderRadius.circular(6),
+                width: 6, // giảm width để tránh sọc
+                borderRadius: BorderRadius.circular(4),
 
                 gradient: const LinearGradient(
                   colors: [
@@ -936,6 +1002,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   end: Alignment.topCenter,
                 ),
               ),
+
             ],
           );
 
@@ -944,11 +1011,15 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     );
   }
   Widget _buildLineChart(List chartData, double maxValue) {
+
+    final data = chartData.length > 24
+        ? chartData.sublist(chartData.length - 24)
+        : chartData;
     return LineChart(
       LineChartData(
 
         minX: 0,
-        maxX: (chartData.length - 1).toDouble(),
+        maxX: (data.length - 1).toDouble(),
 
         minY: 0,
         maxY: maxValue * 1.25,
@@ -989,16 +1060,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: chartData.length < 4 ? 1 : chartData.length / 4,
+              interval: data.length < 6
+                  ? 1
+                  : (data.length / 5).floorToDouble(),
               getTitlesWidget: (value, meta) {
 
                 final index = value.toInt();
-                if (index >= chartData.length) {
+                if (index >= data.length) {
                   return const SizedBox();
                 }
 
                 final time = DateFormat("HH:mm")
-                    .format(chartData[index].updatedAt);
+                    .format(data[index].updatedAt);
 
                 return Padding(
                   padding: const EdgeInsets.only(top: 6),
@@ -1026,8 +1099,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         lineBarsData: [
           LineChartBarData(
 
-            spots: List.generate(chartData.length, (i) {
-              final item = chartData[i];
+            spots: List.generate(data.length, (i) {
+              final item = data[i];
 
               final y = chartType == ChartType.power
                   ? (item.p ?? 0)
@@ -1070,7 +1143,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               return spots.map((spot) {
 
                 final index = spot.x.toInt();
-                final item = chartData[index];
+                final item = data[index];
 
                 final time = DateFormat("HH:mm")
                     .format(item.updatedAt);
@@ -1265,6 +1338,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         final bool isOn = realStatus == 1;
         final bool isOffline = realStatus == -1;
         final bool isMaintenance = realStatus == 2;
+        final bool isOff = realStatus == 0;
         final countdown = state.switchCountdowns[device.id] ?? 0;
         final isSwitching = deviceCubit.isDeviceSwitching(device.id);
         return Scaffold(
@@ -1466,17 +1540,22 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                                 : BreakerColors.maintenance,
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: state.isForceLoading || maintenanceCountdown > 0
+                          onPressed: state.isForceLoading ||
+                              maintenanceCountdown > 0 ||
+                              (isOn && !isMaintenance)
                               ? null
                               : () async {
+
                             final password = await _showPasswordDialog(context);
                             if (password == null) return;
+
                             final wasMaintenance = isMaintenance;
+
                             await context.read<DeviceCubit>().toggleMaintenance(
                               device,
                               password: password,
                             );
-                            /// chỉ countdown khi THOÁT bảo trì
+
                             if (wasMaintenance) {
                               startMaintenanceCountdown();
                             }

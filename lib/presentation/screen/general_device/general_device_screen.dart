@@ -29,7 +29,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
   late bool isLandscape;
-
+  int _currentIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -51,44 +51,40 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       backgroundColor: AppColors.greyFB,
       appBar: AppBar(
         backgroundColor: AppColors.white,
-        scrolledUnderElevation: 0,
         elevation: 0,
-        title: Text(
-          "${LocalizationsUtils.localizations.factory} ${widget.project.name}",
-          style: AppTextStyle.textBase.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
+        scrolledUnderElevation: 0,
+        titleSpacing: 0,
+        title: Row(
+          children: [
+
+            /// LOGO KRA
+            Image.asset(
+              "assets/images/logo.png",
+              height: 32.h,
+            ),
+
+            SizedBox(width: 10.w),
+
+            /// TITLE
+            Expanded(
+              child: Text(
+                "Nhà máy ${widget.project.name}",
+                style: AppTextStyle.textBase.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
-
-          /// ➕ Thêm sản phẩm
           IconButton(
-            icon: const Icon(
-              Icons.add,
-              color: Colors.black87,
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, RouteName.addProduct);
-            },
+            icon: const Icon(Icons.notifications_none),
+            onPressed: () {},
           ),
-
-          /// ⚙️ Cài đặt
           IconButton(
-            icon: const Icon(
-              Icons.settings_outlined,
-              color: Colors.black87,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ProjectSettingScreen(
-                    project: widget.project,
-                  ),
-                ),
-              );
-            },
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () {},
           ),
         ],
       ),
