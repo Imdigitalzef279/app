@@ -54,38 +54,102 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         elevation: 0,
         scrolledUnderElevation: 0,
         titleSpacing: 0,
-        title: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            /// LOGO KRA
-            Image.asset(
-              "assets/images/logo.png",
-              height: 32.h,
-            ),
-
-            SizedBox(width: 10.w),
-
-            /// TITLE
-            Expanded(
-              child: Text(
-                "Nhà máy ${widget.project.name}",
-                style: AppTextStyle.textBase.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  "assets/images/logo.png",
+                  height: 28.h,
                 ),
-              ),
+
+                SizedBox(width: 8.w),
+
+                Expanded(
+                  child: Text(
+                    "Nhà máy ${widget.project.name}",
+                    style: AppTextStyle.textBase.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
+
+            SizedBox(height: 2.h),
+
+            Row(
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF1ABC9C),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  "Đang hoạt động",
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: const Color(0xFF1ABC9C),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {},
-          ),
+          Padding(
+            padding: EdgeInsets.only(right: 10.w),
+            child: Row(
+              children: [
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                      )
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.notifications_none),
+                    onPressed: () {},
+                  ),
+                ),
+
+                SizedBox(width: 8.w),
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.settings_outlined),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProjectSettingScreen(
+                            project: widget.project,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
       body: SafeArea(
@@ -100,90 +164,70 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   borderRadius: BorderRadius.circular(24.r),
                   gradient: const LinearGradient(
                     colors: [
-                      Color(0xFFE9F6F2),
-                      Color(0xFFDFF1EC),
+                      Color(0xFFBFEFE4),
+                      Color(0xFFE8F7F3),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Stack(
                   children: [
-                    Expanded(
-                      flex: 6,
-                      child: SizedBox(
-                        height: 120.h,
-                        child: Lottie.asset(
-                          Assets.images.animationLogin,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
 
-                    SizedBox(width: 12.w),
+                    /// IMAGE
+                    Column(
+                      children: [
 
-                    Expanded(
-                      flex: 4,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-
-                          /// Badge
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 6.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1ABC9C).withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 6.w,
-                                  height: 6.w,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF1ABC9C),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                SizedBox(width: 6.w),
-                                Text(
-                                  "Đang hoạt động",
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF1ABC9C),
-                                  ),
-                                ),
-                              ],
-                            ),
+                        SizedBox(
+                          height: 160.h,
+                          child: Image.asset(
+                            "assets/images/factory.png",
+                            fit: BoxFit.contain,
                           ),
+                        ),
 
-                          SizedBox(height: 20.h),
+                        SizedBox(height: 10.h),
 
-                          Row(
+                        /// SAFE SYSTEM CARD
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 12.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          child: Row(
                             children: [
+
+                              Icon(
+                                Icons.shield_outlined,
+                                color: Color(0xFF1ABC9C),
+                                size: 22.w,
+                              ),
+
+                              SizedBox(width: 10.w),
+
                               Expanded(
-                                child: _statCard(
-                                  icon: Icons.description,
-                                  value: "32",
+                                child: Text(
+                                  "Hệ thống đang an toàn",
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                              SizedBox(width: 10.w),
-                              Expanded(
-                                child: _statCard(
-                                  icon: Icons.wifi,
-                                  value: "28",
-                                ),
+
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16.w,
+                                color: Colors.grey,
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        )
+                      ],
                     ),
                   ],
                 ),
@@ -208,56 +252,34 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       ),
                     ),
                     Gap(16.h),
-                    Wrap(
-                      runSpacing: 12.w,
-                      spacing: 12.w,
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 12.w,
+                      mainAxisSpacing: 12.h,
+                      childAspectRatio: 1.4,
                       children: [
 
-                        /// QUẢN LÝ NƯỚC (cũ)
-                        itemService(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteName.managerWater,
-                              arguments: widget.project,
-                            );
-                          },
-                          icon: Assets.icons.water.svg(
-                            width: 22.w,
-                            height: 22.w,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.blueEA,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                          name: LocalizationsUtils.localizations.water,
+                        featureCard(
+                          icon: Icons.water_drop,
+                          title: "Quản lý nước",
+                          subtitle: "Ổn định",
+                          color: Colors.blue,
                         ),
 
-                        /// TIẾT KIỆM ĐIỆN (cũ)
-                        itemService(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteName.factoryDetail,
-                              arguments: ElectricMeterArgument(
-                                project: widget.project,
-                                type: ElectricType.saveElectric,
-                              ),
-                            );
-                          },
-                          icon: Assets.icons.savingElectric.svg(
-                            width: 22.w,
-                            height: 22.w,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.blueEA,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                          name: LocalizationsUtils.localizations.energy_saving,
+                        featureCard(
+                          icon: Icons.flash_on,
+                          title: "Tiết kiệm điện",
+                          subtitle: "-12% hôm nay",
+                          color: Colors.orange,
                         ),
 
-                        /// QUẢN LÝ NĂNG LƯỢNG (cũ)
-                        itemService(
+                        featureCard(
+                          icon: Icons.bar_chart,
+                          title: "Quản lý năng lượng",
+                          subtitle: "3.2 kW",
+                          color: Colors.purple,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -271,71 +293,64 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               ),
                             );
                           },
-                          icon: Icon(
-                            Icons.electrical_services,
-                            size: 22.w,
-                            color: AppColors.blueEA,
-                          ),
-                          name: "Quản lý năng lượng",
                         ),
 
-                        /// QUẢN LÝ CHIẾU SÁNG
-                        itemService(
-                          onTap: () {
-                            // TODO: route lighting
-                          },
-                          icon: Icon(
-                            Icons.lightbulb_outline,
-                            size: 22.w,
-                            color: AppColors.blueEA,
-                          ),
-                          name: "Quản lý chiếu sáng",
+                        featureCard(
+                          icon: Icons.lightbulb,
+                          title: "Quản lý chiếu sáng",
+                          subtitle: "5 phòng bật",
+                          color: Colors.amber,
                         ),
 
-                        /// NƯỚC - NÓNG LẠNH
-                        itemService(
-                          onTap: () {
-                            // TODO: route water heater
-                          },
-                          icon: Icon(
-                            Icons.hot_tub,
-                            size: 22.w,
-                            color: AppColors.blueEA,
-                          ),
-                          name: "Nước - Nóng lạnh",
+                        featureCard(
+                          icon: Icons.water,
+                          title: "Nước - Nóng lạnh",
+                          subtitle: "Hoạt động tốt",
+                          color: Colors.blueAccent,
                         ),
 
-                        /// ĐIỀU HÒA (HVAC)
-                        itemService(
-                          onTap: () {
-                            // TODO: route hvac
-                          },
-                          icon: Icon(
-                            Icons.ac_unit,
-                            size: 22.w,
-                            color: AppColors.blueEA,
-                          ),
-                          name: "Điều hòa",
-                        ),
-
-                        /// CẢNH BÁO NGƯỜI BỊ NGÃ
-                        itemService(
-                          onTap: () {
-                            // TODO: route kra care
-                          },
-                          icon: Icon(
-                            Icons.health_and_safety_outlined,
-                            size: 22.w,
-                            color: AppColors.blueEA,
-                          ),
-                          name: "KRA Care",
+                        featureCard(
+                          icon: Icons.ac_unit,
+                          title: "Điều hòa",
+                          subtitle: "26°C · 3 thiết bị",
+                          color: Colors.cyan,
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 12.h),
+
+              Container(
+                padding: EdgeInsets.all(14.w),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+                child: Row(
+                  children: [
+
+                    Icon(
+                      Icons.health_and_safety,
+                      color: Colors.green,
+                    ),
+
+                    SizedBox(width: 10.w),
+
+                    Expanded(
+                      child: Text(
+                        "KRA Care",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+
+                    Icon(Icons.arrow_forward_ios, size: 16),
+                  ],
+                ),
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -389,6 +404,72 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       ),
     );
 
+  }
+  Widget featureCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.all(12.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 6,
+              )
+            ],
+          ),
+      child: Row(
+        children: [
+
+          Container(
+            padding: EdgeInsets.all(10.w),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Icon(icon, color: color),
+          ),
+
+          SizedBox(width: 10.w),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                SizedBox(height: 4.h),
+
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+        )
+    );
   }
   Widget _statCard({
     required IconData icon,
