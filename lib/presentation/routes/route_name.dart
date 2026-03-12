@@ -19,4 +19,5 @@ class RouteName {
   static const createStation = '/createStation';
   static const aptomatScreen = "/aptomatScreen";
   static const addProduct = "/addProduct";
+  static const String market = '/market';
 }

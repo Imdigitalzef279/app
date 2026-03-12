@@ -2,16 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
-import 'package:solar_energy/application/enums/electric_type.dart';
-import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
-import 'package:solar_energy/gen/assets.gen.dart';
-import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/general_device/project_setting_screen.dart';
-
 import '../../../data/dto/power_station/response/power_station_response.dart';
 import '../Electricity/automat/automat_list_screen.dart';
 import '../device/bloc/device_cubit.dart';
@@ -78,9 +72,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 ),
               ],
             ),
-
             SizedBox(height: 2.h),
-
             Row(
               children: [
                 Container(
@@ -108,7 +100,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
             padding: EdgeInsets.only(right: 10.w),
             child: Row(
               children: [
-
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,

@@ -495,20 +495,20 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<int> setBreakerMaintenance(CbsMeterRequest request) async {
+  Future<void> setBreakerMaintenance(CbsMeterRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
-    final _options = _setStreamType<int>(Options(
+    final _options = _setStreamType<void>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          'api/app/breaker-command/set-maintaince',
+          'api/app/breaker-command/set-maintenance',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -517,15 +517,7 @@ class _ApiClient implements ApiClient {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<int>(_options);
-    late int _value;
-    try {
-      _value = _result.data!;
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   @override

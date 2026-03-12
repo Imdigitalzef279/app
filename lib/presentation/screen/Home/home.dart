@@ -3,13 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
-import 'package:solar_energy/presentation/screen/account_information/account_screen.dart';
 import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.dart';
 import 'package:solar_energy/presentation/screen/service_solar/bottom_contact_info.dart';
 import '../../../application/enums/load_status.dart';
 import '../Electricity/automat/automat_list_screen.dart';
+import '../account_information/account_screen.dart';
 import '../device/bloc/device_cubit.dart';
 import '../general_device/general_device_screen.dart';
+import '../market/bloc/market_cubit.dart';
+import '../market/market_screen.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -25,7 +27,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   @override
   void initState() {
     super.initState();
-    _tabLoaded = [true, false, false, false];
+    _tabLoaded = [true, false, false, false, false];
   }
 
   @override
@@ -79,19 +81,23 @@ class _HomeWidgetState extends State<HomeWidget> {
 
         /// TAB 1 - THIẾT BỊ
         _tabLoaded[1]
-            ? BlocProvider(
-          create: (_) => DeviceCubit(),
-          child: AutomatListScreen(
-            powerStationId: 181,
-          ),
-        )
-            : const SizedBox(),
+        ? BlocProvider(
+        create: (_) => MarketCubit(),
+    child: const MarketScreen(),
+    )
+        : const SizedBox(),
+
 
         /// TAB 2 - THÔNG BÁO
         const Center(child: Text("Thông báo")),
 
         /// TAB 3 - GIỎ HÀNG
         const Center(child: Text("Giỏ hàng")),
+        /// TAB 4 ACCOUNT
+        BlocProvider(
+          create: (_) => AccountCubit(),
+          child: const AccountScreen(),
+        ),
       ],
     );
   }
@@ -141,6 +147,13 @@ class _HomeWidgetState extends State<HomeWidget> {
           selectedIcon: Icon(Icons.shopping_cart, color: Colors.blue),
           icon: Icon(Icons.shopping_cart_outlined, color: AppColors.grey73),
           label: "Giỏ hàng",
+        ),
+
+        /// ACCOUNT (TAB CUỐI)
+        NavigationDestination(
+          selectedIcon: Icon(Icons.person, color: Colors.blue),
+          icon: Icon(Icons.person_outline, color: AppColors.grey73),
+          label: "Tài khoản",
         ),
       ],
     );

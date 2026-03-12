@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
 import 'package:solar_energy/data/repositories/meter_config/meter_config_repository.dart';
 
+import '../../../../data/data_sources/api/api_client.dart';
+import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
 import 'device_info_screen/device_info_screen.dart';
 
 const kPrimaryColor = Color(0xFF1ABC9C);
@@ -400,7 +404,34 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
     );
   }
+  Future<void> sendProtectionSetting() async {
 
+    final api = GetIt.instance<ApiClient>();
+
+    final command = {
+      "method": "operate",
+      "payload": {
+        "addr": "1_1",
+        "IHighVal01": overCurrent.toInt().toString(),
+        "LgHighVal01": leakageCurrent.toInt().toString(),
+        "UHighVal01": overVoltage.toInt().toString(),
+        "ULowVal01": underVoltage.toInt().toString(),
+        "PHighVal01": overPower.toString(),
+        "T1HighVal01": overTemperature.toInt().toString(),
+      }
+    };
+
+    final request = CbsMeterRequest(
+      gatewaySn: widget.device.gatewaySn,
+      breakerSn: widget.device.breakerSn,
+      addr: "1_1",
+      createdBy: "app",
+      commandValue: jsonEncode(command),
+      isForce: true,
+    );
+
+    await api.controlCircuitBreaker(request);
+  }
   Widget _buildSliderTile({
     required String title,
     required String unit,

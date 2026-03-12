@@ -7,8 +7,6 @@ import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
-import 'package:solar_energy/presentation/screen/account_information/widget/basic_account_widget.dart';
-import 'package:solar_energy/presentation/screen/account_information/widget/item_option_widget.dart';
 
 import '../../../application/cubit/app_cubit.dart';
 
@@ -26,7 +24,8 @@ class _AccountScreenState extends State<AccountScreen> {
   void initState() {
     super.initState();
     cubit = BlocProvider.of(context);
-    WidgetsBinding.instance.addPostFrameCallback((duration) {
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       cubit.getProfile();
     });
   }
@@ -36,158 +35,132 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       backgroundColor: AppColors.greyFB,
       body: BlocConsumer<AccountCubit, AccountState>(
-        listener: (BuildContext context, AccountState state) {
+        listener: (context, state) {
           state.request.when(
-            loading: () => BlocProvider.of<AppCubit>(context).showLoading(),
-            success: (data) =>
-                BlocProvider.of<AppCubit>(context).hideShowLoading(),
-            error: (error) =>
-                BlocProvider.of<AppCubit>(context).hideShowLoading(),
+            loading: () => context.read<AppCubit>().showLoading(),
+            success: (_) => context.read<AppCubit>().hideShowLoading(),
+            error: (_) => context.read<AppCubit>().hideShowLoading(),
           );
         },
-        builder: (context, state) => SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Column(
-              children: [
-                BasicAccountWidget(
-                  email: state.request.data?.email ?? LocalizationsUtils.localizations.no_information,
-                  userName:
-                      state.request.data?.userName ?? LocalizationsUtils.localizations.no_information,
-                  imageLink:
-                      "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-                ),
-                SizedBox(
-                  height: 12.h,
-                ),
-                container(
-                    child: Column(
-                  children: [
-                    ItemOptionWidget(
-                      icon: Icon(
-                        Icons.account_circle,
-                        size: 22.w,
-                      ),
-                      optionName:
-                          "${state.request.data?.surname} ${state.request.data?.name}",
-                    ),
-                    const Divider(
-                      color: AppColors.greyFB,
-                    ),
-                    ItemOptionWidget(
-                      icon: Icon(
-                        Icons.attach_email,
-                        size: 22.w,
-                      ),
-                      optionName:
-                      (state.request.data?.email.isEmpty ?? true)
-                          ? LocalizationsUtils.localizations.no_information
-                          : state.request.data!.email,
-                    ),
-                    const Divider(
-                      color: AppColors.greyFB,
-                    ),
-                    ItemOptionWidget(
-                      icon: Icon(
-                        Icons.phone_android,
-                        size: 22.w,
-                      ),
-                      optionName: (state.request.data?.phoneNumber.isEmpty ?? true)
-                          ? LocalizationsUtils.localizations.no_information
-                          : state.request.data!.phoneNumber,
-                    ),
-                    const Divider(
-                      color: AppColors.greyFB,
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        if (state.request.data?.email == "hong@gmail.com") {
-                          showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: Text(
-                                LocalizationsUtils.localizations.warning_alert,
-                                style: AppTextStyle.textBase,
+        builder: (context, state) {
+          final user = state.request.data;
+
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              child: Column(
+                children: [
+
+                  /// HEADER
+                  Container(
+                    height: 220.h,
+                    width: double.infinity,
+                    child: Stack(
+                      children: [
+
+                        /// IMAGE
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12.r),
+                          child: Image.asset(
+                            "assets/images/factory.png",
+                            width: double.infinity,
+                            height: 220.h,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+
+                        /// USER INFO
+                        Positioned(
+                          left: 16.w,
+                          bottom: 16.h,
+                          child: Row(
+                            children: [
+
+                              CircleAvatar(
+                                radius: 26.w,
+                                backgroundColor: Colors.green,
+                                child: const Icon(Icons.home, color: Colors.white),
                               ),
-                              content: Text(
-                                LocalizationsUtils.localizations.trial_account_cannot_deactivate,
-                                style: AppTextStyle.textSm,
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, LocalizationsUtils.localizations.cancel),
-                                  child: Text(
-                                    LocalizationsUtils.localizations.got_it,
-                                    style: AppTextStyle.textSm,
+
+                              SizedBox(width: 10.w),
+
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+
+                                  Text(
+                                    user?.userName ??
+                                        LocalizationsUtils.localizations.no_information,
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                          return;
-                        }
-                        showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: Text(
-                              LocalizationsUtils.localizations.deactivate_account,
-                              style: AppTextStyle.textSm,
-                            ),
-                            content: Text(
-                              LocalizationsUtils.localizations.confirm_deactivate_account,
-                              style: AppTextStyle.textSm,
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.pop(context, LocalizationsUtils.localizations.cancel),
-                                child: Text(
-                                  LocalizationsUtils.localizations.cancel,
-                                  style: AppTextStyle.textSm,
-                                ),
-                              ),
-                              TextButton(
-                                  onPressed: () async {
-                                    final check = await cubit.deleteAccount();
-                                    if (check) {
-                                      Navigator.pushNamedAndRemoveUntil(
-                                          context,
-                                          RouteName.loginScreen,
-                                          (Route<dynamic> route) => false);
-                                    }
-                                  },
-                                  child: Text(
-                                    LocalizationsUtils.localizations.confirm,
-                                    style: AppTextStyle.textSm,
-                                  )),
+
+                                  Text(
+                                    user?.phoneNumber ??
+                                        LocalizationsUtils.localizations.no_information,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
-                        );
-                      },
-                      child: ItemOptionWidget(
-                        icon: Icon(
-                          Icons.restore_from_trash,
-                          size: 22.w,
                         ),
-                        optionName: LocalizationsUtils.localizations.deactivate_account,
-                      ),
+                      ],
                     ),
-                  ],
-                )),
-                SizedBox(
-                  height: 42.h,
-                ),
-                InkWell(
-                  borderRadius: BorderRadius.circular(12.r),
-                  onTap: () {
-                    cubit.removeToken();
-                    Navigator.pushNamedAndRemoveUntil(context,
-                        RouteName.loginScreen, (Route<dynamic> route) => false);
-                  },
-                  child: Ink(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  ),
+
+                  SizedBox(height: 20.h),
+
+                  /// MENU GRID
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 6,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 12.w,
+                      mainAxisSpacing: 12.h,
+                      childAspectRatio: 1,
+                    ),
+                    itemBuilder: (context, index) {
+                      final items = [
+                        [Icons.storage, "Quản lý"],
+                        [Icons.settings, "Giao diện"],
+                        [Icons.search, "Hỗ trợ"],
+                        [Icons.notifications, "Thông báo"],
+                        [Icons.person, "Tài khoản"],
+                        [Icons.card_giftcard, "Sản phẩm"],
+                      ];
+
+                      return menuItem(
+                        items[index][0] as IconData,
+                        items[index][1] as String,
+                      );
+                    },
+                  ),
+
+                  SizedBox(height: 42.h),
+
+                  /// LOGOUT
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12.r),
+                    onTap: () {
+                      cubit.removeToken();
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        RouteName.loginScreen,
+                            (Route<dynamic> route) => false,
+                      );
+                    },
+                    child: Ink(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 10.h),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.r),
                         color: AppColors.red14.withOpacity(0.1),
@@ -200,36 +173,74 @@ class _AccountScreenState extends State<AccountScreen> {
                             colorFilter: const ColorFilter.mode(
                                 AppColors.red14, BlendMode.srcIn),
                           ),
-                          SizedBox(
-                            width: 12.w,
-                          ),
+                          SizedBox(width: 12.w),
                           Expanded(
-                              child: Text(
-                            LocalizationsUtils.localizations.logout,
-                            style: AppTextStyle.textSm.copyWith(
+                            child: Text(
+                              LocalizationsUtils.localizations.logout,
+                              style: AppTextStyle.textSm.copyWith(
                                 fontWeight: FontWeight.w400,
-                                color: AppColors.red14),
-                            textAlign: TextAlign.center,
-                          )),
+                                color: AppColors.red14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
                         ],
-                      )),
-                )
-              ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget container({Widget? child}) {
+  Widget menuItem(IconData icon, String title) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(vertical: 10.h),
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        color: AppColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          )
+        ],
       ),
-      child: child,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+
+          Container(
+            width: 36.w,
+            height: 36.w,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1ABC9C).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: const Color(0xFF1ABC9C),
+              size: 20,
+            ),
+          ),
+
+          SizedBox(height: 6.h),
+
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

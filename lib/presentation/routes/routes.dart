@@ -26,6 +26,7 @@ import 'package:solar_energy/presentation/screen/register/register_widget.dart';
 
 import '../../data/dto/power_station/response/power_station_response.dart';
 import '../screen/general_device/add_product_screen.dart';
+import '../screen/market/market_screen.dart';
 
 class AppRouter {
   Route onGenerateRoute(RouteSettings routeSettings) {
@@ -166,7 +167,10 @@ class AppRouter {
           device: arguments as DeviceResponse,
         );
         break;
-
+      case RouteName.market:
+        return MaterialPageRoute(
+          builder: (_) => const MarketScreen(),
+        );
       default:
         break;
     }
