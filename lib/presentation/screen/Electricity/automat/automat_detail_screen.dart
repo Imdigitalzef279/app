@@ -16,6 +16,7 @@ import '../../../common_widgets/app_toast.dart';
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'automat_chart_screen.dart';
+
 /// Màn hình chi tiết thiết bị CB (Circuit Breaker)
 /// Hiển thị:
 /// - Trạng thái ON/OFF
@@ -26,10 +27,12 @@ enum ChartType {
   power,
   energy,
 }
+
 enum ChartDisplayType {
   line,
   bar,
 }
+
 class AutomatDetailScreen extends StatefulWidget {
   final DeviceResponse device;
   const AutomatDetailScreen({
@@ -39,6 +42,7 @@ class AutomatDetailScreen extends StatefulWidget {
   @override
   State<AutomatDetailScreen> createState() => _AutomatDetailScreenState();
 }
+
 class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   bool isForceMode = false;
   ChartRange _selectedRange = ChartRange.month;
@@ -60,7 +64,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     super.initState();
     _timer = Timer.periodic(
       const Duration(seconds: 5),
-          (_) {
+      (_) {
         setState(() {});
       },
     );
@@ -78,9 +82,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     /// chart
     context.read<AutomatChartCubit>().loadChart(
-      currentDevice.code ?? "",
-      _selectedRange,
-    );
+          currentDevice.code ?? "",
+          _selectedRange,
+        );
 
     final signalR = SignalRService();
 
@@ -98,8 +102,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     maintenanceTimer?.cancel();
     super.dispose();
   }
-  void startMaintenanceCountdown() {
 
+  void startMaintenanceCountdown() {
     setState(() {
       maintenanceCountdown = 13;
     });
@@ -108,7 +112,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     maintenanceTimer = Timer.periodic(
       const Duration(seconds: 1),
-          (timer) {
+      (timer) {
         if (maintenanceCountdown == 0) {
           timer.cancel();
         } else {
@@ -119,6 +123,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       },
     );
   }
+
   void _handleRealtime(Map<String, dynamic> data) {
     try {
       final event = data["event"];
@@ -153,9 +158,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       /// ⚡ update trạng thái CB realtime
       if (log.rlySta != null) {
         context.read<DeviceCubit>().updateRealtimeLogByCode(
-          currentDevice.code,
-          log,
-        );
+              currentDevice.code,
+              log,
+            );
       }
 
       /// tính điện năng
@@ -170,11 +175,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           realtimeCost += realtime;
         });
       }
-
     } catch (e) {
       print("❌ Parse realtime error: $e");
     }
   }
+
   /// Lấy điện năng tại thời điểm đầu ngày (00:00)
   /// dùng để tính điện năng hôm nay:
   ///
@@ -192,12 +197,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final startOfDay = DateTime(today.year, today.month, today.day);
 
     final firstLog = logs.firstWhere(
-          (e) => DateTime.parse(e.updatedAt!).isAfter(startOfDay),
+      (e) => DateTime.parse(e.updatedAt!).isAfter(startOfDay),
       orElse: () => logs.first,
     );
 
     epiAtStartOfDay = firstLog.epi ?? 0;
   }
+
   /// Lấy giá điện từ API
   /// dùng để tính tiền điện
   Future<void> _loadElectricPrice() async {
@@ -215,17 +221,20 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       print("Load price error: $e");
     }
   }
+
   /// Reload danh sách thiết bị từ server
   /// dùng sau khi đóng/cắt CB
   Future<void> _reloadDevice() async {
     await context.read<DeviceCubit>().getAllDevices(
-      powerStationId: currentDevice.powerStationId,
-    );
+          powerStationId: currentDevice.powerStationId,
+        );
   }
+
   /// Reload log breaker realtime
   void _reloadRealTime() {
     cubit.getBreakerLog(currentDevice.code ?? "");
   }
+
   /// Hiển thị dialog nhập PIN
   /// dùng khi đóng/cắt CB
   Future<String?> _showPasswordDialog(BuildContext context) async {
@@ -237,6 +246,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       },
     );
   }
+
   /// Convert trạng thái CB -> text hiển thị
   String _getStatusText(int status) {
     switch (status) {
@@ -250,6 +260,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         return "Không xác định";
     }
   }
+
   /// Convert trạng thái CB -> màu hiển thị
   Color _getStatusColor(int status) {
     switch (status) {
@@ -263,12 +274,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         return Colors.grey;
     }
   }
+
   /// Chọn icon thiết bị theo meterTypeId
   Widget _deviceImage() {
     String path;
 
     switch (currentDevice.meterTypeId) {
-
       case 81:
         path = "assets/images/mm50h_1p.png";
         break;
@@ -295,13 +306,15 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   Widget _buildOverviewSection(
-      BuildContext context,
-      AtomatLogResponse? log,
-      DeviceResponse device,
-      ) {
+    BuildContext context,
+    AtomatLogResponse? log,
+    DeviceResponse device,
+  ) {
     final chartData = context.watch<AutomatChartCubit>().state;
-    final yAxisLabel = chartType == ChartType.power ? "Power (kW)" : "Energy (kWh)";
+    final yAxisLabel =
+        chartType == ChartType.power ? "Power (kW)" : "Energy (kWh)";
     final xAxisLabel = "Time";
     final limitedData = chartData.length > 18
         ? chartData.sublist(chartData.length - 18)
@@ -310,10 +323,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final double maxValue = limitedData.isEmpty
         ? 5.0
         : limitedData
-        .map((e) => chartType == ChartType.power
-        ? (e.p ?? 0).toDouble()
-        : (e.epi ?? 0).toDouble())
-        .reduce((a, b) => a > b ? a : b);
+            .map((e) => chartType == ChartType.power
+                ? (e.p ?? 0).toDouble()
+                : (e.epi ?? 0).toDouble())
+            .reduce((a, b) => a > b ? a : b);
     if (log == null) return const SizedBox();
 
     return Container(
@@ -324,7 +337,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 12,
-            offset: const Offset(0,6),
+            offset: const Offset(0, 6),
           )
         ],
         borderRadius: BorderRadius.circular(22),
@@ -332,11 +345,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           /// ===== HEADER + RANGE =====
           Row(
             children: [
-
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -360,10 +371,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
               const SizedBox(width: 6),
 
-
               Row(
-                children: [
-                ],
+                children: [],
               ),
               const Text(
                 "Phân tích năng lượng",
@@ -402,7 +411,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             height: 230,
             child: Column(
               children: [
-
                 /// Y axis label
                 Align(
                   alignment: Alignment.centerLeft,
@@ -444,25 +452,20 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           Row(
             children: [
-
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    chartDisplayType =
-                    chartDisplayType == ChartDisplayType.line
+                    chartDisplayType = chartDisplayType == ChartDisplayType.line
                         ? ChartDisplayType.bar
                         : ChartDisplayType.line;
                   });
                 },
-
                 child: Container(
                   padding: const EdgeInsets.all(6),
-
                   decoration: BoxDecoration(
                     color: const Color(0xFFE7F6F3),
                     borderRadius: BorderRadius.circular(10),
                   ),
-
                   child: Icon(
                     chartDisplayType == ChartDisplayType.line
                         ? Icons.show_chart
@@ -472,10 +475,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   ),
                 ),
               ),
-
             ],
           ),
           const SizedBox(height: 10),
+
           /// Card hiển thị thông số
           /// ví dụ:
           /// - điện áp
@@ -534,13 +537,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
                   blurRadius: 10,
-                  offset: const Offset(0,4),
+                  offset: const Offset(0, 4),
                 )
               ],
             ),
             child: Row(
               children: [
-
                 /// ICON
                 const Icon(
                   Icons.savings,
@@ -554,7 +556,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children:  [
+                    children: [
                       Text(
                         "Tiền điện hôm nay",
                         style: TextStyle(
@@ -636,12 +638,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   BarChartGroupData _bar(int x, double y1, double y2) {
     return BarChartGroupData(
       x: x,
       barsSpace: 4, // khoảng cách giữa 2 cột (nhỏ lại để sát nhau)
       barRods: [
-
         /// cột nhạt
         BarChartRodData(
           toY: y1,
@@ -660,12 +662,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ],
     );
   }
+
   Widget _tabItem(
-      String text,
-      bool active, {
-        bool isHome = false,
-        BuildContext? context,
-      }) {
+    String text,
+    bool active, {
+    bool isHome = false,
+    BuildContext? context,
+  }) {
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -678,9 +681,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: active
-                    ? const Color(0xFF1ABC9C)
-                    : Colors.transparent,
+                color: active ? const Color(0xFF1ABC9C) : Colors.transparent,
                 width: 2,
               ),
             ),
@@ -688,16 +689,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               if (isHome)
                 const Icon(
                   Icons.home,
                   size: 16,
                   color: Colors.grey,
                 ),
-
               if (isHome) const SizedBox(width: 4),
-
               Text(
                 text,
                 textAlign: TextAlign.center,
@@ -712,46 +710,40 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   Widget _rangeChip(String text, ChartRange range) {
     final bool active = _selectedRange == range;
 
     return GestureDetector(
       onTap: () {
-
         setState(() {
           _selectedRange = range;
         });
 
         context.read<AutomatChartCubit>().loadChart(
-          currentDevice.code ?? "",
-          _selectedRange,
-        );
+              currentDevice.code ?? "",
+              _selectedRange,
+            );
       },
-
       child: Container(
         margin: const EdgeInsets.only(left: 4),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-
         decoration: BoxDecoration(
-          color: active
-              ? const Color(0xFFE7F6F3)
-              : const Color(0xFFF0F2F6),
+          color: active ? const Color(0xFFE7F6F3) : const Color(0xFFF0F2F6),
           borderRadius: BorderRadius.circular(10),
         ),
-
         child: Text(
           text,
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: active
-                ? const Color(0xFF1ABC9C)
-                : Colors.black,
+            color: active ? const Color(0xFF1ABC9C) : Colors.black,
           ),
         ),
       ),
     );
   }
+
   Widget _buildTopDeviceCard(DeviceResponse device, AtomatLogResponse? log) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -768,7 +760,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
       child: Row(
         children: [
-
           /// ICON DEVICE
           Container(
             height: 48,
@@ -788,19 +779,14 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
-                  device.name.isNotEmpty
-                      ? device.name
-                      : device.code ?? "",
+                  device.name.isNotEmpty ? device.name : device.code ?? "",
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-
                 const SizedBox(height: 2),
-
                 Text(
                   device.gatewayNumber ?? "",
                   style: const TextStyle(
@@ -855,6 +841,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   Widget _miniMetric(String label, String value) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -877,8 +864,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ],
     );
   }
-  Widget _buildBarChart(List chartData, double maxValue) {
 
+  Widget _buildBarChart(List chartData, double maxValue) {
     /// Giới hạn tối đa 24 cột để tránh sọc
     final limitedData = chartData.length > 18
         ? chartData.sublist(chartData.length - 18)
@@ -906,7 +893,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
         /// TITLES
         titlesData: FlTitlesData(
-
           /// LEFT AXIS
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -927,13 +913,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           /// BOTTOM TIME
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 22,
-              interval: limitedData.length < 6
-                  ? 1
-                  : (limitedData.length / 5).floorToDouble(),
+                showTitles: true,
+                reservedSize: 22,
+                interval: limitedData.length < 6
+                    ? 1
+                    : (limitedData.length / 5).floorToDouble(),
                 getTitlesWidget: (value, meta) {
-
                   final index = value.toInt();
 
                   if (index >= limitedData.length) {
@@ -947,8 +932,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     return const SizedBox();
                   }
 
-                  final time = DateFormat("HH:mm")
-                      .format(limitedData[index].updatedAt);
+                  final time =
+                      DateFormat("HH:mm").format(limitedData[index].updatedAt);
 
                   return Padding(
                     padding: const EdgeInsets.only(top: 6),
@@ -960,8 +945,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                       ),
                     ),
                   );
-                }
-            ),
+                }),
           ),
 
           topTitles: AxisTitles(
@@ -975,19 +959,15 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
         /// BAR DATA
         barGroups: List.generate(limitedData.length, (i) {
-
           final item = limitedData[i];
 
-
-          final y = chartType == ChartType.power
-              ? (item.p ?? 0)
-              : (item.epi ?? 0);
+          final y =
+              chartType == ChartType.power ? (item.p ?? 0) : (item.epi ?? 0);
 
           return BarChartGroupData(
             x: i,
             barsSpace: 4,
             barRods: [
-
               BarChartRodData(
                 toY: y.toDouble(),
                 width: 6, // giảm width để tránh sọc
@@ -1002,30 +982,24 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   end: Alignment.topCenter,
                 ),
               ),
-
             ],
           );
-
         }),
       ),
     );
   }
-  Widget _buildLineChart(List chartData, double maxValue) {
 
+  Widget _buildLineChart(List chartData, double maxValue) {
     final data = chartData.length > 24
         ? chartData.sublist(chartData.length - 24)
         : chartData;
     return LineChart(
       LineChartData(
-
         minX: 0,
         maxX: (data.length - 1).toDouble(),
-
         minY: 0,
         maxY: maxValue * 1.25,
-
         borderData: FlBorderData(show: false),
-
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
@@ -1034,13 +1008,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             return FlLine(
               color: Colors.grey.withOpacity(0.15),
               strokeWidth: 1,
-              dashArray: [6,4],
+              dashArray: [6, 4],
             );
           },
         ),
-
         titlesData: FlTitlesData(
-
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -1056,22 +1028,17 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               },
             ),
           ),
-
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: data.length < 6
-                  ? 1
-                  : (data.length / 5).floorToDouble(),
+              interval: data.length < 6 ? 1 : (data.length / 5).floorToDouble(),
               getTitlesWidget: (value, meta) {
-
                 final index = value.toInt();
                 if (index >= data.length) {
                   return const SizedBox();
                 }
 
-                final time = DateFormat("HH:mm")
-                    .format(data[index].updatedAt);
+                final time = DateFormat("HH:mm").format(data[index].updatedAt);
 
                 return Padding(
                   padding: const EdgeInsets.only(top: 6),
@@ -1086,19 +1053,15 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               },
             ),
           ),
-
           topTitles: AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-
           rightTitles: AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
         ),
-
         lineBarsData: [
           LineChartBarData(
-
             spots: List.generate(data.length, (i) {
               final item = data[i];
 
@@ -1108,18 +1071,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
               return FlSpot(i.toDouble(), y.toDouble());
             }),
-
             isCurved: true,
             curveSmoothness: 0.35,
-
             barWidth: 4,
-
             color: const Color(0xFF1ABC9C),
-
             dotData: const FlDotData(
               show: false,
             ),
-
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
@@ -1133,20 +1091,17 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             ),
           ),
         ],
-
         lineTouchData: LineTouchData(
           enabled: true,
           touchTooltipData: LineTouchTooltipData(
-            tooltipRoundedRadius: 10,
-            tooltipBgColor: Colors.black87,
+            // tooltipRoundedRadius: 10,
+            // tooltipBgColor: Colors.black87,
             getTooltipItems: (spots) {
               return spots.map((spot) {
-
                 final index = spot.x.toInt();
                 final item = data[index];
 
-                final time = DateFormat("HH:mm")
-                    .format(item.updatedAt);
+                final time = DateFormat("HH:mm").format(item.updatedAt);
 
                 final unit = chartType == ChartType.power ? "kW" : "kWh";
 
@@ -1158,7 +1113,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 );
-
               }).toList();
             },
           ),
@@ -1166,8 +1120,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  Widget _buildBigStatusCard(DeviceResponse device, AtomatLogResponse? log) {
 
+  Widget _buildBigStatusCard(DeviceResponse device, AtomatLogResponse? log) {
     final realStatus = getRealStatus(device, log);
 
     String statusText;
@@ -1175,8 +1129,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     List<Color> gradientColors;
 
     switch (realStatus) {
-
-    /// OFFLINE
+      /// OFFLINE
       case -1:
         statusText = "Ngoại tuyến";
         icon = Icons.cloud_off;
@@ -1187,7 +1140,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         ];
         break;
 
-    /// MAINTENANCE
+      /// MAINTENANCE
       case 2:
         statusText = "Bảo trì";
         icon = Icons.build;
@@ -1198,7 +1151,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         ];
         break;
 
-    /// ON
+      /// ON
       case 1:
         statusText = "Đóng";
         icon = Icons.flash_on;
@@ -1209,7 +1162,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         ];
         break;
 
-    /// OFF
+      /// OFF
       default:
         statusText = "Cắt";
         icon = Icons.power_off;
@@ -1239,7 +1192,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
       child: Row(
         children: [
-
           Container(
             height: 48,
             width: 48,
@@ -1253,9 +1205,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               size: 26,
             ),
           ),
-
           const SizedBox(width: 10),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1269,9 +1219,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     letterSpacing: 1,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
                   statusText,
                   style: const TextStyle(
@@ -1287,6 +1235,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   Widget _circleIconPremium({
     required IconData icon,
     required Color bgColor,
@@ -1312,13 +1261,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DeviceCubit, DeviceState>(
       builder: (context, deviceState) {
-
         final device = deviceState.resultDevices.data?.firstWhere(
-              (d) => d.id == widget.device.id,
+          (d) => d.id == widget.device.id,
           orElse: () => widget.device,
         );
 
@@ -1327,7 +1276,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-
 
         final deviceCubit = context.watch<DeviceCubit>();
         final state = deviceCubit.state;
@@ -1343,30 +1291,23 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         final isSwitching = deviceCubit.isDeviceSwitching(device.id);
         return Scaffold(
           backgroundColor: const Color(0xFFF3F6FB),
-
           appBar: AppBar(
             elevation: 0,
             centerTitle: true,
             title: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-
                 Text(
-                  device.name.isNotEmpty
-                      ? device.name
-                      : device.code ?? "",
+                  device.name.isNotEmpty ? device.name : device.code ?? "",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-
                 const SizedBox(height: 2),
-
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-
                     Text(
                       device.gatewayNumber ?? "",
                       style: const TextStyle(
@@ -1374,25 +1315,23 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                         color: Colors.grey,
                       ),
                     ),
-
                     const SizedBox(width: 6),
-
                     Container(
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: isOffline ? Colors.grey : const Color(0xFF2ECC71),
+                        color:
+                            isOffline ? Colors.grey : const Color(0xFF2ECC71),
                         shape: BoxShape.circle,
                       ),
                     ),
-
                     const SizedBox(width: 4),
-
                     Text(
                       isOffline ? "Offline" : "Online",
-                      style:  TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: isOffline ? Colors.grey : const Color(0xFF2ECC71),
+                        color:
+                            isOffline ? Colors.grey : const Color(0xFF2ECC71),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1401,16 +1340,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               ],
             ),
           ),
-
           body: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
-
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                 children: [
-
                   /// Card hiển thị thông tin thiết bị
                   /// - tên
                   /// - gateway
@@ -1433,7 +1369,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-
                       /// ===== ĐÓNG / CẮT =====
                       Expanded(
                         child: ElevatedButton(
@@ -1443,39 +1378,42 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            backgroundColor: isOn
-                                ? BreakerColors.off
-                                : BreakerColors.on,
+                            backgroundColor:
+                                isOn ? BreakerColors.off : BreakerColors.on,
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: (isMaintenance || isSwitching || countdown > 0)
+                          onPressed: (isMaintenance ||
+                                  isSwitching ||
+                                  countdown > 0)
                               ? null
                               : () async {
+                                  final password =
+                                      await _showPasswordDialog(context);
+                                  if (password == null) return;
 
-                            final password = await _showPasswordDialog(context);
-                            if (password == null) return;
-
-                            await context.read<DeviceCubit>().togglePower(
-                              device,
-                              password: password,
-                            );
-                          },
+                                  await context.read<DeviceCubit>().togglePower(
+                                        device,
+                                        password: password,
+                                      );
+                                },
                           child: countdown > 0
                               ? Text(
-                            "$countdown s",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
+                                  "$countdown s",
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
                               : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(isOn ? Icons.power_off : Icons.flash_on),
-                              const SizedBox(width: 6),
-                              Text(isOn ? "Cắt" : "Đóng"),
-                            ],
-                          ),
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(isOn
+                                        ? Icons.power_off
+                                        : Icons.flash_on),
+                                    const SizedBox(width: 6),
+                                    Text(isOn ? "Cắt" : "Đóng"),
+                                  ],
+                                ),
                         ),
                       ),
 
@@ -1490,37 +1428,40 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            backgroundColor: BreakerColors.off, // Force ĐÓNG (xanh dương nhạt)
+                            backgroundColor: BreakerColors
+                                .off, // Force ĐÓNG (xanh dương nhạt)
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: (isMaintenance || isSwitching || countdown > 0)
+                          onPressed: (isMaintenance ||
+                                  isSwitching ||
+                                  countdown > 0)
                               ? null
                               : () async {
+                                  final password =
+                                      await _showPasswordDialog(context);
+                                  if (password == null) return;
 
-                            final password = await _showPasswordDialog(context);
-                            if (password == null) return;
-
-                            await context.read<DeviceCubit>().forcePower(
-                              device,
-                              password: password,
-                            );
-                          },
+                                  await context.read<DeviceCubit>().forcePower(
+                                        device,
+                                        password: password,
+                                      );
+                                },
                           child: countdown > 0
                               ? Text(
-                            "$countdown s",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
+                                  "$countdown s",
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
                               : const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.flash_on, size: 18),
-                              SizedBox(width: 6),
-                              Text("Force"),
-                            ],
-                          ),
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.flash_on, size: 18),
+                                    SizedBox(width: 6),
+                                    Text("Force"),
+                                  ],
+                                ),
                         ),
                       ),
 
@@ -1541,38 +1482,41 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                             foregroundColor: Colors.white,
                           ),
                           onPressed: state.isForceLoading ||
-                              maintenanceCountdown > 0 ||
-                              (isOn && !isMaintenance)
+                                  maintenanceCountdown > 0 ||
+                                  (isOn && !isMaintenance)
                               ? null
                               : () async {
+                                  final password =
+                                      await _showPasswordDialog(context);
+                                  if (password == null) return;
 
-                            final password = await _showPasswordDialog(context);
-                            if (password == null) return;
+                                  final wasMaintenance = isMaintenance;
 
-                            final wasMaintenance = isMaintenance;
+                                  await context
+                                      .read<DeviceCubit>()
+                                      .toggleMaintenance(
+                                        device,
+                                        password: password,
+                                      );
 
-                            await context.read<DeviceCubit>().toggleMaintenance(
-                              device,
-                              password: password,
-                            );
-
-                            if (wasMaintenance) {
-                              startMaintenanceCountdown();
-                            }
-                          },
+                                  if (wasMaintenance) {
+                                    startMaintenanceCountdown();
+                                  }
+                                },
                           child: state.isForceLoading
                               ? const SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
+                                  height: 18,
+                                  width: 18,
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
+                                )
                               : Text(
-                            maintenanceCountdown > 0
-                                ? "Chờ ${maintenanceCountdown}s"
-                                : isMaintenance
-                                ? "Thoát bảo trì"
-                                : "Bảo trì",
-                          ),
+                                  maintenanceCountdown > 0
+                                      ? "Chờ ${maintenanceCountdown}s"
+                                      : isMaintenance
+                                          ? "Thoát bảo trì"
+                                          : "Bảo trì",
+                                ),
                         ),
                       ),
                     ],
@@ -1582,7 +1526,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
                   /// GRID OVERVIEW
                   _buildOverviewSection(context, log, device),
-
                 ],
               ),
             ),
@@ -1591,9 +1534,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       },
     );
   }
+
   Future<String?> _askPassword(BuildContext context) {
     return _showPasswordDialog(context);
   }
+
   // ================= GRID SECTION =================
   Widget _goHomeButton(BuildContext context) {
     return GestureDetector(
@@ -1636,6 +1581,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   Widget _actionButton({
     required String text,
     required IconData icon,
@@ -1650,11 +1596,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         decoration: BoxDecoration(
           gradient: onTap == null
               ? LinearGradient(
-            colors: [
-              Colors.grey.shade400,
-              Colors.grey.shade400,
-            ],
-          )
+                  colors: [
+                    Colors.grey.shade400,
+                    Colors.grey.shade400,
+                  ],
+                )
               : gradient,
           borderRadius: BorderRadius.circular(22), // bo tròn hơn
           boxShadow: [
@@ -1688,6 +1634,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   Widget _metricCard(String label, String value, String unit) {
     return Container(
       height: 64, // ↓ giảm chiều dài ô
@@ -1698,7 +1645,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
             blurRadius: 8,
-            offset: const Offset(0,3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -1706,7 +1653,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10), // ↓ padding nhỏ
         child: Row(
           children: [
-
             Container(
               height: 24,
               width: 24,
@@ -1720,14 +1666,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 color: Color(0xFF1ABC9C),
               ),
             ),
-
             const SizedBox(width: 8),
-
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
                   label,
                   style: const TextStyle(
@@ -1735,7 +1678,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     color: Colors.grey,
                   ),
                 ),
-
                 Row(
                   children: [
                     Text(
@@ -1763,14 +1705,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     );
   }
 }
-int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
 
+int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
   if (log == null) {
     return device.status ?? 0;
   }
 
   if (log.updatedAt != null) {
-
     final logTime = DateTime.tryParse(log.updatedAt!);
 
     if (logTime != null) {
@@ -1788,22 +1729,20 @@ int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
 
   return log.rlySta ?? device.status ?? 0;
 }
-class BreakerColors {
 
+class BreakerColors {
   static const on = Color(0xFF2E7D32); // xanh
   static const off = Color(0xFFD32F2F); // đỏ
 
   static const maintenance = Color(0xFFFF9800); // cam
   static const exitMaintenance = Color(0xFFFF9800);
-
 }
+
 Widget buildStatusCard(
-    DeviceResponse device,
-    AtomatLogResponse? log,
-    ) {
-
+  DeviceResponse device,
+  AtomatLogResponse? log,
+) {
   final realStatus = getRealStatus(device, log);
-
 
   final bool isMaintenance = log?.rlyRepSta == 1;
   final bool isOn = realStatus == 1;
@@ -1814,12 +1753,10 @@ Widget buildStatusCard(
   if (isMaintenance) {
     text = "Bảo trì";
     color = BreakerColors.maintenance;
-  }
-  else if (isOn) {
+  } else if (isOn) {
     text = "Đóng";
     color = BreakerColors.on;
-  }
-  else {
+  } else {
     text = "Cắt";
     color = BreakerColors.off;
   }
@@ -1846,7 +1783,7 @@ Widget buildStatusCard(
   );
 }
 
-  class _MetricItem {
+class _MetricItem {
   final String label;
   final String? value;
   final String unit;
@@ -1861,10 +1798,9 @@ class _PinDialog extends StatefulWidget {
 
 class _PinDialogState extends State<_PinDialog> {
   final List<TextEditingController> _controllers =
-  List.generate(4, (_) => TextEditingController());
+      List.generate(4, (_) => TextEditingController());
 
-  final List<FocusNode> _focusNodes =
-  List.generate(4, (_) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
 
   @override
   void initState() {
@@ -1949,6 +1885,7 @@ class _PinDialogState extends State<_PinDialog> {
           ),
 
           const SizedBox(height: 12),
+
           /// Dialog nhập PIN 4 số
           /// mặc định: 9999
           const Text(

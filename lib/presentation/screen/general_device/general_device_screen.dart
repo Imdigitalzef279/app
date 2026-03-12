@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:lottie/lottie.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
-import 'package:solar_energy/application/enums/electric_type.dart';
-import 'package:solar_energy/domain/arguments/electric_meter/electric_meter_argument.dart';
-import 'package:solar_energy/gen/assets.gen.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/general_device/project_setting_screen.dart';
 
 import '../../../data/dto/power_station/response/power_station_response.dart';
 import '../Electricity/automat/automat_list_screen.dart';
 import '../device/bloc/device_cubit.dart';
+import 'dart:async';
 
 class GeneralDeviceScreen extends StatefulWidget {
   const GeneralDeviceScreen({super.key, required this.project});
@@ -30,567 +27,535 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late final AnimationController _controller;
   late bool isLandscape;
   int _currentIndex = 0;
+  final PageController _bannerController = PageController();
+  Timer? _bannerTimer;
+  int _currentBanner = 0;
+
+  // Danh sách ảnh trình chiếu
+  final List<String> _banners = [
+    "assets/images/1.jpg",
+    "assets/images/2.jpg",
+    "assets/images/3.jpg"
+  ];
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
+    _startBannerTimer();
+  }
+
+  void _startBannerTimer() {
+    _bannerTimer?.cancel();
+    _bannerTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_currentBanner < _banners.length - 1) {
+        _currentBanner++;
+      } else {
+        _currentBanner = 0;
+      }
+      if (_bannerController.hasClients) {
+        _bannerController.animateToPage(
+          _currentBanner,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
+    _bannerTimer?.cancel();
+    _bannerController.dispose();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
-      backgroundColor: AppColors.greyFB,
+      backgroundColor:
+          Colors.white, // Đổi màu nền thành trắng hoàn toàn theo thiết kế mới
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleSpacing: 0,
+        titleSpacing: 16.w, // Đẩy logo ra một chút
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
                   "assets/images/logo.png",
-                  height: 28.h,
+                  height: 24.h,
                 ),
-
                 SizedBox(width: 8.w),
-
                 Expanded(
                   child: Text(
                     "Nhà máy ${widget.project.name}",
                     style: AppTextStyle.textBase.copyWith(
                       fontWeight: FontWeight.w600,
+                      fontSize: 16.sp,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-
-            SizedBox(height: 2.h),
-
+            SizedBox(height: 4.h),
             Row(
               children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF1ABC9C),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                SizedBox(width: 4.w),
                 Text(
                   "Đang hoạt động",
                   style: TextStyle(
                     fontSize: 12.sp,
-                    color: const Color(0xFF1ABC9C),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 10.w),
-            child: Row(
-              children: [
-
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                      )
-                    ],
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.notifications_none),
-                    onPressed: () {},
-                  ),
-                ),
-
-                SizedBox(width: 8.w),
-
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.settings_outlined),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProjectSettingScreen(
-                            project: widget.project,
-                          ),
-                        ),
-                      );
-                    },
+                    color: Colors.blue, // Chữ xanh dương theo ảnh
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-          )
+            SizedBox(height: 2.h),
+            Text(
+              "Vị trí : Hà Nội", // Thêm vị trí theo ảnh
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          // Thêm icon dấu + theo thiết kế mới
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.black54),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.notifications_none, color: Colors.black54),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined, color: Colors.black54),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProjectSettingScreen(
+                    project: widget.project,
+                  ),
+                ),
+              );
+            },
+          ),
+          SizedBox(width: 8.w),
         ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ===== HEADER =====
-              Container(
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24.r),
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFFBFEFE4),
-                      Color(0xFFE8F7F3),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
+              // ================= 1. BANNER TRÀN VIỀN =================
+              SizedBox(
+                height: 180.h, // Chiều cao banner
+                width: double.infinity,
                 child: Stack(
                   children: [
+                    // 1. Ảnh Banner
+                    PageView.builder(
+                      controller: _bannerController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentBanner = index;
+                        });
+                        _startBannerTimer(); // Khi vuốt tay cũng reset timer tự động chạy
+                      },
+                      itemCount: _banners.length,
+                      itemBuilder: (context, index) {
+                        return Image.asset(
+                          _banners[index],
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
 
-                    /// IMAGE
-                    Column(
-                      children: [
-
-                        SizedBox(
-                          height: 160.h,
-                          child: Image.asset(
-                            "assets/images/factory.png",
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-
-                        SizedBox(height: 10.h),
-
-                        /// SAFE SYSTEM CARD
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 12.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30.r),
-                          ),
-                          child: Row(
-                            children: [
-
-                              Icon(
-                                Icons.shield_outlined,
-                                color: Color(0xFF1ABC9C),
-                                size: 22.w,
-                              ),
-
-                              SizedBox(width: 10.w),
-
-                              Expanded(
-                                child: Text(
-                                  "Hệ thống đang an toàn",
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 16.w,
-                                color: Colors.grey,
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                    // 2. Chấm tròn đè lên banner
+                    Positioned(
+                      bottom: 12.h,
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(_banners.length, (index) {
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            margin: EdgeInsets.symmetric(horizontal: 4.w),
+                            width: _currentBanner == index ? 20.w : 8.w,
+                            height: 6.h,
+                            decoration: BoxDecoration(
+                              color: _currentBanner == index
+                                  ? const Color(0xFF8CC63F)
+                                  : Colors.white.withOpacity(0.6),
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                          );
+                        }),
+                      ),
                     ),
                   ],
                 ),
               ),
+
               SizedBox(height: 20.h),
-              // ===== FEATURES =====
-              Container(
-                padding:
-                EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16.r),
-                  color: AppColors.white,
-                ),
+
+              // ================= 2. TÍNH NĂNG (GIAO DIỆN MỚI )=================
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      LocalizationsUtils.localizations.features,
-                      style: AppTextStyle.textSm.copyWith(
-                        color: AppColors.textPrimary,
+                      "Tính năng",
+                      style: TextStyle(
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
+                        color: Colors.black87,
                       ),
                     ),
-                    Gap(16.h),
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 12.w,
-                      mainAxisSpacing: 12.h,
-                      childAspectRatio: 1.4,
-                      children: [
+                    SizedBox(height: 8.h),
+                    Divider(
+                        color: Colors.orange.withOpacity(0.5),
+                        thickness: 1), // Kẻ vạch trên
+                    SizedBox(height: 12.h),
 
-                        featureCard(
-                          icon: Icons.water_drop,
-                          title: "Quản lý nước",
-                          subtitle: "Ổn định",
-                          color: Colors.blue,
-                        ),
-
-                        featureCard(
-                          icon: Icons.flash_on,
-                          title: "Tiết kiệm điện",
-                          subtitle: "-12% hôm nay",
-                          color: Colors.orange,
-                        ),
-
-                        featureCard(
-                          icon: Icons.bar_chart,
-                          title: "Quản lý năng lượng",
-                          subtitle: "3.2 kW",
-                          color: Colors.purple,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => BlocProvider(
-                                  create: (_) => DeviceCubit(),
-                                  child: AutomatListScreen(
-                                    powerStationId: widget.project.id!,
+                    // Lướt ngang 6 tính năng cũ
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _featureIconItem(
+                            icon: Icons.water_drop,
+                            title: "Quản lý\nnước",
+                            // subtitle: "Ổn định",
+                            color: Colors.blue,
+                          ),
+                          _featureIconItem(
+                            icon: Icons.flash_on,
+                            title: "Tiết kiệm\nđiện",
+                            // subtitle: "-12% hôm nay",
+                            color: Colors.orange,
+                          ),
+                          _featureIconItem(
+                            icon: Icons.bar_chart,
+                            title: "Quản lý\nnăng lượng",
+                            // subtitle: "3.2 kW",
+                            color: Colors.purple,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BlocProvider(
+                                    create: (_) => DeviceCubit(),
+                                    child: AutomatListScreen(
+                                      powerStationId: widget.project.id!,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-
-                        featureCard(
-                          icon: Icons.lightbulb,
-                          title: "Quản lý chiếu sáng",
-                          subtitle: "5 phòng bật",
-                          color: Colors.amber,
-                        ),
-
-                        featureCard(
-                          icon: Icons.water,
-                          title: "Nước - Nóng lạnh",
-                          subtitle: "Hoạt động tốt",
-                          color: Colors.blueAccent,
-                        ),
-
-                        featureCard(
-                          icon: Icons.ac_unit,
-                          title: "Điều hòa",
-                          subtitle: "26°C · 3 thiết bị",
-                          color: Colors.cyan,
-                        ),
-                      ],
+                              );
+                            },
+                          ),
+                          _featureIconItem(
+                            icon: Icons.health_and_safety,
+                            title: "KRA Care",
+                            // subtitle:
+                            //     "Bảo vệ",
+                            color: Colors.green,
+                          ),
+                          _featureIconItem(
+                            icon: Icons.lightbulb,
+                            title: "Quản lý\nchiếu sáng",
+                            // subtitle: "5 phòng bật",
+                            color: Colors.amber,
+                          ),
+                          _featureIconItem(
+                            icon: Icons.water,
+                            title: "Nước -\nNóng lạnh",
+                            // subtitle: "Hoạt động tốt",
+                            color: Colors.blueAccent,
+                          ),
+                          _featureIconItem(
+                            icon: Icons.ac_unit,
+                            title: "Điều hòa",
+                            // subtitle: "26°C · 3 TB",
+                            color: Colors.cyan,
+                          ),
+                        ],
+                      ),
                     ),
+                    // SizedBox(height: 8.h),
+                    // Divider(
+                    //     color: Colors.yellow.withOpacity(0.8),
+                    //     thickness: 1),
                   ],
                 ),
               ),
-              SizedBox(height: 12.h),
 
-              Container(
-                padding: EdgeInsets.all(14.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
-                ),
-                child: Row(
+              // SizedBox(height: 12.h),
+
+              // ================= 3. KRA CARE (GIỮ LẠI TỪ CODE CŨ) =================
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 16.w),
+              //   child: Container(
+              //     padding: EdgeInsets.all(14.w),
+              //     decoration: BoxDecoration(
+              //       color: Colors.grey
+              //           .shade50, // Chỉnh lại màu xám nhẹ cho hợp giao diện trắng
+              //       borderRadius: BorderRadius.circular(16.r),
+              //       border: Border.all(color: Colors.grey.shade200),
+              //     ),
+              //     child: Row(
+              //       children: [
+              //         const Icon(Icons.health_and_safety, color: Colors.green),
+              //         SizedBox(width: 10.w),
+              //         Expanded(
+              //           child: Text(
+              //             "KRA Care",
+              //             style: TextStyle(
+              //               fontWeight: FontWeight.w600,
+              //               fontSize: 14.sp,
+              //             ),
+              //           ),
+              //         ),
+              //         const Icon(Icons.arrow_forward_ios, size: 16),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+
+              SizedBox(height: 20.h),
+
+              // ================= 4. THIẾT BỊ HAY DÙNG (GIAO DIỆN MỚI + DATA CŨ) =================
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    Icon(
-                      Icons.health_and_safety,
-                      color: Colors.green,
-                    ),
-
-                    SizedBox(width: 10.w),
-
-                    Expanded(
-                      child: Text(
-                        "KRA Care",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                    Text(
+                      "Thiết bị hay dùng",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
                       ),
                     ),
+                    SizedBox(height: 8.h),
+                    Divider(
+                        color: Colors.yellow.withOpacity(0.8),
+                        thickness: 1), // Kẻ vạch vàng
+                    SizedBox(height: 12.h),
 
-                    Icon(Icons.arrow_forward_ios, size: 16),
+                    // Danh sách dọc thay vì lướt ngang
+                    _deviceListItem(
+                      title: "MCB-001",
+                      status: "Đang bật",
+                      powerText: "P=0.5W",
+                      color: Colors.green,
+                      icon: Icons.power,
+                      isSwitched: true, // Thêm dòng này: Công tắc bật (Xanh lá)
+                      onSwitchChanged: (value) {
+                        // Gọi hàm xử lý bật tắt ở đây sau
+                      },
+                    ),
+                    _deviceListItem(
+                      title: "Bơm Nước 1",
+                      status: "Đang chạy",
+                      powerText: "P=11KW",
+                      color: Colors.blue,
+                      icon: Icons.water,
+                      isSwitched: true, // Công tắc bật
+                    ),
+                    _deviceListItem(
+                      title: "MCB-001",
+                      status: "Đang bật",
+                      powerText: "P=0.5W",
+                      color: Colors.green,
+                      icon: Icons.power,
+                      isSwitched: true, // Thêm dòng này: Công tắc bật (Xanh lá)
+                      onSwitchChanged: (value) {
+                        // Gọi hàm xử lý bật tắt ở đây sau
+                      },
+                    ),
+                    _deviceListItem(
+                      title: "Bơm Nước 1",
+                      status: "Đang chạy",
+                      powerText: "P=11KW",
+                      color: Colors.blue,
+                      icon: Icons.water,
+                      isSwitched: true, // Công tắc bật
+                    ),
+                    _deviceListItem(
+                      title: "Điều hòa phòng ngủ 1",
+                      status: "Đang tắt", // Ví dụ trạng thái tắt
+                      color: Colors.grey, // Đổi màu trạng thái thành xám
+                      icon: Icons.ac_unit,
+                      isSwitched: false, // Công tắc tắt (Xám)
+                    ),
+
+                    SizedBox(height: 30.h), // Khoảng trống lề dưới cùng
                   ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Thiết bị hay dùng",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        "Xem tất cả",
-                        style: TextStyle(
-                          color: const Color(0xFF1ABC9C),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  Gap(16.h),
-
-                  SizedBox(
-                    height: 130.h,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _deviceCard(
-                          title: "MCB-001",
-                          status: "Đang bật",
-                          color: Colors.green,
-                          icon: Icons.power,
-                        ),
-                        _deviceCard(
-                          title: "Bơm Nước 1",
-                          status: "Đang chạy",
-                          color: Colors.blue,
-                          icon: Icons.water,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
         ),
       ),
     );
-
   }
-  Widget featureCard({
+
+  // ===== WIDGET CON: NÚT TÍNH NĂNG THEO STYLE ẢNH MỚI =====
+  Widget _featureIconItem({
     required IconData icon,
     required String title,
-    required String subtitle,
+    String? subtitle,
     required Color color,
     VoidCallback? onTap,
   }) {
     return GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.all(12.w),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 6,
-              )
-            ],
-          ),
-      child: Row(
-        children: [
-
-          Container(
-            padding: EdgeInsets.all(10.w),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Icon(icon, color: color),
-          ),
-
-          SizedBox(width: 10.w),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-
-                SizedBox(height: 4.h),
-
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-        )
-    );
-  }
-  Widget _statCard({
-    required IconData icon,
-    required String value,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 14.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          )
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: 22.w,
-            color: const Color(0xFF1ABC9C),
-          ),
-          SizedBox(height: 6.h),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1ABC9C),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _deviceCard({
-    required String title,
-    required String status,
-    required Color color,
-    required IconData icon,
-  }) {
-    return Container(
-      width: 150.w,
-      margin: EdgeInsets.only(right: 12.w),
-      padding: EdgeInsets.all(14.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 14.h),
-          Icon(icon, size: 30.w, color: color),
-          SizedBox(height: 10.h),
-          Row(
-            children: [
-              Container(
-                width: 6.w,
-                height: 6.w,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              SizedBox(width: 6.w),
-              Text(
-                status,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: color,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-  Widget itemService({
-    required String name,
-    required Widget icon,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: () => onTap?.call(),
-      child: SizedBox(
-        width: (1.sw - 68.w) / 2,
+      onTap: onTap,
+      child: Container(
+        width: 80.w, // Rộng vừa đủ
+        margin: EdgeInsets.only(right: 12.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            icon,
-            SizedBox(height: 4.h),
-            Text(
-              name,
-              style: AppTextStyle.textXs.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w400,
+            Container(
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(16.r),
               ),
-              textAlign: TextAlign.center,
+              child: Icon(icon, color: color, size: 28.w),
             ),
+            SizedBox(height: 8.h),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+                height: 1.2,
+              ),
+            ),
+            if (subtitle != null) ...[
+              SizedBox(height: 4.h),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  color: Colors.grey,
+                ),
+              ),
+            ]
           ],
         ),
+      ),
+    );
+  }
+
+  // ===== WIDGET CON: DANH SÁCH THIẾT BỊ THEO STYLE ẢNH MỚI =====
+  // ===== WIDGET CON: DANH SÁCH THIẾT BỊ BỔ SUNG SWITCH =====
+  // ===== WIDGET CON: DANH SÁCH THIẾT BỊ BỔ SUNG SWITCH (ĐÃ XÓA ICON CÀI ĐẶT) =====
+  // ===== WIDGET CON: DANH SÁCH THIẾT BỊ BỔ SUNG SWITCH (ĐÃ XÓA ICON CÀI ĐẶT) =====
+  // ===== WIDGET CON: DANH SÁCH THIẾT BỊ BỔ SUNG SWITCH VÀ CÔNG SUẤT =====
+  Widget _deviceListItem({
+    required String title,
+    required String status,
+    String? powerText, // BỔ SUNG THÊM DÒNG NÀY ĐỂ NHẬN CHỮ "P=..."
+    required Color color,
+    required IconData icon,
+    bool isSwitched = false,
+    ValueChanged<bool>? onSwitchChanged,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // 1. Khung icon bên trái
+          Container(
+            padding: EdgeInsets.all(14.w),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Icon(icon, color: color, size: 24.w),
+          ),
+          SizedBox(width: 16.w),
+
+          // 2. Chi tiết text
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 6.h),
+                Text(
+                  status,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: color,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                // --- BỔ SUNG ĐOẠN NÀY ĐỂ HIỆN DÒNG P = 0.5W ---
+                if (powerText != null) ...[
+                  SizedBox(height: 2.h),
+                  Text(
+                    powerText,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey, // Chữ màu xám theo thiết kế
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          // 3. Công tắc (Switch) hiển thị sát lề phải
+          Transform.scale(
+            scale: 0.8,
+            child: Switch.adaptive(
+              value: isSwitched,
+              activeColor: Colors.white,
+              activeTrackColor: const Color(0xFF65C466),
+              inactiveThumbColor: Colors.white,
+              inactiveTrackColor: Colors.grey.shade300,
+              onChanged: onSwitchChanged ?? (val) {},
+            ),
+          ),
+        ],
       ),
     );
   }
