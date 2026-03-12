@@ -1,44 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 
-Future<String?> showPasswordDialog(BuildContext context) async {
-  final controller = TextEditingController();
+
+Future<String?> showPasswordDialog(BuildContext context) {
+
+  String pin = "";
 
   return showDialog<String>(
     context: context,
     barrierDismissible: false,
     builder: (context) {
+
       return AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Text("Xác thực"),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          maxLength: 4,
-          obscureText: true,
+
+        title: const Text(
+          "Nhập mã PIN",
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            letterSpacing: 12,
-            fontSize: 20,
-          ),
-          decoration: const InputDecoration(
-            hintText: "Nhập mã PIN 4 số",
-            counterText: "",
-          ),
         ),
+
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+            Pinput(
+              length: 4,
+              obscureText: true,
+
+              defaultPinTheme: PinTheme(
+                width: 55,
+                height: 55,
+                textStyle: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+              ),
+
+              focusedPinTheme: PinTheme(
+                width: 55,
+                height: 55,
+                textStyle: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue),
+                ),
+              ),
+
+              onCompleted: (value) {
+                pin = value;
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            const Text(
+              "PIN mặc định: 9999",
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            )
+          ],
+        ),
+
         actions: [
+
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Hủy"),
+            child: const Text("Huỷ"),
           ),
+
           ElevatedButton(
             onPressed: () {
-              if (controller.text.length != 4) return;
-              Navigator.pop(context, controller.text);
+              Navigator.pop(context, pin);
             },
             child: const Text("Xác nhận"),
-          ),
+          )
         ],
       );
     },

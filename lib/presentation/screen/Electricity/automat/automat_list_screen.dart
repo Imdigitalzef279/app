@@ -22,7 +22,7 @@ class AutomatListScreen extends StatefulWidget {
 }
 
 class _AutomatListScreenState extends State<AutomatListScreen> {
-
+  Map<String, bool> expandedCabinets = {};
   @override
   void initState() {
     super.initState();
@@ -35,8 +35,18 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   /// ================= DEVICE CARD =================
   Widget buildDeviceCard(BuildContext context, device) {
 
-    final isOn = device.status == 1;
+    final state = context.watch<DeviceCubit>().state;
 
+    final currentSwitch =
+        device.realtimeLog?.rlySta ??
+            state.breakerLogs[device.code]?.rlySta ??
+            device.status ??
+            0;
+    final isOnline = device.status == 1;
+    final isOn = currentSwitch == 1;
+    final isSwitching =
+    state.switchingDevices.containsKey(device.id);
+    final countdown = state.switchCountdowns[device.id] ?? 0;
     return InkWell(
         borderRadius: BorderRadius.circular(14),
         onTap: () {
@@ -69,45 +79,60 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
         },
 
         child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFFF1F3F5),
-            borderRadius: BorderRadius.circular(14),
+            color: Colors.white,
+            gradient: LinearGradient(
+              colors: [
+                Colors.white,
+                Color(0xFFF8FAFB),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+              borderRadius: BorderRadius.circular(20),
+
             boxShadow: [
+
+              /// shadow dưới (đổ bóng)
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 12,
+                color: Colors.black.withOpacity(0.10),
+                blurRadius: 18,
                 spreadRadius: 1,
-                offset: const Offset(0, 3),
-              )
+                offset: const Offset(0, 8),
+              ),
+
+              /// highlight trên (tạo hiệu ứng nổi)
+              BoxShadow(
+                color: Colors.white.withOpacity(0.9),
+                blurRadius: 6,
+                spreadRadius: -2,
+                offset: const Offset(-2, -2),
+              ),
             ],
           ),
 
       child: Row(
         children: [
-
           /// TYPE
           Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: isOn
-                  ? Colors.green.withOpacity(0.15)
-                  : Colors.grey.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(6),
+              color: const Color(0xFF6BB6A6),
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
-              device.level == 1 ? "CB TỔNG" : "CB",
+            child: const Text(
+              "CB",
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: isOn ? Colors.green : Colors.grey,
+                color: Colors.white,
               ),
             ),
           ),
 
-          const SizedBox(width: 12),
+          SizedBox(width: 14),
 
           /// INFO
           Expanded(
@@ -120,8 +145,10 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       ? device.name
                       : device.code ?? "",
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 17,
+                    letterSpacing: 0.2,
+                    color: Color(0xFF222222),
                   ),
                 ),
 
@@ -134,7 +161,9 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: isOn ? Colors.green : Colors.red,
+                        color: isOnline
+                            ? const Color(0xFF6BB6A6)
+                            : Colors.red,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -142,11 +171,11 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                     const SizedBox(width: 6),
 
                     Text(
-                      isOn ? "Online" : "Offline",
+                      isOnline ? "Online" : "Offline",
                       style: TextStyle(
                         fontSize: 12,
-                        color: isOn
-                            ? Colors.green
+                        color: isOnline
+                            ? const Color(0xFF6BB6A6)
                             : Colors.red,
                       ),
                     ),
@@ -159,7 +188,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                   "Gateway: ${device.gatewayNumber ?? ""}",
                   style: const TextStyle(
                     fontSize: 11,
-                    color: Colors.grey,
+                    color: const Color(0xFF6B7A86),
                   ),
                 ),
 
@@ -202,27 +231,52 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                 },
               ),
 
-              Transform.scale(
-                scale: 0.8,
-                child: Switch(
-                  value: isOn,
-                  activeColor: Colors.green,
-                  onChanged: (value) async {
+              Column(
+                children: [
 
-                    final password =
-                    await showPasswordDialog(context);
+                  Transform.scale(
+                    scale: 0.85,
+                    child: Switch(
+                      value: isOn,
+                      activeColor: const Color(0xFF6BB6A6),
+                      activeTrackColor: const Color(0xFFBFE3DA),
+                      inactiveThumbColor: Colors.red,
+                      inactiveTrackColor: Colors.red.shade200,
+                      onChanged: isOnline
+                          ? (value) async {
+                        final password =
+                        await showPasswordDialog(context);
+                        if (password == null) return;
 
-                    if (password == null) return;
+                        await context
+                            .read<DeviceCubit>()
+                            .togglePower(device, password: password);
+                      }
+                          : null,
+                    ),
+                  ),
 
-                    await context.read<DeviceCubit>()
-                        .togglePower(
-                      device,
-                      password: password,
-                    );
-                  },
-                ),
-              ),
+                  const SizedBox(height: 4),
 
+                  /// trạng thái thiết bị
+                  Text(
+                    isSwitching
+                        ? "Đang chuyển"
+                        : isOn
+                        ? "Đang đóng"
+                        : "Đang cắt",
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: isSwitching
+                          ? Colors.orange
+                          : isOn
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ),
+                ],
+              )
             ],
           )
 
@@ -329,19 +383,41 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       .where((d) => d.status == 1)
                       .length;
 
-              return Container(
+              final isExpanded = expandedCabinets[cabinetEntry.key] ?? false;
+
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
                 margin: const EdgeInsets.only(bottom: 14),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
 
-                  gradient: LinearGradient(
+                  /// khi đóng → xanh
+                  gradient: isExpanded
+                      ? null
+                      : const LinearGradient(
                     colors: [
-                      Colors.green.withOpacity(0.15),
-                      Colors.green.withOpacity(0.05),
+                      Color(0xFFD6E9E3),  // xanh nhạt trái
+                      Color(0xFFFFFFFF),  // trắng giữa
+                      Color(0xFFD6E9E3),  // xanh nhạt phải
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.5, 1.0],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
+
+                  /// khi mở → trắng
+                  color: isExpanded ? Colors.white : null,
+
+                  boxShadow: isExpanded
+                      ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 18,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 8),
+                    )
+                  ]
+                      : [],
                 ),
 
                   child: Theme(
@@ -350,25 +426,48 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                     ),
 
                     child: ExpansionTile(
-                  initiallyExpanded: true,
-                  maintainState: true,
+                      tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      childrenPadding: EdgeInsets.zero,
+                      initiallyExpanded: expandedCabinets[cabinetEntry.key] ?? false,
+                      iconColor: Colors.grey.shade700,
+                      collapsedIconColor: Colors.grey.shade700,
+                      onExpansionChanged: (value) {
+                        setState(() {
+                          expandedCabinets[cabinetEntry.key] = value;
+                        });
+                      },
 
-                  title: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                    children: [
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
-                      Text(
-                        cabinetEntry.key,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
+                          Row(
+                            children: [
+                              const Icon(Icons.factory_outlined, size: 24, color: Colors.green),
+                              const SizedBox(width: 8),
 
-                      const SizedBox(height: 4),
+                              Text(
+                                cabinetEntry.key,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
 
-                      Row(
+                          const SizedBox(height: 6),
+
+                          /// divider giống hình
+                          Container(
+                            height: 1,
+                            margin: const EdgeInsets.only(right: 40),
+                            color: Colors.grey.withOpacity(0.2),
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          Row(
                         children: [
 
                           Text(
