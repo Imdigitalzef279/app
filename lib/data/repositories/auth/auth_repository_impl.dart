@@ -9,8 +9,9 @@ import 'package:solar_energy/data/repositories/base_repository.dart';
 
 import '../../../di.dart';
 import '../../data_sources/api/api_client.dart';
-
 class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
+
+  ProfileResponse? currentProfile;
   @override
   Future<Result<AuthResponse>> signIn(AuthRequest request) async {
     return await callApi(() => api
@@ -26,7 +27,16 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
 
   @override
   Future<Result<ProfileResponse>> getProfile() async {
-    return await callApi(() => api.getProfile());
+    final result = await callApi(() => api.getProfile());
+
+    result.when(
+      success: (profile) {
+        currentProfile = profile;
+      },
+      error: (_) {},
+    );
+
+    return result;
   }
 
   @override

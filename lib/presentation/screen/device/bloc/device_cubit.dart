@@ -17,6 +17,7 @@ import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
 import '../../../../data/dto/profile/profile_response.dart';
 import '../../../../data/repositories/auth/auth_repository.dart';
+import '../../../../data/repositories/auth/auth_repository_impl.dart';
 import '../../../common_widgets/app_toast.dart';
 
 part 'device_state.dart';
@@ -431,8 +432,9 @@ class DeviceCubit extends Cubit<DeviceState> {
           device.realtimeLog?.addr ??
               device.serialNumber ??
               "";
-      final username = profile?.userName ?? "mobile_app";
-
+      // final username = profile?.userName ?? "mobile_app";
+      final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
+      final username = authRepo.currentProfile?.userName ?? "";
       print("DEVICE CODE: ${device.code}");
       print("GATEWAY: ${device.gatewayNumber}");
       print("ADDR: $addr");
