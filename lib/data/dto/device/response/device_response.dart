@@ -26,6 +26,7 @@ class DeviceResponse with _$DeviceResponse {
     @Default(0) int level,
     @Default("") String creationTime,
     @Default('') String gatewayNumber,
+    @Default('') String avatar,
     @Default(MeterTypeResponse()) MeterTypeResponse meterType,
     @Default(PowerStationResponse()) PowerStationResponse powerStation,
 

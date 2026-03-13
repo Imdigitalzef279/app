@@ -22,6 +22,7 @@ _$DeviceResponseImpl _$$DeviceResponseImplFromJson(Map<String, dynamic> json) =>
       level: (json['level'] as num?)?.toInt() ?? 0,
       creationTime: json['creationTime'] as String? ?? "",
       gatewayNumber: json['gatewayNumber'] as String? ?? '',
+      avatar: json['avatar'] as String? ?? '',
       meterType: json['meterType'] == null
           ? const MeterTypeResponse()
           : MeterTypeResponse.fromJson(
@@ -58,6 +59,7 @@ Map<String, dynamic> _$$DeviceResponseImplToJson(
       'level': instance.level,
       'creationTime': instance.creationTime,
       'gatewayNumber': instance.gatewayNumber,
+      'avatar': instance.avatar,
       'meterType': instance.meterType,
       'powerStation': instance.powerStation,
       'lastedLogData': instance.lastedLogData,

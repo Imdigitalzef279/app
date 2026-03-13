@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/bloc/atomat_detail_cubit.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/setting_screen.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/switch_log_screen.dart';
 import '../../../../application/enums/load_status.dart';
+import '../../../../application/utils/device_avatar_storage.dart';
 import '../../../widgets/password_dialog.dart';
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
@@ -31,7 +35,49 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
       powerStationId: widget.powerStationId,
     );
   }
+  Future<void> showRenameDialog(BuildContext context, device) async {
 
+    final controller =
+    TextEditingController(text: device.name);
+
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Đổi tên thiết bị"),
+
+          content: TextField(
+            controller: controller,
+          ),
+
+          actions: [
+
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Huỷ"),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, controller.text);
+              },
+              child: const Text("Lưu"),
+            ),
+
+          ],
+        );
+      },
+    );
+
+    if (newName != null && newName.isNotEmpty) {
+
+      context.read<DeviceCubit>().updateDeviceName(
+        device.id,
+        newName,
+      );
+
+    }
+  }
   /// ================= DEVICE CARD =================
   Widget buildDeviceCard(BuildContext context, device) {
 
@@ -116,20 +162,50 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
       child: Row(
         children: [
           /// TYPE
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: const Color(0xFF6BB6A6),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Text(
-              "CB",
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+          GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () async {
+
+                final image = await pickDeviceImage(device.id);
+
+                print("IMAGE PATH: $image");
+
+                if (image != null) {
+
+                  await DeviceAvatarStorage.saveAvatar(
+                    device.id,
+                    image,
+                  );
+
+                  context.read<DeviceCubit>().updateDeviceAvatar(
+                    device.id,
+                    image,
+                  );
+                }
+              },
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE7F2EF),
+                borderRadius: BorderRadius.circular(10),
+
+                image: device.avatar.isNotEmpty
+                    ? DecorationImage(
+                  image: FileImage(File(device.avatar)),
+                  fit: BoxFit.cover,
+                )
+                    : null,
               ),
-            ),
+
+              child: device.avatar.isEmpty
+                  ? const Icon(
+                Icons.add,
+                size: 20,
+                color: Color(0xFF6BB6A6),
+              )
+                  : null,
+            )
           ),
 
           SizedBox(width: 14),
@@ -140,16 +216,33 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                Text(
-                  device.name?.isNotEmpty == true
-                      ? device.name
-                      : device.code ?? "",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 17,
-                    letterSpacing: 0.2,
-                    color: Color(0xFF222222),
-                  ),
+                Row(
+                  children: [
+
+                    Expanded(
+                      child: Text(
+                        device.name.isNotEmpty
+                            ? device.name
+                            : device.code,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 17,
+                        ),
+                      ),
+                    ),
+
+                    GestureDetector(
+                      onTap: () {
+                        showRenameDialog(context, device);
+                      },
+                      child: const Icon(
+                        Icons.edit,
+                        size: 18,
+                        color: Colors.grey,
+                      ),
+                    ),
+
+                  ],
                 ),
 
                 const SizedBox(height: 4),
@@ -238,10 +331,16 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                     scale: 0.85,
                     child: Switch(
                       value: isOn,
-                      activeColor: const Color(0xFF6BB6A6),
-                      activeTrackColor: const Color(0xFFBFE3DA),
-                      inactiveThumbColor: Colors.red,
-                      inactiveTrackColor: Colors.red.shade200,
+
+                      /// khi bật
+                      activeColor: Colors.white,                 // chấm tròn trắng
+                      activeTrackColor: const Color(0xFF43A047), // xanh đậm
+
+                      /// khi tắt
+                      inactiveThumbColor: Colors.white,          // chấm trắng
+                      inactiveTrackColor: const Color(0xFFE53935), // đỏ đậm
+                      trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       onChanged: isOnline
                           ? (value) async {
                         final password =
@@ -285,7 +384,18 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
         )
     );
   }
+  Future<String?> pickDeviceImage(int deviceId) async {
 
+    final picker = ImagePicker();
+
+    final file = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (file == null) return null;
+
+    return file.path;
+  }
   /// ================= TREE DEVICE =================
   Widget buildTree(List devices, int parentId) {
 

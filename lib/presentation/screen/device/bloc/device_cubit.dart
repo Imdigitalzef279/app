@@ -12,6 +12,7 @@ import 'package:solar_energy/data/repositories/cbs/cbs_repository.dart';
 import 'package:solar_energy/data/repositories/device/device_repository.dart';
 import 'package:solar_energy/di.dart';
 
+import '../../../../application/utils/device_avatar_storage.dart';
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
@@ -104,28 +105,18 @@ class DeviceCubit extends Cubit<DeviceState> {
     required int powerStationId,
   }) async {
 
-    print("=== CALL getAllDevices ===");
-    print("PowerStationId: $powerStationId");
-
     emit(state.copyWith(
       resultDevices: Result(status: LoadStatus.loading),
     ));
 
     try {
 
-      print("➡️ Calling API...");
-      final response = await _repo.getSolarElectric(powerStationId);
-
-      print("⬅️ API Response:");
-      print("Status: ${response.status}");
-      print("Data: ${response.data}");
-      print("Error: ${response.error}");
+      final response =
+      await _repo.getSolarElectric(powerStationId);
 
       if (response.status != LoadStatus.success ||
           response.data == null ||
           response.data!.isEmpty) {
-
-        print("❌ API FAIL OR EMPTY");
 
         emit(state.copyWith(
           resultDevices: Result(
@@ -135,20 +126,37 @@ class DeviceCubit extends Cubit<DeviceState> {
                 : "Không có thiết bị",
           ),
         ));
+
         return;
       }
 
-      print("✅ API SUCCESS - EMIT SUCCESS");
+      final devices = response.data!;
+
+      final updatedDevices = <DeviceResponse>[];
+
+      for (var d in devices) {
+
+        final avatar =
+        await DeviceAvatarStorage.getAvatar(d.id);
+
+        final localName =
+        await DeviceAvatarStorage.getDeviceName(d.id);
+
+        updatedDevices.add(
+          d.copyWith(
+            avatar: avatar ?? "",
+            name: localName ?? d.name,
+          ),
+        );
+      }
 
       emit(state.copyWith(
-        resultDevices: response,
+        resultDevices: response.copyWith(
+          data: updatedDevices,
+        ),
       ));
 
-    } catch (e, stack) {
-
-      print("🔥 EXCEPTION:");
-      print(e);
-      print(stack);
+    } catch (e) {
 
       emit(state.copyWith(
         resultDevices: Result(
@@ -156,6 +164,7 @@ class DeviceCubit extends Cubit<DeviceState> {
           error: e.toString(),
         ),
       ));
+
     }
   }
 
@@ -273,6 +282,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       emit(state.copyWith(switchingDevices: newMap));
     }
   }
+
   // ============================================================
 // TOGGLE MAINTENANCE
 // ============================================================
@@ -538,6 +548,88 @@ class DeviceCubit extends Cubit<DeviceState> {
   // ============================================================
   // HELPER
   // ============================================================
+  void updateDeviceAvatar(int deviceId, String path) {
+
+    final devices = state.resultDevices.data ?? [];
+
+    final updated = devices.map((d) {
+
+      if (d.id == deviceId) {
+        return d.copyWith(
+          avatar: path,
+        );
+      }
+
+      return d;
+
+    }).toList();
+
+    emit(
+      state.copyWith(
+        resultDevices: state.resultDevices.copyWith(
+          data: updated,
+        ),
+      ),
+    );
+  }
+  Future<void> loadDeviceAvatars() async {
+
+    final devices = state.resultDevices.data ?? [];
+
+    final updated = <DeviceResponse>[];
+
+    for (var d in devices) {
+
+      final avatar =
+      await DeviceAvatarStorage.getAvatar(d.id);
+
+      final localName =
+      await DeviceAvatarStorage.getDeviceName(d.id);
+
+      updated.add(
+        d.copyWith(
+          avatar: avatar ?? "",
+          name: localName ?? d.name,
+        ),
+      );
+
+    }
+
+    emit(
+      state.copyWith(
+        resultDevices: state.resultDevices.copyWith(
+          data: updated,
+        ),
+      ),
+    );
+  }
+  Future<void> updateDeviceName(int deviceId, String name) async {
+
+    await DeviceAvatarStorage.saveDeviceName(
+      deviceId,
+      name,
+    );
+
+    final devices = state.resultDevices.data ?? [];
+
+    final updatedDevices = devices.map((d) {
+
+      if (d.id == deviceId) {
+        return d.copyWith(name: name);
+      }
+
+      return d;
+
+    }).toList();
+
+    emit(
+      state.copyWith(
+        resultDevices: state.resultDevices.copyWith(
+          data: updatedDevices,
+        ),
+      ),
+    );
+  }
   bool isDeviceSwitching(int deviceId) {
     return state.switchCountdowns.containsKey(deviceId);
   }

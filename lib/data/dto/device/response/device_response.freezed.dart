@@ -34,6 +34,7 @@ mixin _$DeviceResponse {
   int get level => throw _privateConstructorUsedError;
   String get creationTime => throw _privateConstructorUsedError;
   String get gatewayNumber => throw _privateConstructorUsedError;
+  String get avatar => throw _privateConstructorUsedError;
   MeterTypeResponse get meterType => throw _privateConstructorUsedError;
   PowerStationResponse get powerStation => throw _privateConstructorUsedError;
   @JsonKey(name: "lastedLogData")
@@ -73,6 +74,7 @@ abstract class $DeviceResponseCopyWith<$Res> {
       int level,
       String creationTime,
       String gatewayNumber,
+      String avatar,
       MeterTypeResponse meterType,
       PowerStationResponse powerStation,
       @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData,
@@ -114,6 +116,7 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
     Object? level = null,
     Object? creationTime = null,
     Object? gatewayNumber = null,
+    Object? avatar = null,
     Object? meterType = null,
     Object? powerStation = null,
     Object? lastedLogData = freezed,
@@ -176,6 +179,10 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
       gatewayNumber: null == gatewayNumber
           ? _value.gatewayNumber
           : gatewayNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      avatar: null == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
               as String,
       meterType: null == meterType
           ? _value.meterType
@@ -272,6 +279,7 @@ abstract class _$$DeviceResponseImplCopyWith<$Res>
       int level,
       String creationTime,
       String gatewayNumber,
+      String avatar,
       MeterTypeResponse meterType,
       PowerStationResponse powerStation,
       @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData,
@@ -315,6 +323,7 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
     Object? level = null,
     Object? creationTime = null,
     Object? gatewayNumber = null,
+    Object? avatar = null,
     Object? meterType = null,
     Object? powerStation = null,
     Object? lastedLogData = freezed,
@@ -378,6 +387,10 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
           ? _value.gatewayNumber
           : gatewayNumber // ignore: cast_nullable_to_non_nullable
               as String,
+      avatar: null == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String,
       meterType: null == meterType
           ? _value.meterType
           : meterType // ignore: cast_nullable_to_non_nullable
@@ -420,6 +433,7 @@ class _$DeviceResponseImpl implements _DeviceResponse {
       this.level = 0,
       this.creationTime = "",
       this.gatewayNumber = '',
+      this.avatar = '',
       this.meterType = const MeterTypeResponse(),
       this.powerStation = const PowerStationResponse(),
       @JsonKey(name: "lastedLogData") this.lastedLogData,
@@ -473,6 +487,9 @@ class _$DeviceResponseImpl implements _DeviceResponse {
   final String gatewayNumber;
   @override
   @JsonKey()
+  final String avatar;
+  @override
+  @JsonKey()
   final MeterTypeResponse meterType;
   @override
   @JsonKey()
@@ -488,7 +505,7 @@ class _$DeviceResponseImpl implements _DeviceResponse {
 
   @override
   String toString() {
-    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, parentId: $parentId, level: $level, creationTime: $creationTime, gatewayNumber: $gatewayNumber, meterType: $meterType, powerStation: $powerStation, lastedLogData: $lastedLogData, realtimeLog: $realtimeLog, rlyRepSta: $rlyRepSta)';
+    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, parentId: $parentId, level: $level, creationTime: $creationTime, gatewayNumber: $gatewayNumber, avatar: $avatar, meterType: $meterType, powerStation: $powerStation, lastedLogData: $lastedLogData, realtimeLog: $realtimeLog, rlyRepSta: $rlyRepSta)';
   }
 
   @override
@@ -518,6 +535,7 @@ class _$DeviceResponseImpl implements _DeviceResponse {
                 other.creationTime == creationTime) &&
             (identical(other.gatewayNumber, gatewayNumber) ||
                 other.gatewayNumber == gatewayNumber) &&
+            (identical(other.avatar, avatar) || other.avatar == avatar) &&
             (identical(other.meterType, meterType) ||
                 other.meterType == meterType) &&
             (identical(other.powerStation, powerStation) ||
@@ -548,6 +566,7 @@ class _$DeviceResponseImpl implements _DeviceResponse {
         level,
         creationTime,
         gatewayNumber,
+        avatar,
         meterType,
         powerStation,
         lastedLogData,
@@ -588,6 +607,7 @@ abstract class _DeviceResponse implements DeviceResponse {
       final int level,
       final String creationTime,
       final String gatewayNumber,
+      final String avatar,
       final MeterTypeResponse meterType,
       final PowerStationResponse powerStation,
       @JsonKey(name: "lastedLogData")
@@ -626,6 +646,8 @@ abstract class _DeviceResponse implements DeviceResponse {
   String get creationTime;
   @override
   String get gatewayNumber;
+  @override
+  String get avatar;
   @override
   MeterTypeResponse get meterType;
   @override
