@@ -1,12 +1,58 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
+import 'package:solar_energy/data/dto/Warranty/response/warranty_response.dart';
+import '../../../../../data/repositories/warranty/warranty_repository.dart';
 
-class DeviceInfoScreen extends StatelessWidget {
+class DeviceInfoScreen extends StatefulWidget {
   final DeviceResponse device;
 
   const DeviceInfoScreen({super.key, required this.device});
+
+  @override
+  State<DeviceInfoScreen> createState() => _DeviceInfoScreenState();
+}
+
+class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
+
+  final WarrantyRepository warrantyRepo = WarrantyRepository();
+
+  WarrantyResponse? warranty;
+
+  @override
+  void initState() {
+    super.initState();
+    loadWarranty();
+  }
+
+  Future<void> loadWarranty() async {
+    final data = await warrantyRepo.getWarranty(widget.device.id);
+    print("Warranty API result: $data");
+    setState(() {
+      warranty = data;
+    });
+  }
+
+  Future<void> activateWarranty() async {
+
+    await warrantyRepo.activateWarranty(widget.device.id);
+
+    await loadWarranty();
+  }
+
+  String getWarrantyDuration() {
+    if (warranty?.startDate == null || warranty?.endDate == null) {
+      return "--";
+    }
+
+    final start = DateTime.parse(warranty!.startDate!);
+    final end = DateTime.parse(warranty!.endDate!);
+
+    final months =
+        (end.year - start.year) * 12 + (end.month - start.month);
+
+    return "$months tháng";
+  }
 
   Widget item(String title, dynamic value) {
 
@@ -92,6 +138,7 @@ class DeviceInfoScreen extends StatelessWidget {
       ),
     );
   }
+
   String formatDate(String time) {
     try {
       final date = DateTime.parse(time);
@@ -100,10 +147,13 @@ class DeviceInfoScreen extends StatelessWidget {
       return time;
     }
   }
+
   @override
   Widget build(BuildContext context) {
+
+    final device = widget.device;
     final log = device.realtimeLog;
-    String status = log?.rlySta == 1 ? "Đang đóng" : "Đang cắt";
+
     return Scaffold(
 
       backgroundColor: const Color(0xFFF1F8F6),
@@ -124,25 +174,24 @@ class DeviceInfoScreen extends StatelessWidget {
             "A. Thông tin sản phẩm",
             [
               item("Tên sản phẩm", device.name),
-              item("Device ID", ''),
+              item("Device ID", device.id),
               item("Mã hàng", device.code),
               item("Gateway", device.gatewayNumber),
               item("Loại thiết bị", device.meterType.name),
               item("Trạm điện", device.powerStation.name),
               item("Ngày tạo", formatDate(device.creationTime)),
-
             ],
           ),
 
-          /// B. THÔNG SỐ
+          /// B. THÔNG SỐ ĐIỆN
           section(
             "B. Thông số điện",
             [
               item("Điện áp pha A", log?.ua?.toStringAsFixed(0)),
               item("Dòng pha A", log?.ia?.toStringAsFixed(1)),
-              item("Công suất", log?.p?.toStringAsFixed(2) ?? "--"),
-              item("Điện năng", log?.epi?.toStringAsFixed(1) ?? "--"),
-              item("Tần số", log?.fr?.toStringAsFixed(1) ?? "--"),
+              item("Công suất", log?.p?.toStringAsFixed(2)),
+              item("Điện năng", log?.epi?.toStringAsFixed(1)),
+              item("Tần số", log?.fr?.toStringAsFixed(1)),
             ],
           ),
 
@@ -151,29 +200,38 @@ class DeviceInfoScreen extends StatelessWidget {
             "C. Thông tin bảo hành",
             [
 
-              item("Thời gian bảo hành", "30 tháng"),
-              item("Ngày kích hoạt", "01/01/2026"),
+              item("Thời gian bảo hành", getWarrantyDuration()),
+
+              item(
+                "Ngày kích hoạt",
+                warranty?.startDate != null
+                    ? formatDate(warranty!.startDate!)
+                    : "--",
+              ),
             ],
           ),
 
           const SizedBox(height: 10),
 
-          /// BUTTON
-          ElevatedButton(
-            onPressed: () {},
+          /// BUTTON kích hoạt
+          if (warranty?.startDate == null)
+            ElevatedButton(
+              onPressed: activateWarranty,
 
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF5BB8A6),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5BB8A6),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+
+              child: const Text(
+                "Kích hoạt bảo hành",
+                style: TextStyle(fontSize: 16),
               ),
             ),
-            child: const Text(
-              "Kích hoạt bảo hành",
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
+
         ],
       ),
     );

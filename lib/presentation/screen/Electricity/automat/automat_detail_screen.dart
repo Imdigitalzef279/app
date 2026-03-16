@@ -1881,9 +1881,12 @@ class _PinDialogState extends State<_PinDialog> {
   }
 
   Widget _buildPinBox(int index) {
-    return SizedBox(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+
       width: 55,
       height: 60,
+
       child: TextField(
         controller: _controllers[index],
         focusNode: _focusNodes[index],
@@ -1891,31 +1894,42 @@ class _PinDialogState extends State<_PinDialog> {
         textAlign: TextAlign.center,
         maxLength: 1,
         obscureText: true,
+
         style: const TextStyle(
-          fontSize: 24,
+          fontSize: 26,
           fontWeight: FontWeight.bold,
         ),
+
         decoration: InputDecoration(
           counterText: "",
-          contentPadding: EdgeInsets.zero,
+
+          filled: true,
+          fillColor: const Color(0xFFF5F7FB),
+
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none,
           ),
+
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(
-              color: Colors.blue,
+              color: Color(0xFF1ABC9C),
               width: 2,
             ),
           ),
         ),
+
         onChanged: (value) {
+
           if (value.isNotEmpty) {
+
             if (index < 3) {
               _focusNodes[index + 1].requestFocus();
             } else {
               _focusNodes[index].unfocus();
             }
+
           } else if (value.isEmpty && index > 0) {
             _focusNodes[index - 1].requestFocus();
           }

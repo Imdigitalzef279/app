@@ -70,7 +70,15 @@ class _HomeWidgetState extends State<HomeWidget> {
                   orElse: () => projects.first,
                 );
 
-                return GeneralDeviceScreen(project: project);
+                return BlocProvider(
+                  create: (_) => DeviceCubit()
+                    ..getAllDevices(
+                      powerStationId: project.id!,
+                    ),
+                  child: GeneralDeviceScreen(
+                    project: project,
+                  ),
+                );
               }
 
               return const Center(child: CircularProgressIndicator());

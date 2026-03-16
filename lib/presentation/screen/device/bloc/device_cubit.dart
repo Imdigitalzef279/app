@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
@@ -13,6 +14,7 @@ import 'package:solar_energy/data/repositories/device/device_repository.dart';
 import 'package:solar_energy/di.dart';
 
 import '../../../../application/utils/device_avatar_storage.dart';
+import '../../../../application/utils/favorite_device_storage.dart';
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
@@ -130,6 +132,8 @@ class DeviceCubit extends Cubit<DeviceState> {
         return;
       }
 
+      final prefs = await SharedPreferences.getInstance();
+
       final devices = response.data!;
 
       final updatedDevices = <DeviceResponse>[];
@@ -142,10 +146,14 @@ class DeviceCubit extends Cubit<DeviceState> {
         final localName =
         await DeviceAvatarStorage.getDeviceName(d.id);
 
+        final isFavorite =
+            prefs.getBool("favorite_${d.id}") ?? false;
+
         updatedDevices.add(
           d.copyWith(
             avatar: avatar ?? "",
             name: localName ?? d.name,
+            isFavorite: isFavorite,
           ),
         );
       }
@@ -253,16 +261,17 @@ class DeviceCubit extends Cubit<DeviceState> {
         }
         return d;
       }).toList();
-
       final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
 
-      logs[latestDevice.code!] =
-          (logs[latestDevice.code] ?? latestDevice.realtimeLog!)
-              .copyWith(rlySta: newStatus);
-
+      logs[latestDevice.code!] = AtomatLogResponse(
+        rlySta: newStatus,
+        updatedAt: DateTime.now().toIso8601String(),
+      );
       emit(state.copyWith(
-        resultDevices: state.resultDevices.copyWith(data: updatedDevices),
         breakerLogs: logs,
+        resultDevices: state.resultDevices.copyWith(
+          data: updatedDevices,
+        ),
       ));
       /// Chờ gateway update
       await waitBreakerState(
@@ -646,6 +655,40 @@ class DeviceCubit extends Cubit<DeviceState> {
       default:
         return null;
     }
+  }
+  Future<void> toggleFavorite(int deviceId) async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final devices = state.resultDevices.data ?? [];
+
+    final updated = devices.map((device) {
+
+      if (device.id == deviceId) {
+
+        final newValue = !device.isFavorite;
+
+        if (newValue) {
+          prefs.setBool("favorite_$deviceId", true);
+        } else {
+          prefs.remove("favorite_$deviceId");
+        }
+
+        return device.copyWith(isFavorite: newValue);
+      }
+
+      return device;
+
+    }).toList();
+
+    emit(
+      state.copyWith(
+        resultDevices: Result(
+          status: LoadStatus.success,
+          data: updated,
+        ),
+      ),
+    );
   }
   void updateRealtimeLogByCode(String code, AtomatLogResponse log) {
     final currentList = state.resultDevices.data;

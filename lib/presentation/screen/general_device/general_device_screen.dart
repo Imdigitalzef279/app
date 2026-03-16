@@ -7,7 +7,11 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/general_device/project_setting_screen.dart';
 import '../../../data/dto/power_station/response/power_station_response.dart';
+import '../../widgets/password_dialog.dart';
+import '../Electricity/automat/automat_chart/bloc/automat_chart_cubit.dart';
+import '../Electricity/automat/automat_detail_screen.dart';
 import '../Electricity/automat/automat_list_screen.dart';
+import '../Electricity/automat/bloc/atomat_detail_cubit.dart';
 import '../device/bloc/device_cubit.dart';
 
 class GeneralDeviceScreen extends StatefulWidget {
@@ -17,6 +21,7 @@ class GeneralDeviceScreen extends StatefulWidget {
 
   @override
   State<GeneralDeviceScreen> createState() => _GeneralDeviceScreenState();
+
 }
 
 class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
@@ -28,6 +33,19 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+      final cubit = context.read<DeviceCubit>();
+      final devices = cubit.state.resultDevices.data ?? [];
+
+      for (var d in devices) {
+        if (d.code != null) {
+          await cubit.loadBreakerLog(d.code);
+        }
+      }
+
+    });
   }
 
   @override
@@ -40,7 +58,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   Widget build(BuildContext context) {
     isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-
+    final devices =
+        context.watch<DeviceCubit>().state.resultDevices.data ?? [];
+    final favoriteDevices =
+    devices.where((d) => d.isFavorite).toList();
     return Scaffold(
       backgroundColor: AppColors.greyFB,
       appBar: AppBar(
@@ -143,8 +164,20 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
           )
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFDDF3EA),
+                Color(0xFFEFF8F4),
+                Colors.white,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: SafeArea(
+            child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: Column(
             children: [
@@ -170,7 +203,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       children: [
 
                         SizedBox(
-                          height: 160.h,
+                          height: 135.h,
                           child: Image.asset(
                             "assets/images/factory.png",
                             fit: BoxFit.contain,
@@ -183,7 +216,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 16.w,
-                            vertical: 12.h,
+                              vertical: 10.h
                           ),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -195,7 +228,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               Icon(
                                 Icons.shield_outlined,
                                 color: Color(0xFF1ABC9C),
-                                size: 22.w,
+                                  size: 20.w
                               ),
 
                               SizedBox(width: 10.w),
@@ -223,7 +256,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   ],
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 16.h),
               // ===== FEATURES =====
               Container(
                 padding:
@@ -243,72 +276,65 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       ),
                     ),
                     Gap(16.h),
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 12.w,
-                      mainAxisSpacing: 12.h,
-                      childAspectRatio: 1.4,
-                      children: [
+                    SizedBox(
+                      height: 95.h,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        children: [
 
-                        featureCard(
-                          icon: Icons.water_drop,
-                          title: "Quản lý nước",
-                          subtitle: "Ổn định",
-                          color: Colors.blue,
-                        ),
-
-                        featureCard(
-                          icon: Icons.flash_on,
-                          title: "Tiết kiệm điện",
-                          subtitle: "-12% hôm nay",
-                          color: Colors.orange,
-                        ),
-
-                        featureCard(
-                          icon: Icons.bar_chart,
-                          title: "Quản lý năng lượng",
-                          subtitle: "3.2 kW",
-                          color: Colors.purple,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => BlocProvider(
-                                  create: (_) => DeviceCubit(),
-                                  child: AutomatListScreen(
-                                    powerStationId: widget.project.id!,
+                          featureItem(
+                            icon: Icons.bolt,
+                            title: "Năng lượng",
+                            color: const Color(0xFF8E6CEF),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BlocProvider.value(
+                                    value: context.read<DeviceCubit>(),
+                                    child: AutomatListScreen(
+                                      powerStationId: widget.project.id!,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                          ),
 
-                        featureCard(
-                          icon: Icons.lightbulb,
-                          title: "Quản lý chiếu sáng",
-                          subtitle: "5 phòng bật",
-                          color: Colors.amber,
-                        ),
+                          featureItem(
+                            icon: Icons.water_drop,
+                            title: "Môi trường",
+                            color: const Color(0xFF4DA3FF),
+                          ),
 
-                        featureCard(
-                          icon: Icons.water,
-                          title: "Nước - Nóng lạnh",
-                          subtitle: "Hoạt động tốt",
-                          color: Colors.blueAccent,
-                        ),
+                          featureItem(
+                            icon: Icons.shield,
+                            title: "KRA Care",
+                            color: const Color(0xFF38C793),
+                          ),
 
-                        featureCard(
-                          icon: Icons.ac_unit,
-                          title: "Điều hòa",
-                          subtitle: "26°C · 3 thiết bị",
-                          color: Colors.cyan,
-                        ),
-                      ],
-                    ),
-                  ],
+                          featureItem(
+                            icon: Icons.show_chart,
+                            title: "Phân tích",
+                            color: const Color(0xFFFF8A3D),
+                          ),
+
+                          featureItem(
+                            icon: Icons.lightbulb,
+                            title: "Chiếu sáng",
+                            color: const Color(0xFFFFC542),
+                          ),
+
+                          featureItem(
+                            icon: Icons.ac_unit,
+                            title: "Điều hòa",
+                            color: const Color(0xFF59D0E0),
+                          ),
+                        ],
+                      ),
+                    )
+                ]
                 ),
               ),
               SizedBox(height: 12.h),
@@ -348,18 +374,37 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+
                       Text(
                         "Thiết bị hay dùng",
                         style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                          letterSpacing: -0.2,
                         ),
                       ),
-                      Text(
-                        "Xem tất cả",
-                        style: TextStyle(
-                          color: const Color(0xFF1ABC9C),
-                          fontWeight: FontWeight.w600,
+
+                      InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () {},
+                        child: Row(
+                          children: [
+                            Text(
+                              "Xem tất cả",
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF1ABC9C),
+                              ),
+                            ),
+                            SizedBox(width: 4.w),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14.sp,
+                              color: const Color(0xFF1ABC9C),
+                            )
+                          ],
                         ),
                       ),
                     ],
@@ -367,34 +412,273 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
                   Gap(16.h),
 
-                  SizedBox(
-                    height: 130.h,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _deviceCard(
-                          title: "MCB-001",
-                          status: "Đang bật",
-                          color: Colors.green,
-                          icon: Icons.power,
-                        ),
-                        _deviceCard(
-                          title: "Bơm Nước 1",
-                          status: "Đang chạy",
-                          color: Colors.blue,
-                          icon: Icons.water,
-                        ),
-                      ],
+                  favoriteDevices.isEmpty
+                      ? Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.h),
+                    child: Text(
+                      "Chưa có thiết bị hay dùng",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13.sp,
+                      ),
                     ),
-                  ),
+                  )
+                      : ReorderableListView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+
+                    onReorder: (oldIndex, newIndex) {
+
+                      if (newIndex > oldIndex) {
+                        newIndex -= 1;
+                      }
+
+                      final item = favoriteDevices.removeAt(oldIndex);
+                      favoriteDevices.insert(newIndex, item);
+
+                      setState(() {});
+                    },
+
+                    children: favoriteDevices.map((device) {
+
+                      return Container(
+                        key: ValueKey(device.id),
+                        child: deviceItem(device),
+                      );
+
+                    }).toList(),
+
+                  )
+
                 ],
               ),
             ],
           ),
         ),
       ),
+        )
     );
 
+  }
+
+  Widget deviceItem(device) {
+
+    final state = context.watch<DeviceCubit>().state;
+
+    final log =
+        state.breakerLogs[device.code] ?? device.realtimeLog;
+    final currentSwitch =
+        state.breakerLogs[device.code]?.rlySta ??
+            device.realtimeLog?.rlySta ??
+            device.status ??
+            0;
+
+    final isOnline = device.status == 1;
+    final isOn = currentSwitch == 1;
+
+    return InkWell(
+
+      /// mở chi tiết thiết bị
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+
+                BlocProvider.value(
+                  value: context.read<DeviceCubit>(),
+                ),
+
+                BlocProvider(
+                  create: (_) => AtomatDetailCubit(),
+                ),
+
+                BlocProvider(
+                  create: (_) => AutomatChartCubit(),
+                ),
+
+              ],
+              child: AutomatDetailScreen(device: device),
+            ),
+          ),
+        );
+      },
+
+      /// giữ để xoá favorite
+      onLongPress: () {
+        context.read<DeviceCubit>().toggleFavorite(device.id);
+      },
+
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12.h),
+        padding: EdgeInsets.symmetric(
+          horizontal: 14.w,
+          vertical: 12.h,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 12,
+              offset: const Offset(0,4),
+            )
+          ],
+        ),
+
+        child: Row(
+          children: [
+
+            /// ICON
+            Container(
+              padding: EdgeInsets.all(10.w),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Icon(
+                Icons.power,
+                color: Colors.green,
+                size: 22.w,
+              ),
+            ),
+
+            SizedBox(width: 12.w),
+
+            /// TEXT
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  Text(
+                    device.name.isNotEmpty
+                        ? device.name
+                        : device.code,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  SizedBox(height: 4.h),
+
+                  Text(
+                    isOnline
+                        ? (isOn ? "Đang đóng" : "Đang cắt")
+                        : "Offline",
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: isOnline
+                          ? Colors.blue
+                          : Colors.red,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            /// SWITCH
+            Transform.scale(
+              scale: 0.85,
+              child: Switch(
+                value: isOn,
+
+                activeColor: Colors.white,
+                activeTrackColor: const Color(0xFF43A047),
+
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor: const Color(0xFFE53935),
+
+                materialTapTargetSize:
+                MaterialTapTargetSize.shrinkWrap,
+
+                onChanged: isOnline
+                    ? (value) async {
+
+                  final password =
+                  await showPasswordDialog(context);
+
+                  if (password == null) return;
+
+                  await context
+                      .read<DeviceCubit>()
+                      .togglePower(
+                    device,
+                    password: password,
+                  );
+                }
+                    : null,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget featureItem({
+    required IconData icon,
+    required String title,
+    required Color color,
+    VoidCallback? onTap,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(right: 14.w),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16.r),
+        onTap: onTap,
+        child: Column(
+          children: [
+
+            Container(
+        width: 60.w,
+        height: 60.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.r),
+                gradient: LinearGradient(
+                  colors: [
+                    color.withOpacity(0.25),
+                    color.withOpacity(0.08),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0,4),
+                  )
+                ],
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                  size: 26.w
+              ),
+            ),
+
+            SizedBox(height: 6.h),
+
+            SizedBox(
+              width: 70.w,
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 2,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
   Widget featureCard({
     required IconData icon,

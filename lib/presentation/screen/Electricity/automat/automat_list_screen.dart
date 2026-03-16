@@ -82,10 +82,9 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   Widget buildDeviceCard(BuildContext context, device) {
 
     final state = context.watch<DeviceCubit>().state;
-
     final currentSwitch =
-        device.realtimeLog?.rlySta ??
-            state.breakerLogs[device.code]?.rlySta ??
+        state.breakerLogs[device.code]?.rlySta ??
+            device.realtimeLog?.rlySta ??
             device.status ??
             0;
     final isOnline = device.status == 1;
@@ -220,16 +219,35 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                   children: [
 
                     Expanded(
+                      flex: 5,
                       child: Text(
                         device.name.isNotEmpty
                             ? device.name
                             : device.code,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 17,
                         ),
                       ),
                     ),
+
+                    GestureDetector(
+                      onTap: () {
+                        context.read<DeviceCubit>()
+                            .toggleFavorite(device.id);
+                      },
+                      child: Icon(
+                        device.isFavorite
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: Colors.amber,
+                        size: 18,
+                      ),
+                    ),
+
+                    const SizedBox(width: 4),
 
                     GestureDetector(
                       onTap: () {
@@ -244,7 +262,6 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
                   ],
                 ),
-
                 const SizedBox(height: 4),
 
                 Row(

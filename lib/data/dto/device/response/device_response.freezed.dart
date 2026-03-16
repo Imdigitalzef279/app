@@ -35,6 +35,7 @@ mixin _$DeviceResponse {
   String get creationTime => throw _privateConstructorUsedError;
   String get gatewayNumber => throw _privateConstructorUsedError;
   String get avatar => throw _privateConstructorUsedError;
+  bool get isFavorite => throw _privateConstructorUsedError;
   MeterTypeResponse get meterType => throw _privateConstructorUsedError;
   PowerStationResponse get powerStation => throw _privateConstructorUsedError;
   @JsonKey(name: "lastedLogData")
@@ -75,6 +76,7 @@ abstract class $DeviceResponseCopyWith<$Res> {
       String creationTime,
       String gatewayNumber,
       String avatar,
+      bool isFavorite,
       MeterTypeResponse meterType,
       PowerStationResponse powerStation,
       @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData,
@@ -117,6 +119,7 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
     Object? creationTime = null,
     Object? gatewayNumber = null,
     Object? avatar = null,
+    Object? isFavorite = null,
     Object? meterType = null,
     Object? powerStation = null,
     Object? lastedLogData = freezed,
@@ -184,6 +187,10 @@ class _$DeviceResponseCopyWithImpl<$Res, $Val extends DeviceResponse>
           ? _value.avatar
           : avatar // ignore: cast_nullable_to_non_nullable
               as String,
+      isFavorite: null == isFavorite
+          ? _value.isFavorite
+          : isFavorite // ignore: cast_nullable_to_non_nullable
+              as bool,
       meterType: null == meterType
           ? _value.meterType
           : meterType // ignore: cast_nullable_to_non_nullable
@@ -280,6 +287,7 @@ abstract class _$$DeviceResponseImplCopyWith<$Res>
       String creationTime,
       String gatewayNumber,
       String avatar,
+      bool isFavorite,
       MeterTypeResponse meterType,
       PowerStationResponse powerStation,
       @JsonKey(name: "lastedLogData") LastedLogDataResponse? lastedLogData,
@@ -324,6 +332,7 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
     Object? creationTime = null,
     Object? gatewayNumber = null,
     Object? avatar = null,
+    Object? isFavorite = null,
     Object? meterType = null,
     Object? powerStation = null,
     Object? lastedLogData = freezed,
@@ -391,6 +400,10 @@ class __$$DeviceResponseImplCopyWithImpl<$Res>
           ? _value.avatar
           : avatar // ignore: cast_nullable_to_non_nullable
               as String,
+      isFavorite: null == isFavorite
+          ? _value.isFavorite
+          : isFavorite // ignore: cast_nullable_to_non_nullable
+              as bool,
       meterType: null == meterType
           ? _value.meterType
           : meterType // ignore: cast_nullable_to_non_nullable
@@ -434,6 +447,7 @@ class _$DeviceResponseImpl implements _DeviceResponse {
       this.creationTime = "",
       this.gatewayNumber = '',
       this.avatar = '',
+      this.isFavorite = false,
       this.meterType = const MeterTypeResponse(),
       this.powerStation = const PowerStationResponse(),
       @JsonKey(name: "lastedLogData") this.lastedLogData,
@@ -490,6 +504,9 @@ class _$DeviceResponseImpl implements _DeviceResponse {
   final String avatar;
   @override
   @JsonKey()
+  final bool isFavorite;
+  @override
+  @JsonKey()
   final MeterTypeResponse meterType;
   @override
   @JsonKey()
@@ -505,7 +522,7 @@ class _$DeviceResponseImpl implements _DeviceResponse {
 
   @override
   String toString() {
-    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, parentId: $parentId, level: $level, creationTime: $creationTime, gatewayNumber: $gatewayNumber, avatar: $avatar, meterType: $meterType, powerStation: $powerStation, lastedLogData: $lastedLogData, realtimeLog: $realtimeLog, rlyRepSta: $rlyRepSta)';
+    return 'DeviceResponse(meterTypeId: $meterTypeId, id: $id, projectId: $projectId, powerStationId: $powerStationId, status: $status, name: $name, code: $code, description: $description, serialNumber: $serialNumber, creator: $creator, parentId: $parentId, level: $level, creationTime: $creationTime, gatewayNumber: $gatewayNumber, avatar: $avatar, isFavorite: $isFavorite, meterType: $meterType, powerStation: $powerStation, lastedLogData: $lastedLogData, realtimeLog: $realtimeLog, rlyRepSta: $rlyRepSta)';
   }
 
   @override
@@ -536,6 +553,8 @@ class _$DeviceResponseImpl implements _DeviceResponse {
             (identical(other.gatewayNumber, gatewayNumber) ||
                 other.gatewayNumber == gatewayNumber) &&
             (identical(other.avatar, avatar) || other.avatar == avatar) &&
+            (identical(other.isFavorite, isFavorite) ||
+                other.isFavorite == isFavorite) &&
             (identical(other.meterType, meterType) ||
                 other.meterType == meterType) &&
             (identical(other.powerStation, powerStation) ||
@@ -567,6 +586,7 @@ class _$DeviceResponseImpl implements _DeviceResponse {
         creationTime,
         gatewayNumber,
         avatar,
+        isFavorite,
         meterType,
         powerStation,
         lastedLogData,
@@ -608,6 +628,7 @@ abstract class _DeviceResponse implements DeviceResponse {
       final String creationTime,
       final String gatewayNumber,
       final String avatar,
+      final bool isFavorite,
       final MeterTypeResponse meterType,
       final PowerStationResponse powerStation,
       @JsonKey(name: "lastedLogData")
@@ -648,6 +669,8 @@ abstract class _DeviceResponse implements DeviceResponse {
   String get gatewayNumber;
   @override
   String get avatar;
+  @override
+  bool get isFavorite;
   @override
   MeterTypeResponse get meterType;
   @override

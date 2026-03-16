@@ -23,6 +23,7 @@ _$DeviceResponseImpl _$$DeviceResponseImplFromJson(Map<String, dynamic> json) =>
       creationTime: json['creationTime'] as String? ?? "",
       gatewayNumber: json['gatewayNumber'] as String? ?? '',
       avatar: json['avatar'] as String? ?? '',
+      isFavorite: json['isFavorite'] as bool? ?? false,
       meterType: json['meterType'] == null
           ? const MeterTypeResponse()
           : MeterTypeResponse.fromJson(
@@ -60,6 +61,7 @@ Map<String, dynamic> _$$DeviceResponseImplToJson(
       'creationTime': instance.creationTime,
       'gatewayNumber': instance.gatewayNumber,
       'avatar': instance.avatar,
+      'isFavorite': instance.isFavorite,
       'meterType': instance.meterType,
       'powerStation': instance.powerStation,
       'lastedLogData': instance.lastedLogData,
