@@ -30,8 +30,6 @@ class DeviceResponse with _$DeviceResponse {
     @Default(false) bool isFavorite,
     @Default(MeterTypeResponse()) MeterTypeResponse meterType,
     @Default(PowerStationResponse()) PowerStationResponse powerStation,
-
-
     @JsonKey(name: "lastedLogData")
     LastedLogDataResponse? lastedLogData,
     AtomatLogResponse? realtimeLog,

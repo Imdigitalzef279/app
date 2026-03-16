@@ -76,6 +76,7 @@ class _Banner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 100,
       margin: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -143,7 +144,7 @@ class _ProductSliderState extends State<_ProductSlider> {
   Widget build(BuildContext context) {
 
     return SizedBox(
-      height: 140,
+      height: 200,
       child: Stack(
         children: [
 
@@ -157,10 +158,9 @@ class _ProductSliderState extends State<_ProductSlider> {
               });
             },
             itemBuilder: (context, index) {
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: _ProductCard(image: products[index]),
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: _ProductCard(),
               );
             },
           ),
@@ -196,71 +196,153 @@ class _ProductSliderState extends State<_ProductSlider> {
               },
             ),
           ),
+          Positioned(
+            bottom: 8,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                products.length,
+                    (index) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: current == index ? 8 : 6,
+                  height: current == index ? 8 : 6,
+                  decoration: BoxDecoration(
+                    color: current == index
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
 class _ProductCard extends StatelessWidget {
-
-  final String image;
-
-  const _ProductCard({required this.image});
+  const _ProductCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final images = [
+      "assets/images/mccb_3p.png",
+      "assets/images/mm50h_1p.png",
+      "assets/images/mm50h_2p.png",
+      "assets/images/mm50h_3p.png",
+      "assets/images/mm50h_4p.png",
+      "assets/images/solar_energy.png",
+    ];
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      height: 170,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(18),
         gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            Color(0xffe3a300),
-            Color(0xfff6c542),
+            Color(0xffcf8c00),
+            Color(0xfff4c74d),
           ],
         ),
       ),
       child: Row(
         children: [
 
-          const Expanded(
+          /// TEXT
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                Text(
-                  "Đồng hồ năng lượng",
-                  style: TextStyle(fontSize: 12),
-                ),
-
-                SizedBox(height: 6),
-
-                Text(
-                  "Sản phẩm cho dân dụng",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                SizedBox(height: 8),
-
-                Text(
-                  "xem ngay",
-                  style: TextStyle(
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                )
+                  child: const Text(
+                    "HÀNG ĐÃ BÁN ỔN",
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                const Text(
+                  "Sản phẩm đa chất lượng",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+
+                const SizedBox(height: 4),
+
+                const Text(
+                  "Khám phá sản phẩm và lựa chọn cho bạn",
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.white,
+                  ),
+                ),
+
+                const Spacer(),
+
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    "Xem ngay",
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
           ),
 
-          Image.asset(
-            image,
-            width: 90,
-          )
+          const SizedBox(width: 10),
+
+          /// GRID ICON
+          SizedBox(
+            width: 150,
+            height: 100,
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: images.length,
+              gridDelegate:
+              const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 6,
+                crossAxisSpacing: 6,
+              ),
+              itemBuilder: (context, index) {
+                return Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Image.asset(
+                    images[index],
+                    fit: BoxFit.contain,
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -315,16 +397,20 @@ class _CategoryGrid extends StatelessWidget {
       {"icon": "assets/images/mm50h_3p.png", "text": "Cổng thông minh"},
       {"icon": "assets/images/mm50h_4p.png", "text": "Thiết bị Tuya"},
       {"icon": "assets/images/solar_energy.png", "text": "Giải pháp viễn thông"},
+      {"icon": "assets/images/mccb_3p.png", "text": "Thiết bị điện"},
+      {"icon": "assets/images/mm50h_1p.png", "text": "Điện dân dụng"},
+      {"icon": "assets/images/mm50h_2p.png", "text": "Điện công nghiệp"},
+      {"icon": "assets/images/mm50h_3p.png", "text": "Thiết bị bảo vệ"},
     ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+    return SizedBox(
+      height: 240,
       child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         itemCount: items.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+          crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
           childAspectRatio: 1,
@@ -336,7 +422,7 @@ class _CategoryGrid extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 4,
@@ -349,7 +435,7 @@ class _CategoryGrid extends StatelessWidget {
 
                 Image.asset(
                   items[index]["icon"]!,
-                  height: 32,
+                  height: 34,
                 ),
 
                 const SizedBox(height: 8),

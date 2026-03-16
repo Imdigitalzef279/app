@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
@@ -27,7 +26,6 @@ class BaseRepository {
           error: LocalizationsUtils.localizations.unstable_connection,
         );
       }
-
       // socket or connection error
       if (e is DioException) {
         if (e.error is SocketException ||
@@ -38,7 +36,6 @@ class BaseRepository {
             error: LocalizationsUtils.localizations.unstable_connection,
           );
         }
-
         // error response (404,...)
         if (e.error is ErrorResponse) {
           final error = e.error as ErrorResponse;
@@ -48,7 +45,6 @@ class BaseRepository {
           );
         }
       }
-
       // fallback
       return result.copyWith(
         status: LoadStatus.failure,
@@ -56,7 +52,6 @@ class BaseRepository {
       );
     }
   }
-
   Future<Result<PaginationResponse<T>>> callApiPagination<T>(
       Future<PaginationResponse<T>> Function() apiCallBack) async {
     final result = Result<PaginationResponse<T>>();
@@ -70,7 +65,6 @@ class BaseRepository {
           error: LocalizationsUtils.localizations.unstable_connection,
         );
       }
-
       // socket or connection error
       if (e is DioException) {
         if (e.error is SocketException ||
@@ -81,7 +75,6 @@ class BaseRepository {
             error: LocalizationsUtils.localizations.unstable_connection,
           );
         }
-
         // error response (404,...)
         if (e.error is ErrorResponse) {
           final error = e.error as ErrorResponse;
@@ -91,7 +84,6 @@ class BaseRepository {
           );
         }
       }
-
       // fallback
       return result.copyWith(
         status: LoadStatus.failure,

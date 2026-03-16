@@ -12,10 +12,8 @@ import '../../../../application/enums/chart_range.dart';
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/services/signalr_service.dart';
-import '../../../common_widgets/app_toast.dart';
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
-import 'automat_chart_screen.dart';
 /// Màn hình chi tiết thiết bị CB (Circuit Breaker)
 /// Hiển thị:
 /// - Trạng thái ON/OFF
@@ -306,7 +304,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final limitedData = chartData.length > 18
         ? chartData.sublist(chartData.length - 18)
         : chartData;
-
     final double maxValue = limitedData.isEmpty
         ? 5.0
         : limitedData
@@ -315,7 +312,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         : (e.epi ?? 0).toDouble())
         .reduce((a, b) => a > b ? a : b);
     if (log == null) return const SizedBox();
-
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -1801,16 +1797,11 @@ Widget buildStatusCard(
     DeviceResponse device,
     AtomatLogResponse? log,
     ) {
-
   final realStatus = getRealStatus(device, log);
-
-
   final bool isMaintenance = log?.rlyRepSta == 1;
   final bool isOn = realStatus == 1;
-
   String text;
   Color color;
-
   if (isMaintenance) {
     text = "Bảo trì";
     color = BreakerColors.maintenance;
@@ -1823,7 +1814,6 @@ Widget buildStatusCard(
     text = "Cắt";
     color = BreakerColors.off;
   }
-
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     decoration: BoxDecoration(

@@ -2,36 +2,53 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:solar_energy/data/dto/Warranty/response/warranty_response.dart';
 class WarrantyRepository {
-  final Dio dio = GetIt.instance<Dio>();
+  final Dio _dio = GetIt.instance<Dio>();
+  /// Lấy thông tin bảo hành
   Future<WarrantyResponse?> getWarranty(int deviceId) async {
     try {
-
-      final response = await dio.get(
+      final response = await _dio.get(
         "/api/app/warranty/current-warranty/$deviceId",
       );
-
       final data = response.data;
-
+      if (data == null) return null;
       if (data is Map<String, dynamic>) {
         return WarrantyResponse.fromJson(data);
       }
       return null;
+    } on DioException catch (e) {
+      print("Warranty API error: ${e.response?.data}");
+      return null;
     } catch (e) {
-      print("Warranty API error: $e");
+      print("Warranty unknown error: $e");
       return null;
     }
   }
-  Future<void> activateWarranty(int deviceId) async {
+  /// Kích hoạt bảo hành
+  Future<bool> activateWarranty(int deviceId) async {
     try {
+      final Dio dio = GetIt.instance<Dio>();
+      final now = DateTime.now().toUtc();
+      final end = now.add(const Duration(days: 365));
+      final body = {
+        "deviceId": deviceId,
+        "provider": "Solar Energy",
+        "startDate": now.toIso8601String(),
+        "endDate": end.toIso8601String(),
+        "note": "Activate from mobile app",
+        "status": 0
+      };
+      print("Activate warranty body: $body");
       await dio.post(
         "/api/app/warranty",
-        data: {
-          "deviceId": deviceId
-        },
+        data: body,
       );
+      return true;
+    } on DioException catch (e) {
+      print("Activate warranty API error: ${e.response?.data}");
+      return false;
     } catch (e) {
-      print("activate warranty error: $e");
-      print("Activate warranty deviceId: $deviceId");
+      print("Activate warranty unknown error: $e");
+      return false;
     }
   }
 }

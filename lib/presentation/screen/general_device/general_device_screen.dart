@@ -6,7 +6,10 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/general_device/project_setting_screen.dart';
+import '../../../data/dto/atomat/atomat_log_response.dart';
+import '../../../data/dto/device/response/device_response.dart';
 import '../../../data/dto/power_station/response/power_station_response.dart';
+import '../../../data/services/signalr_service.dart';
 import '../../widgets/password_dialog.dart';
 import '../Electricity/automat/automat_chart/bloc/automat_chart_cubit.dart';
 import '../Electricity/automat/automat_detail_screen.dart';
@@ -21,45 +24,84 @@ class GeneralDeviceScreen extends StatefulWidget {
 
   @override
   State<GeneralDeviceScreen> createState() => _GeneralDeviceScreenState();
-
 }
-
 class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
   late bool isLandscape;
+  late SignalRService signalR;
   int _currentIndex = 0;
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-
+    signalR = SignalRService();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
 
       final cubit = context.read<DeviceCubit>();
       final devices = cubit.state.resultDevices.data ?? [];
 
+      /// load log lần đầu
       for (var d in devices) {
         if (d.code != null) {
           await cubit.loadBreakerLog(d.code);
         }
       }
 
+      if (devices.isNotEmpty && devices.first.code != null) {
+        for (var d in devices) {
+          await signalR.connect(meterCode: d.code!);
+        }
+      }
+
+      signalR.stream.listen((data) {
+
+        final dto = data["breakerMeterDataDto"];
+        if (dto == null) return;
+
+        final raw = Map<String, dynamic>.from(dto);
+
+        raw.updateAll((key, value) {
+          if (value is String) {
+            final numValue = num.tryParse(value);
+            return numValue ?? value;
+          }
+          return value;
+        });
+
+        final log = AtomatLogResponse.fromJson(raw);
+        print("======== BREAKER REALTIME ========");
+        print("Breaker SN: ${raw["breakerSn"]}");
+        print("rlySta: ${log.rlySta}");
+        print("rlyRepSta: ${log.rlyRepSta}");
+        print("=================================");
+        final code = raw["breakerSn"] ?? raw["meterSn"] ?? raw["deviceCode"];
+
+        if (code == null) {
+          print("SignalR missing breakerSn");
+          return;
+        }
+        context.read<DeviceCubit>().updateRealtimeLogByCode(
+          code,
+          log,
+        );
+
+      });
+
     });
   }
-
   @override
   void dispose() {
+    signalR.disconnect();
     _controller.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     final devices =
-        context.watch<DeviceCubit>().state.resultDevices.data ?? [];
+        context.select((DeviceCubit c) => c.state.resultDevices.data) ?? [];
     final favoriteDevices =
     devices.where((d) => d.isFavorite).toList();
     return Scaffold(
@@ -137,9 +179,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     onPressed: () {},
                   ),
                 ),
-
                 SizedBox(width: 8.w),
-
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -197,11 +237,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 ),
                 child: Stack(
                   children: [
-
                     /// IMAGE
                     Column(
                       children: [
-
                         SizedBox(
                           height: 135.h,
                           child: Image.asset(
@@ -209,9 +247,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             fit: BoxFit.contain,
                           ),
                         ),
-
                         SizedBox(height: 10.h),
-
                         /// SAFE SYSTEM CARD
                         Container(
                           padding: EdgeInsets.symmetric(
@@ -230,9 +266,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                 color: Color(0xFF1ABC9C),
                                   size: 20.w
                               ),
-
                               SizedBox(width: 10.w),
-
                               Expanded(
                                 child: Text(
                                   "Hệ thống đang an toàn",
@@ -242,7 +276,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                   ),
                                 ),
                               ),
-
                               Icon(
                                 Icons.arrow_forward_ios,
                                 size: 16.w,
@@ -282,7 +315,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
                         children: [
-
                           featureItem(
                             icon: Icons.bolt,
                             title: "Năng lượng",
@@ -301,31 +333,26 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               );
                             },
                           ),
-
                           featureItem(
                             icon: Icons.water_drop,
                             title: "Môi trường",
                             color: const Color(0xFF4DA3FF),
                           ),
-
                           featureItem(
                             icon: Icons.shield,
                             title: "KRA Care",
                             color: const Color(0xFF38C793),
                           ),
-
                           featureItem(
                             icon: Icons.show_chart,
                             title: "Phân tích",
                             color: const Color(0xFFFF8A3D),
                           ),
-
                           featureItem(
                             icon: Icons.lightbulb,
                             title: "Chiếu sáng",
                             color: const Color(0xFFFFC542),
                           ),
-
                           featureItem(
                             icon: Icons.ac_unit,
                             title: "Điều hòa",
@@ -347,14 +374,11 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 ),
                 child: Row(
                   children: [
-
                     Icon(
                       Icons.health_and_safety,
                       color: Colors.green,
                     ),
-
                     SizedBox(width: 10.w),
-
                     Expanded(
                       child: Text(
                         "KRA Care",
@@ -461,43 +485,72 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
   }
 
-  Widget deviceItem(device) {
+  Widget deviceItem(DeviceResponse device) {
 
-    final state = context.watch<DeviceCubit>().state;
+    return BlocBuilder<DeviceCubit, DeviceState>(
+        builder: (context, state) {
 
-    final log =
-        state.breakerLogs[device.code] ?? device.realtimeLog;
-    final currentSwitch =
-        state.breakerLogs[device.code]?.rlySta ??
-            device.realtimeLog?.rlySta ??
-            device.status ??
-            0;
+          final deviceCubit = context.read<DeviceCubit>();
 
-    final isOnline = device.status == 1;
-    final isOn = currentSwitch == 1;
+          final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+
+          final realStatus = deviceCubit.getRealStatus(device, log);
+
+    final bool isOn = realStatus == 1;
+    final bool isOffline = realStatus == -1;
+    final bool isMaintenance = realStatus == 2;
+
+    final countdown = state.switchCountdowns[device.id] ?? 0;
+    final isSwitching = deviceCubit.isDeviceSwitching(device.id);
+
+    /// text + color trạng thái
+    String statusText;
+    Color statusColor;
+
+    switch (realStatus) {
+      case 1:
+        statusText = "Đóng";
+        statusColor = BreakerColors.on;
+        break;
+
+      case 0:
+        statusText = "Cắt";
+        statusColor = BreakerColors.off;
+        break;
+
+      case 2:
+        statusText = "Bảo trì";
+        statusColor = BreakerColors.maintenance;
+        break;
+
+      case -1:
+        statusText = "Ngoại tuyến";
+        statusColor = Colors.grey;
+        break;
+
+      default:
+        statusText = "--";
+        statusColor = Colors.grey;
+    }
 
     return InkWell(
 
-      /// mở chi tiết thiết bị
+      /// mở chi tiết
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => MultiBlocProvider(
               providers: [
-
                 BlocProvider.value(
                   value: context.read<DeviceCubit>(),
                 ),
-
                 BlocProvider(
                   create: (_) => AtomatDetailCubit(),
                 ),
-
                 BlocProvider(
                   create: (_) => AutomatChartCubit(),
                 ),
-
               ],
               child: AutomatDetailScreen(device: device),
             ),
@@ -535,13 +588,18 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
             Container(
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.15),
+                color: statusColor.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Icon(
-                Icons.power,
-                color: Colors.green,
-                size: 22.w,
+                realStatus == 1
+                    ? Icons.flash_on
+                    : realStatus == 2
+                    ? Icons.build
+                    : realStatus == -1
+                    ? Icons.cloud_off
+                    : Icons.power_off,
+                color: statusColor,
               ),
             ),
 
@@ -566,57 +624,78 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   SizedBox(height: 4.h),
 
                   Text(
-                    isOnline
-                        ? (isOn ? "Đang đóng" : "Đang cắt")
-                        : "Offline",
+                    statusText,
                     style: TextStyle(
                       fontSize: 12.sp,
-                      color: isOnline
-                          ? Colors.blue
-                          : Colors.red,
-                      fontWeight: FontWeight.w500,
+                      color: statusColor,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
             ),
 
-            /// SWITCH
-            Transform.scale(
-              scale: 0.85,
-              child: Switch(
-                value: isOn,
+            /// SWITCH + COUNTDOWN
+            Column(
+              children: [
 
-                activeColor: Colors.white,
-                activeTrackColor: const Color(0xFF43A047),
+                Transform.scale(
+                  scale: 0.85,
+                  child: Switch(
+                    value: isOn,
 
-                inactiveThumbColor: Colors.white,
-                inactiveTrackColor: const Color(0xFFE53935),
+                    activeColor: Colors.white,
+                    activeTrackColor: BreakerColors.on,
+                    inactiveThumbColor: Colors.white,
+                    inactiveTrackColor: BreakerColors.off,
 
-                materialTapTargetSize:
-                MaterialTapTargetSize.shrinkWrap,
+                    materialTapTargetSize:
+                    MaterialTapTargetSize.shrinkWrap,
 
-                onChanged: isOnline
-                    ? (value) async {
+                    onChanged: (isOffline ||
+                        isMaintenance ||
+                        isSwitching ||
+                        countdown > 0)
+                        ? null
+                        : (value) async {
 
-                  final password =
-                  await showPasswordDialog(context);
+                      final password =
+                      await showPasswordDialog(context);
 
-                  if (password == null) return;
+                      if (password == null) return;
 
-                  await context
-                      .read<DeviceCubit>()
-                      .togglePower(
-                    device,
-                    password: password,
-                  );
-                }
-                    : null,
-              ),
+                      await context
+                          .read<DeviceCubit>()
+                          .togglePower(
+                        device,
+                        password: password,
+                      );
+                    },
+                  ),
+                ),
+
+                if (countdown > 0)
+                  AnimatedSwitcher(
+                    duration: Duration(milliseconds: 300),
+                    child: countdown > 0
+                        ? Text(
+                      "$countdown s",
+                      key: ValueKey(countdown),
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                        : SizedBox(),
+                  )
+              ],
             ),
           ],
         ),
       ),
+    );
+        },
     );
   }
   Widget featureItem({

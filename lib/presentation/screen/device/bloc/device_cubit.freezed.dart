@@ -20,17 +20,13 @@ mixin _$DeviceState {
       throw _privateConstructorUsedError;
   LoadStatus get status => throw _privateConstructorUsedError;
   bool get isForceLoading => throw _privateConstructorUsedError;
-
   /// switching theo device
   Map<int, bool> get switchingDevices => throw _privateConstructorUsedError;
-
   /// countdown theo device
   Map<int, int> get switchCountdowns => throw _privateConstructorUsedError;
-
   /// log theo breakerSn
   Map<String, AtomatLogResponse> get breakerLogs =>
       throw _privateConstructorUsedError;
-
   /// Create a copy of DeviceState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)

@@ -14,11 +14,9 @@ class DeviceInfoScreen extends StatefulWidget {
 }
 
 class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
-
   final WarrantyRepository warrantyRepo = WarrantyRepository();
-
+  bool activating = false;
   WarrantyResponse? warranty;
-
   @override
   void initState() {
     super.initState();
@@ -27,7 +25,9 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
 
   Future<void> loadWarranty() async {
     final data = await warrantyRepo.getWarranty(widget.device.id);
-    print("Warranty API result: $data");
+
+    if (!mounted) return;
+
     setState(() {
       warranty = data;
     });
@@ -35,23 +35,54 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
 
   Future<void> activateWarranty() async {
 
+    setState(() {
+      activating = true;
+    });
+
+    final success =
     await warrantyRepo.activateWarranty(widget.device.id);
 
-    await loadWarranty();
+    if (!mounted) return;
+
+    setState(() {
+      activating = false;
+    });
+
+    if (success) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Kích hoạt bảo hành thành công")),
+      );
+
+      await loadWarranty();
+
+    } else {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Kích hoạt thất bại")),
+      );
+    }
   }
 
   String getWarrantyDuration() {
+
     if (warranty?.startDate == null || warranty?.endDate == null) {
       return "--";
     }
 
-    final start = DateTime.parse(warranty!.startDate!);
-    final end = DateTime.parse(warranty!.endDate!);
+    try {
 
-    final months =
-        (end.year - start.year) * 12 + (end.month - start.month);
+      final start = DateTime.parse(warranty!.startDate!);
+      final end = DateTime.parse(warranty!.endDate!);
 
-    return "$months tháng";
+      final months =
+          (end.year - start.year) * 12 + (end.month - start.month);
+
+      return "$months tháng";
+
+    } catch (_) {
+      return "--";
+    }
   }
 
   Widget item(String title, dynamic value) {
@@ -214,10 +245,9 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
           const SizedBox(height: 10),
 
           /// BUTTON kích hoạt
-          if (warranty?.startDate == null)
+          // if (warranty == null || warranty!.startDate == null)
             ElevatedButton(
-              onPressed: activateWarranty,
-
+              onPressed: activating ? null : activateWarranty,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF5BB8A6),
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -225,8 +255,16 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-
-              child: const Text(
+              child: activating
+                  ? const SizedBox(
+                height: 18,
+                width: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+                  : const Text(
                 "Kích hoạt bảo hành",
                 style: TextStyle(fontSize: 16),
               ),
