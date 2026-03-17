@@ -167,12 +167,20 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(24.r),
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFFBFEFE4),
+                        Color(0xFFE8F7F3),
+                      ],
+                    ),
+
+                    /// 🔥 thêm shadow
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 12,
+                        offset: Offset(0, 6),
                       )
                     ],
                   ),
@@ -185,7 +193,15 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(30.r),
+
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      )
+                    ],
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.settings_outlined),
@@ -221,6 +237,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
           child: SafeArea(
             child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+
           child: Column(
             children: [
               // ===== HEADER =====
@@ -228,17 +245,40 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24.r),
+
                   gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [
                       Color(0xFFBFEFE4),
                       Color(0xFFE8F7F3),
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: Stack(
                   children: [
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24.r),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withOpacity(0.15),
+                              Colors.transparent,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                      ),
+                    ),
                     /// IMAGE
                     Column(
                       children: [
@@ -259,6 +299,14 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(30.r),
+
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 12,
+                                offset: Offset(0, 4),
+                              )
+                            ],
                           ),
                           child: Row(
                             children: [
@@ -297,8 +345,15 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 padding:
                 EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16.r),
+                  borderRadius: BorderRadius.circular(20.r),
                   color: AppColors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 12,
+                      offset: Offset(0, 6),
+                    )
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -318,9 +373,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                         physics: const BouncingScrollPhysics(),
                         children: [
                           featureItem(
-                            icon: Icons.bolt,
+                            iconPath: "assets/icons/icons_new/icon_energy_meter.png",
                             title: "Năng lượng",
-                            color: const Color(0xFF8E6CEF),
+                            color: Color(0xFF8E6CEF),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -335,15 +390,17 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               );
                             },
                           ),
+
+                      featureItem(
+                        iconPath: "assets/icons/icons_new/icon_environment.png",
+                        title: "Môi trường",
+                        color: Color(0xFF4DA3FF),
+                      ),
+
                           featureItem(
-                            icon: Icons.water_drop,
-                            title: "Môi trường",
-                            color: const Color(0xFF4DA3FF),
-                          ),
-                          featureItem(
-                            icon: Icons.shield,
+                            iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
                             title: "KRA Care",
-                            color: const Color(0xFF38C793),
+                            color: Color(0xFF38C793),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -353,23 +410,26 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               );
                             },
                           ),
-                          featureItem(
-                            icon: Icons.show_chart,
-                            title: "Phân tích",
-                            color: const Color(0xFFFF8A3D),
-                          ),
-                          featureItem(
-                            icon: Icons.lightbulb,
-                            title: "Chiếu sáng",
-                            color: const Color(0xFFFFC542),
-                          ),
-                          featureItem(
-                            icon: Icons.ac_unit,
-                            title: "Điều hòa",
-                            color: const Color(0xFF59D0E0),
-                          ),
-                        ],
+
+                      featureItem(
+                        iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
+                        title: "Phân tích",
+                        color: Color(0xFFFF8A3D),
                       ),
+
+                      featureItem(
+                        iconPath: "assets/icons/icons_new/icon_energy_saving.png",
+                        title: "Chiếu sáng",
+                        color: Color(0xFFFFC542),
+                      ),
+
+                      featureItem(
+                        iconPath: "assets/icons/icons_new/icon_heat_pump.png",
+                        title: "Điều hòa",
+                        color: Color(0xFF59D0E0),
+                      ),
+                      ]
+                    )
                     )
                 ]
                 ),
@@ -472,277 +532,77 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     );
 
   }
-
-  // Widget deviceItem(DeviceResponse device) {
-  //
-  //   return BlocBuilder<DeviceCubit, DeviceState>(
-  //       builder: (context, state) {
-  //
-  //         final deviceCubit = context.read<DeviceCubit>();
-  //
-  //         final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-  //
-  //         final realStatus = deviceCubit.getRealStatus(device, log);
-  //
-  //   final bool isOn = realStatus == 1;
-  //   final bool isOffline = realStatus == -1;
-  //   final bool isMaintenance = realStatus == 2;
-  //
-  //   final countdown = state.switchCountdowns[device.id] ?? 0;
-  //   final isSwitching = deviceCubit.isDeviceSwitching(device.id);
-  //
-  //   /// text + color trạng thái
-  //   String statusText;
-  //   Color statusColor;
-  //
-  //   switch (realStatus) {
-  //     case 1:
-  //       statusText = "Đóng";
-  //       statusColor = BreakerColors.on;
-  //       break;
-  //
-  //     case 0:
-  //       statusText = "Cắt";
-  //       statusColor = BreakerColors.off;
-  //       break;
-  //
-  //     case 2:
-  //       statusText = "Bảo trì";
-  //       statusColor = BreakerColors.maintenance;
-  //       break;
-  //
-  //     case -1:
-  //       statusText = "Ngoại tuyến";
-  //       statusColor = Colors.grey;
-  //       break;
-  //
-  //     default:
-  //       statusText = "--";
-  //       statusColor = Colors.grey;
-  //   }
-  //
-  //   return InkWell(
-  //
-  //     /// mở chi tiết
-  //     onTap: () {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (_) => MultiBlocProvider(
-  //             providers: [
-  //               BlocProvider.value(
-  //                 value: context.read<DeviceCubit>(),
-  //               ),
-  //               BlocProvider(
-  //                 create: (_) => AtomatDetailCubit(),
-  //               ),
-  //               BlocProvider(
-  //                 create: (_) => AutomatChartCubit(),
-  //               ),
-  //             ],
-  //             child: AutomatDetailScreen(device: device),
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //
-  //     /// giữ để xoá favorite
-  //     onLongPress: () {
-  //       context.read<DeviceCubit>().toggleFavorite(device.id);
-  //     },
-  //
-  //     child: Container(
-  //       margin: EdgeInsets.only(bottom: 12.h),
-  //       padding: EdgeInsets.symmetric(
-  //         horizontal: 14.w,
-  //         vertical: 12.h,
-  //       ),
-  //       decoration: BoxDecoration(
-  //         color: Colors.white,
-  //         borderRadius: BorderRadius.circular(14.r),
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: Colors.black.withOpacity(0.05),
-  //             blurRadius: 12,
-  //             offset: const Offset(0,4),
-  //           )
-  //         ],
-  //       ),
-  //
-  //       child: Row(
-  //         children: [
-  //
-  //           /// ICON
-  //           Container(
-  //             padding: EdgeInsets.all(10.w),
-  //             decoration: BoxDecoration(
-  //               color: statusColor.withOpacity(0.15),
-  //               borderRadius: BorderRadius.circular(12.r),
-  //             ),
-  //             child: Icon(
-  //               realStatus == 1
-  //                   ? Icons.flash_on
-  //                   : realStatus == 2
-  //                   ? Icons.build
-  //                   : realStatus == -1
-  //                   ? Icons.cloud_off
-  //                   : Icons.power_off,
-  //               color: statusColor,
-  //             ),
-  //           ),
-  //
-  //           SizedBox(width: 12.w),
-  //
-  //           /// TEXT
-  //           Expanded(
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //
-  //                 Text(
-  //                   device.name.isNotEmpty
-  //                       ? device.name
-  //                       : device.code,
-  //                   style: TextStyle(
-  //                     fontSize: 14.sp,
-  //                     fontWeight: FontWeight.w600,
-  //                   ),
-  //                 ),
-  //
-  //                 SizedBox(height: 4.h),
-  //
-  //                 Text(
-  //                   statusText,
-  //                   style: TextStyle(
-  //                     fontSize: 12.sp,
-  //                     color: statusColor,
-  //                     fontWeight: FontWeight.w600,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //
-  //           /// SWITCH + COUNTDOWN
-  //           Column(
-  //             children: [
-  //
-  //               Transform.scale(
-  //                 scale: 0.85,
-  //                 child: Switch(
-  //                   value: isOn,
-  //
-  //                   activeColor: Colors.white,
-  //                   activeTrackColor: BreakerColors.on,
-  //                   inactiveThumbColor: Colors.white,
-  //                   inactiveTrackColor: BreakerColors.off,
-  //
-  //                   materialTapTargetSize:
-  //                   MaterialTapTargetSize.shrinkWrap,
-  //
-  //                   onChanged: (isOffline ||
-  //                       isMaintenance ||
-  //                       isSwitching ||
-  //                       countdown > 0)
-  //                       ? null
-  //                       : (value) async {
-  //
-  //                     final password =
-  //                     await showPasswordDialog(context);
-  //
-  //                     if (password == null) return;
-  //
-  //                     await context
-  //                         .read<DeviceCubit>()
-  //                         .togglePower(
-  //                       device,
-  //                       password: password,
-  //                     );
-  //                   },
-  //                 ),
-  //               ),
-  //
-  //               if (countdown > 0)
-  //                 AnimatedSwitcher(
-  //                   duration: Duration(milliseconds: 300),
-  //                   child: countdown > 0
-  //                       ? Text(
-  //                     "$countdown s",
-  //                     key: ValueKey(countdown),
-  //                     style: TextStyle(
-  //                       fontSize: 11.sp,
-  //                       color: Colors.orange,
-  //                       fontWeight: FontWeight.w600,
-  //                     ),
-  //                   )
-  //                       : SizedBox(),
-  //                 )
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  //       },
-  //   );
-  // }
   Widget featureItem({
-    required IconData icon,
+    required String iconPath,
     required String title,
     required Color color,
     VoidCallback? onTap,
   }) {
     return Padding(
       padding: EdgeInsets.only(right: 14.w),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16.r),
-        onTap: onTap,
-        child: Column(
-          children: [
 
-            Container(
-        width: 60.w,
-        height: 60.w,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.r),
-                gradient: LinearGradient(
-                  colors: [
-                    color.withOpacity(0.25),
-                    color.withOpacity(0.08),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+      /// 👇 QUAN TRỌNG: phải có Material để ripple ăn
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18.r),
+          onTap: onTap,
+
+          /// 👇 hiệu ứng bấm
+          child: AnimatedScale(
+            scale: 1,
+            duration: const Duration(milliseconds: 120),
+
+            child: Column(
+              children: [
+                Container(
+                  width: 64.w,
+                  height: 64.w,
+                  padding: EdgeInsets.all(14.w),
+
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18.r),
+
+                    /// 🔥 shadow đẹp hơn
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      )
+                    ],
+
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        color.withOpacity(0.35),
+                        color.withOpacity(0.05),
+                      ],
+                    ),
+                  ),
+
+                  child: Image.asset(iconPath),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: color.withOpacity(0.15),
-                    blurRadius: 8,
-                    offset: const Offset(0,4),
-                  )
-                ],
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                  size: 26.w
-              ),
+
+                SizedBox(height: 8.h),
+
+                SizedBox(
+                  width: 72.w,
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    maxLines: 2,
+                  ),
+                )
+              ],
             ),
-
-            SizedBox(height: 6.h),
-
-            SizedBox(
-              width: 70.w,
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-                maxLines: 2,
-              ),
-            )
-          ],
+          ),
         ),
       ),
     );

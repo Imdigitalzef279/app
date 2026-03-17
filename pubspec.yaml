@@ -124,10 +124,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+
   assets:
-    - assets/icons/
-    - assets/images/
-    - env/
+      - assets/images/
+      - assets/icons/icons_new/
+      - env/
 
   fonts:
     - family: BeVietNamPro

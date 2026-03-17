@@ -135,9 +135,12 @@ class _ProductSliderState extends State<_ProductSlider> {
   int current = 0;
 
   final products = [
-    "assets/images/solar_energy.png",
-    "assets/images/mccb_3p.png",
-    "assets/images/factory.png",
+    "assets/icons/icons_new/icon_smart_breaker.png",
+    "assets/icons/icons_new/icon_circuit_breaker.png",
+    "assets/icons/icons_new/icon_energy_meter.png",
+    "assets/icons/icons_new/icon_gateway.png",
+    "assets/icons/icons_new/icon_kra_smart_safety.png",
+    "assets/icons/icons_new/icon_heat_pump.png",
   ];
 
   @override
@@ -158,9 +161,9 @@ class _ProductSliderState extends State<_ProductSlider> {
               });
             },
             itemBuilder: (context, index) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: _ProductCard(),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: _ProductCard(icons: products),
               );
             },
           ),
@@ -224,18 +227,13 @@ class _ProductSliderState extends State<_ProductSlider> {
   }
 }
 class _ProductCard extends StatelessWidget {
-  const _ProductCard({super.key});
+  final List<String> icons;
+
+  const _ProductCard({required this.icons});
 
   @override
   Widget build(BuildContext context) {
-    final images = [
-      "assets/images/mccb_3p.png",
-      "assets/images/mm50h_1p.png",
-      "assets/images/mm50h_2p.png",
-      "assets/images/mm50h_3p.png",
-      "assets/images/mm50h_4p.png",
-      "assets/images/solar_energy.png",
-    ];
+    final images = icons;
 
     return Container(
       height: 170,
@@ -330,7 +328,7 @@ class _ProductCard extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 return Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
@@ -391,16 +389,46 @@ class _CategoryGrid extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final items = [
-      {"icon": "assets/images/mccb_3p.png", "text": "Đồng hồ & đo lường"},
-      {"icon": "assets/images/mm50h_1p.png", "text": "Bộ đóng ngắt"},
-      {"icon": "assets/images/mm50h_2p.png", "text": "Cầu dao thông minh"},
-      {"icon": "assets/images/mm50h_3p.png", "text": "Cổng thông minh"},
-      {"icon": "assets/images/mm50h_4p.png", "text": "Thiết bị Tuya"},
-      {"icon": "assets/images/solar_energy.png", "text": "Giải pháp viễn thông"},
-      {"icon": "assets/images/mccb_3p.png", "text": "Thiết bị điện"},
-      {"icon": "assets/images/mm50h_1p.png", "text": "Điện dân dụng"},
-      {"icon": "assets/images/mm50h_2p.png", "text": "Điện công nghiệp"},
-      {"icon": "assets/images/mm50h_3p.png", "text": "Thiết bị bảo vệ"},
+      {
+        "icon": "assets/icons/icons_new/icon_energy_meter.png",
+        "text": "Đồng hồ & đo lường"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_smart_breaker.png",
+        "text": "Cầu dao thông minh"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_circuit_breaker.png",
+        "text": "Bộ đóng ngắt"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_gateway.png",
+        "text": "Cổng thông minh"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_environment.png",
+        "text": "Thiết bị môi trường"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_kra_smart_safety.png",
+        "text": "KRA Smart Safety"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_energy_management.png",
+        "text": "Quản lý năng lượng"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_energy_analytics.png",
+        "text": "Phân tích năng lượng"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_energy_saving.png",
+        "text": "Tiết kiệm điện"
+      },
+      {
+        "icon": "assets/icons/icons_new/icon_heat_pump.png",
+        "text": "Heat Pump"
+      },
     ];
 
     return SizedBox(
@@ -433,9 +461,16 @@ class _CategoryGrid extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
 
-                Image.asset(
-                  items[index]["icon"]!,
-                  height: 34,
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Image.asset(
+                    items[index]["icon"]!,
+                    height: 28,
+                  ),
                 ),
 
                 const SizedBox(height: 8),
