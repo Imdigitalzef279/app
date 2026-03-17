@@ -10,6 +10,7 @@ import '../../../../application/enums/load_status.dart';
 import '../../../../application/utils/device_avatar_storage.dart';
 import '../../../widgets/password_dialog.dart';
 import '../../device/bloc/device_cubit.dart';
+import '../../device/device_card/device_card_widget.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'automat_detail_screen.dart';
 
@@ -436,7 +437,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              buildDeviceCard(context, device),
+              DeviceCardWidget(device: device),
 
               Padding(
                 padding: const EdgeInsets.only(left: 20),

@@ -16,6 +16,8 @@ import '../Electricity/automat/automat_detail_screen.dart';
 import '../Electricity/automat/automat_list_screen.dart';
 import '../Electricity/automat/bloc/atomat_detail_cubit.dart';
 import '../device/bloc/device_cubit.dart';
+import '../device/device_card/device_card_widget.dart';
+import '../kra_care/kra_care_screen.dart';
 
 class GeneralDeviceScreen extends StatefulWidget {
   const GeneralDeviceScreen({super.key, required this.project});
@@ -342,6 +344,14 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             icon: Icons.shield,
                             title: "KRA Care",
                             color: const Color(0xFF38C793),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const KraCareScreen(),
+                                ),
+                              );
+                            },
                           ),
                           featureItem(
                             icon: Icons.show_chart,
@@ -435,7 +445,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   ),
 
                   Gap(16.h),
-
                   favoriteDevices.isEmpty
                       ? Padding(
                     padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -447,31 +456,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       ),
                     ),
                   )
-                      : ReorderableListView(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-
-                    onReorder: (oldIndex, newIndex) {
-
-                      if (newIndex > oldIndex) {
-                        newIndex -= 1;
-                      }
-
-                      final item = favoriteDevices.removeAt(oldIndex);
-                      favoriteDevices.insert(newIndex, item);
-
-                      setState(() {});
-                    },
-
+                      : Column(
                     children: favoriteDevices.map((device) {
-
-                      return Container(
-                        key: ValueKey(device.id),
-                        child: deviceItem(device),
-                      );
-
+                      return DeviceCardWidget(device: device);
                     }).toList(),
-
                   )
 
                 ],
@@ -485,219 +473,219 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
   }
 
-  Widget deviceItem(DeviceResponse device) {
-
-    return BlocBuilder<DeviceCubit, DeviceState>(
-        builder: (context, state) {
-
-          final deviceCubit = context.read<DeviceCubit>();
-
-          final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-
-          final realStatus = deviceCubit.getRealStatus(device, log);
-
-    final bool isOn = realStatus == 1;
-    final bool isOffline = realStatus == -1;
-    final bool isMaintenance = realStatus == 2;
-
-    final countdown = state.switchCountdowns[device.id] ?? 0;
-    final isSwitching = deviceCubit.isDeviceSwitching(device.id);
-
-    /// text + color trạng thái
-    String statusText;
-    Color statusColor;
-
-    switch (realStatus) {
-      case 1:
-        statusText = "Đóng";
-        statusColor = BreakerColors.on;
-        break;
-
-      case 0:
-        statusText = "Cắt";
-        statusColor = BreakerColors.off;
-        break;
-
-      case 2:
-        statusText = "Bảo trì";
-        statusColor = BreakerColors.maintenance;
-        break;
-
-      case -1:
-        statusText = "Ngoại tuyến";
-        statusColor = Colors.grey;
-        break;
-
-      default:
-        statusText = "--";
-        statusColor = Colors.grey;
-    }
-
-    return InkWell(
-
-      /// mở chi tiết
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider.value(
-                  value: context.read<DeviceCubit>(),
-                ),
-                BlocProvider(
-                  create: (_) => AtomatDetailCubit(),
-                ),
-                BlocProvider(
-                  create: (_) => AutomatChartCubit(),
-                ),
-              ],
-              child: AutomatDetailScreen(device: device),
-            ),
-          ),
-        );
-      },
-
-      /// giữ để xoá favorite
-      onLongPress: () {
-        context.read<DeviceCubit>().toggleFavorite(device.id);
-      },
-
-      child: Container(
-        margin: EdgeInsets.only(bottom: 12.h),
-        padding: EdgeInsets.symmetric(
-          horizontal: 14.w,
-          vertical: 12.h,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 12,
-              offset: const Offset(0,4),
-            )
-          ],
-        ),
-
-        child: Row(
-          children: [
-
-            /// ICON
-            Container(
-              padding: EdgeInsets.all(10.w),
-              decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Icon(
-                realStatus == 1
-                    ? Icons.flash_on
-                    : realStatus == 2
-                    ? Icons.build
-                    : realStatus == -1
-                    ? Icons.cloud_off
-                    : Icons.power_off,
-                color: statusColor,
-              ),
-            ),
-
-            SizedBox(width: 12.w),
-
-            /// TEXT
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  Text(
-                    device.name.isNotEmpty
-                        ? device.name
-                        : device.code,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-
-                  SizedBox(height: 4.h),
-
-                  Text(
-                    statusText,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: statusColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            /// SWITCH + COUNTDOWN
-            Column(
-              children: [
-
-                Transform.scale(
-                  scale: 0.85,
-                  child: Switch(
-                    value: isOn,
-
-                    activeColor: Colors.white,
-                    activeTrackColor: BreakerColors.on,
-                    inactiveThumbColor: Colors.white,
-                    inactiveTrackColor: BreakerColors.off,
-
-                    materialTapTargetSize:
-                    MaterialTapTargetSize.shrinkWrap,
-
-                    onChanged: (isOffline ||
-                        isMaintenance ||
-                        isSwitching ||
-                        countdown > 0)
-                        ? null
-                        : (value) async {
-
-                      final password =
-                      await showPasswordDialog(context);
-
-                      if (password == null) return;
-
-                      await context
-                          .read<DeviceCubit>()
-                          .togglePower(
-                        device,
-                        password: password,
-                      );
-                    },
-                  ),
-                ),
-
-                if (countdown > 0)
-                  AnimatedSwitcher(
-                    duration: Duration(milliseconds: 300),
-                    child: countdown > 0
-                        ? Text(
-                      "$countdown s",
-                      key: ValueKey(countdown),
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        color: Colors.orange,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
-                        : SizedBox(),
-                  )
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-        },
-    );
-  }
+  // Widget deviceItem(DeviceResponse device) {
+  //
+  //   return BlocBuilder<DeviceCubit, DeviceState>(
+  //       builder: (context, state) {
+  //
+  //         final deviceCubit = context.read<DeviceCubit>();
+  //
+  //         final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+  //
+  //         final realStatus = deviceCubit.getRealStatus(device, log);
+  //
+  //   final bool isOn = realStatus == 1;
+  //   final bool isOffline = realStatus == -1;
+  //   final bool isMaintenance = realStatus == 2;
+  //
+  //   final countdown = state.switchCountdowns[device.id] ?? 0;
+  //   final isSwitching = deviceCubit.isDeviceSwitching(device.id);
+  //
+  //   /// text + color trạng thái
+  //   String statusText;
+  //   Color statusColor;
+  //
+  //   switch (realStatus) {
+  //     case 1:
+  //       statusText = "Đóng";
+  //       statusColor = BreakerColors.on;
+  //       break;
+  //
+  //     case 0:
+  //       statusText = "Cắt";
+  //       statusColor = BreakerColors.off;
+  //       break;
+  //
+  //     case 2:
+  //       statusText = "Bảo trì";
+  //       statusColor = BreakerColors.maintenance;
+  //       break;
+  //
+  //     case -1:
+  //       statusText = "Ngoại tuyến";
+  //       statusColor = Colors.grey;
+  //       break;
+  //
+  //     default:
+  //       statusText = "--";
+  //       statusColor = Colors.grey;
+  //   }
+  //
+  //   return InkWell(
+  //
+  //     /// mở chi tiết
+  //     onTap: () {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (_) => MultiBlocProvider(
+  //             providers: [
+  //               BlocProvider.value(
+  //                 value: context.read<DeviceCubit>(),
+  //               ),
+  //               BlocProvider(
+  //                 create: (_) => AtomatDetailCubit(),
+  //               ),
+  //               BlocProvider(
+  //                 create: (_) => AutomatChartCubit(),
+  //               ),
+  //             ],
+  //             child: AutomatDetailScreen(device: device),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //
+  //     /// giữ để xoá favorite
+  //     onLongPress: () {
+  //       context.read<DeviceCubit>().toggleFavorite(device.id);
+  //     },
+  //
+  //     child: Container(
+  //       margin: EdgeInsets.only(bottom: 12.h),
+  //       padding: EdgeInsets.symmetric(
+  //         horizontal: 14.w,
+  //         vertical: 12.h,
+  //       ),
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.circular(14.r),
+  //         boxShadow: [
+  //           BoxShadow(
+  //             color: Colors.black.withOpacity(0.05),
+  //             blurRadius: 12,
+  //             offset: const Offset(0,4),
+  //           )
+  //         ],
+  //       ),
+  //
+  //       child: Row(
+  //         children: [
+  //
+  //           /// ICON
+  //           Container(
+  //             padding: EdgeInsets.all(10.w),
+  //             decoration: BoxDecoration(
+  //               color: statusColor.withOpacity(0.15),
+  //               borderRadius: BorderRadius.circular(12.r),
+  //             ),
+  //             child: Icon(
+  //               realStatus == 1
+  //                   ? Icons.flash_on
+  //                   : realStatus == 2
+  //                   ? Icons.build
+  //                   : realStatus == -1
+  //                   ? Icons.cloud_off
+  //                   : Icons.power_off,
+  //               color: statusColor,
+  //             ),
+  //           ),
+  //
+  //           SizedBox(width: 12.w),
+  //
+  //           /// TEXT
+  //           Expanded(
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //
+  //                 Text(
+  //                   device.name.isNotEmpty
+  //                       ? device.name
+  //                       : device.code,
+  //                   style: TextStyle(
+  //                     fontSize: 14.sp,
+  //                     fontWeight: FontWeight.w600,
+  //                   ),
+  //                 ),
+  //
+  //                 SizedBox(height: 4.h),
+  //
+  //                 Text(
+  //                   statusText,
+  //                   style: TextStyle(
+  //                     fontSize: 12.sp,
+  //                     color: statusColor,
+  //                     fontWeight: FontWeight.w600,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //
+  //           /// SWITCH + COUNTDOWN
+  //           Column(
+  //             children: [
+  //
+  //               Transform.scale(
+  //                 scale: 0.85,
+  //                 child: Switch(
+  //                   value: isOn,
+  //
+  //                   activeColor: Colors.white,
+  //                   activeTrackColor: BreakerColors.on,
+  //                   inactiveThumbColor: Colors.white,
+  //                   inactiveTrackColor: BreakerColors.off,
+  //
+  //                   materialTapTargetSize:
+  //                   MaterialTapTargetSize.shrinkWrap,
+  //
+  //                   onChanged: (isOffline ||
+  //                       isMaintenance ||
+  //                       isSwitching ||
+  //                       countdown > 0)
+  //                       ? null
+  //                       : (value) async {
+  //
+  //                     final password =
+  //                     await showPasswordDialog(context);
+  //
+  //                     if (password == null) return;
+  //
+  //                     await context
+  //                         .read<DeviceCubit>()
+  //                         .togglePower(
+  //                       device,
+  //                       password: password,
+  //                     );
+  //                   },
+  //                 ),
+  //               ),
+  //
+  //               if (countdown > 0)
+  //                 AnimatedSwitcher(
+  //                   duration: Duration(milliseconds: 300),
+  //                   child: countdown > 0
+  //                       ? Text(
+  //                     "$countdown s",
+  //                     key: ValueKey(countdown),
+  //                     style: TextStyle(
+  //                       fontSize: 11.sp,
+  //                       color: Colors.orange,
+  //                       fontWeight: FontWeight.w600,
+  //                     ),
+  //                   )
+  //                       : SizedBox(),
+  //                 )
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  //       },
+  //   );
+  // }
   Widget featureItem({
     required IconData icon,
     required String title,
