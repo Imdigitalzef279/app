@@ -134,7 +134,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       }
 
       final prefs = await SharedPreferences.getInstance();
-
+      print("TOKEN TRƯỚC MAINTENANCE: ${prefs.getString("access_token")}");
       final devices = response.data!;
 
       final updatedDevices = <DeviceResponse>[];
@@ -317,28 +317,31 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(isForceLoading: true));
 
     try {
-      final username = profile?.userName ?? "mobile_app";
-      String addr =
+
+      String rawAddr =
           state.breakerLogs[device.code]?.addr ??
               device.realtimeLog?.addr ??
-              device.serialNumber ??
               "";
-      print("MAINTENANCE ADDR: $addr");
-      print("DEVICE: ${device.code}");
-      print("GATEWAY: ${device.gatewayNumber}");
-      print("ADDR: $addr");
-      print("======================");
-      print("MQTT STATE: ${state.breakerLogs[device.code]?.rlyRepSta}");
-      print("TYPE: ${state.breakerLogs[device.code]?.rlyRepSta.runtimeType}");
+
+      final addr =
+          state.breakerLogs[device.code]?.addr ??
+              device.realtimeLog?.addr ??
+              "";
       if (addr.isEmpty) {
         print("ADDR NULL → không gửi API");
         return;
       }
       final isMaintenance =
           state.breakerLogs[device.code]?.rlyRepSta == 1;
-
+      final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
+      final username = authRepo.currentProfile?.userName ?? "";
       final commandValue = isMaintenance ? "0" : "1";
-
+      print("=== TOGGLE MAINTENANCE DEBUG ===");
+      print("DEVICE CODE: ${device.code}");
+      print("GATEWAY: ${device.gatewayNumber}");
+      print("ADDR: $addr");
+      print("USERNAME: $username");
+      print("COMMAND: $commandValue");
       final response = await _cbs.setBreakerMaintenance(
         CbsMeterRequest(
           addr: addr,
@@ -349,7 +352,6 @@ class DeviceCubit extends Cubit<DeviceState> {
           isForce: true,
         ),
       );
-      print("API RESPONSE: $response");
       if (response == -1) {
         AppToast.showToastError(title: "Không đổi bảo trì được");
         emit(state.copyWith(isForceLoading: false));
@@ -401,7 +403,12 @@ class DeviceCubit extends Cubit<DeviceState> {
         return;
       }
 
-      final currentStatus = latestDevice.status ?? 0;
+
+      final currentStatus =
+          state.breakerLogs[latestDevice.code]?.rlySta ??
+              latestDevice.realtimeLog?.rlySta ??
+              latestDevice.status ??
+              0;
       final commandValue = currentStatus == 1 ? "0" : "1";
 
       final success = await switchCbsWithForce(

@@ -15,7 +15,19 @@ class CbsRepositoryImpl implements CbsRepository {
 
   @override
   Future<int> setBreakerMaintenance(CbsMeterRequest request) async {
-    await _apiClient.setBreakerMaintenance(request);
-    return 1;
+    try {
+      print("=== CALL CBS MAINTENANCE ===");
+      print("REQUEST: ${request.toJson()}");
+
+      final res = await _apiClient.setBreakerMaintenance(request);
+
+
+      return 1;
+    } catch (e) {
+      print("=== ERROR CBS ===");
+      print(e);
+
+      return -1;
+    }
   }
 }

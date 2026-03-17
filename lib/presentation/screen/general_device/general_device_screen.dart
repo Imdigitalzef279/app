@@ -18,6 +18,7 @@ import '../Electricity/automat/bloc/atomat_detail_cubit.dart';
 import '../device/bloc/device_cubit.dart';
 import '../device/device_card/device_card_widget.dart';
 import '../kra_care/kra_care_screen.dart';
+import 'ai_chat/ai_chat_screen.dart';
 
 class GeneralDeviceScreen extends StatefulWidget {
   const GeneralDeviceScreen({super.key, required this.project});
@@ -33,6 +34,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late bool isLandscape;
   late SignalRService signalR;
   int _currentIndex = 0;
+  double _aiTop = 500;
+  double _aiLeft = 300;
+
+  bool _showChat = false;
   @override
   void initState() {
     super.initState();
@@ -222,7 +227,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
           )
         ],
       ),
-        body: Container(
+      body: Stack(
+          children: [
+      Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -521,14 +528,52 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       return DeviceCardWidget(device: device);
                     }).toList(),
                   )
-
                 ],
               ),
             ],
           ),
         ),
       ),
-        )
+
+      ),
+
+
+            Positioned(
+              top: _aiTop,
+              left: _aiLeft,
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  setState(() {
+                    _aiTop += details.delta.dy;
+                    _aiLeft += details.delta.dx;
+
+
+                    _aiTop = _aiTop.clamp(0, MediaQuery.of(context).size.height - 120);
+                    _aiLeft = _aiLeft.clamp(0, MediaQuery.of(context).size.width - 80);
+                  });
+                },
+                onTap: () {
+                  setState(() {
+                    _showChat = !_showChat;
+                  });
+                },
+                child: _buildAiButton(),
+              ),
+
+            ),
+            if (_showChat)
+              Positioned(
+                top: _aiTop - 360,
+                left: _aiLeft - 200,
+                child: AnimatedScale(
+                  scale: _showChat ? 1 : 0,
+                  duration: Duration(milliseconds: 200),
+                  child: _buildChatBox(),
+                ),
+              ),
+          ]
+      )
+
     );
 
   }
@@ -796,4 +841,87 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       ),
     );
   }
+}
+Widget _buildAiButton() {
+  return Column(
+    children: [
+      CircleAvatar(
+        radius: 26,
+        backgroundColor: Color(0xFF2D6BFF),
+        child: Icon(Icons.support_agent, color: Colors.white),
+      ),
+      SizedBox(height: 4),
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Color(0xFF2D6BFF),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          "Tư vấn",
+          style: TextStyle(color: Colors.white, fontSize: 12),
+        ),
+      )
+    ],
+  );
+}
+Widget _buildChatBox() {
+  return Container(
+    width: 280,
+    height: 350,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.2),
+          blurRadius: 12,
+        )
+      ],
+    ),
+    child: Column(
+      children: [
+        /// HEADER
+        Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Color(0xFF2D6BFF),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.smart_toy, color: Colors.white),
+              SizedBox(width: 8),
+              Text(
+                "AI Tư vấn",
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+
+        /// BODY
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.all(8),
+            children: [
+              Text("Xin chào 👋"),
+              Text("Bạn cần hỗ trợ gì?"),
+            ],
+          ),
+        ),
+
+        /// INPUT
+        Padding(
+          padding: EdgeInsets.all(8),
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: "Nhập câu hỏi...",
+              border: OutlineInputBorder(),
+            ),
+          ),
+        )
+      ],
+    ),
+  );
 }

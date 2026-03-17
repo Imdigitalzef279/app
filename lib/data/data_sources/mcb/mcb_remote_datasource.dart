@@ -28,9 +28,9 @@ class McbRemoteDatasource {
     }
   }
   Future<BreakerStateResponse> getBreakerState({
-    required String gatewaySn,   // nếu không dùng có thể bỏ
+    required String gatewaySn,
     required String breakerSn,
-    required String addr,        // nếu không dùng có thể bỏ
+    required String addr,
   }) async {
     final response = await dio.post(
       '/api/app/log-meter-breaker/get-list',

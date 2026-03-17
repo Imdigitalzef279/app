@@ -23,6 +23,10 @@ enum ChartDisplayType {
   line,
   bar,
 }
+enum MeterType {
+  household,
+  business,
+}
 class AutomatDetailScreen extends StatefulWidget {
   final DeviceResponse device;
   const AutomatDetailScreen({
@@ -151,20 +155,26 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         );
       }
 
-      /// tính điện năng
       if (log.epi != null) {
+
         double energy = log.epi! - epiAtStartOfDay;
-        double money = energy * pricePerKwh;
-        double realtime = (log.p ?? 0) * pricePerKwh / 3600;
-        print("⚡ EPI hiện tại: ${log.epi}");
-        print("⚡ EPI đầu ngày: $epiAtStartOfDay");
-        print("⚡ Energy hôm nay: $energy");
-        print("💰 Giá điện: $pricePerKwh");
-        print("💰 Tiền tính được: $money");
+        if (energy < 0) energy = 0;
+
+        double money = 0;
+
+        if (pricePerKwh > 0) {
+          final type = getMeterType();
+
+          if (type == MeterType.household) {
+            money = calculateHousehold(energy);
+          } else {
+            money = calculateBusiness(energy);
+          }
+        }
+
         setState(() {
           todayEnergy = energy;
           moneyToday = money;
-          realtimeCost += realtime;
         });
       }
 
@@ -185,15 +195,38 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
 
+    /// 👉 log đầu ngày
     final firstLog = logs.firstWhere(
           (e) => DateTime.parse(e.updatedAt!).isAfter(startOfDay),
       orElse: () => logs.first,
     );
 
+    /// 👉 log mới nhất (cuối cùng)
+    final lastLog = logs.last;
+
+    /// 👉 lưu mốc đầu ngày
     epiAtStartOfDay = firstLog.epi ?? 0;
+
+    /// 👉 tính điện năng hôm nay NGAY (không cần realtime)
+    double currentEpi = lastLog.epi ?? 0;
+
+    double energy = currentEpi - epiAtStartOfDay;
+
+    if (energy < 0) energy = 0;
+
+    setState(() {
+      todayEnergy = energy;
+    });
+
+    print("START EPI: $epiAtStartOfDay");
+    print("CURRENT EPI: $currentEpi");
+    print("ENERGY TODAY: $energy");
+
+    /// 👉 nếu đã có giá thì tính luôn tiền
+    if (pricePerKwh > 0) {
+      _recalculateMoney();
+    }
   }
-  /// Lấy giá điện từ API
-  /// dùng để tính tiền điện
   Future<void> _loadElectricPrice() async {
     try {
       final api = GetIt.instance<ApiClient>();
@@ -201,27 +234,74 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       final result = await api.getPriceConfig(currentDevice.id);
 
       if (result.isNotEmpty) {
+
+        final price = result.first.priceAvr;
+
         setState(() {
-          pricePerKwh = result.first.priceAvr ?? 0;
+          pricePerKwh = price;
         });
+
+        print("✅ Giá điện: $pricePerKwh");
+
+        _recalculateMoney();
       }
+
     } catch (e) {
       print("Load price error: $e");
     }
   }
-  /// Reload danh sách thiết bị từ server
-  /// dùng sau khi đóng/cắt CB
   Future<void> _reloadDevice() async {
     await context.read<DeviceCubit>().getAllDevices(
       powerStationId: currentDevice.powerStationId,
     );
   }
-  /// Reload log breaker realtime
   void _reloadRealTime() {
     cubit.getBreakerLog(currentDevice.code ?? "");
   }
-  /// Hiển thị dialog nhập PIN
-  /// dùng khi đóng/cắt CB
+  void _recalculateMoney() {
+    final energy = todayEnergy;
+
+    final type = getMeterType();
+
+    double money = 0;
+
+    if (type == MeterType.household) {
+      money = calculateHousehold(energy);
+    } else {
+      money = calculateBusiness(energy);
+    }
+
+    setState(() {
+      moneyToday = money;
+    });
+  }
+  MeterType getMeterType() {
+    if (currentDevice.meterTypeId == 81 ||
+        currentDevice.meterTypeId == 82) {
+      return MeterType.household;
+    }
+    return MeterType.business;
+  }
+  double calculateHousehold(double kwh) {
+    double money = 0;
+
+    if (kwh <= 50) {
+      money = kwh * 1800;
+    } else if (kwh <= 100) {
+      money = 50 * 1800 + (kwh - 50) * 1900;
+    } else if (kwh <= 200) {
+      money = 50 * 1800 + 50 * 1900 + (kwh - 100) * 2200;
+    } else {
+      money = 50 * 1800 +
+          50 * 1900 +
+          100 * 2200 +
+          (kwh - 200) * 2700;
+    }
+    return money;
+  }
+  double calculateBusiness(double kwh) {
+    return kwh * pricePerKwh;
+  }
   Future<String?> _showPasswordDialog(BuildContext context) async {
     return showDialog<String>(
       context: context,
@@ -546,7 +626,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children:  [
+                    children: [
                       Text(
                         "Tiền điện hôm nay",
                         style: TextStyle(
@@ -554,6 +634,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                           color: Colors.grey,
                         ),
                       ),
+
+                      /// 👉 THÊM DÒNG NÀY
+                      Text(
+                        getMeterType() == MeterType.household
+                            ? "Hộ gia đình"
+                            : "Doanh nghiệp",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+
                       Text(
                         "${todayEnergy.toStringAsFixed(1)} kWh • ${pricePerKwh.toInt()}đ/kWh",
                         style: TextStyle(

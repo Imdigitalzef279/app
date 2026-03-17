@@ -52,17 +52,26 @@ void configureDependencies() {
         onRequest: (options, handler) async {
           final prefs = getIt<SharedPreferencesHelper>();
           final token = await prefs.getAccessToken();
+
+          print("=== REQUEST ===");
+          print("URL: ${options.uri}");
+          print("METHOD: ${options.method}");
+          print("BODY: ${options.data}");
+          print("TOKEN: $token");
+
           if (token != null && token.isNotEmpty) {
             options.headers["Authorization"] = "Bearer $token";
           }
 
-
           return handler.next(options);
         },
         onError: (e, handler) async {
-          if (e.type == DioExceptionType.unknown) {
-            print("🚨 NETWORK ERROR - CHECK BASE URL OR INTERNET");
-          }
+          print("=== ERROR RESPONSE ===");
+          print("URL: ${e.requestOptions.uri}");
+          print("STATUS CODE: ${e.response?.statusCode}");
+          print("DATA: ${e.response?.data}");
+          print("MESSAGE: ${e.message}");
+
           if (e.response?.statusCode == 401) {
             final prefs = getIt<SharedPreferencesHelper>();
             await prefs.removeAccessToken();
@@ -77,7 +86,11 @@ void configureDependencies() {
           return handler.next(e);
         },
         onResponse: (response, handler) {
-
+          print("=== RESPONSE ===");
+          print("URL: ${response.requestOptions.uri}");
+          print("STATUS CODE: ${response.statusCode}");
+          print("HEADERS: ${response.headers}");
+          print("DATA: ${response.data}");
 
           return handler.next(response);
         },
