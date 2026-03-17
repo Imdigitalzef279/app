@@ -33,9 +33,13 @@ class DeviceCubit extends Cubit<DeviceState> {
   final _authRepo = getIt.get<AuthRepository>();
   ProfileResponse? profile;
 
-  double calculateElectricCost(DeviceResponse device, {double price = 3200}) {
-    final kwh = device.realtimeLog?.epi ?? 0;
-    return kwh * price;
+  double calculateTodayMoney({
+    required double currentEpi,
+    required double startOfDayEpi,
+    required double price,
+  }) {
+    final energy = currentEpi - startOfDayEpi;
+    return energy * price;
   }
   // lấy usernaemn cho api đóng cắt
   void setProfile(ProfileResponse profileResponse) {

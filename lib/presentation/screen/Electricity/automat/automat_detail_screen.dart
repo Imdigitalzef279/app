@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
@@ -14,12 +15,6 @@ import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/services/signalr_service.dart';
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
-/// Màn hình chi tiết thiết bị CB (Circuit Breaker)
-/// Hiển thị:
-/// - Trạng thái ON/OFF
-/// - Điện áp / dòng / công suất
-/// - Chart tải điện
-/// - Tiền điện hôm nay
 enum ChartType {
   power,
   energy,
@@ -120,7 +115,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   void _handleRealtime(Map<String, dynamic> data) {
     try {
       final event = data["event"];
-
+      print("🔥 EVENT: $event");
       /// command response từ server
       if (event == "ReceiveCommand") {
         return;
@@ -161,7 +156,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         double energy = log.epi! - epiAtStartOfDay;
         double money = energy * pricePerKwh;
         double realtime = (log.p ?? 0) * pricePerKwh / 3600;
-
+        print("⚡ EPI hiện tại: ${log.epi}");
+        print("⚡ EPI đầu ngày: $epiAtStartOfDay");
+        print("⚡ Energy hôm nay: $energy");
+        print("💰 Giá điện: $pricePerKwh");
+        print("💰 Tiền tính được: $money");
         setState(() {
           todayEnergy = energy;
           moneyToday = money;
@@ -173,10 +172,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       print("❌ Parse realtime error: $e");
     }
   }
-  /// Lấy điện năng tại thời điểm đầu ngày (00:00)
-  /// dùng để tính điện năng hôm nay:
-  ///
-  /// todayEnergy = currentEpi - epiAtStartOfDay
+
   Future<void> _loadStartOfDayEnergy() async {
     final api = GetIt.instance<ApiClient>();
 
@@ -1338,94 +1334,54 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         final countdown = state.switchCountdowns[device.id] ?? 0;
         final isSwitching = deviceCubit.isDeviceSwitching(device.id);
         return Scaffold(
-          backgroundColor: const Color(0xFFF3F6FB),
+          extendBodyBehindAppBar: true,
+          backgroundColor: Colors.transparent,
 
           appBar: AppBar(
             elevation: 0,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent, // 🔥 fix Material 3
+            systemOverlayStyle: SystemUiOverlayStyle.dark, // icon status bar đen
             centerTitle: true,
-            title: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-
-                Text(
-                  device.name.isNotEmpty
-                      ? device.name
-                      : device.code ?? "",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-
-                const SizedBox(height: 2),
-
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-
-                    Text(
-                      device.gatewayNumber ?? "",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-
-                    const SizedBox(width: 6),
-
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: isOffline ? Colors.grey : const Color(0xFF2ECC71),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-
-                    const SizedBox(width: 4),
-
-                    Text(
-                      isOffline ? "Offline" : "Online",
-                      style:  TextStyle(
-                        fontSize: 12,
-                        color: isOffline ? Colors.grey : const Color(0xFF2ECC71),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            title: const SizedBox(),
           ),
+            body: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFFF6F8FC),
+                    Color(0xFFEFF3FA),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
 
-          body: Center(
-            child: ConstrainedBox(
+              child: Center(
+                child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
 
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  MediaQuery.of(context).padding.top + 60,
+                  16,
+                  18,
+                ),
 
                 children: [
 
-                  /// Card hiển thị thông tin thiết bị
-                  /// - tên
-                  /// - gateway
-                  /// - nút history
-                  /// - nút settings
+
                   _buildTopDeviceCard(device, log),
 
                   const SizedBox(height: 16),
 
-                  /// Card trạng thái lớn
-                  /// hiển thị:
-                  /// - ON
-                  /// - OFF
-                  /// - Maintenance
+
                   _buildBigStatusCard(device, log),
 
                   const SizedBox(height: 16),
 
-                  /// HEADER ACTION BUTTONS
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -1581,8 +1537,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
                 ],
               ),
+                ),
+              ),
             ),
-          ),
         );
       },
     );
