@@ -127,10 +127,12 @@ flutter:
 
 
   assets:
-    - assets/images/
-    - assets/icons/
-    - assets/icons/icons_new/
-    - env/
+      - assets/images/
+      - assets/images/matis/
+      - assets/images/acrel/
+      - assets/icons/
+      - assets/icons/icons_new/
+      - env/
 
   fonts:
     - family: BeVietNamPro

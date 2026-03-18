@@ -317,35 +317,29 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(isForceLoading: true));
 
     try {
-      /// ✅ LUÔN lấy realtime (giống ON/OFF)
-      final addr = device.realtimeLog?.addr ?? "";
-
+      final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+      final addr = log?.addr ?? "";
       if (addr.isEmpty) {
-        print("ADDR NULL → không gửi API");
+        AppToast.showToastError(title: "Chưa có dữ liệu thiết bị");
+        emit(state.copyWith(isForceLoading: false));
         return;
       }
 
-      /// ✅ trạng thái bảo trì
       final currentMaintenance =
           device.realtimeLog?.rlyRepSta ?? 0;
 
-      /// ✅ toggle
       final commandValue =
       currentMaintenance == 1 ? "0" : "1";
 
       final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
       final username = authRepo.currentProfile?.userName ?? "";
 
-      print("=== MAINTENANCE DEBUG ===");
-      print("ADDR: $addr");
-      print("COMMAND: $commandValue");
-
       final response = await _cbs.setBreakerMaintenance(
         CbsMeterRequest(
           addr: addr,
           breakerSn: device.code,
           gatewaySn: device.gatewayNumber,
-          commandValue: commandValue, // ✅ "0"/"1"
+          commandValue: commandValue,
           createdBy: username,
           isForce: true,
         ),
@@ -353,10 +347,11 @@ class DeviceCubit extends Cubit<DeviceState> {
 
       if (response == -1) {
         AppToast.showToastError(title: "Không đổi bảo trì được");
+
+        emit(state.copyWith(isForceLoading: false)); // 🔥 thêm luôn
         return;
       }
 
-      /// chờ update theo rlyRepSta (KHÔNG phải rlySta)
       await waitBreakerMaintenance(
         device.id,
         device.code,
@@ -367,9 +362,10 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     } catch (e) {
       AppToast.showToastError(title: "Có lỗi xảy ra");
+    } finally {
+      /// 🔥 QUAN TRỌNG NHẤT
+      emit(state.copyWith(isForceLoading: false));
     }
-
-    emit(state.copyWith(isForceLoading: false));
   }
   Future<void> waitBreakerMaintenance(
       int deviceId,

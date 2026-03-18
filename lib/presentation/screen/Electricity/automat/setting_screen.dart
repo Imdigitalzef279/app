@@ -194,7 +194,7 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: const Color(0xFFF2F4F5),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -287,121 +287,175 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget _buildProtectionCard() {
     return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: kPrimaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  "Bảo vệ dòng điện",
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+        /// 🔹 QUÁ DÒNG
+        _buildItemCard(
+          title: "Quá dòng",
+          child: Column(
+            children: [
+              _buildSliderTile(
+                title: "",
+                unit: "A",
+                value: overCurrent,
+                min: 10,
+                max: 100,
+                onChanged: (v) => setState(() => overCurrent = v),
+              ),
+              _buildRecommendBox(),
+              const SizedBox(height: 10),
+              _buildSliderTile(
+                title: "",
+                unit: "",
+                value: overCurrent,
+                showValue: false,
+                min: 10,
+                max: 100,
+                onChanged: (v) => setState(() => overCurrent = v),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        ),
 
-          const Text("Bảo vệ dòng điện",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-
-          const SizedBox(height: 16),
-
-          _buildSliderTile(
-            title: "Quá dòng",
-            unit: "A",
-            value: overCurrent,
-            min: 10,
-            max: 100,
-            onChanged: (v) => setState(() => overCurrent = v),
-          ),
-
-          const SizedBox(height: 25),
-
-          _buildSliderTile(
-            title: "Dòng rò",
+        /// 🔹 DÒNG RÒ
+        _buildItemCard(
+          title: "Dòng rò",
+          child: _buildSliderTile(
+            title: "",
             unit: "mA",
             value: leakageCurrent,
             min: 10,
             max: 300,
             onChanged: (v) => setState(() => leakageCurrent = v),
           ),
-
-          const SizedBox(height: 25),
-
-          const Text("Bảo vệ điện áp",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-
-          const SizedBox(height: 16),
-
-          _buildSliderTile(
-            title: "Quá áp",
+        ),
+            Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Colors.orange,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  "Bảo vệ điện áp",
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+        /// 🔹 QUÁ ÁP
+        _buildItemCard(
+          title: "Quá áp",
+          child: _buildSliderTile(
+            title: "",
             unit: "V",
             value: overVoltage,
             min: 200,
             max: 280,
-            isVoltage: true, // 👈 thêm dòng này
+            isVoltage: true,
             onChanged: (v) => setState(() => overVoltage = v),
           ),
+        ),
 
-          const SizedBox(height: 25),
-
-          _buildSliderTile(
-            title: "Thấp áp",
+        /// 🔹 THẤP ÁP
+        _buildItemCard(
+          title: "Thấp áp",
+          child: _buildSliderTile(
+            title: "",
             unit: "V",
             value: underVoltage,
             min: 180,
             max: 240,
-            isVoltage: true, // 👈 thêm dòng này
+            isVoltage: true,
             onChanged: (v) => setState(() => underVoltage = v),
           ),
+        ),
 
-          const SizedBox(height: 25),
-
-          _buildSliderTile(
-            title: "Quá công suất",
+        /// 🔹 QUÁ CÔNG SUẤT
+        _buildItemCard(
+          title: "Quá công suất",
+          child: _buildSliderTile(
+            title: "",
             unit: "kW",
             value: overPower,
             min: 1,
             max: 20,
             onChanged: (v) => setState(() => overPower = v),
           ),
-          const SizedBox(height: 25),
+        ),
 
-          _buildSliderTile(
-            title: "Quá nhiệt",
+        /// 🔹 QUÁ NHIỆT
+        _buildItemCard(
+          title: "Quá nhiệt",
+          child: _buildSliderTile(
+            title: "",
             unit: "°C",
             value: overTemperature,
             min: 40,
             max: 120,
             onChanged: (v) => setState(() => overTemperature = v),
           ),
-          const SizedBox(height: 30),
+        ),
 
-          const Divider(),
+        const SizedBox(height: 10),
 
-          const SizedBox(height: 20),
-
-          _buildModernSwitch("Mất pha", phaseLoss,
-                  (v) => setState(() => phaseLoss = v)),
-
-          _buildModernSwitch("Set ngưỡng riêng", customThreshold,
-                  (v) => setState(() => customThreshold = v)),
-
-          _buildModernSwitch("Cảnh báo qua App", notifyApp,
-                  (v) => setState(() => notifyApp = v)),
-
-          _buildModernSwitch("Cảnh báo Email", notifyEmail,
-                  (v) => setState(() => notifyEmail = v)),
-
-          _buildModernSwitch("Lưu log cảnh báo", saveLog,
-                  (v) => setState(() => saveLog = v)),
-
-          _buildModernSwitch("Xuất báo cáo lịch sử cảnh báo", exportReport,
-                  (v) => setState(() => exportReport = v)),
-        ],
-      ),
+        /// 🔹 SWITCH SETTINGS
+        _buildItemCard(
+          title: "Cài đặt bổ sung",
+          child: Column(
+            children: [
+              _buildModernSwitch("Mất pha", phaseLoss,
+                      (v) => setState(() => phaseLoss = v)),
+              _buildModernSwitch("Set ngưỡng riêng", customThreshold,
+                      (v) => setState(() => customThreshold = v)),
+              _buildModernSwitch("Cảnh báo qua App", notifyApp,
+                      (v) => setState(() => notifyApp = v)),
+              _buildModernSwitch("Cảnh báo Email", notifyEmail,
+                      (v) => setState(() => notifyEmail = v)),
+              _buildModernSwitch("Lưu log cảnh báo", saveLog,
+                      (v) => setState(() => saveLog = v)),
+              _buildModernSwitch("Xuất báo cáo", exportReport,
+                      (v) => setState(() => exportReport = v)),
+            ],
+          ),
+        ),
+      ],
+        )
     );
   }
   Future<void> sendProtectionSetting() async {
@@ -440,6 +494,7 @@ class _SettingScreenState extends State<SettingScreen> {
     required double max,
     required Function(double) onChanged,
     bool isVoltage = false,
+    bool showValue = true,
   }) {
     final percent = (value - min) / (max - min);
 
@@ -465,100 +520,107 @@ class _SettingScreenState extends State<SettingScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: const TextStyle(fontSize: 14)),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: valueColor.withOpacity(.12),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                "${value.toInt()} $unit",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: valueColor,
+            if (showValue)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: valueColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              ),
-            )
+                child: Text(
+                  "${value.toInt()} $unit",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: valueColor,
+                  ),
+                ),
+              )
           ],
         ),
 
         const SizedBox(height: 12),
 
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
-            final activeWidth = width * percent;
+        Container(
+          margin: const EdgeInsets.only(top: 6),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
 
-            return Stack(
-              alignment: Alignment.centerLeft,
-              children: [
+              /// TRACK + SLIDER
+              Stack(
+                alignment: Alignment.centerLeft,
+                children: [
 
-                /// BACKGROUND TRACK (xám)
-                Container(
-                  height: 6,
-                  width: width,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE0E0E0),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-
-                /// GRADIENT ACTIVE TRACK (chỉ điện áp)
-                if (isVoltage)
+                  /// nền xám
                   Container(
                     height: 6,
-                    width: activeWidth,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF1ABC9C),
-                          Color(0xFFFFB74D),
-                          Color(0xFFE57373),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    ),
-                  )
-                else
-                  Container(
-                    height: 6,
-                    width: activeWidth,
                     decoration: BoxDecoration(
-                      color: kPrimaryColor,
+                      color: const Color(0xFFE5E5E5),
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
 
-                /// SLIDER
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    trackHeight: 6,
-                    activeTrackColor: Colors.transparent,
-                    inactiveTrackColor: Colors.transparent,
-                    thumbShape: const _ModernThumbShape(),
-                    overlayColor: valueColor.withOpacity(.08),
-                    overlayShape:
-                    const RoundSliderOverlayShape(overlayRadius: 18),
+                  /// active
+                  FractionallySizedBox(
+                    widthFactor: (value - min) / (max - min),
+                    child: Container(
+                      height: 6,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        gradient: isVoltage
+                            ? const LinearGradient(
+                          colors: [
+                            Color(0xFF1ABC9C),
+                            Color(0xFFFFB74D),
+                            Color(0xFFE57373),
+                          ],
+                        )
+                            : null,
+                        color: isVoltage ? null : kPrimaryColor,
+                      ),
+                    ),
                   ),
-                  child: Slider(
-                    value: value,
-                    min: min,
-                    max: max,
-                    divisions: (max - min).toInt(),
-                    onChanged: onChanged,
+
+                  /// slider thật
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      trackHeight: 6,
+                      activeTrackColor: Colors.transparent,
+                      inactiveTrackColor: Colors.transparent,
+                      thumbShape: _ModernThumbShape(),
+                      overlayShape: SliderComponentShape.noOverlay,
+                    ),
+                    child: Slider(
+                      value: value,
+                      min: min,
+                      max: max,
+                      onChanged: onChanged,
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
-        ),
+                ],
+              ),
 
-        const SizedBox(height: 6),
+              const SizedBox(height: 6),
 
-        Text(
-          "Min ${min.toInt()}        Max ${max.toInt()}",
-          style: const TextStyle(fontSize: 11, color: Colors.grey),
-        ),
+              /// LABEL
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("${min.toInt()}",
+                      style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  Text("${(min + max) ~/ 2}",
+                      style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  Text("${max.toInt()}",
+                      style: TextStyle(fontSize: 11, color: Colors.grey)),
+                ],
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
@@ -593,7 +655,61 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
     );
   }
+}
+Widget _buildRecommendBox() {
+  return Container(
+    margin: const EdgeInsets.only(top: 10),
+    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    decoration: BoxDecoration(
+      color: const Color(0xFFF1F5F4),
+      borderRadius: BorderRadius.circular(14),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text(
+          "Khuyến nghị cho gia đình: 40–63A",
+          style: TextStyle(fontSize: 13),
+        ),
+        const Icon(Icons.keyboard_arrow_down_rounded)
+      ],
+    ),
+  );
+}
+Widget _buildItemCard({
+  required String title,
+  required Widget child,
+}) {
+  return Container(
+    margin: const EdgeInsets.only(bottom: 14),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: const Color(0xFFF7F8FA),
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.03),
+          blurRadius: 6,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
 
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 12),
+        child,
+      ],
+    ),
+  );
 }
 class _ShadowThumbShape extends SliderComponentShape {
   final double thumbRadius;
@@ -666,24 +782,21 @@ class _RoundedTrackShape extends RoundedRectSliderTrackShape {
   }
 }
 class _ModernThumbShape extends SliderComponentShape {
-  final double radius;
-  const _ModernThumbShape({this.radius = 9});
-
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return Size.fromRadius(radius);
+    return const Size(28, 28);
   }
 
   @override
   void paint(
       PaintingContext context,
       Offset center, {
+        required RenderBox parentBox,
+        required SliderThemeData sliderTheme,
         required Animation<double> activationAnimation,
         required Animation<double> enableAnimation,
         required bool isDiscrete,
         required TextPainter labelPainter,
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
         required TextDirection textDirection,
         required double value,
         required double textScaleFactor,
@@ -691,14 +804,28 @@ class _ModernThumbShape extends SliderComponentShape {
       }) {
     final canvas = context.canvas;
 
+    /// shadow
     canvas.drawShadow(
-      Path()..addOval(Rect.fromCircle(center: center, radius: radius)),
-      Colors.black.withOpacity(.25),
+      Path()..addOval(Rect.fromCircle(center: center, radius: 12)),
+      Colors.black.withOpacity(.15),
       4,
       true,
     );
 
-    final paint = Paint()..color = Colors.white;
-    canvas.drawCircle(center, radius, paint);
+    /// vòng trắng
+    canvas.drawCircle(center, 12, Paint()..color = Colors.white);
+
+    /// viền xanh nhạt
+    canvas.drawCircle(
+      center,
+      12,
+      Paint()
+        ..color = kPrimaryColor.withOpacity(0.3)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+
+    /// chấm xanh
+    canvas.drawCircle(center, 4, Paint()..color = kPrimaryColor);
   }
 }
