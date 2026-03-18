@@ -692,7 +692,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               children: [
                 _tabItem("Tổng quan", true),
                 _tabItem("Thông số", false),
-                _tabItem("Lịch sử", false),
+                _tabItem(
+                  "Lịch sử",
+                  false,
+                  isHistory: true,
+                  context: context,
+                ),
                 _tabItem("Home", false, isHome: true, context: context),
               ],
             ),
@@ -748,6 +753,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       String text,
       bool active, {
         bool isHome = false,
+        bool isHistory = false,
         BuildContext? context,
       }) {
     return Expanded(
@@ -755,6 +761,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         onTap: () {
           if (isHome && context != null) {
             Navigator.popUntil(context, (route) => route.isFirst);
+          }
+          /// 👉 HISTORY
+          if (isHistory && context != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SwitchLogScreen(
+                  gatewaySn: currentDevice.gatewayNumber ?? '',
+                  breakerSn: currentDevice.code ?? "",
+                ),
+              ),
+            );
           }
         },
         child: Container(

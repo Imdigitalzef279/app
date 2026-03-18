@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,6 +35,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late final AnimationController _controller;
   late bool isLandscape;
   late SignalRService signalR;
+  StreamSubscription? _signalSub;
   int _currentIndex = 0;
   double _aiTop = 500;
   double _aiLeft = 300;
@@ -60,8 +63,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
           await signalR.connect(meterCode: d.code!);
         }
       }
-
-      signalR.stream.listen((data) {
+      _signalSub = signalR.stream.listen((data) {
+        if (!mounted) return; // 👈 THÊM DÒNG NÀY
 
         final dto = data["breakerMeterDataDto"];
         if (dto == null) return;
@@ -77,28 +80,18 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         });
 
         final log = AtomatLogResponse.fromJson(raw);
-        print("======== BREAKER REALTIME ========");
-        print("Breaker SN: ${raw["breakerSn"]}");
-        print("rlySta: ${log.rlySta}");
-        print("rlyRepSta: ${log.rlyRepSta}");
-        print("=================================");
         final code = raw["breakerSn"] ?? raw["meterSn"] ?? raw["deviceCode"];
 
-        if (code == null) {
-          print("SignalR missing breakerSn");
-          return;
-        }
-        context.read<DeviceCubit>().updateRealtimeLogByCode(
-          code,
-          log,
-        );
+        if (code == null) return;
 
+        context.read<DeviceCubit>().updateRealtimeLogByCode(code, log);
       });
 
     });
   }
   @override
   void dispose() {
+    _signalSub?.cancel();
     signalR.disconnect();
     _controller.dispose();
     super.dispose();
@@ -108,108 +101,79 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     final devices =
-        context.select((DeviceCubit c) => c.state.resultDevices.data) ?? [];
+       context.select((DeviceCubit c) => c.state.resultDevices.data) ?? [];
     final favoriteDevices =
-    devices.where((d) => d.isFavorite).toList();
+    devices.where((d) => d.isFavorite).toList();String locationText = "Hà Nội";
     return Scaffold(
       backgroundColor: AppColors.greyFB,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleSpacing: 0,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          titleSpacing: 12,
 
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(
-                  "assets/images/logo.png",
-                  height: 28.h,
-                ),
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.asset(
+                "assets/images/logo.png",
+                height: 32,
+              ),
+              SizedBox(width: 10),
 
-                SizedBox(width: 8.w),
-
-                Expanded(
-                  child: Text(
-                    "Nhà máy ${widget.project.name}",
-                    style: AppTextStyle.textBase.copyWith(
-                      fontWeight: FontWeight.w600,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Nhà máy ${widget.project.name}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 2.h),
-            Row(
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF1ABC9C),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                SizedBox(width: 4.w),
-                Text(
-                  "Đang hoạt động",
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: const Color(0xFF1ABC9C),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 10.w),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24.r),
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFBFEFE4),
-                        Color(0xFFE8F7F3),
-                      ],
+                    Text(
+                      "Đang hoạt động",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.blue,
+                      ),
                     ),
+                    Text(
+                      "Vị trí: $locationText",
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
-                    /// 🔥 thêm shadow
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
-                        blurRadius: 12,
-                        offset: Offset(0, 6),
-                      )
-                    ],
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.notifications_none),
+              /// 👇 icon nằm cùng hàng (đúng mẫu)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.add, size: 18),
                     onPressed: () {},
                   ),
-                ),
-                SizedBox(width: 8.w),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30.r),
 
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      )
-                    ],
+                  SizedBox(width: 2), // 👈 giảm xuống cực nhỏ
+
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.notifications_none, size: 20),
+                    onPressed: () {},
                   ),
-                  child: IconButton(
-                    icon: const Icon(Icons.settings_outlined),
+
+                  SizedBox(width: 2), // 👈 giảm tiếp
+
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.settings_outlined, size: 20),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -221,12 +185,11 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       );
                     },
                   ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+                ],
+              )
+            ],
+          ),
+        ),
       body: Stack(
           children: [
       Container(
@@ -297,50 +260,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                           ),
                         ),
                         SizedBox(height: 10.h),
-                        /// SAFE SYSTEM CARD
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                              vertical: 10.h
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30.r),
-
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 12,
-                                offset: Offset(0, 4),
-                              )
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-
-                              Icon(
-                                Icons.shield_outlined,
-                                color: Color(0xFF1ABC9C),
-                                  size: 20.w
-                              ),
-                              SizedBox(width: 10.w),
-                              Expanded(
-                                child: Text(
-                                  "Hệ thống đang an toàn",
-                                  style: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 16.w,
-                                color: Colors.grey,
-                              ),
-                            ],
-                          ),
-                        )
                       ],
                     ),
                   ],

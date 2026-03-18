@@ -317,55 +317,52 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(isForceLoading: true));
 
     try {
+      /// ✅ LUÔN lấy realtime (giống ON/OFF)
+      final addr = device.realtimeLog?.addr ?? "";
 
-      String rawAddr =
-          state.breakerLogs[device.code]?.addr ??
-              device.realtimeLog?.addr ??
-              "";
-
-      final addr =
-          state.breakerLogs[device.code]?.addr ??
-              device.realtimeLog?.addr ??
-              "";
       if (addr.isEmpty) {
         print("ADDR NULL → không gửi API");
         return;
       }
-      final isMaintenance =
-          state.breakerLogs[device.code]?.rlyRepSta == 1;
+
+      /// ✅ trạng thái bảo trì
+      final currentMaintenance =
+          device.realtimeLog?.rlyRepSta ?? 0;
+
+      /// ✅ toggle
+      final commandValue =
+      currentMaintenance == 1 ? "0" : "1";
+
       final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
       final username = authRepo.currentProfile?.userName ?? "";
-      final commandValue = isMaintenance ? "0" : "1";
-      print("=== TOGGLE MAINTENANCE DEBUG ===");
-      print("DEVICE CODE: ${device.code}");
-      print("GATEWAY: ${device.gatewayNumber}");
+
+      print("=== MAINTENANCE DEBUG ===");
       print("ADDR: $addr");
-      print("USERNAME: $username");
       print("COMMAND: $commandValue");
+
       final response = await _cbs.setBreakerMaintenance(
         CbsMeterRequest(
           addr: addr,
           breakerSn: device.code,
           gatewaySn: device.gatewayNumber,
-          commandValue: commandValue,
+          commandValue: commandValue, // ✅ "0"/"1"
           createdBy: username,
           isForce: true,
         ),
       );
+
       if (response == -1) {
         AppToast.showToastError(title: "Không đổi bảo trì được");
-        emit(state.copyWith(isForceLoading: false));
         return;
       }
 
-      /// 🔥 chờ breaker update
-      await waitBreakerState(
+      /// chờ update theo rlyRepSta (KHÔNG phải rlySta)
+      await waitBreakerMaintenance(
         device.id,
         device.code,
-        commandValue == "1" ? 1 : 0,
+        int.parse(commandValue),
       );
 
-      /// reload breaker log
       await loadBreakerLog(device.code);
 
     } catch (e) {
@@ -373,6 +370,28 @@ class DeviceCubit extends Cubit<DeviceState> {
     }
 
     emit(state.copyWith(isForceLoading: false));
+  }
+  Future<void> waitBreakerMaintenance(
+      int deviceId,
+      String breakerSn,
+      int expected,
+      ) async {
+
+    int countdown = 5;
+
+    while (countdown > 0) {
+
+      await Future.delayed(const Duration(seconds: 1));
+      countdown--;
+
+      final log = state.breakerLogs[breakerSn];
+
+      final current = log?.rlyRepSta;
+
+      if (current == expected) {
+        break;
+      }
+    }
   }
   // ============================================================
   // Force on off

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/io.dart';
 import 'package:get_it/get_it.dart';
 import 'package:solar_energy/data/repositories/atomat_repo/atomat_repository.dart';
 import 'package:solar_energy/data/repositories/atomat_repo/atomat_repository_impl.dart';
@@ -46,7 +49,12 @@ void configureDependencies() {
         },
       ),
     );
-
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      return client;
+    };
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -71,7 +79,7 @@ void configureDependencies() {
           print("STATUS CODE: ${e.response?.statusCode}");
           print("DATA: ${e.response?.data}");
           print("MESSAGE: ${e.message}");
-
+          print("ERROR TYPE: ${e.type}");
           if (e.response?.statusCode == 401) {
             final prefs = getIt<SharedPreferencesHelper>();
             await prefs.removeAccessToken();

@@ -28,16 +28,33 @@ class AccountCubit extends Cubit<AccountState> {
 
   Future<void> getProfile() async {
     try {
+      if (isClosed) return; // ✅ thêm dòng này
+
       emit(state.copyWith(request: Result(status: LoadStatus.loading)));
+
       final response = await authRepository.getProfile();
+
+      if (isClosed) return; // ✅ thêm dòng này (QUAN TRỌNG NHẤT)
+
       if (response.isSuccess) {
         emit(state.copyWith(
-            request: Result(status: LoadStatus.success, data: response.data)));
+          request: Result(
+            status: LoadStatus.success,
+            data: response.data,
+          ),
+        ));
         return;
       }
-      emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+
+      emit(state.copyWith(
+        request: Result(status: LoadStatus.failure),
+      ));
     } catch (e) {
-      emit(state.copyWith(request: Result(status: LoadStatus.failure)));
+      if (isClosed) return;
+
+      emit(state.copyWith(
+        request: Result(status: LoadStatus.failure),
+      ));
     }
   }
 
@@ -52,6 +69,7 @@ class AccountCubit extends Cubit<AccountState> {
       if (token.isEmpty) return false;
 
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      final dio = GetIt.instance<Dio>();
       final uniqueName = decodedToken['unique_name'];
 
       print("unique_name	: ${uniqueName.toString()}");
@@ -70,7 +88,7 @@ class AccountCubit extends Cubit<AccountState> {
             title: LocalizationsUtils.localizations.usernameNotMatchOrNotExist);
         return false;
       }
-
+      if (isClosed) return false;
       emit(state.copyWith(
           status: LoadStatus.success,
           request: Result(status: LoadStatus.success)));

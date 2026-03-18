@@ -94,6 +94,7 @@ dependencies:
   in_app_update: ^4.2.5
   upgrader: ^11.5.1
   signalr_core: ^1.1.1
+  geocoding: ^2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -126,9 +127,10 @@ flutter:
 
 
   assets:
-      - assets/images/
-      - assets/icons/icons_new/
-      - env/
+    - assets/images/
+    - assets/icons/
+    - assets/icons/icons_new/
+    - env/
 
   fonts:
     - family: BeVietNamPro
