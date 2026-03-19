@@ -115,7 +115,7 @@ abstract class ApiClient {
       );
   // ================= BREAKER MAINTENANCE =================
   @POST("api/app/breaker-command/set-maintenance")
-  Future<void> setBreakerMaintenance(
+  Future<HttpResponse<dynamic>> setBreakerMaintenance(
       @Body() CbsMeterRequest request,
       );
   // ================= BREAKER log =================

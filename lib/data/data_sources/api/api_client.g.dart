@@ -495,13 +495,25 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<void> setBreakerMaintenance(CbsMeterRequest request) async {
+  Future<HttpResponse<dynamic>> setBreakerMaintenance(
+      CbsMeterRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<void>(Options(
+    print("👉 ORIGINAL BODY: ${request.toJson()}");
+
+    _data.addAll({
+      "gatewaySn": request.gatewaySn,
+      "breakerSn": request.breakerSn,
+      "addr": request.addr,
+      "commandValue": request.commandValue.toString(), // 🔥 FIX 1
+      "createdBy": request.createdBy,
+      "isForce": true,
+    });
+
+    print("👉 FINAL BODY: $_data");;
+    final _options = _setStreamType<HttpResponse<dynamic>>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -517,7 +529,10 @@ class _ApiClient implements ApiClient {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    await _dio.fetch<void>(_options);
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
   }
 
   @override

@@ -1602,16 +1602,17 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                                 : BreakerColors.maintenance,
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: state.isForceLoading ||
+                          onPressed:
+                          state.isForceLoading ||
                               maintenanceCountdown > 0 ||
-                              (isOn && !isMaintenance)
+                              realStatus == -1 ||   // offline
+                              realStatus == 1       // đang ON thì không cho bảo trì
                               ? null
                               : () async {
-
                             final password = await _showPasswordDialog(context);
                             if (password == null) return;
 
-                            final wasMaintenance = isMaintenance;
+                            final wasMaintenance = realStatus == 2;
 
                             await context.read<DeviceCubit>().toggleMaintenance(
                               device,
@@ -1832,23 +1833,17 @@ int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
     return device.status ?? 0;
   }
 
-  if (log.updatedAt != null) {
-
-    final logTime = DateTime.tryParse(log.updatedAt!);
-
-    if (logTime != null) {
-      final diff = DateTime.now().difference(logTime).inSeconds;
-
-      if (diff > 120) {
-        return -1;
-      }
-    }
-  }
-
-  if (log?.rlyRepSta == 1) {
+  /// 1. MAINTENANCE FIRST
+  if (log.rlyRepSta == 1) {
     return 2;
   }
 
+  /// 2. ONLINE / OFFLINE
+  if (log.state != "ONLINE") {
+    return -1;
+  }
+
+  /// 3. ON / OFF
   return log.rlySta ?? device.status ?? 0;
 }
 class BreakerColors {

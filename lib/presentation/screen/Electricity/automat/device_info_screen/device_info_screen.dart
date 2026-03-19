@@ -205,24 +205,19 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
             "A. Thông tin sản phẩm",
             [
               item("Tên sản phẩm", device.name),
-              item("Device ID", device.id),
-              item("Mã hàng", device.code),
-              item("Gateway", device.gatewayNumber),
-              item("Loại thiết bị", device.meterType.name),
-              item("Trạm điện", device.powerStation.name),
-              item("Ngày tạo", formatDate(device.creationTime)),
+              item("Mã hàng", device.name),
+              item("Serial Number", device.code),
+              item("Hãng Sản Xuất", device.projectId),
+              item("Xuất Xứ", device.creator),
             ],
           ),
 
           /// B. THÔNG SỐ ĐIỆN
           section(
-            "B. Thông số điện",
+            "B. Thông số thiết bị",
             [
-              item("Điện áp pha A", log?.ua?.toStringAsFixed(0)),
-              item("Dòng pha A", log?.ia?.toStringAsFixed(1)),
-              item("Công suất", log?.p?.toStringAsFixed(2)),
-              item("Điện năng", log?.epi?.toStringAsFixed(1)),
-              item("Tần số", log?.fr?.toStringAsFixed(1)),
+              item("Dòng định mức", log?.p?.toStringAsFixed(0)),
+              item("Điện áp", log?.u0?.toStringAsFixed(1)),
             ],
           ),
 
@@ -234,7 +229,7 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
               item("Thời gian bảo hành", getWarrantyDuration()),
 
               item(
-                "Ngày kích hoạt",
+                "Ngày kích hoạt lần đầu sản phẩm",
                 warranty?.startDate != null
                     ? formatDate(warranty!.startDate!)
                     : "--",

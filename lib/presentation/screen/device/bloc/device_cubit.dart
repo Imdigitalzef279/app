@@ -318,28 +318,33 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     try {
       final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-      final addr = log?.addr ?? "";
+
+      final addr = (log?.addr ?? "").split("_").first;
       if (addr.isEmpty) {
         AppToast.showToastError(title: "Chưa có dữ liệu thiết bị");
         emit(state.copyWith(isForceLoading: false));
         return;
       }
 
-      final currentMaintenance =
-          device.realtimeLog?.rlyRepSta ?? 0;
+      final currentMaintenance = log?.rlyRepSta ?? 0;
 
-      final commandValue =
-      currentMaintenance == 1 ? "0" : "1";
+      final commandValue = currentMaintenance == 1 ? 2 : 1;
+
+      print("CURRENT MAINTENANCE: $currentMaintenance");
+      print("COMMAND VALUE: $commandValue");
 
       final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
       final username = authRepo.currentProfile?.userName ?? "";
+
+      print("ADDR: $addr");
+      print("COMMAND VALUE: $commandValue");
 
       final response = await _cbs.setBreakerMaintenance(
         CbsMeterRequest(
           addr: addr,
           breakerSn: device.code,
           gatewaySn: device.gatewayNumber,
-          commandValue: commandValue,
+          commandValue: commandValue.toString(), // 🔥 FIX
           createdBy: username,
           isForce: true,
         ),
@@ -355,7 +360,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       await waitBreakerMaintenance(
         device.id,
         device.code,
-        int.parse(commandValue),
+        commandValue,
       );
 
       await loadBreakerLog(device.code);

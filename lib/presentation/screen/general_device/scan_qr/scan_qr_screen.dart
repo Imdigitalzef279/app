@@ -189,7 +189,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                 ),
                 child: const Center(
                   child: Text(
-                    "Không có mã QR và thêm thủ công",
+                    "Thêm thủ công ",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

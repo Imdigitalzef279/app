@@ -126,6 +126,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/guide-alt.svg
   SvgGenImage get guideAlt => const SvgGenImage('assets/icons/guide-alt.svg');
 
+  /// Directory path: assets/icons/icons_new
+  $AssetsIconsIconsNewGen get iconsNew => const $AssetsIconsIconsNewGen();
+
   /// File path: assets/icons/info.svg
   SvgGenImage get info => const SvgGenImage('assets/icons/info.svg');
 
@@ -265,6 +268,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/AnimationLogin.json
   String get animationLogin => 'assets/images/AnimationLogin.json';
 
+  /// Directory path: assets/images/acrel
+  $AssetsImagesAcrelGen get acrel => const $AssetsImagesAcrelGen();
+
   /// File path: assets/images/animation.json
   String get animation => 'assets/images/animation.json';
 
@@ -283,8 +289,15 @@ class $AssetsImagesGen {
   /// File path: assets/images/factory.png
   AssetGenImage get factory => const AssetGenImage('assets/images/factory.png');
 
+  /// File path: assets/images/fall_demo.png
+  AssetGenImage get fallDemo =>
+      const AssetGenImage('assets/images/fall_demo.png');
+
   /// File path: assets/images/logo.png
   AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
+
+  /// Directory path: assets/images/matis
+  $AssetsImagesMatisGen get matis => const $AssetsImagesMatisGen();
 
   /// File path: assets/images/mccb_3p.png
   AssetGenImage get mccb3p => const AssetGenImage('assets/images/mccb_3p.png');
@@ -327,6 +340,7 @@ class $AssetsImagesGen {
         exclamationMark,
         exclamation,
         factory,
+        fallDemo,
         logo,
         mccb3p,
         mm50h1p,
@@ -338,6 +352,127 @@ class $AssetsImagesGen {
         solarEnergy,
         waterLottie
       ];
+}
+
+class $AssetsIconsIconsNewGen {
+  const $AssetsIconsIconsNewGen();
+
+  /// File path: assets/icons/icons_new/icon_circuit_breaker.png
+  AssetGenImage get iconCircuitBreaker =>
+      const AssetGenImage('assets/icons/icons_new/icon_circuit_breaker.png');
+
+  /// File path: assets/icons/icons_new/icon_device_management.png
+  AssetGenImage get iconDeviceManagement =>
+      const AssetGenImage('assets/icons/icons_new/icon_device_management.png');
+
+  /// File path: assets/icons/icons_new/icon_energy_analytics.png
+  AssetGenImage get iconEnergyAnalytics =>
+      const AssetGenImage('assets/icons/icons_new/icon_energy_analytics.png');
+
+  /// File path: assets/icons/icons_new/icon_energy_management.png
+  AssetGenImage get iconEnergyManagement =>
+      const AssetGenImage('assets/icons/icons_new/icon_energy_management.png');
+
+  /// File path: assets/icons/icons_new/icon_energy_meter.png
+  AssetGenImage get iconEnergyMeter =>
+      const AssetGenImage('assets/icons/icons_new/icon_energy_meter.png');
+
+  /// File path: assets/icons/icons_new/icon_energy_saving.png
+  AssetGenImage get iconEnergySaving =>
+      const AssetGenImage('assets/icons/icons_new/icon_energy_saving.png');
+
+  /// File path: assets/icons/icons_new/icon_environment.png
+  AssetGenImage get iconEnvironment =>
+      const AssetGenImage('assets/icons/icons_new/icon_environment.png');
+
+  /// File path: assets/icons/icons_new/icon_gateway.png
+  AssetGenImage get iconGateway =>
+      const AssetGenImage('assets/icons/icons_new/icon_gateway.png');
+
+  /// File path: assets/icons/icons_new/icon_heat_pump.png
+  AssetGenImage get iconHeatPump =>
+      const AssetGenImage('assets/icons/icons_new/icon_heat_pump.png');
+
+  /// File path: assets/icons/icons_new/icon_kra_smart_safety.png
+  AssetGenImage get iconKraSmartSafety =>
+      const AssetGenImage('assets/icons/icons_new/icon_kra_smart_safety.png');
+
+  /// File path: assets/icons/icons_new/icon_smart_breaker.png
+  AssetGenImage get iconSmartBreaker =>
+      const AssetGenImage('assets/icons/icons_new/icon_smart_breaker.png');
+
+  /// File path: assets/icons/icons_new/icon_water_protection.png
+  AssetGenImage get iconWaterProtection =>
+      const AssetGenImage('assets/icons/icons_new/icon_water_protection.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+        iconCircuitBreaker,
+        iconDeviceManagement,
+        iconEnergyAnalytics,
+        iconEnergyManagement,
+        iconEnergyMeter,
+        iconEnergySaving,
+        iconEnvironment,
+        iconGateway,
+        iconHeatPump,
+        iconKraSmartSafety,
+        iconSmartBreaker,
+        iconWaterProtection
+      ];
+}
+
+class $AssetsImagesAcrelGen {
+  const $AssetsImagesAcrelGen();
+
+  /// File path: assets/images/acrel/1446074178112364544_08557473-8d6a-46ec-96a2-a1c7ca71168e.webp
+  AssetGenImage get a1446074178112364544085574738d6a46ec96a2A1c7ca71168e =>
+      const AssetGenImage(
+          'assets/images/acrel/1446074178112364544_08557473-8d6a-46ec-96a2-a1c7ca71168e.webp');
+
+  /// File path: assets/images/acrel/1446074178112364544_ab28e10d-d177-4106-b705-3bb6dd6644bb.webp
+  AssetGenImage get a1446074178112364544Ab28e10dD1774106B7053bb6dd6644bb =>
+      const AssetGenImage(
+          'assets/images/acrel/1446074178112364544_ab28e10d-d177-4106-b705-3bb6dd6644bb.webp');
+
+  /// File path: assets/images/acrel/1446074178112364544_acfcfb40-6a2a-4da4-8739-567915c07d1d.webp
+  AssetGenImage get a1446074178112364544Acfcfb406a2a4da48739567915c07d1d =>
+      const AssetGenImage(
+          'assets/images/acrel/1446074178112364544_acfcfb40-6a2a-4da4-8739-567915c07d1d.webp');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+        a1446074178112364544085574738d6a46ec96a2A1c7ca71168e,
+        a1446074178112364544Ab28e10dD1774106B7053bb6dd6644bb,
+        a1446074178112364544Acfcfb406a2a4da48739567915c07d1d
+      ];
+}
+
+class $AssetsImagesMatisGen {
+  const $AssetsImagesMatisGen();
+
+  /// File path: assets/images/matis/1.png
+  AssetGenImage get a1 => const AssetGenImage('assets/images/matis/1.png');
+
+  /// File path: assets/images/matis/2.png
+  AssetGenImage get a2 => const AssetGenImage('assets/images/matis/2.png');
+
+  /// File path: assets/images/matis/4.png
+  AssetGenImage get a4 => const AssetGenImage('assets/images/matis/4.png');
+
+  /// File path: assets/images/matis/5.png
+  AssetGenImage get a5 => const AssetGenImage('assets/images/matis/5.png');
+
+  /// File path: assets/images/matis/Enertrek System.png
+  AssetGenImage get enertrekSystem =>
+      const AssetGenImage('assets/images/matis/Enertrek System.png');
+
+  /// File path: assets/images/matis/ảnh bìa.png
+  AssetGenImage get aNhBA =>
+      const AssetGenImage('assets/images/matis/ảnh bìa.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [a1, a2, a4, a5, enertrekSystem, aNhBA];
 }
 
 class Assets {

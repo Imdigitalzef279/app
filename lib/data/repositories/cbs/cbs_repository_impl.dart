@@ -21,12 +21,20 @@ class CbsRepositoryImpl implements CbsRepository {
 
       final res = await _apiClient.setBreakerMaintenance(request);
 
+      final status = res.response.statusCode;
+      final data = res.response.data;
+
+      print("STATUS: $status");
+      print("DATA: $data");
+
+      if (status != 200) {
+        return -1;
+      }
 
       return 1;
     } catch (e) {
       print("=== ERROR CBS ===");
       print(e);
-
       return -1;
     }
   }

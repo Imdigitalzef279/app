@@ -95,12 +95,6 @@ class _HomeWidgetState extends State<HomeWidget> {
     )
         : const SizedBox(),
 
-
-        /// TAB 2 - THÔNG BÁO
-        const Center(child: Text("Thông báo")),
-
-        /// TAB 3 - GIỎ HÀNG
-        const Center(child: Text("Giỏ hàng")),
         /// TAB 4 ACCOUNT
         BlocProvider(
           create: (_) => AccountCubit(),
@@ -140,22 +134,10 @@ class _HomeWidgetState extends State<HomeWidget> {
         NavigationDestination(
           selectedIcon: Icon(Icons.grid_view, color: Colors.blue),
           icon: Icon(Icons.grid_view_outlined, color: AppColors.grey73),
-          label: "Thiết bị",
+          label: "Cửa Hàng",
         ),
 
-        /// NOTIFICATION
-        NavigationDestination(
-          selectedIcon: Icon(Icons.notifications, color: Colors.blue),
-          icon: Icon(Icons.notifications_none, color: AppColors.grey73),
-          label: "Thông báo",
-        ),
 
-        /// CART
-        NavigationDestination(
-          selectedIcon: Icon(Icons.shopping_cart, color: Colors.blue),
-          icon: Icon(Icons.shopping_cart_outlined, color: AppColors.grey73),
-          label: "Giỏ hàng",
-        ),
 
         /// ACCOUNT (TAB CUỐI)
         NavigationDestination(

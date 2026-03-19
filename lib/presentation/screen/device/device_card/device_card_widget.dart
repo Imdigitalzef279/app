@@ -82,8 +82,8 @@ class DeviceCardWidget extends StatelessWidget {
     final isSwitching =
     state.switchingDevices.containsKey(device.id);
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque, // 🔥 QUAN TRỌNG
       onTap: () {
         Navigator.push(
           context,
@@ -93,18 +93,15 @@ class DeviceCardWidget extends StatelessWidget {
                 BlocProvider.value(
                   value: context.read<DeviceCubit>(),
                 ),
-                BlocProvider(
-                  create: (_) => AtomatDetailCubit(),
-                ),
-                BlocProvider(
-                  create: (_) => AutomatChartCubit(),
-                ),
+                BlocProvider(create: (_) => AtomatDetailCubit()),
+                BlocProvider(create: (_) => AutomatChartCubit()),
               ],
               child: AutomatDetailScreen(device: device),
             ),
           ),
         );
       },
+
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(14),
@@ -234,25 +231,39 @@ class DeviceCardWidget extends StatelessWidget {
                   const SizedBox(height: 4),
 
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: isOnline
-                              ? const Color(0xFF6BB6A6)
-                              : Colors.red,
-                          shape: BoxShape.circle,
+                      Text(
+                        isOn ? "Đóng" : "Cắt",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: isOn ? Colors.green : Colors.red,
                         ),
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        isOnline ? "Online" : "Offline",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isOnline
-                              ? const Color(0xFF6BB6A6)
-                              : Colors.red,
+
+                      GestureDetector(
+                        onTap: () {}, // 🔥 CHẶN TAP LAN
+                        child: Transform.scale(
+                          scale: 0.7,
+                          child: Switch(
+                            value: isOn,
+                            activeColor: Colors.white,
+                            activeTrackColor: const Color(0xFF43A047),
+                            inactiveTrackColor: const Color(0xFFE53935),
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            onChanged: isOnline
+                                ? (value) async {
+                              final password = await showPasswordDialog(context);
+                              if (password == null) return;
+
+                              await context.read<DeviceCubit>().togglePower(
+                                device,
+                                password: password,
+                              );
+                            }
+                                : null,
+                          ),
                         ),
                       ),
                     ],

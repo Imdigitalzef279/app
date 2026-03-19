@@ -80,6 +80,10 @@ void configureDependencies() {
           print("DATA: ${e.response?.data}");
           print("MESSAGE: ${e.message}");
           print("ERROR TYPE: ${e.type}");
+          print("HEADERS: ${e.response?.headers}");
+          print("REDIRECT LOCATION: ${e.response?.headers['location']}");
+          print("👉 RESPONSE DATA: ${e.response?.data}");
+          print("👉 REDIRECT: ${e.response?.headers}");
           if (e.response?.statusCode == 401) {
             final prefs = getIt<SharedPreferencesHelper>();
             await prefs.removeAccessToken();

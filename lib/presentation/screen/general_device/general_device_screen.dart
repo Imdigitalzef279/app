@@ -228,19 +228,16 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
             children: [
               // ===== HEADER =====
               Container(
-                height: 260,
+                height: 260, // 👈 tăng thêm
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20), // 👈 đồng bộ luôn
+                  borderRadius: BorderRadius.circular(20),
                   child: PageView.builder(
                     itemCount: bannerImages.length,
                     itemBuilder: (context, index) {
                       return Image.asset(
                         bannerImages[index],
-                        fit: BoxFit.cover, // 👈 QUAN TRỌNG
+                        fit: BoxFit.contain, // 🔥 QUAN TRỌNG (thay cover)
                       );
                     },
                   ),
@@ -249,8 +246,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               SizedBox(height: 8.h),
               // ===== FEATURES =====
               Container(
-                padding:
-                EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.r),
                   color: AppColors.white,
@@ -272,9 +268,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Gap(16.h),
+                    Gap(10.h),
                     SizedBox(
-                        height: 75.h,
+                        height: 70.h,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
@@ -297,6 +293,15 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             },
                           ),
 
+
+                      featureItem(
+                        iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
+                        title: "Phân tích",
+                      ),
+                          featureItem(
+                            iconPath: "assets/icons/icons_new/icon_environment.png",
+                            title: "Môi trường",
+                          ),
                           featureItem(
                             iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
                             title: "KRA Care",
@@ -309,18 +314,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               );
                             },
                           ),
-
-                      featureItem(
-                        iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
-                        title: "Phân tích",
-                      ),
-
-
-                          featureItem(
-                            iconPath: "assets/icons/icons_new/icon_environment.png",
-                            title: "Môi trường",
-                          ),
-
                       ]
                     )
                     )
@@ -526,40 +519,42 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     VoidCallback? onTap,
   }) {
     return Padding(
-      padding: EdgeInsets.only(right: 18.w),
+      padding: EdgeInsets.only(right: 16.w),
       child: GestureDetector(
         onTap: onTap,
-        child: Column(
-          children: [
-            /// 🔥 CHỈ ICON - KHÔNG nền
-            Container(
-              width: 44.w,
-              height: 44.w,
-              alignment: Alignment.center,
-
-              /// ❌ KHÔNG decoration luôn
-              child: Image.asset(
-                iconPath,
-                fit: BoxFit.contain,
+        child: SizedBox(
+          width: 70.w, // 👈 fix width để các item đều nhau
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              /// 🔥 ICON NGUYÊN BẢN (KHÔNG NỀN)
+              Container(
+                width: 36.w,
+                height: 36.w,
+                alignment: Alignment.center,
+                child: Image.asset(
+                  iconPath,
+                  width: 32.w,
+                  height: 32.w,
+                  fit: BoxFit.contain,
+                ),
               ),
-            ),
 
-            SizedBox(height: 6.h),
+              SizedBox(height: 6.h),
 
-            SizedBox(
-              width: 60.w,
-              child: Text(
+              Text(
                 title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 11.sp,
+                  fontSize: 10.sp,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
                 ),
                 maxLines: 2,
-              ),
-            )
-          ],
+                overflow: TextOverflow.ellipsis,
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -642,121 +637,149 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     final isOnline = device.status == 1;
     final isOn = currentSwitch == 1;
 
-    return Container(
-      height: 105,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 4,
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                  value: context.read<DeviceCubit>(),
+                ),
+                BlocProvider(
+                  create: (_) => AtomatDetailCubit(),
+                ),
+                BlocProvider(
+                  create: (_) => AutomatChartCubit(),
+                ),
+              ],
+              child: AutomatDetailScreen(device: device),
+            ),
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          /// ===== HEADER =====
-          Row(
-            children: [
-              Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEAF4F1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Icon(
-                  Icons.power,
-                  size: 13,
-                  color: Color(0xFF6BB6A6),
-                ),
-              ),
+        );
+      },
 
-              const SizedBox(width: 6),
+      child: Container(
+        height: 105,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 4,
+            ),
+          ],
+        ),
 
-              /// NAME + STATUS
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      device.name ?? device.code ?? "",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+
+            /// HEADER
+            Row(
+              children: [
+                Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF4F1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Icon(
+                    Icons.power,
+                    size: 13,
+                    color: Color(0xFF6BB6A6),
+                  ),
+                ),
+
+                const SizedBox(width: 6),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        device.name ?? device.code ?? "",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 2),
+                      const SizedBox(height: 2),
 
-                    Row(
-                      children: [
-                        Container(
-                          width: 5,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: isOnline ? Colors.green : Colors.red,
-                            shape: BoxShape.circle,
+                      Row(
+                        children: [
+                          Container(
+                            width: 5,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: isOnline ? Colors.green : Colors.red,
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          isOnline ? "Online" : "Offline",
-                          style: TextStyle(
-                            fontSize: 9,
-                            color: isOnline ? Colors.green : Colors.red,
+                          const SizedBox(width: 4),
+                          Text(
+                            isOnline ? "Online" : "Offline",
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: isOnline ? Colors.green : Colors.red,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
 
-          /// ===== FOOTER =====
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                isOn ? "Đóng" : "Cắt",
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: isOn ? Colors.green : Colors.red,
+            /// FOOTER
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  isOn ? "Đóng" : "Cắt",
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: isOn ? Colors.green : Colors.red,
+                  ),
                 ),
-              ),
 
-              Transform.scale(
-                scale: 0.7,
-                child: Switch(
-                  value: isOn,
-                  activeColor: Colors.white,
-                  activeTrackColor: const Color(0xFF43A047),
-                  inactiveTrackColor: const Color(0xFFE53935),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  onChanged: isOnline
-                      ? (value) async {
-                    final password = await showPasswordDialog(context);
-                    if (password == null) return;
+                /// 🔥 FIX SWITCH KHÔNG BỊ CLICK CHỒNG
+                SizedBox(
+                  width: 50,
+                  height: 30,
+                  child: Switch(
+                    value: isOn,
+                    activeColor: Colors.white,
+                    activeTrackColor: const Color(0xFF43A047),
+                    inactiveTrackColor: const Color(0xFFE53935),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onChanged: isOnline
+                        ? (value) async {
+                      final password = await showPasswordDialog(context);
+                      if (password == null) return;
 
-                    await context.read<DeviceCubit>().togglePower(
-                      device,
-                      password: password,
-                    );
-                  }
-                      : null,
-                ),
-              ),
-            ],
-          ),
-        ],
+                      await context.read<DeviceCubit>().togglePower(
+                        device,
+                        password: password,
+                      );
+                    }
+                        : null,
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
