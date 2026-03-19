@@ -24,8 +24,8 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   }
 
   Future<void> loadWarranty() async {
-    final data = await warrantyRepo.getWarranty(widget.device.id);
-
+    final data = await  warrantyRepo.getWarranty(widget.device.id);
+    debugPrint("👉 WARRANTY DATA: ${data?.startDate} - ${data?.endDate}");
     if (!mounted) return;
 
     setState(() {
@@ -34,7 +34,7 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   }
 
   Future<void> activateWarranty() async {
-
+    debugPrint("👉 CLICK ACTIVATE deviceId: ${widget.device.id}");
     setState(() {
       activating = true;
     });

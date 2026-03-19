@@ -8,6 +8,7 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/general_device/project_setting_screen.dart';
+import 'package:solar_energy/presentation/screen/general_device/scan_qr/scan_qr_screen.dart';
 import '../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../data/dto/device/response/device_response.dart';
 import '../../../data/dto/power_station/response/power_station_response.dart';
@@ -164,7 +165,14 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     padding: EdgeInsets.zero,
                     constraints: BoxConstraints(),
                     icon: Icon(Icons.add, size: 18),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ScanQrScreen(),
+                        ),
+                      );
+                    },
                   ),
 
                   SizedBox(width: 2), // 👈 giảm xuống cực nhỏ
@@ -214,40 +222,31 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
           ),
           child: SafeArea(
             child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
 
           child: Column(
             children: [
               // ===== HEADER =====
               Container(
-                padding: EdgeInsets.all(14.w),
+                height: 260,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFFE8F5E9),
-                      Color(0xFFF1F8F6),
-                    ],
-                  ),
                 ),
-                child: SizedBox(
-                  height: 140,
-                  width: double.infinity, // 👈 QUAN TRỌNG
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20), // 👈 đồng bộ luôn
                   child: PageView.builder(
                     itemCount: bannerImages.length,
                     itemBuilder: (context, index) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.asset(
-                          bannerImages[index],
-                          fit: BoxFit.cover,
-                        ),
+                      return Image.asset(
+                        bannerImages[index],
+                        fit: BoxFit.cover, // 👈 QUAN TRỌNG
                       );
                     },
                   ),
                 ),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 8.h),
               // ===== FEATURES =====
               Container(
                 padding:
@@ -275,7 +274,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     ),
                     Gap(16.h),
                     SizedBox(
-                      height: 95.h,
+                        height: 75.h,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
@@ -316,25 +315,19 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                         title: "Phân tích",
                       ),
 
-                      featureItem(
-                        iconPath: "assets/icons/icons_new/icon_energy_saving.png",
-                        title: "Chiếu sáng",
-                      ),
+
                           featureItem(
                             iconPath: "assets/icons/icons_new/icon_environment.png",
                             title: "Môi trường",
                           ),
-                      featureItem(
-                        iconPath: "assets/icons/icons_new/icon_heat_pump.png",
-                        title: "Điều hòa",
-                      ),
+
                       ]
                     )
                     )
                 ]
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: 6.h),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -344,7 +337,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       Text(
                         "Thiết bị hay dùng",
                         style: TextStyle(
-                          fontSize: 17.sp,
+                          fontSize: 13.sp,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textPrimary,
                         ),
@@ -392,7 +385,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     ],
                   ),
 
-                  Gap(16.h),
+                  Gap(4.h),
                   favoriteDevices.isEmpty
                       ? Padding(
                     padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -480,7 +473,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     }
 
     return SizedBox(
-      height: 240, // 👈 đủ chứa 2 hàng
+      height: 120 * 2 + 8,
       child: PageView.builder(
         itemCount: chunks.length,
         controller: PageController(viewportFraction: 1),
@@ -504,7 +497,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 }),
               ),
 
-              SizedBox(height: 10),
+              SizedBox(height: 8),
 
               /// HÀNG 2
               Row(
@@ -540,8 +533,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
           children: [
             /// 🔥 CHỈ ICON - KHÔNG nền
             Container(
-              width: 56.w,
-              height: 56.w,
+              width: 44.w,
+              height: 44.w,
               alignment: Alignment.center,
 
               /// ❌ KHÔNG decoration luôn
@@ -551,15 +544,15 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               ),
             ),
 
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
 
             SizedBox(
-              width: 70.w,
+              width: 60.w,
               child: Text(
                 title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 12.sp,
+                  fontSize: 11.sp,
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
                 ),
@@ -650,7 +643,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     final isOn = currentSwitch == 1;
 
     return Container(
-      height: 110, // 👈 khớp với mainAxisExtent
+      height: 105,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white,

@@ -95,6 +95,7 @@ dependencies:
   upgrader: ^11.5.1
   signalr_core: ^1.1.1
   geocoding: ^2.1.0
+  mobile_scanner: ^3.5.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
