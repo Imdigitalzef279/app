@@ -62,55 +62,15 @@ class _AccountScreenState extends State<AccountScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12.r),
                           child: Image.asset(
-                            "assets/images/factory.png",
+                            "assets/images/logo.png",
                             width: double.infinity,
-                            height: 220.h,
+                            height: 100.h,
                             fit: BoxFit.contain,
                           ),
                         ),
 
                         /// USER INFO
-                        Positioned(
-                          left: 16.w,
-                          bottom: 16.h,
-                          child: Row(
-                            children: [
 
-                              CircleAvatar(
-                                radius: 26.w,
-                                backgroundColor: Colors.green,
-                                child: const Icon(Icons.home, color: Colors.white),
-                              ),
-
-                              SizedBox(width: 10.w),
-
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-
-                                  Text(
-                                    user?.userName ??
-                                        LocalizationsUtils.localizations.no_information,
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-
-                                  Text(
-                                    user?.phoneNumber ??
-                                        LocalizationsUtils.localizations.no_information,
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -130,12 +90,12 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                     itemBuilder: (context, index) {
                       final items = [
-                        [Icons.storage, "Quản lý"],
+                        [Icons.storage, "Quản lý thiết bị"],
+                        [Icons.settings, "Hướng Dẫn Sử Dụng Thiết Bị"],
+                        [Icons.settings, "Hỗ Trợ Kỹ Thuật"],
                         [Icons.settings, "Giao diện"],
-                        [Icons.search, "Hỗ trợ"],
                         [Icons.notifications, "Thông báo"],
                         [Icons.person, "Tài khoản"],
-                        [Icons.card_giftcard, "Sản phẩm"],
                       ];
 
                       return menuItem(
