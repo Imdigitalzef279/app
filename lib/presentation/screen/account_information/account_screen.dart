@@ -33,8 +33,48 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.greyFB,
-      body: BlocConsumer<AccountCubit, AccountState>(
+        body: AnimatedBg(
+          child: Stack(
+            children: [
+            /// 🌟 GLOW (3D effect)
+            Positioned(
+            top: -60,
+            left: -40,
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.25),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: -80,
+            right: -60,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    Colors.greenAccent.withOpacity(0.08),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          /// 📱 UI chính của bạn
+          BlocConsumer<AccountCubit, AccountState>(
         listener: (context, state) {
           state.request.when(
             loading: () => context.read<AppCubit>().showLoading(),
@@ -46,161 +86,219 @@ class _AccountScreenState extends State<AccountScreen> {
           final user = state.request.data;
 
           return SafeArea(
-            child: SingleChildScrollView(
+            child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: Column(
                 children: [
 
                   /// HEADER
-                  Container(
-                    height: 220.h,
-                    width: double.infinity,
-                    child: Stack(
-                      children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 22,
+                        backgroundColor: Color(0xFF1ABC9C).withOpacity(0.1),
+                        child: Icon(Icons.person, color: Color(0xFF1ABC9C)),
+                      ),
+                      SizedBox(width: 10.w),
 
-                        /// IMAGE
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12.r),
-                          child: Image.asset(
-                            "assets/images/logo.png",
-                            width: double.infinity,
-                            height: 100.h,
-                            fit: BoxFit.contain,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user?.name ?? "User",
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              "Tài khoản",
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Image.asset(
+                        "assets/images/logo.png",
+                        height: 36,
+                      ),
+
+                      SizedBox(width: 6),
+
+                      InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () {
+                          cubit.removeToken();
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            RouteName.loginScreen,
+                                (route) => false,
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.red14.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Assets.icons.signOutAlt.svg(
+                            width: 16,
+                            height: 16,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.red14,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
-
-                        /// USER INFO
-
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
 
                   SizedBox(height: 20.h),
 
-                  /// MENU GRID
+                  Spacer(),
+
+                  /// GRID
                   GridView.builder(
                     shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 6,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: 7,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 12.w,
                       mainAxisSpacing: 12.h,
-                      childAspectRatio: 1,
+                      childAspectRatio: 0.9,
                     ),
                     itemBuilder: (context, index) {
                       final items = [
-                        [Icons.storage, "Quản lý thiết bị"],
-                        [Icons.settings, "Hướng Dẫn Sử Dụng Thiết Bị"],
-                        [Icons.settings, "Hỗ Trợ Kỹ Thuật"],
-                        [Icons.settings, "Giao diện"],
+                        [Icons.devices, "Quản lý thiết bị"],
+                        [Icons.menu_book, "Hướng dẫn sử dụng"],
+                        [Icons.support_agent, "Hỗ trợ kỹ thuật"],
+                        [Icons.palette, "Giao diện"],
                         [Icons.notifications, "Thông báo"],
                         [Icons.person, "Tài khoản"],
+                        [Icons.person, "Quản lý thiết bị bảo hành"],
                       ];
 
-                      return menuItem(
+                      return _menuItem(
                         items[index][0] as IconData,
                         items[index][1] as String,
                       );
                     },
                   ),
-
-                  SizedBox(height: 42.h),
-
-                  /// LOGOUT
-                  InkWell(
-                    borderRadius: BorderRadius.circular(12.r),
-                    onTap: () {
-                      cubit.removeToken();
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        RouteName.loginScreen,
-                            (Route<dynamic> route) => false,
-                      );
-                    },
-                    child: Ink(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 10.h),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.r),
-                        color: AppColors.red14.withOpacity(0.1),
-                      ),
-                      child: Row(
-                        children: [
-                          Assets.icons.signOutAlt.svg(
-                            width: 16.w,
-                            height: 16.w,
-                            colorFilter: const ColorFilter.mode(
-                                AppColors.red14, BlendMode.srcIn),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: Text(
-                              LocalizationsUtils.localizations.logout,
-                              style: AppTextStyle.textSm.copyWith(
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.red14,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )
+                  Spacer(),
                 ],
               ),
             ),
           );
         },
       ),
+          ]
+        )
+        )
     );
   }
 
-  Widget menuItem(IconData icon, String title) {
+  Widget _menuItem(IconData icon, String title) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          )
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
           Container(
-            width: 36.w,
-            height: 36.w,
+            width: 42.w,
+            height: 42.w,
             decoration: BoxDecoration(
-              color: const Color(0xFF1ABC9C).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              color: const Color(0xFF1ABC9C).withOpacity(0.08),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
               icon,
               color: const Color(0xFF1ABC9C),
-              size: 20,
+              size: 24,
             ),
           ),
 
-          SizedBox(height: 6.h),
+          SizedBox(height: 8.h),
 
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w500,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 6.w),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          )
+          ),
         ],
       ),
+    );
+  }
+}
+class AnimatedBg extends StatefulWidget {
+  final Widget child;
+  const AnimatedBg({super.key, required this.child});
+
+  @override
+  State<AnimatedBg> createState() => _AnimatedBgState();
+}
+
+class _AnimatedBgState extends State<AnimatedBg> {
+  Alignment begin = Alignment.topLeft;
+  Alignment end = Alignment.bottomRight;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 6));
+      setState(() {
+        begin = begin == Alignment.topLeft
+            ? Alignment.bottomLeft
+            : Alignment.topLeft;
+        end = end == Alignment.bottomRight
+            ? Alignment.topRight
+            : Alignment.bottomRight;
+      });
+      return true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(seconds: 6),
+      curve: Curves.easeInOut,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: begin,
+          end: end,
+          colors: const [
+            Color(0xFFDFF7F2),
+            Color(0xFFF3FFFC),
+            Colors.white,
+          ],
+        ),
+      ),
+      child: widget.child,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,10 +20,21 @@ import '../Electricity/automat/automat_detail_screen.dart';
 import '../Electricity/automat/automat_list_screen.dart';
 import '../Electricity/automat/bloc/atomat_detail_cubit.dart';
 import '../device/bloc/device_cubit.dart';
-import '../device/device_card/device_card_widget.dart';
 import '../kra_care/kra_care_screen.dart';
-import 'ai_chat/ai_chat_screen.dart';
+import 'background/bloc/background_cubit.dart';
+Color getAdaptiveTextColor(String? bg) {
+  if (bg == null) return Colors.black;
 
+  /// ảnh tối (ví dụ cờ đỏ)
+  if (bg.contains("red") ||
+      bg.contains("dark") ||
+      bg.contains("night")) {
+    return Colors.white;
+  }
+
+  /// mặc định ảnh sáng
+  return Colors.black87;
+}
 class GeneralDeviceScreen extends StatefulWidget {
   const GeneralDeviceScreen({super.key, required this.project});
 
@@ -102,360 +114,330 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   Widget build(BuildContext context) {
     isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
+    final textColor = Colors.black;
     final devices =
-       context.select((DeviceCubit c) => c.state.resultDevices.data) ?? [];
+        context.select((DeviceCubit c) => c.state.resultDevices.data) ?? [];
+
     final favoriteDevices =
     devices.where((d) => d.isFavorite).take(6).toList();
+
     String locationText = "Hà Nội";
+
     final bannerImages = [
-      "assets/images/matis/1.png",
       "assets/images/matis/2.png",
+      "assets/images/matis/1.png",
       "assets/images/matis/4.png",
       "assets/images/matis/5.png",
     ];
+
     return Scaffold(
-      backgroundColor: AppColors.greyFB,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          titleSpacing: 12,
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.white.withOpacity(0.85),
+        elevation: 0,
+        titleSpacing: 12,
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.asset(
+              "assets/images/logo.png",
+              height: 32,
+            ),
+            SizedBox(width: 10),
 
-          title: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset(
-                "assets/images/logo.png",
-                height: 32,
-              ),
-              SizedBox(width: 10),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Nhà máy ${widget.project.name}",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      "Đang hoạt động",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    Text(
-                      "Vị trí: $locationText",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              /// 👇 icon nằm cùng hàng (đúng mẫu)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                    icon: Icon(Icons.add, size: 18),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ScanQrScreen(),
-                        ),
-                      );
-                    },
+                  Text(
+                    "Nhà máy ${widget.project.name}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
                   ),
-
-                  SizedBox(width: 2), // 👈 giảm xuống cực nhỏ
-
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                    icon: Icon(Icons.notifications_none, size: 20),
-                    onPressed: () {},
+                  Text(
+                    "Đang hoạt động",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: textColor.withOpacity(0.8),
+                    ),
                   ),
-
-                  SizedBox(width: 2), // 👈 giảm tiếp
-
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                    icon: Icon(Icons.settings_outlined, size: 20),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProjectSettingScreen(
-                            project: widget.project,
-                          ),
-                        ),
-                      );
-                    },
+                  Text(
+                    "Vị trí: $locationText",
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: textColor.withOpacity(0.6),
+                    ),
                   ),
                 ],
-              )
-            ],
-          ),
-        ),
-      body: Stack(
-          children: [
-      Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFFDDF3EA),
-                Color(0xFFEFF8F4),
-                Colors.white,
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
 
-          child: Column(
+            Row(
+              children: [
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  icon: Icon(Icons.add, size: 18),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ScanQrScreen(),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(width: 2),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  icon: Icon(Icons.notifications_none, size: 20),
+                  onPressed: () {},
+                ),
+                SizedBox(width: 2),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  icon: Icon(Icons.settings_outlined, size: 20),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProjectSettingScreen(
+                          project: widget.project,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+
+      /// 🔥 BODY CÓ BACKGROUND ĐỘNG
+      body: BlocBuilder<BackgroundCubit, String?>(
+        builder: (context, bg) {
+          final textColor = getAdaptiveTextColor(bg);
+          return Stack(
             children: [
-              // ===== HEADER =====
-              Container(
-                height: 260, // 👈 tăng thêm
-                width: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: PageView.builder(
-                    itemCount: bannerImages.length,
-                    itemBuilder: (context, index) {
-                      return Image.asset(
-                        bannerImages[index],
-                        fit: BoxFit.contain, // 🔥 QUAN TRỌNG (thay cover)
-                      );
-                    },
+
+              /// ===== BACKGROUND IMAGE =====
+              if (bg != null && bg.isNotEmpty)
+                Positioned.fill(
+                  child: bg.startsWith("assets/")
+                      ? Image.asset(
+                    bg,
+                    fit: BoxFit.cover,
+                  )
+                      : Image.file(
+                    File(bg),
+                    fit: BoxFit.cover,
                   ),
                 ),
-              ),
-              SizedBox(height: 8.h),
-              // ===== FEATURES =====
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.r),
-                  color: AppColors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 12,
-                      offset: Offset(0, 6),
-                    )
-                  ],
+
+              /// ===== OVERLAY =====
+              if (bg != null && bg.isNotEmpty)
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.1),
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LocalizationsUtils.localizations.features,
-                      style: AppTextStyle.textSm.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Gap(10.h),
-                    SizedBox(
-                        height: 70.h,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        children: [
-                          featureItem(
-                            iconPath: "assets/icons/icons_new/icon_energy_meter.png",
-                            title: "Năng lượng",
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => BlocProvider.value(
-                                    value: context.read<DeviceCubit>(),
-                                    child: AutomatListScreen(
-                                      powerStationId: widget.project.id!,
+
+              /// ===== UI CŨ =====
+          SafeArea(
+                  bottom: true,
+                  child: SingleChildScrollView(
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    child: Column(
+                      children: [
+
+                        /// HEADER
+                        Container(
+                          height: 180,
+                          width: double.infinity,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: PageView.builder(
+                              itemCount: bannerImages.length,
+                              itemBuilder: (context, index) {
+                                return Image.asset(
+                                  bannerImages[index],
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 8.h),
+
+                        /// FEATURES
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.r),
+                            color: Colors.white.withOpacity(0.85),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 12,
+                                offset: Offset(0, 6),
+                              )
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                LocalizationsUtils.localizations.features,
+                                style: AppTextStyle.textSm.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Gap(10.h),
+
+                              SizedBox(
+                                height: 70.h,
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    featureItem(
+                                      iconPath: "assets/icons/icons_new/icon_energy_meter.png",
+                                      title: "Năng lượng",
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => BlocProvider.value(
+                                              value: context.read<DeviceCubit>(), // 👈 truyền cubit sang
+                                              child: AutomatListScreen(
+                                                powerStationId: widget.project.id!,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    featureItem(
+                                      iconPath:
+                                      "assets/icons/icons_new/icon_energy_analytics.png",
+                                      title: "Phân tích",
+                                    ),
+                                    featureItem(
+                                      iconPath:
+                                      "assets/icons/icons_new/icon_environment.png",
+                                      title: "Môi trường",
+                                    ),
+                                    featureItem(
+                                      iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
+                                      title: "KRA Care",
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => KraCareScreen(), // 👈 màn KRA
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: 6.h),
+
+                        /// DEVICES
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.45), // 👈 nền
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    "Thiết bị hay dùng",
+                                    style: TextStyle(
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white, // 👈 luôn trắng
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-
-
-                      featureItem(
-                        iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
-                        title: "Phân tích",
-                      ),
-                          featureItem(
-                            iconPath: "assets/icons/icons_new/icon_environment.png",
-                            title: "Môi trường",
-                          ),
-                          featureItem(
-                            iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
-                            title: "KRA Care",
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const KraCareScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                      ]
-                    )
-                    )
-                ]
-                ),
-              ),
-              SizedBox(height: 6.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Thiết bị hay dùng",
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-
-                      Row(
-                        children: [
-                          /// 👇 NÚT ĐỔI VIEW
-                          IconButton(
-                            icon: Icon(
-                              _isGridView ? Icons.grid_view : Icons.view_list,
-                              size: 18,
-                              color: Color(0xFF1ABC9C),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isGridView = !_isGridView;
-                              });
-                            },
-                          ),
-
-                          InkWell(
-                            onTap: () {},
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Xem tất cả",
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF1ABC9C),
-                                  ),
-                                ),
-                                SizedBox(width: 4.w),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 14.sp,
-                                  color: Color(0xFF1ABC9C),
-                                )
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
 
-                  Gap(4.h),
-                  favoriteDevices.isEmpty
-                      ? Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.h),
-                    child: Text(
-                      "Chưa có thiết bị hay dùng",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 13.sp,
-                      ),
+                            Gap(4.h),
+
+                            favoriteDevices.isEmpty
+                                ? Text("Chưa có thiết bị")
+                                : _buildFixed6AndScroll(
+                              devices
+                                  .where((d) => d.isFavorite)
+                                  .toList(),
+                            )
+                          ],
+                        ),
+                      ],
                     ),
-                  )
-                      : _isGridView
-                      ? _buildFixed6AndScroll(
-                      devices.where((d) => d.isFavorite).toList()
-                  )
-                      : ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: favoriteDevices.length,
-                    itemBuilder: (context, index) {
-                      return DeviceCardWidget(
-                        device: favoriteDevices[index],
-                      );
-                    },
-                  )
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+                  ),
+                ),
 
-      ),
-
-
-            Positioned(
-              top: _aiTop,
-              left: _aiLeft,
-              child: GestureDetector(
-                onPanUpdate: (details) {
-                  setState(() {
-                    _aiTop += details.delta.dy;
-                    _aiLeft += details.delta.dx;
-
-
-                    _aiTop = _aiTop.clamp(0, MediaQuery.of(context).size.height - 120);
-                    _aiLeft = _aiLeft.clamp(0, MediaQuery.of(context).size.width - 80);
-                  });
-                },
-                onTap: () {
-                  setState(() {
-                    _showChat = !_showChat;
-                  });
-                },
-                child: _buildAiButton(),
-              ),
-
-            ),
-            if (_showChat)
+              /// ===== AI BUTTON =====
               Positioned(
-                top: _aiTop - 360,
-                left: _aiLeft - 200,
-                child: AnimatedScale(
-                  scale: _showChat ? 1 : 0,
-                  duration: Duration(milliseconds: 200),
-                  child: _buildChatBox(),
+                top: _aiTop,
+                left: _aiLeft,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    setState(() {
+                      _aiTop += details.delta.dy;
+                      _aiLeft += details.delta.dx;
+                    });
+                  },
+                  onTap: () {
+                    setState(() {
+                      _showChat = !_showChat;
+                    });
+                  },
+                  child: _buildAiButton(),
                 ),
               ),
-          ]
-      )
 
+              if (_showChat)
+                Positioned(
+                  top: _aiTop - 360,
+                  left: _aiLeft - 200,
+                  child: AnimatedScale(
+                    scale: _showChat ? 1 : 0,
+                    duration: Duration(milliseconds: 200),
+                    child: _buildChatBox(),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
     );
-
   }
   Widget _buildFixed6AndScroll(List<DeviceResponse> devices) {
     final chunks = <List<DeviceResponse>>[];
-
+    final textColor = Colors.black;
     for (int i = 0; i < devices.length; i += 6) {
       chunks.add(
         devices.sublist(
@@ -466,10 +448,11 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     }
 
     return SizedBox(
-      height: 120 * 2 + 8,
+      height: 180 * 2 + 8,
       child: PageView.builder(
         itemCount: chunks.length,
         controller: PageController(viewportFraction: 1),
+        physics: const BouncingScrollPhysics(),
         itemBuilder: (context, pageIndex) {
           final pageDevices = chunks[pageIndex];
 
@@ -484,7 +467,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(right: index != 2 ? 10 : 0),
-                      child: _deviceGridItem(pageDevices[index]),
+                      child: _deviceGridItem(pageDevices[index], textColor),
                     ),
                   );
                 }),
@@ -502,7 +485,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(right: index != 2 ? 10 : 0),
-                      child: _deviceGridItem(pageDevices[i]),
+                      child: _deviceGridItem(pageDevices[i], textColor),
                     ),
                   );
                 }),
@@ -523,21 +506,17 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
-          width: 70.w, // 👈 fix width để các item đều nhau
+          width: 70.w,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              /// 🔥 ICON NGUYÊN BẢN (KHÔNG NỀN)
-              Container(
+
+              /// ✅ HIỆN ICON LẠI
+              Image.asset(
+                iconPath,
                 width: 36.w,
                 height: 36.w,
-                alignment: Alignment.center,
-                child: Image.asset(
-                  iconPath,
-                  width: 32.w,
-                  height: 32.w,
-                  fit: BoxFit.contain,
-                ),
+                fit: BoxFit.contain,
               ),
 
               SizedBox(height: 6.h),
@@ -550,8 +529,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   fontWeight: FontWeight.w500,
                   color: Colors.black87,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               )
             ],
           ),
@@ -571,7 +548,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         child: Container(
           padding: EdgeInsets.all(12.w),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.white.withOpacity(0.85),
             borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
@@ -625,7 +602,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         )
     );
   }
-  Widget _deviceGridItem(DeviceResponse device) {
+  Widget _deviceGridItem(DeviceResponse device, Color textColor) {
     final state = context.watch<DeviceCubit>().state;
 
     final currentSwitch =
@@ -665,7 +642,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         height: 105,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: textColor == Colors.white
+              ? Colors.black.withOpacity(0.4)
+              : Colors.white.withOpacity(0.85),
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
@@ -790,7 +769,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     return Container(
       padding: EdgeInsets.symmetric(vertical: 14.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(18.r),
         boxShadow: [
           BoxShadow(
@@ -946,7 +925,7 @@ Widget _buildChatBox() {
     width: 280,
     height: 350,
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: Colors.white.withOpacity(0.85),
       borderRadius: BorderRadius.circular(16),
       boxShadow: [
         BoxShadow(

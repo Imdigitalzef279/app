@@ -16,6 +16,8 @@ class DeviceInfoScreen extends StatefulWidget {
 class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   final WarrantyRepository warrantyRepo = WarrantyRepository();
   bool activating = false;
+  bool get isActivated =>
+      warranty?.startDate != null;
   WarrantyResponse? warranty;
   @override
   void initState() {
@@ -65,21 +67,28 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   }
 
   String getWarrantyDuration() {
-
-    if (warranty?.startDate == null || warranty?.endDate == null) {
-      return "--";
-    }
+    if (warranty?.endDate == null) return "--";
 
     try {
-
-      final start = DateTime.parse(warranty!.startDate!);
+      final now = DateTime.now();
       final end = DateTime.parse(warranty!.endDate!);
 
-      final months =
-          (end.year - start.year) * 12 + (end.month - start.month);
+      final diff = end.difference(now);
 
-      return "$months tháng";
+      if (diff.isNegative) {
+        return "Hết hạn";
+      }
 
+      final days = diff.inDays;
+
+      // Nếu còn hơn 30 ngày → tính tháng
+      if (days > 30) {
+        final months = (days / 30).floor();
+        return "$months tháng";
+      }
+
+      // Tháng cuối → tính ngày
+      return "$days ngày";
     } catch (_) {
       return "--";
     }
@@ -207,7 +216,7 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
               item("Tên sản phẩm", device.name),
               item("Mã hàng", device.name),
               item("Serial Number", device.code),
-              item("Hãng Sản Xuất", device.projectId),
+              item("Hãng Sản Xuất", warranty?.provider),
               item("Xuất Xứ", device.creator),
             ],
           ),
@@ -240,16 +249,23 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
           const SizedBox(height: 10),
 
           /// BUTTON kích hoạt
-          // if (warranty == null || warranty!.startDate == null)
             ElevatedButton(
-              onPressed: activating ? null : activateWarranty,
+              onPressed: (activating || isActivated)
+                  ? null
+                  : activateWarranty,
+
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5BB8A6),
+                backgroundColor: isActivated
+                    ? Colors.green.shade300
+                    : const Color(0xFF5BB8A6),
+
                 padding: const EdgeInsets.symmetric(vertical: 16),
+
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
+
               child: activating
                   ? const SizedBox(
                 height: 18,
@@ -259,9 +275,11 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
                   color: Colors.white,
                 ),
               )
-                  : const Text(
-                "Kích hoạt bảo hành",
-                style: TextStyle(fontSize: 16),
+                  : Text(
+                isActivated
+                    ? "Đã kích hoạt bảo hành"
+                    : "Kích hoạt bảo hành",
+                style: const TextStyle(fontSize: 16),
               ),
             ),
 

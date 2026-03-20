@@ -118,21 +118,31 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 
           /// 🔲 KHUNG SCAN
           Center(
-            child: Container(
+            child: SizedBox(
               width: 260,
               height: 260,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.9),
-                  width: 2,
-                ),
+              child: Stack(
+                children: [
+                  /// 🔲 KHUNG
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+
+                  /// 🔥 LINE SCAN (CHỈ TRONG Ô)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: const _ScanLineGreen(),
+                  ),
+                ],
               ),
             ),
           ),
-
-          /// 🔥 LINE SCAN
-          const Positioned.fill(child: _ScanLineWhite()),
 
           /// 🔙 HEADER (safe)
           SafeArea(
@@ -268,15 +278,14 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   }
 }
 
-/// 🔥 LINE ANIMATION
-class _ScanLineWhite extends StatefulWidget {
-  const _ScanLineWhite();
+class _ScanLineGreen extends StatefulWidget {
+  const _ScanLineGreen();
 
   @override
-  State<_ScanLineWhite> createState() => _ScanLineWhiteState();
+  State<_ScanLineGreen> createState() => _ScanLineGreenState();
 }
 
-class _ScanLineWhiteState extends State<_ScanLineWhite>
+class _ScanLineGreenState extends State<_ScanLineGreen>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
 
@@ -298,9 +307,17 @@ class _ScanLineWhiteState extends State<_ScanLineWhite>
         return Align(
           alignment: Alignment(0, controller.value * 2 - 1),
           child: Container(
-            width: 260,
-            height: 2,
-            color: Colors.white,
+            width: double.infinity,
+            height: 3,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  Colors.greenAccent,
+                  Colors.transparent,
+                ],
+              ),
+            ),
           ),
         );
       },

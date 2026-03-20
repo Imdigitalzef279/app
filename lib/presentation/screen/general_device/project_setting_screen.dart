@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../data/dto/power_station/response/power_station_response.dart';
+import 'background/bloc/background_cubit.dart';
 
 enum AccountType {
   admin,
@@ -92,7 +97,77 @@ class _ProjectSettingScreenState
       }
     });
   }
+  Future<void> _previewBackground(String path) async {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return Dialog(
+          insetPadding: EdgeInsets.all(12),
+          child: Stack(
+            children: [
 
+              /// ảnh preview
+              Positioned.fill(
+                child: path.startsWith("assets")
+                    ? Image.asset(path, fit: BoxFit.cover)
+                    : Image.file(File(path), fit: BoxFit.cover),
+              ),
+
+              /// overlay
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.3),
+                ),
+              ),
+
+              /// nút
+              Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("Huỷ"),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          context.read<BackgroundCubit>().setBg(path);
+                          Navigator.pop(context);
+                        },
+                        child: Text("Áp dụng"),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+
+    final file = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
+    if (file != null) {
+      context.read<BackgroundCubit>().setBg(file.path);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Đã đổi hình nền")),
+      );
+    }
+  }
   // ================= BUILD =================
 
   @override
@@ -123,7 +198,8 @@ class _ProjectSettingScreenState
             const SizedBox(height: 24),
             _buildPackageSection(),
             const SizedBox(height: 30),
-
+            _buildBackgroundSection(),
+            const SizedBox(height: 24),
             _buildSaveButton(),
           ],
         ),
@@ -494,6 +570,91 @@ class _ProjectSettingScreenState
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+  Widget _buildBackgroundSection() {
+    final presets = [
+      "assets/images/backgrounds/8machine-_-gCkv8mnmxm8-unsplash.jpg",
+      "assets/images/backgrounds/brendan-sapp-voobNbqCQHY-unsplash.jpg",
+      "assets/images/backgrounds/diego-ph-wyeapf7Gy-U-unsplash.jpg",
+      "assets/images/backgrounds/itsiken-hs8bzEFVffc-unsplash.jpg",
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Hình nền",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+
+          const SizedBox(height: 16),
+
+          /// GRID ẢNH
+          GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: presets.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 1.6,
+            ),
+            itemBuilder: (_, index) {
+              final img = presets[index];
+
+              return GestureDetector(
+                onTap: () => _previewBackground(img),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(img, fit: BoxFit.cover),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          /// chọn ảnh máy
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final picker = ImagePicker();
+                    final file = await picker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+
+                    if (file != null) {
+                      _previewBackground(file.path);
+                    }
+                  },
+                  child: Text("Chọn ảnh"),
+                ),
+              ),
+
+              const SizedBox(width: 10),
+
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.read<BackgroundCubit>().clear();
+                  },
+                  child: Text("Mặc định"),
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );
