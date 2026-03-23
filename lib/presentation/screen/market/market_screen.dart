@@ -387,7 +387,6 @@ class _CategoryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final items = [
       {
         "icon": "assets/icons/icons_new/icon_energy_meter.png",
@@ -413,47 +412,31 @@ class _CategoryGrid extends StatelessWidget {
         "icon": "assets/icons/icons_new/icon_kra_smart_safety.png",
         "text": "KRA Smart Safety"
       },
-      {
-        "icon": "assets/icons/icons_new/icon_energy_management.png",
-        "text": "Quản lý năng lượng"
-      },
-      {
-        "icon": "assets/icons/icons_new/icon_energy_analytics.png",
-        "text": "Phân tích năng lượng"
-      },
-      {
-        "icon": "assets/icons/icons_new/icon_energy_saving.png",
-        "text": "Tiết kiệm điện"
-      },
-      {
-        "icon": "assets/icons/icons_new/icon_heat_pump.png",
-        "text": "Heat Pump"
-      },
     ];
 
-    return SizedBox(
-      height: 240,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: GridView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: items.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-          childAspectRatio: 1,
+          crossAxisCount: 3, // 3 cột đẹp hơn
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.9, // chỉnh tỉ lệ ô
         ),
         itemBuilder: (context, index) {
-
           return Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
-                  blurRadius: 4,
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
                 )
               ],
             ),
@@ -461,23 +444,20 @@ class _CategoryGrid extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
 
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Image.asset(
-                    items[index]["icon"]!,
-                    height: 28,
-                  ),
+                /// ICON (KHÔNG NỀN)
+                Image.asset(
+                  items[index]["icon"]!,
+                  height: 32,
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
 
+                /// TEXT
                 Text(
                   items[index]["text"]!,
                   textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,

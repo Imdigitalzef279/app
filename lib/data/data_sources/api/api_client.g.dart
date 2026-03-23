@@ -501,18 +501,7 @@ class _ApiClient implements ApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    print("👉 ORIGINAL BODY: ${request.toJson()}");
-
-    _data.addAll({
-      "gatewaySn": request.gatewaySn,
-      "breakerSn": request.breakerSn,
-      "addr": request.addr,
-      "commandValue": request.commandValue.toString(), // 🔥 FIX 1
-      "createdBy": request.createdBy,
-      "isForce": true,
-    });
-
-    print("👉 FINAL BODY: $_data");;
+    _data.addAll(request.toJson());
     final _options = _setStreamType<HttpResponse<dynamic>>(Options(
       method: 'POST',
       headers: _headers,

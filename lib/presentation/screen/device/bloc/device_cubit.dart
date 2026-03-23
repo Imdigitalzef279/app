@@ -164,7 +164,11 @@ class DeviceCubit extends Cubit<DeviceState> {
           data: updatedDevices,
         ),
       ));
-
+      for (var d in updatedDevices) {
+        if (d.code != null) {
+          loadBreakerLog(d.code!);
+        }
+      }
     } catch (e) {
 
       emit(state.copyWith(
@@ -226,6 +230,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(switchingDevices: newMap));
 
     try {
+      await loadBreakerLog(device.code!);
       final latestDevice = state.resultDevices.data
           ?.where((d) => d.id == device.id)
           .firstOrNull;
@@ -263,7 +268,6 @@ class DeviceCubit extends Cubit<DeviceState> {
           );
 
           return d.copyWith(
-            status: newStatus,
             realtimeLog: newLog,
           );
 
@@ -750,7 +754,6 @@ class DeviceCubit extends Cubit<DeviceState> {
       if (d.code == code) {
         return d.copyWith(
           realtimeLog: log,
-          status: log.rlySta ?? d.status,
         );
       }
 

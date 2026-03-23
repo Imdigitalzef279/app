@@ -6,7 +6,7 @@ class LoginState with _$LoginState {
     required Result<AuthRequest> request,
     @Default("") String userName,
     @Default("") String password,
-    @Default(true) bool clause,
+    @Default(false) bool clause,
     @Default("") String errorUserName,
     @Default("") String errorPassword,
     @Default("") String error,

@@ -13,6 +13,7 @@ import 'package:solar_energy/presentation/common_widgets/app_loading.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/login/bloc/login_cubit.dart';
+import 'package:solar_energy/presentation/screen/login/terms/terms_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -141,28 +142,40 @@ class _LoginScreenState extends State<LoginScreen> {
                                 builder: (context, state) => Checkbox(
                                   shape: const CircleBorder(),
                                   checkColor: Colors.white,
-                                  fillColor:
-                                      WidgetStateProperty.resolveWith<Color>(
-                                          (states) {
+                                  fillColor: WidgetStateProperty.resolveWith<Color>((states) {
                                     if (states.contains(WidgetState.selected)) {
                                       return AppColors.blueF8;
                                     }
                                     return Colors.white;
                                   }),
                                   value: state.clause,
-                                  onChanged: (value) => {
-                                    cubit.changeDataQuery(
-                                        clause: !state.clause),
-                                  },
+
+                                  /// 🔥 KHÓA checkbox (không cho user tự tick)
+                                  onChanged: null,
                                 ),
                               ),
                               Expanded(
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const TermsScreen()),
+                                    );
+
+                                    if (result == true) {
+                                      cubit.changeDataQuery(clause: true);
+                                    }
+                                  },
                                   child: Text(
-                                LocalizationsUtils.localizations.agree_terms,
-                                style: AppTextStyle.textXs.copyWith(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.w400),
-                              ))
+                                    LocalizationsUtils.localizations.agree_terms,
+                                    style: AppTextStyle.textXs.copyWith(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w400,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           )
                         ],
@@ -238,9 +251,16 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget buttonLogin() {
     return BlocBuilder<LoginCubit, LoginState>(
         builder: (context, state) => AppButton(
-              onPressed: () async {
-                await cubit.login();
-              },
+          onPressed: () async {
+            if (!state.clause) {
+              AppToast.showToastError(
+                title: "Vui lòng đồng ý điều khoản",
+              );
+              return;
+            }
+
+            await cubit.login();
+          },
               title: LocalizationsUtils.localizations.login,
               color: AppColors.blue,
               fontSize: 12.sp,

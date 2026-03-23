@@ -83,13 +83,10 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   Widget buildDeviceCard(BuildContext context, device) {
 
     final state = context.watch<DeviceCubit>().state;
-    final currentSwitch =
-        state.breakerLogs[device.code]?.rlySta ??
-            device.realtimeLog?.rlySta ??
-            device.status ??
-            0;
-    final isOnline = device.status == 1;
+    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+    final currentSwitch = log?.rlySta;
     final isOn = currentSwitch == 1;
+    final isOnline = device.status == 1;
     final isSwitching =
     state.switchingDevices.containsKey(device.id);
     final countdown = state.switchCountdowns[device.id] ?? 0;
@@ -347,19 +344,25 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
                   Transform.scale(
                     scale: 0.85,
-                    child: Switch(
+                    child: isSwitching
+                        ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                        : Switch(
                       value: isOn,
+                      activeColor: Colors.white,
+                      activeTrackColor: const Color(0xFF43A047),
 
-                      /// khi bật
-                      activeColor: Colors.white,                 // chấm tròn trắng
-                      activeTrackColor: const Color(0xFF43A047), // xanh đậm
+                      inactiveThumbColor: Colors.white,
+                      inactiveTrackColor: const Color(0xFFE53935),
+                      trackOutlineColor:
+                      WidgetStateProperty.all(Colors.transparent),
+                      materialTapTargetSize:
+                      MaterialTapTargetSize.shrinkWrap,
 
-                      /// khi tắt
-                      inactiveThumbColor: Colors.white,          // chấm trắng
-                      inactiveTrackColor: const Color(0xFFE53935), // đỏ đậm
-                      trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      onChanged: isOnline
+                      onChanged: (isOnline && !isSwitching && countdown == 0)
                           ? (value) async {
                         final password =
                         await showPasswordDialog(context);
@@ -378,14 +381,16 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                   /// trạng thái thiết bị
                   Text(
                     isSwitching
-                        ? "Đang chuyển"
+                        ? "Đang gửi lệnh..."
+                        : countdown > 0
+                        ? "Đang xử lý (${countdown}s)"
                         : isOn
                         ? "Đang đóng"
                         : "Đang cắt",
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: isSwitching
+                      color: isSwitching || countdown > 0
                           ? Colors.orange
                           : isOn
                           ? Colors.green

@@ -210,7 +210,7 @@ class _$LoginStateImpl implements _LoginState {
       {required this.request,
       this.userName = "",
       this.password = "",
-      this.clause = true,
+      this.clause = false,
       this.errorUserName = "",
       this.errorPassword = "",
       this.error = "",

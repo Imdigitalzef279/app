@@ -74,7 +74,6 @@ class DeviceCardWidget extends StatelessWidget {
     final currentSwitch =
         state.breakerLogs[device.code]?.rlySta ??
             device.realtimeLog?.rlySta ??
-            device.status ??
             0;
 
     final isOnline = device.status == 1;

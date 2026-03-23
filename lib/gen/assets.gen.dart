@@ -274,6 +274,10 @@ class $AssetsImagesGen {
   /// File path: assets/images/animation.json
   String get animation => 'assets/images/animation.json';
 
+  /// Directory path: assets/images/backgrounds
+  $AssetsImagesBackgroundsGen get backgrounds =>
+      const $AssetsImagesBackgroundsGen();
+
   /// File path: assets/images/electric_pole.png
   AssetGenImage get electricPole =>
       const AssetGenImage('assets/images/electric_pole.png');
@@ -445,6 +449,34 @@ class $AssetsImagesAcrelGen {
         a1446074178112364544085574738d6a46ec96a2A1c7ca71168e,
         a1446074178112364544Ab28e10dD1774106B7053bb6dd6644bb,
         a1446074178112364544Acfcfb406a2a4da48739567915c07d1d
+      ];
+}
+
+class $AssetsImagesBackgroundsGen {
+  const $AssetsImagesBackgroundsGen();
+
+  /// File path: assets/images/backgrounds/8machine-_-gCkv8mnmxm8-unsplash.jpg
+  AssetGenImage get a8machineGCkv8mnmxm8Unsplash => const AssetGenImage(
+      'assets/images/backgrounds/8machine-_-gCkv8mnmxm8-unsplash.jpg');
+
+  /// File path: assets/images/backgrounds/brendan-sapp-voobNbqCQHY-unsplash.jpg
+  AssetGenImage get brendanSappVoobNbqCQHYUnsplash => const AssetGenImage(
+      'assets/images/backgrounds/brendan-sapp-voobNbqCQHY-unsplash.jpg');
+
+  /// File path: assets/images/backgrounds/diego-ph-wyeapf7Gy-U-unsplash.jpg
+  AssetGenImage get diegoPhWyeapf7GyUUnsplash => const AssetGenImage(
+      'assets/images/backgrounds/diego-ph-wyeapf7Gy-U-unsplash.jpg');
+
+  /// File path: assets/images/backgrounds/itsiken-hs8bzEFVffc-unsplash.jpg
+  AssetGenImage get itsikenHs8bzEFVffcUnsplash => const AssetGenImage(
+      'assets/images/backgrounds/itsiken-hs8bzEFVffc-unsplash.jpg');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+        a8machineGCkv8mnmxm8Unsplash,
+        brendanSappVoobNbqCQHYUnsplash,
+        diegoPhWyeapf7GyUUnsplash,
+        itsikenHs8bzEFVffcUnsplash
       ];
 }
 
