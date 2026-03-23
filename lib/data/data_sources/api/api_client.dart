@@ -23,6 +23,7 @@ import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.
 import 'package:solar_energy/data/dto/meter_config/response/meter_config_response.dart';
 
 import '../../dto/Price/price_config_response.dart';
+import '../../dto/alarm/response/alarm_response.dart';
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 part 'api_client.g.dart';
 
@@ -128,6 +129,9 @@ abstract class ApiClient {
   Future<List<BreakerChartResponse>> getBreakerChartData(
       @Query('breakerSn') String breakerSn,
       );
+  // ================= alert thiet bi  =================
+  @GET('api/app/alarm-meter/active-alarm')
+  Future<PaginationResponse<AlarmResponse>> getActiveAlarms();
   // ================= REGISTER =================
 
   @POST('api/identity/users')

@@ -1434,7 +1434,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         final deviceCubit = context.watch<DeviceCubit>();
         final state = deviceCubit.state;
 
-        final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+        final log = device.realtimeLog ?? state.breakerLogs[device.code];
         final realStatus = getRealStatus(device, log);
 
         final bool isOn = realStatus == 1;
@@ -1839,7 +1839,7 @@ int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
   }
 
   /// 2. ONLINE / OFFLINE
-  if (log.state != "ONLINE") {
+  if (log.state == null || log.state != "ONLINE") {
     return -1;
   }
 

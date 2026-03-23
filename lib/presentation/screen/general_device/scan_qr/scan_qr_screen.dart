@@ -67,7 +67,6 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 
     final serial = raw.trim();
     debugPrint("👉 SERIAL AFTER TRIM: $serial");
-    debugPrint("QR RAW: $serial");
 
     setState(() {
       isScanned = true;
@@ -75,12 +74,19 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     });
 
     try {
-      final device = deviceList.where(
-            (e) => e.serialNumber == serial,
-      ).isNotEmpty
-          ? deviceList.firstWhere((e) => e.serialNumber == serial)
-          : null;
-      debugPrint("👉 FOUND DEVICE: ${device?.toJson()}");
+      DeviceResponse? device;
+
+      try {
+        device = deviceList.firstWhere(
+              (e) =>
+          (e.serialNumber ?? "").trim().toLowerCase() ==
+              serial.toLowerCase(),
+        );
+      } catch (_) {
+        device = null;
+      }
+
+
       if (device == null) {
         showError("Không tìm thấy thiết bị");
         return;
@@ -91,15 +97,18 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => DeviceInfoScreen(device: device),
+          builder: (_) => DeviceInfoScreen(device: device!),
         ),
       );
 
-      /// 👉 reset lại để scan tiếp
+      /// 👉 reset scan lại
       setState(() {
         isScanned = false;
+        isLoading = false;
       });
+
     } catch (e) {
+      debugPrint("❌ ERROR: $e");
       showError("Lỗi xử lý QR");
     }
   }

@@ -11,6 +11,6 @@ abstract class DeviceRepository {
 
   Future<Result<MeterResponse>> createElectricMeter(MeterRequest request);
 
-  /// ⭐ THÊM CÁI NÀY
   Future<Result<List<AtomatLogResponse>>> getBreakerLog(String breakerSn);
+
 }

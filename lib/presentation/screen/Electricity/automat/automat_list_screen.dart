@@ -83,10 +83,10 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   Widget buildDeviceCard(BuildContext context, device) {
 
     final state = context.watch<DeviceCubit>().state;
-    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+    final log = device.realtimeLog ?? state.breakerLogs[device.code];
     final currentSwitch = log?.rlySta;
     final isOn = currentSwitch == 1;
-    final isOnline = device.status == 1;
+    final isOnline = log != null && log.rlySta != null;
     final isSwitching =
     state.switchingDevices.containsKey(device.id);
     final countdown = state.switchCountdowns[device.id] ?? 0;
@@ -511,10 +511,10 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
               final total = cabinetDevices.length;
 
-              final online =
-                  cabinetDevices
-                      .where((d) => d.status == 1)
-                      .length;
+              final online = cabinetDevices.where((d) {
+                final log = d.realtimeLog ?? state.breakerLogs[d.code];
+                return log != null && log.rlySta != null;
+              }).length;
 
               final isExpanded = expandedCabinets[cabinetEntry.key] ?? false;
 

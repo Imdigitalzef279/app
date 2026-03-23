@@ -15,11 +15,21 @@ class WarrantyResponse {
 
   factory WarrantyResponse.fromJson(Map<String, dynamic> json) {
     return WarrantyResponse(
-      id: json['id'],
-      deviceId: json['deviceId'],
-      startDate: json['startDate'],
-      endDate: json['endDate'],
-      provider: json['provider'],
+      id: json['id'] ?? 0,
+      deviceId: json['deviceId'] ?? 0,
+      startDate: json['startDate']?.toString(),
+      endDate: json['endDate']?.toString(),
+      provider: json['provider']?.toString(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'deviceId': deviceId,
+      'startDate': startDate,
+      'endDate': endDate,
+      'provider': provider,
+    };
   }
 }

@@ -22,6 +22,7 @@ import '../device/bloc/device_cubit.dart';
 import '../kra_care/kra_care_screen.dart';
 import 'analytics_overview/analytics_overview_screen.dart';
 import 'background/bloc/background_cubit.dart';
+import 'notification/notification_screen.dart';
 Color getAdaptiveTextColor(String? bg) {
   if (bg == null) return Colors.black;
 
@@ -121,7 +122,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     String locationText = "Hà Nội";
 
     final bannerImages = [
-      "assets/images/matis/2.png",
+      "assets/images/matis/Enertrek System.png",
       "assets/images/matis/1.png",
       "assets/images/matis/4.png",
       "assets/images/matis/5.png",
@@ -190,10 +191,15 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 ),
                 SizedBox(width: 2),
                 IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
                   icon: Icon(Icons.notifications_none, size: 20),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => NotificationScreen(),
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(width: 2),
                 IconButton(
@@ -273,7 +279,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                       itemBuilder: (context, index) {
                                         return Image.asset(
                                           bannerImages[index],
-                                          fit: BoxFit.cover,
+                                          fit: BoxFit.contain,
                                         );
                                       },
                                     ),
@@ -397,7 +403,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                       ),
                                     ],
                                   ),
-
+                                  SizedBox(height: 20),
                                   Gap(4.h),
 
                                   favoriteDevices.isEmpty
@@ -896,36 +902,32 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   }
 }
 Widget _buildAiButton() {
-  return Column(
-    children: [
-      Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF1ABC9C),
-              Color(0xFF6BB6A6),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFF1ABC9C).withOpacity(0.3),
-              blurRadius: 12,
-              offset: Offset(0, 4),
-            )
-          ],
-        ),
-        child: CircleAvatar(
-          radius: 26,
-          backgroundColor: Colors.transparent,
-          child: Icon(
-            Icons.smart_toy,
-            color: Colors.white,
-            size: 24,
-          ),
-        ),
+  return Container(
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      gradient: LinearGradient(
+        colors: [
+          Color(0xFF4FACFE),
+          Color(0xFF00F2FE),
+        ],
       ),
-    ],
+      boxShadow: [
+        BoxShadow(
+          color: Colors.blue.withOpacity(0.4),
+          blurRadius: 20,
+          spreadRadius: 2,
+        )
+      ],
+    ),
+    child: CircleAvatar(
+      radius: 28,
+      backgroundColor: Colors.transparent,
+      child: Icon(
+        Icons.psychology_alt, // 🧠 AI nhìn xịn hơn robot
+        color: Colors.white,
+        size: 26,
+      ),
+    ),
   );
 }
 

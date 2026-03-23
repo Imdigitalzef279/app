@@ -74,6 +74,7 @@ class DeviceRepositoryImpl extends BaseRepository implements DeviceRepository {
 
     }
   }
+
   @override
   Future<Result<MeterResponse>> createElectricMeter(MeterRequest request) async {
     final result = Result<MeterResponse>();

@@ -284,21 +284,43 @@ class _AnimatedBgState extends State<AnimatedBg> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(seconds: 6),
-      curve: Curves.easeInOut,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: begin,
-          end: end,
-          colors: const [
-            Color(0xFFDFF7F2),
-            Color(0xFFF3FFFC),
-            Colors.white,
-          ],
+    return Stack(
+      children: [
+
+        AnimatedContainer(
+          duration: const Duration(seconds: 6),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: begin,
+              end: end,
+              colors: const [
+                Color(0xFF42E150),
+                Color(0xFF97E14A),
+                Colors.white,
+              ],
+            ),
+          ),
         ),
-      ),
-      child: widget.child,
+
+
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Opacity(
+            opacity: 0.18,
+            child: Image.asset(
+              "assets/images/backgrounds/36804.jpg",
+              fit: BoxFit.cover,
+              height: 260,
+            ),
+          ),
+        ),
+
+        /// CONTENT
+        widget.child,
+      ],
     );
   }
 }

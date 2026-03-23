@@ -164,11 +164,6 @@ class DeviceCubit extends Cubit<DeviceState> {
           data: updatedDevices,
         ),
       ));
-      for (var d in updatedDevices) {
-        if (d.code != null) {
-          loadBreakerLog(d.code!);
-        }
-      }
     } catch (e) {
 
       emit(state.copyWith(
@@ -242,6 +237,13 @@ class DeviceCubit extends Cubit<DeviceState> {
           state.breakerLogs[latestDevice.code]?.rlySta ??
               latestDevice.realtimeLog?.rlySta ??
               0;
+      final target = currentSwitch == 1 ? 0 : 1;
+
+      /// 🔥 CHẶN GỬI LỆNH TRÙNG
+      if (currentSwitch == target) {
+        AppToast.showToastError(title: "Thiết bị đã ở trạng thái này");
+        return;
+      }
       final commandValue = currentSwitch == 1 ? "0" : "1";
 
       final success = await switchCbsWithForce(
@@ -282,14 +284,8 @@ class DeviceCubit extends Cubit<DeviceState> {
               latestDevice.realtimeLog ??
               AtomatLogResponse())
               .copyWith(rlySta: newStatus);
-      emit(state.copyWith(
-        breakerLogs: logs,
-        resultDevices: state.resultDevices.copyWith(
-          data: updatedDevices,
-        ),
-      ));
-
-      await waitBreakerState(device.id, device.code!, newStatus);
+      await waitBreakerState(device.id, device.code!, target);
+      await loadBreakerLog(device.code!);
       /// Reload log server
       // await loadBreakerLog(device.code);
     } catch (e) {
@@ -321,7 +317,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     emit(state.copyWith(isForceLoading: true));
 
     try {
-      final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+      final log = device.realtimeLog ?? state.breakerLogs[device.code];
 
       final addr = (log?.addr ?? "").split("_").first;
       if (addr.isEmpty) {
@@ -386,11 +382,20 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     while (countdown > 0) {
 
+      final map = Map<int,int>.from(state.switchCountdowns);
+      map[deviceId] = countdown;
+
+      emit(state.copyWith(
+        switchCountdowns: map,
+      ));
+
       await Future.delayed(const Duration(seconds: 1));
       countdown--;
 
-      final log = state.breakerLogs[breakerSn];
+      /// 🔥 reload mỗi vòng
+      await loadBreakerLog(breakerSn);
 
+      final log = state.breakerLogs[breakerSn];
       final current = log?.rlyRepSta;
 
       if (current == expected) {
@@ -482,11 +487,12 @@ class DeviceCubit extends Cubit<DeviceState> {
       bool isForce,
       ) async {
     try {
-      final addr =
+      final rawAddr =
           device.realtimeLog?.addr ??
               device.serialNumber ??
               "";
-      // final username = profile?.userName ?? "mobile_app";
+
+      final addr = rawAddr.split("_").first; // 🔥 FIX
       final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
       final username = authRepo.currentProfile?.userName ?? "";
       print("DEVICE CODE: ${device.code}");
@@ -566,13 +572,20 @@ class DeviceCubit extends Cubit<DeviceState> {
 
       countdown--;
 
-      final log = state.breakerLogs[breakerSn];
+      while (countdown > 0) {
 
-      final current = log?.rlySta;
+        await Future.delayed(const Duration(seconds: 1));
+        countdown--;
 
-      /// breaker đã đổi trạng thái
-      if (current == expectedState) {
-        break;
+        /// 🔥 RELOAD STATE MỖI GIÂY
+        await loadBreakerLog(breakerSn);
+
+        final log = state.breakerLogs[breakerSn];
+        final current = log?.rlyRepSta;
+
+        if (current == expectedState) {
+          break;
+        }
       }
     }
 
@@ -583,9 +596,6 @@ class DeviceCubit extends Cubit<DeviceState> {
       switchCountdowns: map,
     ));
   }
-  // ============================================================
-  // Tính tiền điện
-  // ============================================================
   // ============================================================
   // HELPER
   // ============================================================

@@ -15,10 +15,12 @@ class DeviceInfoScreen extends StatefulWidget {
 
 class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   final WarrantyRepository warrantyRepo = WarrantyRepository();
+
   bool activating = false;
-  bool get isActivated =>
-      warranty?.startDate != null;
   WarrantyResponse? warranty;
+
+  bool get isActivated => warranty?.startDate != null;
+
   @override
   void initState() {
     super.initState();
@@ -26,8 +28,10 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   }
 
   Future<void> loadWarranty() async {
-    final data = await  warrantyRepo.getWarranty(widget.device.id);
-    debugPrint("👉 WARRANTY DATA: ${data?.startDate} - ${data?.endDate}");
+    final data = await warrantyRepo.getWarranty(widget.device.id);
+
+    debugPrint("👉 WARRANTY: ${data?.startDate} - ${data?.endDate}");
+
     if (!mounted) return;
 
     setState(() {
@@ -36,36 +40,31 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   }
 
   Future<void> activateWarranty() async {
-    debugPrint("👉 CLICK ACTIVATE deviceId: ${widget.device.id}");
-    setState(() {
-      activating = true;
-    });
+    setState(() => activating = true);
 
     final success =
     await warrantyRepo.activateWarranty(widget.device.id);
 
     if (!mounted) return;
 
-    setState(() {
-      activating = false;
-    });
+    setState(() => activating = false);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? "Kích hoạt bảo hành thành công"
+              : "Kích hoạt thất bại",
+        ),
+      ),
+    );
 
     if (success) {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Kích hoạt bảo hành thành công")),
-      );
-
       await loadWarranty();
-
-    } else {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Kích hoạt thất bại")),
-      );
     }
   }
 
+  /// 🔥 TÍNH THỜI GIAN BẢO HÀNH
   String getWarrantyDuration() {
     if (warranty?.endDate == null) return "--";
 
@@ -75,44 +74,44 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
 
       final diff = end.difference(now);
 
-      if (diff.isNegative) {
-        return "Hết hạn";
-      }
+      if (diff.isNegative) return "Hết hạn";
 
       final days = diff.inDays;
 
-      // Nếu còn hơn 30 ngày → tính tháng
       if (days > 30) {
         final months = (days / 30).floor();
         return "$months tháng";
       }
 
-      // Tháng cuối → tính ngày
       return "$days ngày";
-    } catch (_) {
+    } catch (e) {
+      debugPrint("❌ DATE ERROR: $e");
       return "--";
     }
   }
 
-  Widget item(String title, dynamic value) {
+  /// 🔥 FORMAT DATE
+  String formatDate(String? time) {
+    if (time == null || time.isEmpty) return "--";
 
-    final text = (value == null || value.toString().isEmpty)
-        ? "--"
-        : value.toString();
+    try {
+      final date = DateTime.parse(time);
+      return DateFormat("dd/MM/yyyy HH:mm").format(date);
+    } catch (_) {
+      return time;
+    }
+  }
+
+  Widget item(String title, dynamic value) {
+    final text =
+    (value == null || value.toString().isEmpty) ? "--" : value.toString();
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-
-          const Icon(
-            Icons.circle,
-            size: 8,
-            color: Color(0xFF5BB8A6),
-          ),
-
+          const Icon(Icons.circle, size: 8, color: Color(0xFF5BB8A6)),
           const SizedBox(width: 10),
-
           Expanded(
             flex: 2,
             child: Text(
@@ -124,7 +123,6 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
               ),
             ),
           ),
-
           Expanded(
             flex: 3,
             child: Text(
@@ -144,24 +142,20 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
-
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: const Offset(0,4),
+            offset: const Offset(0, 4),
           )
         ],
       ),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Text(
             title,
             style: const TextStyle(
@@ -170,119 +164,87 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
               color: Color(0xFF2C3E50),
             ),
           ),
-
           const SizedBox(height: 10),
-
           ...children
         ],
       ),
     );
   }
 
-  String formatDate(String time) {
-    try {
-      final date = DateTime.parse(time);
-      return DateFormat("dd/MM/yyyy HH:mm").format(date);
-    } catch (_) {
-      return time;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-
     final device = widget.device;
     final log = device.realtimeLog;
 
     return Scaffold(
-
       backgroundColor: const Color(0xFFF1F8F6),
-
       appBar: AppBar(
         title: const Text("Thông tin thiết bị"),
         backgroundColor: const Color(0xFF5BB8A6),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-
           /// A. THÔNG TIN SẢN PHẨM
-          section(
-            "A. Thông tin sản phẩm",
-            [
-              item("Tên sản phẩm", device.name),
-              item("Mã hàng", device.name),
-              item("Serial Number", device.code),
-              item("Hãng Sản Xuất", warranty?.provider),
-              item("Xuất Xứ", device.creator),
-            ],
-          ),
+          section("A. Thông tin sản phẩm", [
+            item("Tên sản phẩm", device.name),
+            item("Mã hàng", device.name),
 
-          /// B. THÔNG SỐ ĐIỆN
-          section(
-            "B. Thông số thiết bị",
-            [
-              item("Dòng định mức", log?.p?.toStringAsFixed(0)),
-              item("Điện áp", log?.u0?.toStringAsFixed(1)),
-            ],
-          ),
+            /// 🔥 FIX CHUẨN SERIAL
+            item("Serial Number", device.serialNumber),
+
+            item("Hãng Sản Xuất", warranty?.provider),
+            item("Xuất Xứ", device.creator),
+          ]),
+
+          /// B. THÔNG SỐ
+          section("B. Thông số thiết bị", [
+            item("Dòng định mức", log?.p?.toStringAsFixed(0)),
+            item("Điện áp", log?.u0?.toStringAsFixed(1)),
+          ]),
 
           /// C. BẢO HÀNH
-          section(
-            "C. Thông tin bảo hành",
-            [
-
-              item("Thời gian bảo hành", getWarrantyDuration()),
-
-              item(
-                "Ngày kích hoạt lần đầu sản phẩm",
-                warranty?.startDate != null
-                    ? formatDate(warranty!.startDate!)
-                    : "--",
-              ),
-            ],
-          ),
+          section("C. Thông tin bảo hành", [
+            item("Thời gian bảo hành", getWarrantyDuration()),
+            item(
+              "Ngày kích hoạt lần đầu",
+              formatDate(warranty?.startDate),
+            ),
+          ]),
 
           const SizedBox(height: 10),
 
-          /// BUTTON kích hoạt
-            ElevatedButton(
-              onPressed: (activating || isActivated)
-                  ? null
-                  : activateWarranty,
-
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isActivated
-                    ? Colors.green.shade300
-                    : const Color(0xFF5BB8A6),
-
-                padding: const EdgeInsets.symmetric(vertical: 16),
-
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-
-              child: activating
-                  ? const SizedBox(
-                height: 18,
-                width: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-                  : Text(
-                isActivated
-                    ? "Đã kích hoạt bảo hành"
-                    : "Kích hoạt bảo hành",
-                style: const TextStyle(fontSize: 16),
+          /// BUTTON
+          ElevatedButton(
+            onPressed:
+            (activating || isActivated) ? null : activateWarranty,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isActivated
+                  ? Colors.green.shade300
+                  : const Color(0xFF5BB8A6),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
-
+            child: activating
+                ? const SizedBox(
+              height: 18,
+              width: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+                : Text(
+              isActivated
+                  ? "Đã kích hoạt bảo hành"
+                  : "Kích hoạt bảo hành",
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
         ],
       ),
     );

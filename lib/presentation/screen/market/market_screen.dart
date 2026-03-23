@@ -6,37 +6,50 @@ class MarketScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff5f5f5),
-      body: SafeArea(
-        child: Column(
-          children: const [
-
-            _Header(),
-
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-
-                    _Banner(),
-
-                    SizedBox(height: 14),
-
-                    _TutorialSlider(),
-
-                    SizedBox(height: 16),
-
-                    _ProductSlider(),
-
-                    SizedBox(height: 16),
-
-                    _CategoryGrid(),
-                  ],
-                ),
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Container(
+            height: 220, // vùng màu (có thể chỉnh 180-260)
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF50CD5A), // 🟢 xanh lá RẤT NHẸ
+                  Colors.transparent,
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+
+          /// 📱 CONTENT
+          SafeArea(
+            child: Column(
+              children: [
+                _Header(),
+
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _Banner(),
+
+                        SizedBox(height: 14),
+
+                        _ProductSlider(),
+
+                        SizedBox(height: 16),
+
+                        _CategoryGrid(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -70,52 +83,77 @@ class _Header extends StatelessWidget {
     );
   }
 }
-class _Banner extends StatelessWidget {
+class _Banner extends StatefulWidget {
   const _Banner();
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        image: const DecorationImage(
-          image: AssetImage("assets/images/banner_market.png"),
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
+  State<_Banner> createState() => _BannerState();
 }
-class _TutorialSlider extends StatelessWidget {
-  const _TutorialSlider();
+
+class _BannerState extends State<_Banner> {
+  final PageController _controller = PageController();
+  int current = 0;
+
+  final banners = [
+    "assets/images/matis/1.png",
+    "assets/images/matis/2.png",
+    "assets/images/matis/4.png",
+    "assets/images/matis/5.png",
+    "assets/images/matis/Enertrek System.png",
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final images = [
-      "assets/images/electric_pole.png",
-      "assets/images/factory.png",
-      "assets/images/solar_energy.png",
-      "assets/images/mccb_3p.png",
-    ];
-
     return SizedBox(
-      height: 180,
-      child: PageView.builder(
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Image.asset(
-                images[index],
-                fit: BoxFit.contain,
+      height: 140,
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: _controller,
+            itemCount: banners.length,
+            onPageChanged: (index) {
+              setState(() {
+                current = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    banners[index],
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          /// DOT
+          Positioned(
+            bottom: 8,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                banners.length,
+                    (index) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: current == index ? 8 : 6,
+                  height: current == index ? 8 : 6,
+                  decoration: BoxDecoration(
+                    color: current == index
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                ),
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
