@@ -67,7 +67,7 @@ class AppButton extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                    fontFamily: 'BeVietNamPro',
+                    fontFamily: 'Inter',
                     fontSize: fontSize,
                     fontWeight: fontWeight,
                     height: heightText,

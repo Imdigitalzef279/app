@@ -214,10 +214,11 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
               children: [
 
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
+                    /// TEXT
                     Expanded(
-                      flex: 5,
                       child: Text(
                         device.name.isNotEmpty
                             ? device.name
@@ -231,33 +232,36 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       ),
                     ),
 
-                    GestureDetector(
-                      onTap: () {
-                        context.read<DeviceCubit>()
-                            .toggleFavorite(device.id);
-                      },
-                      child: Icon(
-                        device.isFavorite
-                            ? Icons.star
-                            : Icons.star_border,
-                        color: Colors.amber,
-                        size: 18,
-                      ),
+
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+
+                        GestureDetector(
+                          onTap: () {
+                            context.read<DeviceCubit>().toggleFavorite(device.id);
+                          },
+                          child: Icon(
+                            device.isFavorite ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 22,
+                          ),
+                        ),
+
+                        const SizedBox(width: 6),
+
+                        GestureDetector(
+                          onTap: () {
+                            showRenameDialog(context, device);
+                          },
+                          child: const Icon(
+                            Icons.edit,
+                            size: 22,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
-
-                    const SizedBox(width: 4),
-
-                    GestureDetector(
-                      onTap: () {
-                        showRenameDialog(context, device);
-                      },
-                      child: const Icon(
-                        Icons.edit,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                    ),
-
                   ],
                 ),
                 const SizedBox(height: 4),

@@ -155,7 +155,7 @@ class _CustomLabelTextFieldState extends State<CustomLabelTextField> {
 
               hintStyle: widget.textStyleHint ??
                   TextStyle(
-                    fontFamily: 'BeVietNamPro',
+                    fontFamily: 'Inter',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w400,
                     color: Colors.grey,

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:solar_energy/presentation/screen/market/product_search.dart';
+
+import '../general_device/notification/notification_screen.dart';
+import 'cart_screen.dart';
 
 class MarketScreen extends StatelessWidget {
   const MarketScreen({super.key});
@@ -71,13 +75,44 @@ class _Header extends StatelessWidget {
 
           const Spacer(),
 
-          const Icon(Icons.search, size: 22),
+          IconButton(
+            icon: const Icon(Icons.search, size: 22),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: ProductSearchDelegate(),
+              );
+            },
+          ),
           const SizedBox(width: 16),
 
-          const Icon(Icons.notifications_none, size: 22),
+          /// 🔔 Notification
+          IconButton(
+            icon: const Icon(Icons.notifications_none, size: 22),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NotificationScreen(),
+                ),
+              );
+            },
+          ),
+
           const SizedBox(width: 16),
 
-          const Icon(Icons.shopping_cart_outlined, size: 22),
+          /// 🛒 Cart
+          IconButton(
+            icon: const Icon(Icons.shopping_cart_outlined, size: 22),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CartScreen(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
