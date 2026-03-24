@@ -478,7 +478,6 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
           }
 
           final devices = state.resultDevices.data ?? [];
-
           if (devices.isEmpty) {
             return const Center(
               child: Text("Không có thiết bị"),
@@ -494,6 +493,24 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                 device.powerStation?.name ?? "Chưa xác định";
 
             cabinetMap.putIfAbsent(cabinet, () => []);
+            /// ================= FAKE CABINET =================
+            if (devices.isNotEmpty) {
+              final sample = devices.first;
+
+              cabinetMap["Tủ điều khiển ánh sáng 2"] = List.generate(3, (i) {
+                return sample.copyWith(
+                  id: -100 - i,
+                  name: "CB phòng ${i + 1}",
+                );
+              });
+
+              cabinetMap["Tủ điện tầng 2"] = List.generate(4, (i) {
+                return sample.copyWith(
+                  id: -200 - i,
+                  name: "Thiết bị ${i + 1}",
+                );
+              });
+            }
             cabinetMap[cabinet]!.add(device);
           }
 

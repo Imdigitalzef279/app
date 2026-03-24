@@ -485,7 +485,7 @@ class _CategoryGrid extends StatelessWidget {
                 /// ICON (KHÔNG NỀN)
                 Image.asset(
                   items[index]["icon"]!,
-                  height: 32,
+                  height: 60,
                 ),
 
                 const SizedBox(height: 10),

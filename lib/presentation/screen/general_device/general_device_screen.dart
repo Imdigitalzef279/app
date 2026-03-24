@@ -20,6 +20,7 @@ import '../Electricity/automat/automat_list_screen.dart';
 import '../Electricity/automat/bloc/atomat_detail_cubit.dart';
 import '../device/bloc/device_cubit.dart';
 import '../kra_care/kra_care_screen.dart';
+import '../manager_water/manager_water_screen.dart';
 import 'analytics_overview/analytics_overview_screen.dart';
 import 'background/bloc/background_cubit.dart';
 import 'notification/notification_screen.dart';
@@ -354,6 +355,16 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_environment.png",
                                               title: "Môi trường",
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) => ManagerWaterScreen(
+                                                      station: widget.project, //
+                                                    ),
+                                                  ),
+                                                );
+                                              },
                                             ),
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",

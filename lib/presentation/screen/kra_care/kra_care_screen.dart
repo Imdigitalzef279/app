@@ -36,7 +36,7 @@ class _KraCareScreenState extends State<KraCareScreen> {
                 height: 320,
                 width: double.infinity,
                 child: Image.asset(
-                  "assets/images/fall_demo.png",
+                  "assets/images/factory.png",
                   fit: BoxFit.cover,
                 ),
               ),
@@ -145,29 +145,6 @@ class _KraCareScreenState extends State<KraCareScreen> {
           /// 🔥 CONTENT
           Expanded(
             child: tabs[currentIndex],
-          ),
-        ],
-      ),
-
-      /// 🔥 BOTTOM NAV
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (i) => setState(() => currentIndex = i),
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.video_library),
-            label: "Activities",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_remote),
-            label: "Controls",
-
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
           ),
         ],
       ),

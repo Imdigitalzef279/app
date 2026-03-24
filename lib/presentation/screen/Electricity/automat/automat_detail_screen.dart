@@ -438,7 +438,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 ],
               ),
               const Text(
-                "Phân tích năng lượng",
+                "Dữ liệu năng lượng",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 12,
@@ -632,17 +632,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey,
-                        ),
-                      ),
-
-                      /// 👉 THÊM DÒNG NÀY
-                      Text(
-                        getMeterType() == MeterType.household
-                            ? "Hộ gia đình"
-                            : "Doanh nghiệp",
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.blueGrey,
                         ),
                       ),
 

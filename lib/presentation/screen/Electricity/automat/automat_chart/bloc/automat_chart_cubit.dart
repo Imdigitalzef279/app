@@ -19,7 +19,6 @@ class AutomatChartCubit extends Cubit<List<BreakerChartResponse>> {
 
       final result = await _api.getBreakerChartData(
         meterCode,
-        // range.name,
       );
 
       emit(result);
