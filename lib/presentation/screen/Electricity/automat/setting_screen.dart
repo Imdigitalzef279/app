@@ -41,6 +41,64 @@ class _SettingScreenState extends State<SettingScreen> {
   bool exportReport = false;
   bool isLoading = true;
 
+  double getDeviceMax(String unit) {
+    final name = widget.device.name ?? "";
+
+    if (unit == "A") {
+      final match = RegExp(r'(\d+)A').firstMatch(name);
+      if (match != null) {
+        return double.parse(match.group(1)!);
+      }
+    }
+
+    if (unit == "kW") return 20;
+    if (unit == "V") return 280;
+    if (unit == "mA") return 300;
+    if (unit == "°C") return 120;
+
+    return 100;
+  }
+  double getDeviceMin(String unit) {
+    final name = widget.device.name ?? "";
+
+    // ===== DÒNG ĐIỆN =====
+    if (unit == "A") {
+      final match = RegExp(r'(\d+)A').firstMatch(name);
+      if (match != null) {
+        final max = double.parse(match.group(1)!);
+
+        // min = ~20% max
+        return (max * 0.2).clamp(5, max);
+      }
+    }
+
+    // ===== ĐIỆN ÁP =====
+    if (unit == "V") {
+      return 180; // hoặc đọc từ device nếu có
+    }
+
+    // ===== DÒNG RÒ =====
+    if (unit == "mA") return 10;
+
+    // ===== CÔNG SUẤT =====
+    if (unit == "kW") return 1;
+
+    // ===== NHIỆT ĐỘ =====
+    if (unit == "°C") return 40;
+
+    return 0;
+  }
+  double getVoltageBase() {
+    final name = widget.device.name ?? "";
+
+    // nếu device có ghi 220V / 380V
+    final match = RegExp(r'(\d+)V').firstMatch(name);
+    if (match != null) {
+      return double.parse(match.group(1)!);
+    }
+
+    return 220; // mặc định VN
+  }
   @override
   void initState() {
     super.initState();
@@ -264,7 +322,7 @@ class _SettingScreenState extends State<SettingScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryColor,
-                  foregroundColor: Colors.white, // 👈 QUAN TRỌNG
+                  foregroundColor: Colors.white,
                   textStyle: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -326,24 +384,16 @@ class _SettingScreenState extends State<SettingScreen> {
           child: Column(
             children: [
               _buildSliderTile(
-                title: "",
+                title: "Quá dòng",
                 unit: "A",
                 value: overCurrent,
-                min: 10,
-                max: 100,
+                min: getDeviceMin("A"),
+                max: getDeviceMax("A"),
+                isOverCurrent: true,
+                description: "Ngưỡng cắt khi dòng vượt mức cho phép",
                 onChanged: (v) => setState(() => overCurrent = v),
               ),
               _buildRecommendBox(),
-              const SizedBox(height: 10),
-              _buildSliderTile(
-                title: "",
-                unit: "",
-                value: overCurrent,
-                showValue: false,
-                min: 10,
-                max: 100,
-                onChanged: (v) => setState(() => overCurrent = v),
-              ),
             ],
           ),
         ),
@@ -352,13 +402,15 @@ class _SettingScreenState extends State<SettingScreen> {
         _buildItemCard(
           title: "Dòng rò",
           child: _buildSliderTile(
-            title: "",
+            title: "Dòng rò",
             unit: "mA",
             value: leakageCurrent,
-            min: 10,
-            max: 300,
+            min: getDeviceMin("mA"),
+            max: getDeviceMax("mA"),
+            description: "Phát hiện rò điện để đảm bảo an toàn",
             onChanged: (v) => setState(() => leakageCurrent = v),
           ),
+
         ),
             Row(
               children: [
@@ -378,43 +430,41 @@ class _SettingScreenState extends State<SettingScreen> {
               ],
             ),
             const SizedBox(height: 12),
+
         /// 🔹 QUÁ ÁP
-        _buildItemCard(
-          title: "Quá áp",
-          child: _buildSliderTile(
-            title: "",
-            unit: "V",
-            value: overVoltage,
-            min: 200,
-            max: 280,
-            isVoltage: true,
-            onChanged: (v) => setState(() => overVoltage = v),
-          ),
-        ),
+            _buildSliderTile(
+              title: "Quá áp",
+              unit: "V",
+              value: overVoltage,
+              min: getVoltageBase(),
+              max: getVoltageBase() * 1.3,
+              isVoltage: true,
+              description: "Ngắt khi điện áp vượt ngưỡng an toàn",
+              onChanged: (v) => setState(() => overVoltage = v),
+            ),
 
         /// 🔹 THẤP ÁP
-        _buildItemCard(
-          title: "Thấp áp",
-          child: _buildSliderTile(
-            title: "",
-            unit: "V",
-            value: underVoltage,
-            min: 180,
-            max: 240,
-            isVoltage: true,
-            onChanged: (v) => setState(() => underVoltage = v),
-          ),
-        ),
+            _buildSliderTile(
+              title: "Thấp áp",
+              unit: "V",
+              value: underVoltage,
+              min: getVoltageBase() * 0.8,
+              max: getVoltageBase(),
+              isVoltage: true,
+              description: "Ngắt khi điện áp thấp hơn mức cho phép",
+              onChanged: (v) => setState(() => underVoltage = v),
+            ),
 
         /// 🔹 QUÁ CÔNG SUẤT
         _buildItemCard(
           title: "Quá công suất",
           child: _buildSliderTile(
-            title: "",
+            title: "Quá công suất",
             unit: "kW",
             value: overPower,
-            min: 1,
-            max: 20,
+            min: getDeviceMin("kW"),
+            max: getDeviceMax("kW"),
+            description: "Ngắt khi điện áp vượt ngưỡng an toàn",
             onChanged: (v) => setState(() => overPower = v),
           ),
         ),
@@ -423,11 +473,12 @@ class _SettingScreenState extends State<SettingScreen> {
         _buildItemCard(
           title: "Quá nhiệt",
           child: _buildSliderTile(
-            title: "",
+            title: "Quá nhiệt",
             unit: "°C",
             value: overTemperature,
-            min: 40,
-            max: 120,
+            min: getDeviceMin("°C"),
+            max: getDeviceMax("°C"),
+            description: "Ngắt khi điện áp vượt ngưỡng an toàn",
             onChanged: (v) => setState(() => overTemperature = v),
           ),
         ),
@@ -495,6 +546,8 @@ class _SettingScreenState extends State<SettingScreen> {
     required Function(double) onChanged,
     bool isVoltage = false,
     bool showValue = true,
+    bool isOverCurrent = false,
+    String? description,
   }) {
     final percent = (value - min) / (max - min);
 
@@ -521,20 +574,38 @@ class _SettingScreenState extends State<SettingScreen> {
           children: [
             Text(title, style: const TextStyle(fontSize: 14)),
             if (showValue)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: valueColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(20),
+              GestureDetector(
+                onTap: () => _showInputDialog(
+                  context,
+                  value,
+                  unit,
+                  min,
+                  max,
+                  onChanged,
                 ),
-                child: Text(
-                  "${value.toInt()} $unit",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: valueColor,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: valueColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${value.toInt()}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: valueColor,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(unit, style: TextStyle(color: valueColor)),
+                      const SizedBox(width: 4),
+                      Icon(Icons.edit, size: 14, color: valueColor),
+                    ],
                   ),
                 ),
-              )
+              ),
           ],
         ),
 
@@ -571,16 +642,20 @@ class _SettingScreenState extends State<SettingScreen> {
                       height: 6,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        gradient: isVoltage
+                        gradient: isOverCurrent
                             ? const LinearGradient(
+                          colors: [
+                            Color(0xFF1ABC9C), // xanh
+                            Color(0xFFF69C21), // cam (max)
+                          ],
+                        )
+                            : const LinearGradient(
                           colors: [
                             Color(0xFF1ABC9C),
                             Color(0xFFFFB74D),
-                            Color(0xFFE57373),
+                            Color(0xFFE53935),
                           ],
-                        )
-                            : null,
-                        color: isVoltage ? null : kPrimaryColor,
+                        ),
                       ),
                     ),
                   ),
@@ -588,7 +663,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   /// slider thật
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
-                      trackHeight: 6,
+                      trackHeight: 30,
                       activeTrackColor: Colors.transparent,
                       inactiveTrackColor: Colors.transparent,
                       thumbShape: _ModernThumbShape(),
@@ -618,10 +693,80 @@ class _SettingScreenState extends State<SettingScreen> {
                       style: TextStyle(fontSize: 11, color: Colors.grey)),
                 ],
               ),
+              if (description != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              if (percent > 0.8)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    "⚠ Gần ngưỡng nguy hiểm",
+                    style: TextStyle(color: Colors.orange, fontSize: 11),
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  "(${min.toInt()} - ${max.toInt()} $unit)",
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                ),
+              ),
             ],
           ),
+
         )
+
       ],
+    );
+  }
+  void _showInputDialog(
+      BuildContext context,
+      double current,
+      String unit,
+      double min,
+      double max,
+      Function(double) onChanged,
+      ) {
+    final controller =
+    TextEditingController(text: current.toInt().toString());
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Nhập giá trị ($unit)"),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            suffixText: unit,
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text("Hủy"),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ElevatedButton(
+            child: Text("OK"),
+            onPressed: () {
+              final v = double.tryParse(controller.text);
+              if (v != null && v >= min && v <= max) {
+                onChanged(v);
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
   Widget _buildCheckboxTile({
@@ -697,15 +842,6 @@ Widget _buildItemCard({
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 12),
         child,
       ],
     ),
@@ -805,6 +941,7 @@ class _ModernThumbShape extends SliderComponentShape {
     final canvas = context.canvas;
 
     /// shadow
+
     canvas.drawShadow(
       Path()..addOval(Rect.fromCircle(center: center, radius: 12)),
       Colors.black.withOpacity(.15),
@@ -813,9 +950,10 @@ class _ModernThumbShape extends SliderComponentShape {
     );
 
     /// vòng trắng
-    canvas.drawCircle(center, 12, Paint()..color = Colors.white);
+    canvas.drawCircle(center, 18, Paint()..color = Colors.white);
 
     /// viền xanh nhạt
+    ///
     canvas.drawCircle(
       center,
       12,
