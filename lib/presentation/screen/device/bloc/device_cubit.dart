@@ -284,6 +284,13 @@ class DeviceCubit extends Cubit<DeviceState> {
               latestDevice.realtimeLog ??
               AtomatLogResponse())
               .copyWith(rlySta: newStatus);
+      /// 🔥 EMIT để cập nhật UI NGAY LẬP TỨC
+      emit(state.copyWith(
+        resultDevices: state.resultDevices.copyWith(
+          data: updatedDevices,
+        ),
+        breakerLogs: logs,
+      ));
       await waitBreakerState(device.id, device.code!, target);
       await loadBreakerLog(device.code!);
       /// Reload log server
@@ -396,7 +403,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       await loadBreakerLog(breakerSn);
 
       final log = state.breakerLogs[breakerSn];
-      final current = log?.rlyRepSta;
+      final current = log?.rlySta;
 
       if (current == expected) {
         break;

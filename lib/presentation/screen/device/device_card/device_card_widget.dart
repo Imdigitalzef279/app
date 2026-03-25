@@ -102,8 +102,8 @@ class DeviceCardWidget extends StatelessWidget {
       },
 
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(14),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white,
           gradient: const LinearGradient(
@@ -114,13 +114,13 @@ class DeviceCardWidget extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.10),
-              blurRadius: 18,
+              blurRadius: 10,
               spreadRadius: 1,
-              offset: const Offset(0, 8),
+              offset: const Offset(0, 4),
             ),
             BoxShadow(
               color: Colors.white.withOpacity(0.9),
@@ -150,8 +150,8 @@ class DeviceCardWidget extends StatelessWidget {
                 }
               },
               child: Container(
-                width: 40,
-                height: 40,
+                width: 30,
+                height: 30,
                 decoration: BoxDecoration(
                   color: const Color(0xFFE7F2EF),
                   borderRadius: BorderRadius.circular(10),
@@ -165,7 +165,7 @@ class DeviceCardWidget extends StatelessWidget {
                 child: device.avatar.isEmpty
                     ? const Icon(
                   Icons.add,
-                  size: 20,
+                  size: 16,
                   color: Color(0xFF6BB6A6),
                 )
                     : null,
@@ -227,7 +227,7 @@ class DeviceCardWidget extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,7 +242,7 @@ class DeviceCardWidget extends StatelessWidget {
                       ),
 
                       GestureDetector(
-                        onTap: () {}, // 🔥 CHẶN TAP LAN
+                        onTap: () {},
                         child: Transform.scale(
                           scale: 0.7,
                           child: Switch(

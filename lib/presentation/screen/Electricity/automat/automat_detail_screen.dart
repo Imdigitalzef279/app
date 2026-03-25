@@ -15,6 +15,7 @@ import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/services/signalr_service.dart';
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
+import 'full_chart/full_chart_screen.dart';
 enum ChartType {
   power,
   energy,
@@ -405,7 +406,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   Widget _buildOverviewSection(
       BuildContext context,
-      AtomatLogResponse? log,
       DeviceResponse device,
       ) {
     final now = DateTime.now();
@@ -413,6 +413,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final yAxisLabel = chartType == ChartType.power ? "Power (kW)" : "Energy (kWh)";
     final xAxisLabel = "Time";
     final limitedData = getDisplayData(chartData);
+    final latest = limitedData.isNotEmpty ? limitedData.last : null;
     final double maxValue = limitedData.isEmpty
         ? 5.0
         : limitedData
@@ -478,7 +479,33 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               ),
 
               const Spacer(),
-
+              /// 🔥 ICON FULL SCREEN
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FullChartScreen(
+                        chartData: chartData,
+                        selectedRange: _selectedRange,
+                        chartType: chartType,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE7F6F3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.fullscreen,
+                    size: 18,
+                    color: Color(0xFF1ABC9C),
+                  ),
+                ),
+              ),
               /// RANGE SELECTOR
               Container(
                 padding: const EdgeInsets.all(4),
@@ -580,17 +607,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             ],
           ),
           const SizedBox(height: 10),
-          /// Card hiển thị thông số
-          /// ví dụ:
-          /// - điện áp
-          /// - dòng điện
-          /// - công suất
           Row(
             children: [
               Expanded(
                 child: _metricCard(
                   "Điện áp",
-                  "${log?.ua?.toStringAsFixed(0) ?? '--'}",
+                  "${latest?.ua?.toStringAsFixed(0) ?? '--'}",
                   "V",
                 ),
               ),
@@ -598,7 +620,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Dòng điện",
-                  "${log?.ia?.toStringAsFixed(0) ?? '--'}",
+                  "${latest?.ia?.toStringAsFixed(0) ?? '--'}",
                   "A",
                 ),
               ),
@@ -612,7 +634,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Công suất",
-                  "${log?.p?.toStringAsFixed(1) ?? '--'}",
+                  "${latest?.p?.toStringAsFixed(1) ?? '--'}",
                   "kW",
                 ),
               ),
@@ -620,7 +642,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Điện năng",
-                  "${log?.epi?.toStringAsFixed(0) ?? '--'}",
+                  "${latest?.epi?.toStringAsFixed(0) ?? '--'}",
                   "kWh",
                 ),
               ),
@@ -1711,7 +1733,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   const SizedBox(height: 10),
 
                   /// GRID OVERVIEW
-                  _buildOverviewSection(context, log, device),
+                  _buildOverviewSection(context, device),
 
                 ],
               ),

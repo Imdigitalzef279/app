@@ -19,6 +19,7 @@ import '../Electricity/automat/automat_detail_screen.dart';
 import '../Electricity/automat/automat_list_screen.dart';
 import '../Electricity/automat/bloc/atomat_detail_cubit.dart';
 import '../device/bloc/device_cubit.dart';
+import '../device/device_card/device_card_widget.dart';
 import '../kra_care/kra_care_screen.dart';
 import '../manager_water/manager_water_screen.dart';
 import 'analytics_overview/analytics_overview_screen.dart';
@@ -123,8 +124,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     String locationText = "Hà Nội";
 
     final bannerImages = [
-      "assets/images/matis/Enertrek System.png",
       "assets/images/matis/1.png",
+      "assets/images/matis/Enertrek System.png",
       "assets/images/matis/4.png",
       "assets/images/matis/5.png",
     ];
@@ -148,28 +149,43 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Nhà máy ${widget.project.name}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: textColor,
-                    ),
-                  ),
-                  Text(
-                    "Đang hoạt động",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: textColor.withOpacity(0.8),
-                    ),
-                  ),
-                  Text(
-                    "Vị trí: $locationText",
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: textColor.withOpacity(0.6),
-                    ),
+                  // Text(
+                  //   "Nhà máy ${widget.project.name}",
+                  //   maxLines: 1,
+                  //   overflow: TextOverflow.ellipsis,
+                  //   style: TextStyle(
+                  //     fontWeight: FontWeight.w600,
+                  //     color: textColor,
+                  //   ),
+                  // ),
+                  // Text(
+                  //   "Đang hoạt động",
+                  //   style: TextStyle(
+                  //     fontSize: 12,
+                  //     color: textColor.withOpacity(0.8),
+                  //   ),
+                  // ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        size: 20,
+                        color: Colors.greenAccent,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          locationText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: textColor.withOpacity(0.8),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -177,11 +193,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
             Row(
               children: [
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  icon: Icon(Icons.add, size: 18),
-                  onPressed: () {
+                _buildAppBarIcon(
+                  icon: Icons.add_rounded,
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -190,10 +204,12 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     );
                   },
                 ),
-                SizedBox(width: 2),
-                IconButton(
-                  icon: Icon(Icons.notifications_none, size: 20),
-                  onPressed: () {
+
+                SizedBox(width: 8),
+
+                _buildAppBarIcon(
+                  icon: Icons.notifications_rounded,
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -202,12 +218,12 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     );
                   },
                 ),
-                SizedBox(width: 2),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  icon: Icon(Icons.settings_outlined, size: 20),
-                  onPressed: () {
+
+                SizedBox(width: 8),
+
+                _buildAppBarIcon(
+                  icon: Icons.settings_rounded,
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -280,7 +296,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                       itemBuilder: (context, index) {
                                         return Image.asset(
                                           bannerImages[index],
-                                          fit: BoxFit.contain,
+                                          fit: BoxFit.cover,
                                         );
                                       },
                                     ),
@@ -412,15 +428,39 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                           ),
                                         ),
                                       ),
+
+                                      /// 🔥 NÚT CHUYỂN VIEW
+                                      Row(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () => setState(() => _isGridView = !_isGridView),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withOpacity(0.4),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: Icon(
+                                                _isGridView ? Icons.view_agenda : Icons.grid_view,
+                                                size: 18,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                   SizedBox(height: 20),
                                   Gap(4.h),
 
-                                  favoriteDevices.isEmpty
-                                      ? Text("Chưa có thiết bị")
-                                      : _buildFixed6AndScroll(
-                                    devices.where((d) => d.isFavorite).toList(),
+                                  AnimatedSwitcher(
+                                    duration: Duration(milliseconds: 300),
+                                    child: favoriteDevices.isEmpty
+                                        ? Text("Chưa có thiết bị")
+                                        : _isGridView
+                                        ? _buildFixed6AndScroll(favoriteDevices)
+                                        : _buildHorizontalList(favoriteDevices),
                                   )
                                 ],
                               ),
@@ -465,6 +505,45 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
           );
         },
       ),
+    );
+  }
+  Widget _buildAppBarIcon({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 6,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Icon(
+          icon,
+          size: 20,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+  Widget _buildHorizontalList(List<DeviceResponse> devices) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: devices.length,
+      separatorBuilder: (_, __) => SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        return DeviceCardWidget(device: devices[index]);
+      },
     );
   }
   Widget _buildFixed6AndScroll(List<DeviceResponse> devices) {
@@ -934,7 +1013,7 @@ Widget _buildAiButton() {
       radius: 28,
       backgroundColor: Colors.transparent,
       child: Icon(
-        Icons.psychology_alt, // 🧠 AI nhìn xịn hơn robot
+        Icons.psychology_alt,
         color: Colors.white,
         size: 26,
       ),

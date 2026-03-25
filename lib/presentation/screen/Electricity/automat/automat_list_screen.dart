@@ -81,12 +81,27 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   }
   /// ================= DEVICE CARD =================
   Widget buildDeviceCard(BuildContext context, device) {
-
+    final isFake = (device.id ?? 0) < 0;
     final state = context.watch<DeviceCubit>().state;
     final log = device.realtimeLog ?? state.breakerLogs[device.code];
-    final currentSwitch = log?.rlySta;
-    final isOn = currentSwitch == 1;
-    final isOnline = log != null && log.rlySta != null;
+    final realStatus = getRealStatus(device, log);
+    /// 🔥 Gateway status (ONLINE / OFFLINE)
+    final gatewayState = (log?.state ?? "").toLowerCase();
+
+    final isOnline =
+        gatewayState == "online" ||
+            gatewayState == "1" ||
+            gatewayState == "connected";
+    /// 🔥 CB status
+    final isOn = isFake
+        ? (device.status ?? 0) == 1
+        : (state.breakerLogs[device.code]?.rlySta ??
+        log?.rlySta ??
+        device.status ??
+        0) ==
+        1;
+    /// 🔥 Maintenance
+    final isMaintenance = log?.rlyRepSta == 1;
     final isSwitching =
     state.switchingDevices.containsKey(device.id);
     final countdown = state.switchCountdowns[device.id] ?? 0;
@@ -366,7 +381,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       materialTapTargetSize:
                       MaterialTapTargetSize.shrinkWrap,
 
-                      onChanged: (isOnline && !isSwitching && countdown == 0)
+                      onChanged: (!isFake && !isSwitching && countdown == 0)
                           ? (value) async {
                         final password =
                         await showPasswordDialog(context);
@@ -388,6 +403,8 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                         ? "Đang gửi lệnh..."
                         : countdown > 0
                         ? "Đang xử lý (${countdown}s)"
+                        : isMaintenance
+                        ? "Bảo trì"
                         : isOn
                         ? "Đang đóng"
                         : "Đang cắt",
@@ -505,6 +522,8 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                 return sample.copyWith(
                   id: -100 - i,
                   name: "CB phòng ${i + 1}",
+                  status: i % 2 == 0 ? 1 : 0, // fake ON/OFF xen kẽ
+                  realtimeLog: null, // ❗ không dùng log thật
                 );
               });
 
@@ -531,10 +550,14 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                   .toList();
 
               final total = cabinetDevices.length;
-
+              final autoExpand = total < 6;
               final online = cabinetDevices.where((d) {
                 final log = d.realtimeLog ?? state.breakerLogs[d.code];
-                return log != null && log.rlySta != null;
+                final stateStr = (log?.state ?? "").toLowerCase();
+
+                return stateStr == "online" ||
+                    stateStr == "1" ||
+                    stateStr == "connected";
               }).length;
 
               final isExpanded = expandedCabinets[cabinetEntry.key] ?? false;
@@ -582,10 +605,12 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                     child: ExpansionTile(
                       tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                       childrenPadding: EdgeInsets.zero,
-                      initiallyExpanded: expandedCabinets[cabinetEntry.key] ?? false,
+                      initiallyExpanded: autoExpand || (expandedCabinets[cabinetEntry.key] ?? false),
                       iconColor: Colors.grey.shade700,
                       collapsedIconColor: Colors.grey.shade700,
                       onExpansionChanged: (value) {
+                        if (autoExpand) return;
+
                         setState(() {
                           expandedCabinets[cabinetEntry.key] = value;
                         });
