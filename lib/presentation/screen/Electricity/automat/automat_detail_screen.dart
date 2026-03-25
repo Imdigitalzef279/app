@@ -37,6 +37,7 @@ class AutomatDetailScreen extends StatefulWidget {
   State<AutomatDetailScreen> createState() => _AutomatDetailScreenState();
 }
 class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
+  StreamSubscription? _signalSub;
   bool isForceMode = false;
   ChartRange _selectedRange = ChartRange.month;
   ChartDisplayType chartDisplayType = ChartDisplayType.line;
@@ -50,28 +51,23 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   double realtimeCost = 0;
   int maintenanceCountdown = 0;
   Timer? maintenanceTimer;
+  double monthEnergy = 0;
+  double moneyMonth = 0;
+  double epiAtStartOfMonth = 0;
+  Timer? _moneyTimer;
+
   final formatted = DateFormat("yyyy-MM-dd'T'00:00:00");
   Timer? _timer;
+
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(
-      const Duration(seconds: 5),
-          (_) {
-        setState(() {});
-      },
-    );
+
     currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
 
-    _loadStartOfDayEnergy();
+    _loadStartOfMonthEnergy();
     _loadElectricPrice();
-
-    /// load breaker log cho màn hình
-    cubit.getBreakerLog(currentDevice.code ?? "");
-
-    /// load breaker log cho DeviceCubit (để đóng cắt)
-    context.read<DeviceCubit>().loadBreakerLog(currentDevice.code);
 
     /// chart
     context.read<AutomatChartCubit>().loadChart(
@@ -79,19 +75,21 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       _selectedRange,
     );
 
+    /// realtime
     final signalR = SignalRService();
+    signalR.connect(meterCode: currentDevice.code ?? "");
+    _signalSub = signalR.stream.listen(_handleRealtime);
 
-    signalR.connect(
-      meterCode: currentDevice.code ?? "",
+    /// update tiền mỗi 5 phút
+    _moneyTimer = Timer.periodic(
+      const Duration(minutes: 5),
+          (_) => _recalculateMoney(),
     );
-
-    signalR.stream.listen(_handleRealtime);
   }
-
-  /// Huỷ timer khi thoát màn hình
   @override
   void dispose() {
-    _timer?.cancel();
+    _signalSub?.cancel();
+    _moneyTimer?.cancel();
     maintenanceTimer?.cancel();
     super.dispose();
   }
@@ -118,71 +116,79 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   void _handleRealtime(Map<String, dynamic> data) {
     try {
-      final event = data["event"];
-      print("🔥 EVENT: $event");
-      /// command response từ server
-      if (event == "ReceiveCommand") {
-        return;
-      }
-
-      if (event != "ReceiveChart" && event != "ReceiveLog") {
-        return;
-      }
-
       final dto = data["breakerMeterDataDto"];
       if (dto == null) return;
 
       final raw = Map<String, dynamic>.from(dto);
 
-      /// convert string -> number
       raw.updateAll((key, value) {
         if (value is String) {
-          final numValue = num.tryParse(value);
-          return numValue ?? value;
+          return num.tryParse(value) ?? value;
         }
         return value;
       });
 
-      raw["updatedAt"] = data["updatedAt"];
-
       final log = AtomatLogResponse.fromJson(raw);
 
-      /// ⚡ update trạng thái CB realtime
-      if (log.rlySta != null) {
-        context.read<DeviceCubit>().updateRealtimeLogByCode(
-          currentDevice.code,
-          log,
-        );
-      }
-
       if (log.epi != null) {
-
-        double energy = log.epi! - epiAtStartOfDay;
+        double energy = log.epi! - epiAtStartOfMonth;
         if (energy < 0) energy = 0;
 
-        double money = 0;
-
-        if (pricePerKwh > 0) {
-          final type = getMeterType();
-
-          if (type == MeterType.household) {
-            money = calculateHousehold(energy);
-          } else {
-            money = calculateBusiness(energy);
-          }
-        }
-
         setState(() {
-          todayEnergy = energy;
-          moneyToday = money;
+          monthEnergy = energy;
         });
+
+        _recalculateMoney();
       }
 
     } catch (e) {
-      print("❌ Parse realtime error: $e");
+      print("Realtime error: $e");
     }
   }
+  List getDisplayData(List chartData) {
+    switch (_selectedRange) {
+      case ChartRange.day:
+        return chartData.length > 24
+            ? chartData.sublist(chartData.length - 24)
+            : chartData;
 
+      case ChartRange.week:
+        return chartData.length > 7
+            ? chartData.sublist(chartData.length - 7)
+            : chartData;
+
+      case ChartRange.month:
+        return chartData.length > 30
+            ? chartData.sublist(chartData.length - 30)
+            : chartData;
+
+      case ChartRange.year:
+        return chartData.length > 12
+            ? chartData.sublist(chartData.length - 12)
+            : chartData;
+
+      default:
+        return chartData;
+    }
+  }
+  Future<void> _loadStartOfMonthEnergy() async {
+    final api = GetIt.instance<ApiClient>();
+
+    final result = await api.getBreakerLog(currentDevice.code ?? "");
+    final logs = result.data;
+
+    if (logs == null || logs.isEmpty) return;
+
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+
+    final firstLog = logs.firstWhere(
+          (e) => DateTime.parse(e.updatedAt!).isAfter(startOfMonth),
+      orElse: () => logs.first,
+    );
+
+    epiAtStartOfMonth = firstLog.epi ?? 0;
+  }
   Future<void> _loadStartOfDayEnergy() async {
     final api = GetIt.instance<ApiClient>();
 
@@ -259,7 +265,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     cubit.getBreakerLog(currentDevice.code ?? "");
   }
   void _recalculateMoney() {
-    final energy = todayEnergy;
+    final energy = monthEnergy;
 
     final type = getMeterType();
 
@@ -272,7 +278,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     }
 
     setState(() {
-      moneyToday = money;
+      moneyMonth = money;
     });
   }
   MeterType getMeterType() {
@@ -310,6 +316,34 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         return _PinDialog();
       },
     );
+  }
+  double getMaxY(double maxValue) {
+    switch (_selectedRange) {
+      case ChartRange.day:
+        return maxValue * 1.2;
+      case ChartRange.week:
+        return maxValue * 1.3;
+      case ChartRange.month:
+        return maxValue * 1.4;
+      case ChartRange.year:
+        return maxValue * 1.5;
+      case ChartRange.quarter:
+        return maxValue * 1.45; // thêm dòng này
+    }
+  }
+  String formatTime(DateTime time) {
+    switch (_selectedRange) {
+      case ChartRange.day:
+        return DateFormat("HH:mm").format(time);
+      case ChartRange.week:
+        return DateFormat("dd/MM").format(time);
+      case ChartRange.month:
+        return DateFormat("dd/MM").format(time);
+      case ChartRange.year:
+        return DateFormat("MM/yyyy").format(time);
+      case ChartRange.quarter:
+        return DateFormat("MM/yyyy").format(time);
+    }
   }
   /// Convert trạng thái CB -> text hiển thị
   String _getStatusText(int status) {
@@ -374,12 +408,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       AtomatLogResponse? log,
       DeviceResponse device,
       ) {
+    final now = DateTime.now();
     final chartData = context.watch<AutomatChartCubit>().state;
     final yAxisLabel = chartType == ChartType.power ? "Power (kW)" : "Energy (kWh)";
     final xAxisLabel = "Time";
-    final limitedData = chartData.length > 18
-        ? chartData.sublist(chartData.length - 18)
-        : chartData;
+    final limitedData = getDisplayData(chartData);
     final double maxValue = limitedData.isEmpty
         ? 5.0
         : limitedData
@@ -387,7 +420,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         ? (e.p ?? 0).toDouble()
         : (e.epi ?? 0).toDouble())
         .reduce((a, b) => a > b ? a : b);
-    if (log == null) return const SizedBox();
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -558,7 +590,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Điện áp",
-                  "${log.ua?.toStringAsFixed(0) ?? '--'}",
+                  "${log?.ua?.toStringAsFixed(0) ?? '--'}",
                   "V",
                 ),
               ),
@@ -566,7 +598,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Dòng điện",
-                  "${log.ia?.toStringAsFixed(0) ?? '--'}",
+                  "${log?.ia?.toStringAsFixed(0) ?? '--'}",
                   "A",
                 ),
               ),
@@ -580,7 +612,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Công suất",
-                  "${log.p?.toStringAsFixed(1) ?? '--'}",
+                  "${log?.p?.toStringAsFixed(1) ?? '--'}",
                   "kW",
                 ),
               ),
@@ -588,7 +620,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Điện năng",
-                  "${log.epi?.toStringAsFixed(0) ?? '--'}",
+                  "${log?.epi?.toStringAsFixed(0) ?? '--'}",
                   "kWh",
                 ),
               ),
@@ -628,15 +660,21 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Tiền điện hôm nay",
+                  "Tiền điện tháng ${now.month}/${now.year}",
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey,
                         ),
                       ),
-
                       Text(
-                        "${todayEnergy.toStringAsFixed(1)} kWh • ${pricePerKwh.toInt()}đ/kWh",
+                        "${NumberFormat("#,###").format(moneyMonth)} đ",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "${monthEnergy.toStringAsFixed(1)} kWh • ${pricePerKwh.toInt()}đ/kWh",
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey,
@@ -647,16 +685,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 ),
 
                 /// PRICE
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "${NumberFormat("#,###").format(moneyToday)} đ",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                     Text(
                       "+${realtimeCost.toStringAsFixed(0)} đ",
                       style: const TextStyle(
@@ -666,8 +694,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     ),
                   ],
                 )
-              ],
-            ),
           ),
           const SizedBox(height: 8),
 
@@ -751,7 +777,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           if (isHome && context != null) {
             Navigator.popUntil(context, (route) => route.isFirst);
           }
-          /// 👉 HISTORY
           if (isHistory && context != null) {
             Navigator.push(
               context,
@@ -968,25 +993,23 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ],
     );
   }
+
   Widget _buildBarChart(List chartData, double maxValue) {
 
-    /// Giới hạn tối đa 24 cột để tránh sọc
-    final limitedData = chartData.length > 18
-        ? chartData.sublist(chartData.length - 18)
-        : chartData;
+    final limitedData = getDisplayData(chartData);
 
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
         groupsSpace: 4,
-        maxY: maxValue == 0 ? 5 : maxValue * 1.25,
+        maxY: maxValue == 0 ? 5 : getMaxY(maxValue),
         borderData: FlBorderData(show: false),
 
         /// GRID
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          horizontalInterval: maxValue == 0 ? 1 : maxValue / 4,
+          horizontalInterval: maxValue == 0 ? 1 : maxValue / 6,
           getDrawingHorizontalLine: (value) {
             return FlLine(
               color: Colors.grey.withOpacity(0.15),
@@ -1019,39 +1042,43 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 22,
-              interval: limitedData.length < 6
-                  ? 1
-                  : (limitedData.length / 5).floorToDouble(),
-                getTitlesWidget: (value, meta) {
+              reservedSize: 28,
+              getTitlesWidget: (value, meta) {
 
-                  final index = value.toInt();
+                final index = value.toInt();
 
-                  if (index >= limitedData.length) {
-                    return const SizedBox();
-                  }
-
-                  /// chỉ hiển thị 5 mốc
-                  final step = (limitedData.length / 5).ceil();
-
-                  if (index % step != 0 && index != limitedData.length - 1) {
-                    return const SizedBox();
-                  }
-
-                  final time = DateFormat("HH:mm")
-                      .format(limitedData[index].updatedAt);
-
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      time,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  );
+                if (index >= limitedData.length) {
+                  return const SizedBox();
                 }
+
+                final total = limitedData.length;
+
+                int labelCount = 5;
+                if (_selectedRange == ChartRange.year) labelCount = 6;
+                if (_selectedRange == ChartRange.week) labelCount = 4;
+
+                final interval = (total / labelCount).ceil();
+
+                if (index % interval != 0 && index != total - 1) {
+                  return const SizedBox();
+                }
+
+                final time = formatTime(limitedData[index].updatedAt);
+
+                return Padding(
+                  padding: EdgeInsets.only(
+                    top: 6,
+                    right: index == total - 1 ? 8 : 0,
+                  ),
+                  child: Text(
+                    time,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 
@@ -1103,9 +1130,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   Widget _buildLineChart(List chartData, double maxValue) {
 
-    final data = chartData.length > 24
-        ? chartData.sublist(chartData.length - 24)
-        : chartData;
+    final data = getDisplayData(chartData);
+
     return LineChart(
       LineChartData(
 
@@ -1113,34 +1139,36 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         maxX: (data.length - 1).toDouble(),
 
         minY: 0,
-        maxY: maxValue * 1.25,
+        maxY: getMaxY(maxValue),
 
         borderData: FlBorderData(show: false),
 
+        /// ===== GRID (mịn hơn) =====
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          horizontalInterval: maxValue == 0 ? 1 : maxValue / 4,
+          horizontalInterval: maxValue == 0 ? 1 : maxValue / 6,
           getDrawingHorizontalLine: (value) {
             return FlLine(
-              color: Colors.grey.withOpacity(0.15),
+              color: Colors.grey.withOpacity(0.12),
               strokeWidth: 1,
-              dashArray: [6,4],
+              dashArray: [4, 4],
             );
           },
         ),
 
         titlesData: FlTitlesData(
 
+          /// ===== TRỤC Y (gọn hơn) =====
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 34,
               getTitlesWidget: (value, meta) {
                 return Text(
-                  value.toStringAsFixed(1),
+                  value.toStringAsFixed(0),
                   style: const TextStyle(
-                    fontSize: 10,
+                    fontSize: 9,
                     color: Colors.grey,
                   ),
                 );
@@ -1148,28 +1176,44 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             ),
           ),
 
+          /// ===== TRỤC X (5 mốc đẹp) =====
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: data.length < 6
-                  ? 1
-                  : (data.length / 5).floorToDouble(),
               getTitlesWidget: (value, meta) {
 
                 final index = value.toInt();
-                if (index >= data.length) {
-                  return const SizedBox();
+                if (index >= data.length) return const SizedBox();
+
+                int labelCount;
+
+                switch (_selectedRange) {
+                  case ChartRange.day:
+                    labelCount = 8;   // nhiều giờ hơn
+                    break;
+                  case ChartRange.week:
+                    labelCount = 7;   // đủ 7 ngày
+                    break;
+                  case ChartRange.month:
+                    labelCount = 10;  // 30 ngày → lấy 10 mốc
+                    break;
+                  case ChartRange.year:
+                    labelCount = 12;  // 12 tháng
+                    break;
+                  default:
+                    labelCount = 6;
                 }
 
-                final time = DateFormat("HH:mm")
-                    .format(data[index].updatedAt);
+                final step = (data.length / labelCount).ceil();
+
+                final time = formatTime(data[index].updatedAt);
 
                 return Padding(
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(
                     time,
                     style: const TextStyle(
-                      fontSize: 10,
+                      fontSize: 9,
                       color: Colors.grey,
                     ),
                   ),
@@ -1187,6 +1231,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           ),
         ),
 
+        /// ===== LINE STYLE PRO =====
         lineBarsData: [
           LineChartBarData(
 
@@ -1203,20 +1248,28 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             isCurved: true,
             curveSmoothness: 0.35,
 
-            barWidth: 4,
+            barWidth: 3.5,
 
-            color: const Color(0xFF1ABC9C),
+            /// 🔥 gradient line
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF00C6A7),
+                Color(0xFF1ABC9C),
+              ],
+            ),
 
-            dotData: const FlDotData(
+            /// 🔥 DOT (chỉ show khi touch)
+            dotData: FlDotData(
               show: false,
             ),
 
+            /// 🔥 vùng dưới đẹp hơn
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF1ABC9C).withOpacity(0.35),
-                  Colors.transparent
+                  const Color(0xFF1ABC9C).withOpacity(0.25),
+                  Colors.transparent,
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -1225,24 +1278,49 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           ),
         ],
 
+        /// ===== TOUCH PRO =====
         lineTouchData: LineTouchData(
           enabled: true,
+
+          /// highlight line
+          getTouchedSpotIndicator: (barData, spotIndexes) {
+            return spotIndexes.map((index) {
+              return TouchedSpotIndicatorData(
+                FlLine(
+                  color: Colors.grey.withOpacity(0.3),
+                  strokeWidth: 1,
+                  dashArray: [3,3],
+                ),
+                FlDotData(
+                  getDotPainter: (spot, percent, bar, index) {
+                    return FlDotCirclePainter(
+                      radius: 4,
+                      color: const Color(0xFF1ABC9C),
+                      strokeWidth: 2,
+                      strokeColor: Colors.white,
+                    );
+                  },
+                ),
+              );
+            }).toList();
+          },
+
           touchTooltipData: LineTouchTooltipData(
-            tooltipRoundedRadius: 10,
-            tooltipBgColor: Colors.black87,
+            tooltipRoundedRadius: 12,
+            tooltipPadding: const EdgeInsets.all(10),
+            tooltipBgColor: Colors.black.withOpacity(0.85),
+
             getTooltipItems: (spots) {
               return spots.map((spot) {
 
                 final index = spot.x.toInt();
                 final item = data[index];
 
-                final time = DateFormat("HH:mm")
-                    .format(item.updatedAt);
-
+                final time = formatTime(item.updatedAt);
                 final unit = chartType == ChartType.power ? "kW" : "kWh";
 
                 return LineTooltipItem(
-                  "$time\n$unit: ${spot.y.toStringAsFixed(2)}",
+                  "$time\n${spot.y.toStringAsFixed(2)} $unit",
                   const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
