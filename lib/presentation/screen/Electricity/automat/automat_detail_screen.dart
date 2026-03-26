@@ -131,16 +131,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
       final log = AtomatLogResponse.fromJson(raw);
 
-      if (log.epi != null) {
-        double energy = log.epi! - epiAtStartOfMonth;
-        if (energy < 0) energy = 0;
-
-        setState(() {
-          monthEnergy = energy;
-        });
-
-        _recalculateMoney();
-      }
+      /// DÒNG NÀY
+      context.read<DeviceCubit>().updateRealtimeLogByCode(
+        currentDevice.code ?? "",
+        log,
+      );
 
     } catch (e) {
       print("Realtime error: $e");
@@ -1523,7 +1518,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         final deviceCubit = context.watch<DeviceCubit>();
         final state = deviceCubit.state;
 
-        final log = device.realtimeLog ?? state.breakerLogs[device.code];
+        final log = state.breakerLogs[device.code] ?? device.realtimeLog;
         final realStatus = getRealStatus(device, log);
 
         final bool isOn = realStatus == 1;

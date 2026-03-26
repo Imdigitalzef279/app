@@ -12,4 +12,10 @@ class FontFamily {
 
   /// Font family: BeVietNamPro
   static const String beVietNamPro = 'BeVietNamPro';
+
+  /// Font family: Inter
+  static const String inter = 'Inter';
+
+  /// Font family: Poppins
+  static const String poppins = 'Poppins';
 }

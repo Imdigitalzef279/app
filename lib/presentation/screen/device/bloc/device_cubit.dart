@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +32,7 @@ class DeviceCubit extends Cubit<DeviceState> {
   final _api = GetIt.instance<ApiClient>();
   final _cbs = getIt.get<CbsRepository>();
   final _authRepo = getIt.get<AuthRepository>();
+  final _timers = <int, Timer>{};
   ProfileResponse? profile;
 
   double calculateTodayMoney({
@@ -211,100 +213,105 @@ class DeviceCubit extends Cubit<DeviceState> {
       DeviceResponse device, {
         required String password,
       }) async {
-    if (state.isForceLoading) return;
+
+    if (state.switchingDevices.containsKey(device.id)) return;
 
     final isValid = await _verifyForceAuth(password: password);
-    if (!isValid) {
-      AppToast.showToastError(title: "Sai mật khẩu");
-      return;
-    }
+    if (!isValid) return;
 
-    final newMap = Map<int, bool>.from(state.switchingDevices);
-    newMap[device.id] = true;
-
-    emit(state.copyWith(switchingDevices: newMap));
+    emit(state.copyWith(
+      switchingDevices: {
+        ...state.switchingDevices,
+        device.id: true,
+      },
+    ));
 
     try {
+
+      /// 🔥 load log mới nhất
       await loadBreakerLog(device.code!);
-      final latestDevice = state.resultDevices.data
-          ?.where((d) => d.id == device.id)
-          .firstOrNull;
 
-      if (latestDevice == null) return;
+      final log = state.breakerLogs[device.code];
+      if (log == null) return;
 
-      /// Lấy trạng thái hiện tại
-      final currentSwitch =
-          state.breakerLogs[latestDevice.code]?.rlySta ??
-              latestDevice.realtimeLog?.rlySta ??
-              0;
-      final target = currentSwitch == 1 ? 0 : 1;
+      /// 🔥 FIX QUAN TRỌNG: dùng chung logic với UI
+      final realStatus = getRealStatus(device, log);
 
-      /// 🔥 CHẶN GỬI LỆNH TRÙNG
-      if (currentSwitch == target) {
-        AppToast.showToastError(title: "Thiết bị đã ở trạng thái này");
-        return;
-      }
-      final commandValue = currentSwitch == 1 ? "0" : "1";
-
-      final success = await switchCbsWithForce(
-        latestDevice,
-        commandValue,
-        false,
-      );
-
-      if (!success) {
-        AppToast.showToastError(title: "Không ON/OFF được");
+      /// ❌ không cho đóng cắt nếu:
+      if (realStatus == -1) {
+        AppToast.showToastError(title: "Thiết bị offline");
         return;
       }
 
-      /// Update UI ngay lập tức (optimistic update)
-      final newStatus = int.parse(commandValue);
+      if (realStatus == 2) {
+        AppToast.showToastError(title: "Đang bảo trì");
+        return;
+      }
 
-      final updatedDevices = (state.resultDevices.data ?? []).map((d) {
+      final isOn = realStatus == 1;
+      final target = isOn ? "0" : "1";
 
-        if (d.id == latestDevice.id) {
+      print("👉 REAL STATUS: $realStatus");
+      print("👉 COMMAND: $target");
 
-          final newLog = (d.realtimeLog ??
-              AtomatLogResponse()).copyWith(
-            rlySta: newStatus,
-          );
+      /// 🔥 gửi lệnh
+      final success = await switchCbsWithForce(device, target, false);
+      if (!success) return;
 
-          return d.copyWith(
-            realtimeLog: newLog,
-          );
+      /// update UI ngay
+      updateLocalStatus(device.id, int.parse(target));
 
-        }
+      /// countdown
+      startCountdown(device.id);
 
-        return d;
-
-      }).toList();
-      final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
-      logs[latestDevice.code!] =
-          (state.breakerLogs[latestDevice.code] ??
-              latestDevice.realtimeLog ??
-              AtomatLogResponse())
-              .copyWith(rlySta: newStatus);
-      /// 🔥 EMIT để cập nhật UI NGAY LẬP TỨC
-      emit(state.copyWith(
-        resultDevices: state.resultDevices.copyWith(
-          data: updatedDevices,
-        ),
-        breakerLogs: logs,
-      ));
-      await waitBreakerState(device.id, device.code!, target);
-      await loadBreakerLog(device.code!);
-      /// Reload log server
-      // await loadBreakerLog(device.code);
     } catch (e) {
-      AppToast.showToastError(title: "Có lỗi xảy ra");
+      AppToast.showToastError(title: "Lỗi");
     } finally {
-      final newMap = Map<int, bool>.from(state.switchingDevices);
-      newMap.remove(device.id);
 
-      emit(state.copyWith(switchingDevices: newMap));
+      Future.delayed(const Duration(seconds: 3), () {
+        final map = Map<int, bool>.from(state.switchingDevices);
+        map.remove(device.id);
+
+        emit(state.copyWith(switchingDevices: map));
+      });
     }
   }
+  void startCountdown(int deviceId) {
 
+    _timers[deviceId]?.cancel();
+
+    int count = 3;
+
+    emit(state.copyWith(
+      switchCountdowns: {
+        ...state.switchCountdowns,
+        deviceId: count,
+      },
+    ));
+
+    final timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+
+      count--;
+
+      if (count < 0) {
+        timer.cancel();
+        _timers.remove(deviceId);
+
+        final newMap = Map<int,int>.from(state.switchCountdowns);
+        newMap.remove(deviceId);
+
+        emit(state.copyWith(switchCountdowns: newMap));
+        return;
+      }
+
+      final map = Map<int,int>.from(state.switchCountdowns);
+      map[deviceId] = count;
+
+      emit(state.copyWith(switchCountdowns: map));
+    });
+
+    _timers[deviceId] = timer;
+  }
   // ============================================================
 // TOGGLE MAINTENANCE
 // ============================================================
@@ -326,7 +333,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     try {
       final log = device.realtimeLog ?? state.breakerLogs[device.code];
 
-      final addr = (log?.addr ?? "").split("_").first;
+      final addr = log?.addr ?? "";
       if (addr.isEmpty) {
         AppToast.showToastError(title: "Chưa có dữ liệu thiết bị");
         emit(state.copyWith(isForceLoading: false));
@@ -495,11 +502,18 @@ class DeviceCubit extends Cubit<DeviceState> {
       ) async {
     try {
       final rawAddr =
-          device.realtimeLog?.addr ??
-              device.serialNumber ??
+          state.breakerLogs[device.code]?.addr ??
+              device.realtimeLog?.addr ??
               "";
 
-      final addr = rawAddr.split("_").first; // 🔥 FIX
+      if (rawAddr.isEmpty) {
+        print("ADDR NULL → không gửi");
+        return false;
+      }
+
+      final addr = rawAddr; //
+
+      print("✅ ADDR: $addr");
       final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
       final username = authRepo.currentProfile?.userName ?? "";
       print("DEVICE CODE: ${device.code}");
@@ -571,59 +585,48 @@ class DeviceCubit extends Cubit<DeviceState> {
       final map = Map<int,int>.from(state.switchCountdowns);
       map[deviceId] = countdown;
 
-      emit(state.copyWith(
-        switchCountdowns: map,
-      ));
+      emit(state.copyWith(switchCountdowns: map));
 
       await Future.delayed(const Duration(seconds: 1));
-
       countdown--;
 
-      while (countdown > 0) {
+      /// chỉ gọi 1 lần / giây
+      await loadBreakerLog(breakerSn);
 
-        await Future.delayed(const Duration(seconds: 1));
-        countdown--;
+      final log = state.breakerLogs[breakerSn];
+      final current = log?.rlySta;
 
-        /// 🔥 RELOAD STATE MỖI GIÂY
-        await loadBreakerLog(breakerSn);
-
-        final log = state.breakerLogs[breakerSn];
-        final current = log?.rlyRepSta;
-
-        if (current == expectedState) {
-          break;
-        }
+      if (current == expectedState) {
+        break;
       }
     }
 
     final map = Map<int,int>.from(state.switchCountdowns);
     map.remove(deviceId);
 
-    emit(state.copyWith(
-      switchCountdowns: map,
-    ));
+    emit(state.copyWith(switchCountdowns: map));
   }
   // ============================================================
   // HELPER
   // ============================================================
   int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
 
-    /// nếu có realtime log → ưu tiên dùng
-    if (log != null) {
-
-      /// bảo trì
-      if (log.rlyRepSta == 1) {
-        return 2;
-      }
-
-      /// trạng thái đóng/cắt
-      if (log.rlySta != null) {
-        return log.rlySta!;
-      }
+    if (log == null) {
+      return device.status ?? 0;
     }
 
-    /// fallback trạng thái từ device
-    return device.status ?? 0;
+    /// MAINTENANCE
+    if (log.rlyRepSta == 1) {
+      return 2;
+    }
+
+    /// OFFLINE
+    if (log.state != null && log.state != "ONLINE") {
+      return -1;
+    }
+
+    /// ON/OFF (KHÔNG ĐẢO NỮA)
+    return log.rlySta ?? device.status ?? 0;
   }
   void updateDeviceAvatar(int deviceId, String path) {
 
@@ -781,7 +784,6 @@ class DeviceCubit extends Cubit<DeviceState> {
     /// stop countdown
     final countdowns = Map<int,int>.from(state.switchCountdowns);
 
-    countdowns.remove(device.id);
 
     emit(state.copyWith(
       breakerLogs: logs,

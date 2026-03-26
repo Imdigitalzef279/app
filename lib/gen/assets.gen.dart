@@ -455,6 +455,10 @@ class $AssetsImagesAcrelGen {
 class $AssetsImagesBackgroundsGen {
   const $AssetsImagesBackgroundsGen();
 
+  /// File path: assets/images/backgrounds/36804.jpg
+  AssetGenImage get a36804 =>
+      const AssetGenImage('assets/images/backgrounds/36804.jpg');
+
   /// File path: assets/images/backgrounds/8machine-_-gCkv8mnmxm8-unsplash.jpg
   AssetGenImage get a8machineGCkv8mnmxm8Unsplash => const AssetGenImage(
       'assets/images/backgrounds/8machine-_-gCkv8mnmxm8-unsplash.jpg');
@@ -473,6 +477,7 @@ class $AssetsImagesBackgroundsGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
+        a36804,
         a8machineGCkv8mnmxm8Unsplash,
         brendanSappVoobNbqCQHYUnsplash,
         diegoPhWyeapf7GyUUnsplash,

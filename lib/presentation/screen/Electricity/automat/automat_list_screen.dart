@@ -84,7 +84,6 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
     final isFake = (device.id ?? 0) < 0;
     final state = context.watch<DeviceCubit>().state;
     final log = device.realtimeLog ?? state.breakerLogs[device.code];
-    final realStatus = getRealStatus(device, log);
     /// 🔥 Gateway status (ONLINE / OFFLINE)
     final gatewayState = (log?.state ?? "").toLowerCase();
 
@@ -93,15 +92,13 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
             gatewayState == "1" ||
             gatewayState == "connected";
     /// 🔥 CB status
-    final isOn = isFake
-        ? (device.status ?? 0) == 1
-        : (state.breakerLogs[device.code]?.rlySta ??
-        log?.rlySta ??
-        device.status ??
-        0) ==
-        1;
+    final realStatus = getRealStatus(device, log);
+
+    final isOn = realStatus == 1;
+    final isMaintenance = realStatus == 2;
+    final isOffline = realStatus == -1;
     /// 🔥 Maintenance
-    final isMaintenance = log?.rlyRepSta == 1;
+
     final isSwitching =
     state.switchingDevices.containsKey(device.id);
     final countdown = state.switchCountdowns[device.id] ?? 0;
@@ -381,7 +378,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       materialTapTargetSize:
                       MaterialTapTargetSize.shrinkWrap,
 
-                      onChanged: (!isFake && !isSwitching && countdown == 0)
+                      onChanged: (!isFake && !isSwitching && countdown == 0 && !isOffline)
                           ? (value) async {
                         final password =
                         await showPasswordDialog(context);
@@ -403,6 +400,8 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                         ? "Đang gửi lệnh..."
                         : countdown > 0
                         ? "Đang xử lý (${countdown}s)"
+                        : isOffline
+                        ? "Offline"
                         : isMaintenance
                         ? "Bảo trì"
                         : isOn

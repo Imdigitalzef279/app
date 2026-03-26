@@ -16,6 +16,7 @@ class DeviceState with _$DeviceState {
     @Default({})
     Map<int, bool> switchingDevices,
 
+
     /// countdown theo device
     @Default({})
     Map<int, int> switchCountdowns,
@@ -30,5 +31,6 @@ class DeviceState with _$DeviceState {
     resultDevices: Result<List<DeviceResponse>>(),
     status: LoadStatus.initial,
     breakerLogs: {},
+
   );
 }
