@@ -1354,8 +1354,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   Widget _buildBigStatusCard(DeviceResponse device, AtomatLogResponse? log) {
 
-    final realStatus = getRealStatus(device, log);
-
+    final state = context.read<DeviceCubit>().state;
+    final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
     String statusText;
     IconData icon;
     List<Color> gradientColors;
@@ -1519,8 +1519,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         final state = deviceCubit.state;
 
         final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-        final realStatus = getRealStatus(device, log);
-
+        final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
         final bool isOn = realStatus == 1;
         final bool isOffline = realStatus == -1;
         final bool isMaintenance = realStatus == 2;
@@ -1600,7 +1599,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
                             final password = await _showPasswordDialog(context);
                             if (password == null) return;
-
+                            print("isMaintenance: $isMaintenance");
+                            print("isSwitching: $isSwitching");
+                            print("countdown: $countdown");
                             await context.read<DeviceCubit>().togglePower(
                               device,
                               password: password,
@@ -1911,25 +1912,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     );
   }
 }
-int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
-
-  if (log == null) {
-    return device.status ?? 0;
-  }
-
-  /// 1. MAINTENANCE FIRST
-  if (log.rlyRepSta == 1) {
-    return 2;
-  }
-
-  /// 2. ONLINE / OFFLINE
-  if (log.state == null || log.state != "ONLINE") {
-    return -1;
-  }
-
-  /// 3. ON / OFF
-  return log.rlySta ?? device.status ?? 0;
-}
 class BreakerColors {
 
   static const on = Color(0xFF2E7D32); // xanh
@@ -1940,10 +1922,12 @@ class BreakerColors {
 
 }
 Widget buildStatusCard(
+    BuildContext context,
     DeviceResponse device,
     AtomatLogResponse? log,
+    DeviceState state,
     ) {
-  final realStatus = getRealStatus(device, log);
+  final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);
   final bool isMaintenance = log?.rlyRepSta == 1;
   final bool isOn = realStatus == 1;
   String text;

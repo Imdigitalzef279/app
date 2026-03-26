@@ -713,13 +713,20 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   Widget _deviceGridItem(DeviceResponse device, Color textColor) {
     final state = context.watch<DeviceCubit>().state;
 
-    final currentSwitch =
-        state.breakerLogs[device.code]?.rlySta ??
-            device.realtimeLog?.rlySta ??
-            0;
+    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
 
-    final isOnline = device.status == 1;
-    final isOn = currentSwitch == 1;
+    final realStatus =
+    context.read<DeviceCubit>().getRealStatus(device, log);
+
+    final isOn = realStatus == 1;
+
+    final gatewayState = (log?.state ?? "").toLowerCase();
+
+    final isOnline =
+        gatewayState == "online" ||
+            gatewayState == "1" ||
+            gatewayState == "connected";
+
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),

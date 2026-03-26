@@ -92,8 +92,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
             gatewayState == "1" ||
             gatewayState == "connected";
     /// 🔥 CB status
-    final realStatus = getRealStatus(device, log);
-
+    final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
     final isOn = realStatus == 1;
     final isMaintenance = realStatus == 2;
     final isOffline = realStatus == -1;
