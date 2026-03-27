@@ -429,7 +429,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                         ),
                                       ),
 
-                                      /// 🔥 NÚT CHUYỂN VIEW
+                                      ///  NÚT CHUYỂN VIEW
                                       Row(
                                         children: [
                                           GestureDetector(
@@ -717,7 +717,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
     final realStatus =
     context.read<DeviceCubit>().getRealStatus(device, log);
+    final isSwitching =
+    state.switchingDevices.containsKey(device.id);
 
+    final countdown = state.switchCountdowns[device.id] ?? 0;
     final isOn = realStatus == 1;
 
     final gatewayState = (log?.state ?? "").toLowerCase();
@@ -837,7 +840,13 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  isOn ? "Đóng" : "Cắt",
+                  isSwitching
+                      ? "Đang gửi..."
+                      : countdown > 0
+                      ? "Đang xử lý (${countdown}s)"
+                      : isOn
+                      ? "Đóng"
+                      : "Cắt",
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
@@ -854,7 +863,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     activeTrackColor: const Color(0xFF43A047),
                     inactiveTrackColor: const Color(0xFFE53935),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    onChanged: isOnline
+                    onChanged: (isOnline && !isSwitching && countdown == 0)
                         ? (value) async {
                       final password = await showPasswordDialog(context);
                       if (password == null) return;

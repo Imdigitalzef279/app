@@ -32,9 +32,21 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   void initState() {
     super.initState();
 
-    context.read<DeviceCubit>().getAllDevices(
+    final cubit = context.read<DeviceCubit>();
+
+    cubit.getAllDevices(
       powerStationId: widget.powerStationId,
-    );
+    ).then((_) {
+
+      final devices = cubit.state.resultDevices.data ?? [];
+
+      for (var d in devices) {
+        if (d.code != null) {
+          cubit.loadBreakerLog(d.code!);
+        }
+      }
+
+    });
   }
   Future<void> showRenameDialog(BuildContext context, device) async {
 
@@ -83,11 +95,11 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   Widget buildDeviceCard(BuildContext context, device) {
     final isFake = (device.id ?? 0) < 0;
     final state = context.watch<DeviceCubit>().state;
-    final log = device.realtimeLog ?? state.breakerLogs[device.code];
-    ///  Gateway status (ONLINE / OFFLINE)
-    final isGatewayOnline = log != null &&
-        ["online", "1", "connected"]
-            .contains((log.state ?? "").toLowerCase());
+    final log = state.breakerLogs[device.code] ?? device.realtimeLog;    ///  Gateway status (ONLINE / OFFLINE)
+    final isGatewayOnline = log == null
+        ? true
+        : ["online", "1", "connected"]
+        .contains((log.state ?? "").toLowerCase());
     final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
     final isOn = realStatus == 1;
     final isMaintenance = realStatus == 2;

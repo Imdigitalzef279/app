@@ -110,10 +110,6 @@ class DeviceCubit extends Cubit<DeviceState> {
     required int powerStationId,
   }) async {
 
-    emit(state.copyWith(
-      resultDevices: Result(status: LoadStatus.loading),
-    ));
-
     try {
 
       final response =
@@ -255,50 +251,56 @@ class DeviceCubit extends Cubit<DeviceState> {
         _removeSwitching(device.id);
         return;
       }
-      final isOn = realStatus == 1;
-      final target = isOn ? "1" : "0";
-      print("IS ON: $isOn");
+      final currentState =
+          state.breakerLogs[device.code]?.rlySta ??
+              device.realtimeLog?.rlySta ??
+              device.status ??
+              0;
+
+      final target = currentState == 1 ? "0" : "1";
       print("COMMAND (target): $target");
       print("👉 SEND COMMAND");
       print("ADDR: ${log?.addr}");
       print("BREAKER: ${device.code}");
       print("COMMAND: $target");
-      final success = await switchCbsWithForce(device, target, false);
-      if (!success) {
-        _removeSwitching(device.id);
-        return;
-      }
+      final uiStatus = int.parse(target);
 
-      /// update UI ngay
-      /// convert về UI
-      final uiStatus = target == "0" ? 1 : 0;
+      ///  1. UPDATE UI NGAY
       updateLocalStatus(device.id, uiStatus);
+
+      ///  2. UPDATE LOG LOCAL NGAY
       final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
 
       final currentLog = logs[device.code] ?? device.realtimeLog;
 
       if (currentLog != null) {
         logs[device.code!] = currentLog.copyWith(
-          rlySta: int.parse(target),
+          rlySta: uiStatus,
         );
       }
 
       emit(state.copyWith(
         breakerLogs: logs,
       ));
-      /// countdown
-      startCountdown(device.id);
-      final expectedUi = target == "0" ? 1 : 0;
-      waitBreakerState(
+
+      ///  3. GỌI API SAU
+      final success = await switchCbsWithForce(device, target, false);
+
+      if (!success) {
+        _removeSwitching(device.id);
+        return;
+      }
+      await waitBreakerState(
         device.id,
         device.code!,
-        expectedUi,
+        int.parse(target),
       );
+      /// countdown
+      final expectedUi = int.parse(target);
+
 
     } catch (e) {
       AppToast.showToastError(title: "Lỗi");
-    } finally {
-      _removeSwitching(device.id);
     }
 
   }
@@ -311,7 +313,7 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     _timers[deviceId]?.cancel();
 
-    int count = 3;
+    int count = 20;
 
     emit(state.copyWith(
       switchCountdowns: {
@@ -596,6 +598,13 @@ class DeviceCubit extends Cubit<DeviceState> {
       final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
       logs[breakerSn] = log;
 
+      final isSwitching = state.switchingDevices.values.contains(true);
+
+      if (isSwitching) {
+        print("⛔ Bỏ update log vì đang switching");
+        return;
+      }
+
       emit(state.copyWith(
         breakerLogs: logs,
       ));
@@ -610,59 +619,44 @@ class DeviceCubit extends Cubit<DeviceState> {
       int expectedState,
       ) async {
 
-    int countdown = 5;
-    bool success = false; // 🔥 thêm
+    int retry = 5;
+    bool success = false;
 
-    while (countdown > 0) {
-
-      final map = Map<int,int>.from(state.switchCountdowns);
-      map[deviceId] = countdown;
-
-      emit(state.copyWith(switchCountdowns: map));
+    while (retry > 0) {
 
       await Future.delayed(const Duration(seconds: 1));
-      countdown--;
+      retry--;
 
       /// gọi API
       await loadBreakerLog(breakerSn);
 
       final log = state.breakerLogs[breakerSn];
-      final raw = log?.rlySta ?? 0;
-      final current = raw == 0 ? 1 : 0;
+      final current = log?.rlySta ?? 0;
+
       print("WAIT STATE: current=$current | expected=$expectedState");
 
       if (current == expectedState) {
-        success = true; // 🔥 đánh dấu thành công
+        success = true;
         break;
       }
     }
 
-    /// 🔥 luôn clear countdown
-    final map = Map<int,int>.from(state.switchCountdowns);
-    map.remove(deviceId);
-
-    emit(state.copyWith(switchCountdowns: map));
-
-    /// 🔥 luôn clear switching
+    ///  luôn remove switching (fix kẹt nút)
     _removeSwitching(deviceId);
 
-    /// 🔥 debug nếu fail
     if (!success) {
-      print("⚠️ TIMEOUT: thiết bị không phản hồi đúng trạng thái");
+      print("⚠ TIMEOUT: thiết bị chưa phản hồi → chờ realtime update");
     }
   }
   // ============================================================
   // HELPER
   // ============================================================
   int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
-    final countdown = state.switchCountdowns[device.id] ?? 0;
-
-    if (countdown > 0) {
-      return device.status ?? 0;
+    if (state.switchingDevices.containsKey(device.id)) {
+      return log?.rlySta ?? device.status ?? 0;
     }
-
     if (log == null) {
-      return device.status ?? 0;
+      return -1;
     }
 
     if (log.rlyRepSta == 1) {
@@ -676,11 +670,10 @@ class DeviceCubit extends Cubit<DeviceState> {
       }
     }
 
-    ///  FIX NGƯỢC TRẠNG THÁI TẠI ĐÂY
     final raw = log.rlySta ?? device.status ?? 0;
 
-    if (raw == 0) return 1; // ĐÓNG
-    if (raw == 1) return 0; // CẮT
+    if (raw == 1) return 1;
+    if (raw == 0) return 0;
 
     return raw;
   }
@@ -825,13 +818,15 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     if (device == null) return;
 
-    /// 🔥 KHÔNG BLOCK REALTIME NỮA
     final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
     logs[code] = log;
 
     final updatedDevices = (state.resultDevices.data ?? []).map((d) {
       if (d.code == code) {
-        return d.copyWith(realtimeLog: log);
+        return d.copyWith(
+          realtimeLog: log,
+          status: log.rlySta ?? d.status ?? 0,
+        );
       }
       return d;
     }).toList();
@@ -840,6 +835,8 @@ class DeviceCubit extends Cubit<DeviceState> {
       breakerLogs: logs,
       resultDevices: state.resultDevices.copyWith(data: updatedDevices),
     ));
+
+    _removeSwitching(device.id);
   }
 
   Future<bool> _verifyForceAuth({

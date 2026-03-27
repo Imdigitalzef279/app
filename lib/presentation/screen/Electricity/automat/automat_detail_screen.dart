@@ -253,11 +253,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       print("Load price error: $e");
     }
   }
-  Future<void> _reloadDevice() async {
-    await context.read<DeviceCubit>().getAllDevices(
-      powerStationId: currentDevice.powerStationId,
-    );
-  }
   void _reloadRealTime() {
     cubit.getBreakerLog(currentDevice.code ?? "");
   }
@@ -370,7 +365,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   /// Chọn icon thiết bị theo meterTypeId
   Widget _deviceImage(DeviceResponse device) {
-    /// 👉 Ưu tiên ảnh user chọn
+    ///  Ưu tiên ảnh user chọn
     if (device.avatar.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -381,7 +376,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       );
     }
 
-    /// 👉 fallback về asset
+    ///  fallback về asset
     String path;
 
     switch (device.meterTypeId) {
@@ -1354,13 +1349,39 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     );
   }
   Widget _buildBigStatusCard(DeviceResponse device, AtomatLogResponse? log) {
+    final countdown = context.watch<DeviceCubit>()
+        .state.switchCountdowns[device.id] ?? 0;
 
+    final isWaiting = countdown > 0;
     final state = context.read<DeviceCubit>().state;
-    final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
+    final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);;
     String statusText;
     IconData icon;
     List<Color> gradientColors;
-
+    if (isWaiting) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          gradient: LinearGradient(
+            colors: [
+              Colors.blue.withOpacity(0.7),
+              Colors.blue,
+            ],
+          ),
+        ),
+        child: Row(
+          children: [
+            CircularProgressIndicator(color: Colors.white),
+            SizedBox(width: 10),
+            Text(
+              "Đang xử lý (${countdown}s)",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
     switch (realStatus) {
 
     /// OFFLINE
@@ -1501,14 +1522,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DeviceCubit, DeviceState>(
-      builder: (context, deviceState) {
+    final state = context.watch<DeviceCubit>().state;
 
-        final device = deviceState.resultDevices.data?.firstWhere(
-              (d) => d.id == widget.device.id,
-          orElse: () => widget.device,
-        );
 
+    final device = state.resultDevices.data?.firstWhere(
+          (d) => d.id == widget.device.id,
+      orElse: () => widget.device,
+    );
         if (device == null) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -1517,10 +1537,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
 
         final deviceCubit = context.watch<DeviceCubit>();
-        final state = deviceCubit.state;
-
-        final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-        final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
+    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+    final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);
         final bool isOn = realStatus == 1;
         final bool isOffline = realStatus == -1;
         final bool isMaintenance = realStatus == 2;
@@ -1534,7 +1552,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent, // 🔥 fix Material 3
+            surfaceTintColor: Colors.transparent, // x Material 3
             systemOverlayStyle: SystemUiOverlayStyle.dark, // icon status bar đen
             centerTitle: true,
             title: const SizedBox(),
@@ -1594,33 +1612,35 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                                 : BreakerColors.on,
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: (isMaintenance || isSwitching || countdown > 0)
+                          onPressed: (isMaintenance || isSwitching)
                               ? null
                               : () async {
-
                             final password = await _showPasswordDialog(context);
                             if (password == null) return;
-                            print("isMaintenance: $isMaintenance");
-                            print("isSwitching: $isSwitching");
-                            print("countdown: $countdown");
+
                             await context.read<DeviceCubit>().togglePower(
                               device,
                               password: password,
                             );
                           },
-                          child: countdown > 0
-                              ? Text(
-                            "$countdown s",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: isSwitching
+                              ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                              SizedBox(width: 8),
+                  Text(isOn ? "Đang cắt..." : "Đang đóng..."),
+                            ],
                           )
                               : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(isOn ? Icons.power_off : Icons.flash_on),
-                              const SizedBox(width: 6),
+                              SizedBox(width: 6),
                               Text(isOn ? "Cắt" : "Đóng"),
                             ],
                           ),
@@ -1738,8 +1758,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               ),
             ),
         );
-      },
-    );
+
   }
   Future<String?> _askPassword(BuildContext context) {
     return _showPasswordDialog(context);

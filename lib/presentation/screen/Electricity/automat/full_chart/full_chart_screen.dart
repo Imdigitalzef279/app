@@ -124,7 +124,7 @@ class FullChartScreen extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          /// 🔥 SCROLL NGANG
+          ///  SCROLL NGANG
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SizedBox(

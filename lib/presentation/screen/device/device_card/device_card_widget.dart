@@ -71,16 +71,28 @@ class DeviceCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<DeviceCubit>().state;
 
-    final currentSwitch =
-        state.breakerLogs[device.code]?.rlySta ??
-            device.realtimeLog?.rlySta ??
-            0;
 
-    final isOnline = device.status == 1;
-    final isOn = currentSwitch == 1;
+
+    final cubit = context.watch<DeviceCubit>();
+
+    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+
+    final realStatus = cubit.getRealStatus(device, log);
+
+    final isOn = realStatus == 1;
+
+    final gatewayState = (log?.state ?? "").toLowerCase();
+
+    final isOnline =
+        gatewayState == "online" ||
+            gatewayState == "1" ||
+            gatewayState == "connected";
+
     final isSwitching =
     state.switchingDevices.containsKey(device.id);
 
+    final countdown =
+        state.switchCountdowns[device.id] ?? 0;
     return GestureDetector(
       behavior: HitTestBehavior.opaque, // 🔥 QUAN TRỌNG
       onTap: () {
@@ -233,36 +245,17 @@ class DeviceCardWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        isOn ? "Đóng" : "Cắt",
+                        isSwitching
+                            ? "Đang gửi..."
+                            : countdown > 0
+                            ? "Đang xử lý (${countdown}s)"
+                            : isOn
+                            ? "Đóng"
+                            : "Cắt",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: isOn ? Colors.green : Colors.red,
-                        ),
-                      ),
-
-                      GestureDetector(
-                        onTap: () {},
-                        child: Transform.scale(
-                          scale: 0.7,
-                          child: Switch(
-                            value: isOn,
-                            activeColor: Colors.white,
-                            activeTrackColor: const Color(0xFF43A047),
-                            inactiveTrackColor: const Color(0xFFE53935),
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            onChanged: isOnline
-                                ? (value) async {
-                              final password = await showPasswordDialog(context);
-                              if (password == null) return;
-
-                              await context.read<DeviceCubit>().togglePower(
-                                device,
-                                password: password,
-                              );
-                            }
-                                : null,
-                          ),
                         ),
                       ),
                     ],
