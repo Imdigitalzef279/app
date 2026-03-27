@@ -34,6 +34,7 @@ mixin _$RegisterState {
   bool get showPass => throw _privateConstructorUsedError;
   bool get showPassConfirm => throw _privateConstructorUsedError;
   LoadStatus get loadStatus => throw _privateConstructorUsedError;
+  bool get isAgree => throw _privateConstructorUsedError;
 
   /// Create a copy of RegisterState
   /// with the given fields replaced by the non-null parameter values.
@@ -66,7 +67,8 @@ abstract class $RegisterStateCopyWith<$Res> {
       String message,
       bool showPass,
       bool showPassConfirm,
-      LoadStatus loadStatus});
+      LoadStatus loadStatus,
+      bool isAgree});
 }
 
 /// @nodoc
@@ -102,6 +104,7 @@ class _$RegisterStateCopyWithImpl<$Res, $Val extends RegisterState>
     Object? showPass = null,
     Object? showPassConfirm = null,
     Object? loadStatus = null,
+    Object? isAgree = null,
   }) {
     return _then(_value.copyWith(
       gmail: null == gmail
@@ -176,6 +179,10 @@ class _$RegisterStateCopyWithImpl<$Res, $Val extends RegisterState>
           ? _value.loadStatus
           : loadStatus // ignore: cast_nullable_to_non_nullable
               as LoadStatus,
+      isAgree: null == isAgree
+          ? _value.isAgree
+          : isAgree // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -206,7 +213,8 @@ abstract class _$$RegisterStateImplCopyWith<$Res>
       String message,
       bool showPass,
       bool showPassConfirm,
-      LoadStatus loadStatus});
+      LoadStatus loadStatus,
+      bool isAgree});
 }
 
 /// @nodoc
@@ -240,6 +248,7 @@ class __$$RegisterStateImplCopyWithImpl<$Res>
     Object? showPass = null,
     Object? showPassConfirm = null,
     Object? loadStatus = null,
+    Object? isAgree = null,
   }) {
     return _then(_$RegisterStateImpl(
       gmail: null == gmail
@@ -314,6 +323,10 @@ class __$$RegisterStateImplCopyWithImpl<$Res>
           ? _value.loadStatus
           : loadStatus // ignore: cast_nullable_to_non_nullable
               as LoadStatus,
+      isAgree: null == isAgree
+          ? _value.isAgree
+          : isAgree // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -339,7 +352,8 @@ class _$RegisterStateImpl implements _RegisterState {
       this.message = "",
       this.showPass = false,
       this.showPassConfirm = false,
-      this.loadStatus = LoadStatus.initial});
+      this.loadStatus = LoadStatus.initial,
+      this.isAgree = false});
 
   @override
   @JsonKey()
@@ -395,10 +409,13 @@ class _$RegisterStateImpl implements _RegisterState {
   @override
   @JsonKey()
   final LoadStatus loadStatus;
+  @override
+  @JsonKey()
+  final bool isAgree;
 
   @override
   String toString() {
-    return 'RegisterState(gmail: $gmail, gmailError: $gmailError, name: $name, nameError: $nameError, phoneNumber: $phoneNumber, phoneNumberError: $phoneNumberError, accountName: $accountName, accountNameError: $accountNameError, password: $password, passwordError: $passwordError, confirmPassword: $confirmPassword, confirmPasswordError: $confirmPasswordError, surname: $surname, surnameError: $surnameError, message: $message, showPass: $showPass, showPassConfirm: $showPassConfirm, loadStatus: $loadStatus)';
+    return 'RegisterState(gmail: $gmail, gmailError: $gmailError, name: $name, nameError: $nameError, phoneNumber: $phoneNumber, phoneNumberError: $phoneNumberError, accountName: $accountName, accountNameError: $accountNameError, password: $password, passwordError: $passwordError, confirmPassword: $confirmPassword, confirmPasswordError: $confirmPasswordError, surname: $surname, surnameError: $surnameError, message: $message, showPass: $showPass, showPassConfirm: $showPassConfirm, loadStatus: $loadStatus, isAgree: $isAgree)';
   }
 
   @override
@@ -437,30 +454,33 @@ class _$RegisterStateImpl implements _RegisterState {
             (identical(other.showPassConfirm, showPassConfirm) ||
                 other.showPassConfirm == showPassConfirm) &&
             (identical(other.loadStatus, loadStatus) ||
-                other.loadStatus == loadStatus));
+                other.loadStatus == loadStatus) &&
+            (identical(other.isAgree, isAgree) || other.isAgree == isAgree));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      gmail,
-      gmailError,
-      name,
-      nameError,
-      phoneNumber,
-      phoneNumberError,
-      accountName,
-      accountNameError,
-      password,
-      passwordError,
-      confirmPassword,
-      confirmPasswordError,
-      surname,
-      surnameError,
-      message,
-      showPass,
-      showPassConfirm,
-      loadStatus);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        gmail,
+        gmailError,
+        name,
+        nameError,
+        phoneNumber,
+        phoneNumberError,
+        accountName,
+        accountNameError,
+        password,
+        passwordError,
+        confirmPassword,
+        confirmPasswordError,
+        surname,
+        surnameError,
+        message,
+        showPass,
+        showPassConfirm,
+        loadStatus,
+        isAgree
+      ]);
 
   /// Create a copy of RegisterState
   /// with the given fields replaced by the non-null parameter values.
@@ -490,7 +510,8 @@ abstract class _RegisterState implements RegisterState {
       final String message,
       final bool showPass,
       final bool showPassConfirm,
-      final LoadStatus loadStatus}) = _$RegisterStateImpl;
+      final LoadStatus loadStatus,
+      final bool isAgree}) = _$RegisterStateImpl;
 
   @override
   String get gmail;
@@ -528,6 +549,8 @@ abstract class _RegisterState implements RegisterState {
   bool get showPassConfirm;
   @override
   LoadStatus get loadStatus;
+  @override
+  bool get isAgree;
 
   /// Create a copy of RegisterState
   /// with the given fields replaced by the non-null parameter values.

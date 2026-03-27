@@ -44,10 +44,17 @@ class LineChartWidget extends StatelessWidget {
                     color: line.color,
                     barWidth: 2,
                     dotData: FlDotData(show: false),
-                    spots: data.asMap().entries.map((e) {
+                    spots: line.customData != null
+                        ? List.generate(line.customData!.length, (i) {
+                      return FlSpot(
+                        i.toDouble(),
+                        line.customData![i],
+                      );
+                    })
+                        : data.asMap().entries.map((e) {
                       return FlSpot(
                         e.key.toDouble(),
-                        line.getY(e.value) ?? 0,
+                        line.getY!(e.value),
                       );
                     }).toList(),
                   );
@@ -62,11 +69,15 @@ class LineChartWidget extends StatelessWidget {
 }
 
 class LineConfig {
-  final double? Function(BreakerChartResponse) getY;
+  final double Function(BreakerChartResponse)? getY;
+  final List<double>? customData;
   final Color color;
+  final bool isDashed;
 
   LineConfig({
-    required this.getY,
+    this.getY,
+    this.customData,
     required this.color,
+    this.isDashed = false,
   });
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -368,36 +369,36 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     }
   }
   /// Chọn icon thiết bị theo meterTypeId
-  Widget _deviceImage() {
+  Widget _deviceImage(DeviceResponse device) {
+    /// 👉 Ưu tiên ảnh user chọn
+    if (device.avatar.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.file(
+          File(device.avatar),
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    /// 👉 fallback về asset
     String path;
 
-    switch (currentDevice.meterTypeId) {
-
+    switch (device.meterTypeId) {
       case 81:
         path = "assets/images/mm50h_1p.png";
         break;
-
       case 82:
         path = "assets/images/mm50h_3p.png";
         break;
-
       case 61:
         path = "assets/images/mccb_3p.png";
         break;
-
       default:
         path = "assets/images/mm50h_1p.png";
     }
 
-    return Image.asset(
-      path,
-      fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => const Icon(
-        Icons.electrical_services,
-        size: 80,
-        color: Colors.grey,
-      ),
-    );
+    return Image.asset(path, fit: BoxFit.contain);
   }
   Widget _buildOverviewSection(
       BuildContext context,
@@ -911,7 +912,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               color: const Color(0xFFF2F3F7),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: _deviceImage(),
+            child: _deviceImage(device),
           ),
 
           const SizedBox(width: 6),

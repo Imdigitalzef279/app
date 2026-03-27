@@ -13,6 +13,7 @@ import '../../../gen/assets.gen.dart';
 import '../../common_widgets/app_button.dart';
 import '../../common_widgets/app_lable_text_field.dart';
 import '../../common_widgets/app_toast.dart';
+import '../login/terms/terms_screen.dart';
 
 class RegisterWidget extends StatefulWidget {
   const RegisterWidget({super.key});
@@ -294,10 +295,56 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Gap(32.h),
+                  Gap(16.h),
+
+                  Row(
+                    children: [
+                      BlocBuilder<RegisterCubit, RegisterState>(
+                        builder: (context, state) => Checkbox(
+                          value: state.isAgree,
+                          onChanged: null, //  KHÓA checkbox
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const TermsScreen(),
+                              ),
+                            );
+
+                            if (result == true) {
+                              cubit.changeQuery(isAgree: true);
+                            }
+                          },
+                          child: Text(
+                            "Xem điều khoản và bảo mật",
+                            style: AppTextStyle.textSm.copyWith(
+                              decoration: TextDecoration.underline,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+
+                  Gap(16.h),
+
                   button(
                     title: "Đăng Ký",
                     callBack: () async {
+                      final state = cubit.state;
+
+                      if (!state.isAgree) {
+                        AppToast.showToastError(
+                          title: "Vui lòng đồng ý điều khoản",
+                        );
+                        return;
+                      }
+
                       if (cubit.validate()) {
                         await cubit.registerUser();
                       }

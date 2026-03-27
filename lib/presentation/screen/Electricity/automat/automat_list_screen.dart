@@ -84,19 +84,15 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
     final isFake = (device.id ?? 0) < 0;
     final state = context.watch<DeviceCubit>().state;
     final log = device.realtimeLog ?? state.breakerLogs[device.code];
-    /// 🔥 Gateway status (ONLINE / OFFLINE)
-    final gatewayState = (log?.state ?? "").toLowerCase();
-
-    final isOnline =
-        gatewayState == "online" ||
-            gatewayState == "1" ||
-            gatewayState == "connected";
-    /// 🔥 CB status
+    ///  Gateway status (ONLINE / OFFLINE)
+    final isGatewayOnline = log != null &&
+        ["online", "1", "connected"]
+            .contains((log.state ?? "").toLowerCase());
     final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
     final isOn = realStatus == 1;
     final isMaintenance = realStatus == 2;
-    final isOffline = realStatus == -1;
-    /// 🔥 Maintenance
+    final isOffline = !isGatewayOnline;
+    ///  Maintenance
 
     final isSwitching =
     state.switchingDevices.containsKey(device.id);
@@ -284,7 +280,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: isOnline
+                        color: isGatewayOnline
                             ? const Color(0xFF6BB6A6)
                             : Colors.red,
                         shape: BoxShape.circle,
@@ -294,10 +290,10 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                     const SizedBox(width: 6),
 
                     Text(
-                      isOnline ? "Online" : "Offline",
+                      isGatewayOnline ? "Online" : "Offline",
                       style: TextStyle(
                         fontSize: 12,
-                        color: isOnline
+                        color: isGatewayOnline
                             ? const Color(0xFF6BB6A6)
                             : Colors.red,
                       ),

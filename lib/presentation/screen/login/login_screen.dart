@@ -15,6 +15,9 @@ import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/login/bloc/login_cubit.dart';
 import 'package:solar_energy/presentation/screen/login/terms/terms_screen.dart';
 
+import '../register/Bloc/register_cubit.dart';
+import '../register/register_widget.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -31,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     check = ValueNotifier(false);
     cubit = BlocProvider.of(context);
-
+    cubit.changeDataQuery(clause: true);
     checkToken();
   }
 
@@ -150,21 +153,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }),
                                   value: state.clause,
 
-                                  /// 🔥 KHÓA checkbox (không cho user tự tick)
+                                  ///  KHÓA checkbox (không cho user tự tick)
                                   onChanged: null,
                                 ),
                               ),
                               Expanded(
                                 child: GestureDetector(
                                   onTap: () async {
-                                    final result = await Navigator.push(
+                                    await Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (_) => const TermsScreen()),
+                                      MaterialPageRoute(
+                                        builder: (_) => const TermsScreen(),
+                                      ),
                                     );
-
-                                    if (result == true) {
-                                      cubit.changeDataQuery(clause: true);
-                                    }
                                   },
                                   child: Text(
                                     LocalizationsUtils.localizations.agree_terms,
@@ -273,20 +274,37 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget buttonRegister() {
-    return InkWell(
-        borderRadius: BorderRadius.circular(4.r),
-        // onTap: () {
-        //   // Navigator.pushNamed(context, RouteName.registerWidget);
-        // },
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
-          child: Text(
-            // LocalizationsUtils.localizations.no_account_register,
-            "",
-            style: AppTextStyle.textSm.copyWith(color: AppColors.blue),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "Chưa có tài khoản? ",
+          style: AppTextStyle.textSm.copyWith(
+            color: AppColors.textPrimary,
           ),
-        ));
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (_) => RegisterCubit(),
+                  child: const RegisterWidget(),
+                ),
+              ),
+            );
+          },
+          child: Text(
+            "Đăng ký",
+            style: AppTextStyle.textSm.copyWith(
+              color: AppColors.blue,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget loginTest() {

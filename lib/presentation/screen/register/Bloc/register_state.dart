@@ -21,6 +21,7 @@ class RegisterState with _$RegisterState {
     @Default(false) bool showPass,
     @Default(false) bool showPassConfirm,
     @Default(LoadStatus.initial) LoadStatus loadStatus,
+    @Default(false) bool isAgree,
   }) = _RegisterState;
 
   factory RegisterState.init() => const RegisterState();

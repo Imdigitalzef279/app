@@ -92,7 +92,8 @@ class RegisterCubit extends Cubit<RegisterState> {
       String? surnameError,
       String? message,
       bool? showPass,
-      bool? showPassConfirm}) {
+      bool? showPassConfirm,
+      bool? isAgree}) {
     emit(state.copyWith(
         password: password ?? state.password,
         gmail: mail ?? state.gmail,
@@ -111,7 +112,8 @@ class RegisterCubit extends Cubit<RegisterState> {
         surnameError: surnameError ?? state.surnameError,
         message: message ?? state.message,
         showPass: showPass ?? state.showPass,
-        showPassConfirm: showPassConfirm ?? state.showPassConfirm));
+        showPassConfirm: showPassConfirm ?? state.showPassConfirm,
+      isAgree: isAgree ?? state.isAgree,));
   }
 
   bool validate() {
