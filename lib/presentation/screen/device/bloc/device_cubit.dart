@@ -259,7 +259,7 @@ class DeviceCubit extends Cubit<DeviceState> {
 
       final target = currentState == 1 ? "0" : "1";
       print("COMMAND (target): $target");
-      print("👉 SEND COMMAND");
+      print(" SEND COMMAND");
       print("ADDR: ${log?.addr}");
       print("BREAKER: ${device.code}");
       print("COMMAND: $target");
@@ -391,7 +391,7 @@ class DeviceCubit extends Cubit<DeviceState> {
           addr: addr,
           breakerSn: device.code,
           gatewaySn: device.gatewayNumber,
-          commandValue: commandValue.toString(), // 🔥 FIX
+          commandValue: commandValue.toString(), //  FIX
           createdBy: username,
           isForce: true,
         ),
@@ -400,7 +400,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       if (response == -1) {
         AppToast.showToastError(title: "Không đổi bảo trì được");
 
-        emit(state.copyWith(isForceLoading: false)); // 🔥 thêm luôn
+        emit(state.copyWith(isForceLoading: false)); //  thêm luôn
         return;
       }
 
@@ -415,7 +415,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     } catch (e) {
       AppToast.showToastError(title: "Có lỗi xảy ra");
     } finally {
-      /// 🔥 QUAN TRỌNG NHẤT
+      ///  QUAN TRỌNG NHẤT
       emit(state.copyWith(isForceLoading: false));
     }
   }
@@ -439,7 +439,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       await Future.delayed(const Duration(seconds: 1));
       countdown--;
 
-      /// 🔥 reload mỗi vòng
+      ///  reload mỗi vòng
       await loadBreakerLog(breakerSn);
 
       final log = state.breakerLogs[breakerSn];
@@ -547,7 +547,7 @@ class DeviceCubit extends Cubit<DeviceState> {
 
       final addr = rawAddr; //
 
-      print("✅ ADDR: $addr");
+      print(" ADDR: $addr");
       final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
       final username = authRepo.currentProfile?.userName ?? "";
       print("DEVICE CODE: ${device.code}");
@@ -601,13 +601,13 @@ class DeviceCubit extends Cubit<DeviceState> {
       final isSwitching = state.switchingDevices.values.contains(true);
 
       if (isSwitching) {
-        print("⛔ Bỏ update log vì đang switching");
-        return;
+        print("⚠ vẫn update log nhưng không override UI");
       }
 
       emit(state.copyWith(
         breakerLogs: logs,
       ));
+
 
     } catch (e) {
       print("LOAD LOG ERROR: $e");

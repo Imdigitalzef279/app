@@ -50,12 +50,11 @@ class AnalyticsOverviewScreen extends StatelessWidget {
             const Icon(Icons.folder, color: Colors.green),
             const SizedBox(width: 8),
             Text(
-              "Project $projectId",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
+              deviceList.isNotEmpty &&
+                  deviceList.first.powerStation.name.isNotEmpty
+                  ? deviceList.first.powerStation.name
+                  : "Chưa xác định",
+            )
           ],
         ),
 

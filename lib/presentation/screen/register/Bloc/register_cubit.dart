@@ -95,35 +95,44 @@ class RegisterCubit extends Cubit<RegisterState> {
       bool? showPassConfirm,
       bool? isAgree}) {
     emit(state.copyWith(
-        password: password ?? state.password,
-        gmail: mail ?? state.gmail,
-        name: name ?? state.name,
-        phoneNumber: phoneNumber ?? state.phoneNumber,
-        accountName: accountName ?? state.accountName,
-        confirmPassword: confirmPassword ?? state.confirmPassword,
-        surname: surname ?? state.surname,
-        passwordError: passwordError ?? state.passwordError,
-        gmailError: mailError ?? state.gmailError,
-        nameError: nameError ?? state.nameError,
-        phoneNumberError: phoneNumberError ?? state.phoneNumberError,
-        accountNameError: accountNameError ?? state.accountNameError,
-        confirmPasswordError:
-            confirmPasswordError ?? state.confirmPasswordError,
-        surnameError: surnameError ?? state.surnameError,
-        message: message ?? state.message,
-        showPass: showPass ?? state.showPass,
-        showPassConfirm: showPassConfirm ?? state.showPassConfirm,
-      isAgree: isAgree ?? state.isAgree,));
-  }
+      password: password ?? state.password,
+      gmail: mail ?? state.gmail,
+      name: name ?? state.name,
+      phoneNumber: phoneNumber ?? state.phoneNumber,
+      accountName: accountName ?? state.accountName,
+      confirmPassword: confirmPassword ?? state.confirmPassword,
+      surname: surname ?? state.surname,
 
-  bool validate() {
-    return validateEmail() &&
-        validateName() &&
-        validateAccount() &&
-        validatePass() &&
-        validateConfirmPass() &&
-        validateProjectName();
+      /// FIX: clear error khi user nhập
+      gmailError: mail != null ? "" : state.gmailError,
+      nameError: name != null ? "" : state.nameError,
+      phoneNumberError:
+      phoneNumber != null ? "" : state.phoneNumberError,
+      accountNameError:
+      accountName != null ? "" : state.accountNameError,
+      passwordError: password != null ? "" : state.passwordError,
+      confirmPasswordError:
+      confirmPassword != null ? "" : state.confirmPasswordError,
+      surnameError: surname != null ? "" : state.surnameError,
+
+      message: message ?? state.message,
+      showPass: showPass ?? state.showPass,
+      showPassConfirm: showPassConfirm ?? state.showPassConfirm,
+      isAgree: isAgree ?? state.isAgree,
+
+    )
+    );
   }
+    bool validate() {
+      final v1 = validateEmail();
+      final v2 = validateName();
+      final v3 = validateAccount();
+      final v4 = validatePass();
+      final v5 = validateConfirmPass();
+      final v6 = validateProjectName();
+
+      return v1 && v2 && v3 && v4 && v5 && v6;
+    }
 
   bool validateEmail() {
     if (state.gmail.isEmpty) {
@@ -172,16 +181,22 @@ class RegisterCubit extends Cubit<RegisterState> {
     return true;
   }
 
-  bool validateConfirmPass() {
-    if (state.confirmPassword != state.password) {
-      emit(state.copyWith(
-          confirmPasswordError:
-              LocalizationsUtils.localizations.passwordMismatch));
-      return false;
+    bool validateConfirmPass() {
+      if (state.confirmPassword.isEmpty) {
+        emit(state.copyWith(confirmPasswordError: notNull));
+        return false;
+      }
+
+      if (state.confirmPassword != state.password) {
+        emit(state.copyWith(
+            confirmPasswordError:
+            LocalizationsUtils.localizations.passwordMismatch));
+        return false;
+      }
+
+      emit(state.copyWith(confirmPasswordError: ""));
+      return true;
     }
-    emit(state.copyWith(confirmPasswordError: ""));
-    return true;
-  }
 
   bool validateProjectName() {
     if (state.surname.isEmpty) {

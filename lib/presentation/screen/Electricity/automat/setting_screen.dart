@@ -432,27 +432,33 @@ class _SettingScreenState extends State<SettingScreen> {
             const SizedBox(height: 12),
 
         /// 🔹 QUÁ ÁP
-            _buildSliderTile(
+            _buildItemCard(
               title: "Quá áp",
-              unit: "V",
-              value: overVoltage,
-              min: getVoltageBase(),
-              max: getVoltageBase() * 1.3,
-              isVoltage: true,
-              description: "Ngắt khi điện áp vượt ngưỡng an toàn",
-              onChanged: (v) => setState(() => overVoltage = v),
+              child: _buildSliderTile(
+                title: "Quá áp",
+                unit: "V",
+                value: overVoltage,
+                min: getVoltageBase(),
+                max: getVoltageBase() * 1.3,
+                isVoltage: true,
+                description: "Ngắt khi điện áp vượt ngưỡng an toàn",
+                onChanged: (v) => setState(() => overVoltage = v),
+              ),
             ),
 
         /// 🔹 THẤP ÁP
-            _buildSliderTile(
+            _buildItemCard(
               title: "Thấp áp",
-              unit: "V",
-              value: underVoltage,
-              min: getVoltageBase() * 0.8,
-              max: getVoltageBase(),
-              isVoltage: true,
-              description: "Ngắt khi điện áp thấp hơn mức cho phép",
-              onChanged: (v) => setState(() => underVoltage = v),
+              child: _buildSliderTile(
+                title: "Thấp áp",
+                unit: "V",
+                value: underVoltage,
+                min: getVoltageBase() * 0.8,
+                max: getVoltageBase(),
+                isVoltage: true,
+                description: "Ngắt khi điện áp thấp hơn mức cho phép",
+                onChanged: (v) => setState(() => underVoltage = v),
+              ),
             ),
 
         /// 🔹 QUÁ CÔNG SUẤT
@@ -486,27 +492,64 @@ class _SettingScreenState extends State<SettingScreen> {
         const SizedBox(height: 10),
 
         /// 🔹 SWITCH SETTINGS
-        _buildItemCard(
-          title: "Cài đặt bổ sung",
-          child: Column(
-            children: [
-              _buildModernSwitch("Mất pha", phaseLoss,
-                      (v) => setState(() => phaseLoss = v)),
-              _buildModernSwitch("Set ngưỡng riêng", customThreshold,
-                      (v) => setState(() => customThreshold = v)),
-              _buildModernSwitch("Cảnh báo qua App", notifyApp,
-                      (v) => setState(() => notifyApp = v)),
-              _buildModernSwitch("Cảnh báo Email", notifyEmail,
-                      (v) => setState(() => notifyEmail = v)),
-              _buildModernSwitch("Lưu log cảnh báo", saveLog,
-                      (v) => setState(() => saveLog = v)),
-              _buildModernSwitch("Xuất báo cáo", exportReport,
-                      (v) => setState(() => exportReport = v)),
-            ],
-          ),
-        ),
+            _buildItemCard(
+              title: "Cài đặt bổ sung",
+              child: Column(
+                children: [
+
+                  _buildSwitchItem("Mất pha", phaseLoss,
+                          (v) => setState(() => phaseLoss = v)),
+
+                  _buildSwitchItem("Set ngưỡng riêng", customThreshold,
+                          (v) => setState(() => customThreshold = v)),
+
+                  _buildSwitchItem("Cảnh báo qua App", notifyApp,
+                          (v) => setState(() => notifyApp = v)),
+
+                  _buildSwitchItem("Cảnh báo Email", notifyEmail,
+                          (v) => setState(() => notifyEmail = v)),
+
+                  _buildSwitchItem("Lưu log cảnh báo", saveLog,
+                          (v) => setState(() => saveLog = v)),
+
+                  _buildSwitchItem("Xuất báo cáo", exportReport,
+                          (v) => setState(() => exportReport = v)),
+                ],
+              ),
+            )
       ],
         )
+    );
+  }
+  Widget _buildSwitchItem(
+      String title,
+      bool value,
+      Function(bool) onChanged,
+      ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F5E9), // 🔥 xanh nhạt
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ),
+          Switch(
+            value: value,
+            activeColor: kPrimaryColor,
+            activeTrackColor: kPrimaryColor.withOpacity(.4),
+            onChanged: onChanged,
+          ),
+        ],
+      ),
     );
   }
   Future<void> sendProtectionSetting() async {
@@ -829,13 +872,33 @@ Widget _buildItemCard({
     margin: const EdgeInsets.only(bottom: 14),
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
-      color: const Color(0xFFF7F8FA),
-      borderRadius: BorderRadius.circular(16),
+      color: Colors.white,
+      gradient: LinearGradient(
+        colors: [
+          Colors.white,
+          Color(0xFFB2E6B4),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(20),
+
       boxShadow: [
+
+        /// shadow dưới (đổ bóng)
         BoxShadow(
-          color: Colors.black.withOpacity(0.03),
+          color: Colors.black.withOpacity(0.10),
+          blurRadius: 18,
+          spreadRadius: 1,
+          offset: const Offset(0, 8),
+        ),
+
+        /// highlight trên (tạo hiệu ứng nổi)
+        BoxShadow(
+          color: Colors.white.withOpacity(0.9),
           blurRadius: 6,
-          offset: const Offset(0, 2),
+          spreadRadius: -2,
+          offset: const Offset(-2, -2),
         ),
       ],
     ),

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -94,7 +93,7 @@ class DeviceCardWidget extends StatelessWidget {
     final countdown =
         state.switchCountdowns[device.id] ?? 0;
     return GestureDetector(
-      behavior: HitTestBehavior.opaque, // 🔥 QUAN TRỌNG
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         Navigator.push(
           context,

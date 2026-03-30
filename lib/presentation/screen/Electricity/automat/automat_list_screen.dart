@@ -48,6 +48,53 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
     });
   }
+  Future<void> showRenameCabinetDialog(
+      BuildContext context,
+      String oldName,
+      ) async {
+    final controller = TextEditingController(text: oldName);
+
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Đổi tên tủ"),
+
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              hintText: "Nhập tên mới",
+            ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Huỷ"),
+            ),
+
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, controller.text);
+              },
+              child: const Text("Lưu"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (newName != null && newName.isNotEmpty) {
+      setState(() {
+        /// 🔥 rename key trong map
+        final value = expandedCabinets[oldName];
+
+        expandedCabinets.remove(oldName);
+        expandedCabinets[newName] = value ?? false;
+      });
+    }
+  }
   Future<void> showRenameDialog(BuildContext context, device) async {
 
     final controller =
@@ -631,11 +678,26 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                               const Icon(Icons.factory_outlined, size: 24, color: Colors.green),
                               const SizedBox(width: 8),
 
-                              Text(
-                                cabinetEntry.key,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                              Expanded(
+                                child: Text(
+                                  cabinetEntry.key,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+
+                              /// 🔥 NÚT SỬA
+                              GestureDetector(
+                                onTap: () {
+                                  showRenameCabinetDialog(context, cabinetEntry.key);
+                                },
+                                child: const Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                  color: Colors.grey,
                                 ),
                               ),
                             ],
