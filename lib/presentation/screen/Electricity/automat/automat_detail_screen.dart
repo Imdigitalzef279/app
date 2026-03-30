@@ -67,9 +67,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
+    _loadElectricReport();
 
-    _loadStartOfMonthEnergy();
-    _loadElectricPrice();
 
     /// chart
     context.read<AutomatChartCubit>().loadChart(
@@ -82,16 +81,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     signalR.connect(meterCode: currentDevice.code ?? "");
     _signalSub = signalR.stream.listen(_handleRealtime);
 
-    /// update tiền mỗi 5 phút
-    _moneyTimer = Timer.periodic(
-      const Duration(minutes: 5),
-          (_) => _recalculateMoney(),
-    );
   }
   @override
   void dispose() {
     _signalSub?.cancel();
     _moneyTimer?.cancel();
+
     maintenanceTimer?.cancel();
     super.dispose();
   }
@@ -168,24 +163,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         return chartData;
     }
   }
-  Future<void> _loadStartOfMonthEnergy() async {
-    final api = GetIt.instance<ApiClient>();
-
-    final result = await api.getBreakerLog(currentDevice.code ?? "");
-    final logs = result.data;
-
-    if (logs == null || logs.isEmpty) return;
-
-    final now = DateTime.now();
-    final startOfMonth = DateTime(now.year, now.month, 1);
-
-    final firstLog = logs.firstWhere(
-          (e) => DateTime.parse(e.updatedAt!).isAfter(startOfMonth),
-      orElse: () => logs.first,
-    );
-
-    epiAtStartOfMonth = firstLog.epi ?? 0;
-  }
   Future<void> _loadStartOfDayEnergy() async {
     final api = GetIt.instance<ApiClient>();
 
@@ -225,53 +202,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     print("CURRENT EPI: $currentEpi");
     print("ENERGY TODAY: $energy");
 
-    /// 👉 nếu đã có giá thì tính luôn tiền
-    if (pricePerKwh > 0) {
-      _recalculateMoney();
-    }
-  }
-  Future<void> _loadElectricPrice() async {
-    try {
-      final api = GetIt.instance<ApiClient>();
-
-      final result = await api.getPriceConfig(currentDevice.id);
-
-      if (result.isNotEmpty) {
-
-        final price = result.first.priceAvr;
-
-        setState(() {
-          pricePerKwh = price;
-        });
-
-        print("✅ Giá điện: $pricePerKwh");
-
-        _recalculateMoney();
-      }
-
-    } catch (e) {
-      print("Load price error: $e");
-    }
   }
   void _reloadRealTime() {
     cubit.getBreakerLog(currentDevice.code ?? "");
-  }
-  void _recalculateMoney() {
-    final energy = monthEnergy;
-
-    final type = getMeterType();
-
-    double money = 0;
-
-    if (type == MeterType.household) {
-      money = calculateHousehold(energy);
-    } else {
-      money = calculateBusiness(energy);
-    }
-
-    setState(() {
-      moneyMonth = money;
-    });
   }
   MeterType getMeterType() {
     if (currentDevice.meterTypeId == 81 ||
@@ -280,26 +213,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     }
     return MeterType.business;
   }
-  double calculateHousehold(double kwh) {
-    double money = 0;
 
-    if (kwh <= 50) {
-      money = kwh * 1800;
-    } else if (kwh <= 100) {
-      money = 50 * 1800 + (kwh - 50) * 1900;
-    } else if (kwh <= 200) {
-      money = 50 * 1800 + 50 * 1900 + (kwh - 100) * 2200;
-    } else {
-      money = 50 * 1800 +
-          50 * 1900 +
-          100 * 2200 +
-          (kwh - 200) * 2700;
-    }
-    return money;
-  }
-  double calculateBusiness(double kwh) {
-    return kwh * pricePerKwh;
-  }
   Future<String?> _showPasswordDialog(BuildContext context) async {
     return showDialog<String>(
       context: context,
@@ -308,6 +222,51 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         return _PinDialog();
       },
     );
+  }
+  Future<void> _loadElectricReport() async {
+    try {
+      final api = GetIt.instance<ApiClient>();
+      final now = DateTime.now();
+
+      DateTime from;
+
+      switch (_selectedRange) {
+        case ChartRange.day:
+          from = DateTime(now.year, now.month, now.day);
+          break;
+
+        case ChartRange.week:
+          from = now.subtract(const Duration(days: 7));
+          break;
+
+        case ChartRange.month:
+          from = DateTime(now.year, now.month, 1);
+          break;
+
+        case ChartRange.year:
+          from = DateTime(now.year, 1, 1);
+          break;
+
+        default:
+          from = DateTime(now.year, now.month, 1);
+      }
+
+      final res = await api.getElectricReport(
+        currentDevice.id,
+        from.toIso8601String(),
+        now.toIso8601String(),
+      );
+
+      final t = res["t"];
+
+      setState(() {
+        monthEnergy = (t["totalKwh"] ?? 0).toDouble();
+        moneyMonth = (t["totalWithVat"] ?? 0).toDouble();
+      });
+
+    } catch (e) {
+      print("❌ ElectricReport error: $e");
+    }
   }
   double getMaxY(double maxValue) {
     switch (_selectedRange) {
@@ -687,7 +646,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                         ),
                       ),
                       Text(
-                        "${monthEnergy.toStringAsFixed(1)} kWh • ${pricePerKwh.toInt()}đ/kWh",
+                        "${monthEnergy.toStringAsFixed(1)} kWh",
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey,
@@ -846,7 +805,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     return GestureDetector(
       onTap: () {
-
         setState(() {
           _selectedRange = range;
         });
@@ -855,6 +813,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           currentDevice.code ?? "",
           _selectedRange,
         );
+
+        _loadElectricReport();
       },
 
       child: Container(
@@ -1271,12 +1231,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               ],
             ),
 
-            /// 🔥 DOT (chỉ show khi touch)
+            ///  DOT (chỉ show khi touch)
             dotData: FlDotData(
               show: false,
             ),
 
-            /// 🔥 vùng dưới đẹp hơn
+            ///  vùng dưới đẹp hơn
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(

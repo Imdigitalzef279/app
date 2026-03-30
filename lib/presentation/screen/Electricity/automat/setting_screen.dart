@@ -530,7 +530,7 @@ class _SettingScreenState extends State<SettingScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9), // 🔥 xanh nhạt
+        color: const Color(0xFFE8F5E9), // xanh nhạt
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(

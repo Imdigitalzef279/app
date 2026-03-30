@@ -57,7 +57,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     setState(() => isLoading = false);
   }
 
-  /// 🔥 HANDLE SCAN
+  ///  HANDLE SCAN
   Future<void> _onDetect(BarcodeCapture capture) async {
     if (isScanned || isLoading) return;
 

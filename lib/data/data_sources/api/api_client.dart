@@ -144,6 +144,13 @@ abstract class ApiClient {
   Future<List<MeterConfigResponse>> getMeterConfigByMeterId(
       @Path('meterId') int meterId,
       );
+  // ================= ELECTRIC REPORT =================
+  @GET('api/app/electric-report')
+  Future<dynamic> getElectricReport(
+      @Query('meterId') int meterId,
+      @Query('fromDate') String fromDate,
+      @Query('toDate') String toDate,
+      );
   // ================= Tính tiền điện =================
   @GET('api/app/price-config/by-meter-id/{meterId}')
   Future<List<PriceConfigResponse>> getPriceConfig(
