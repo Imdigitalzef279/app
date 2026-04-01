@@ -706,7 +706,7 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<dynamic> getElectricReport(
+  Future<ElectricReport> getElectricReport(
     int meterId,
     String fromDate,
     String toDate,
@@ -719,7 +719,7 @@ class _ApiClient implements ApiClient {
     };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<dynamic>(Options(
+    final _options = _setStreamType<ElectricReport>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -735,8 +735,14 @@ class _ApiClient implements ApiClient {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch(_options);
-    final _value = _result.data;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ElectricReport _value;
+    try {
+      _value = ElectricReport.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
     return _value;
   }
 

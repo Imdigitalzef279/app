@@ -25,6 +25,7 @@ import 'package:solar_energy/data/dto/meter_config/response/meter_config_respons
 import '../../dto/Price/price_config_response.dart';
 import '../../dto/alarm/response/alarm_response.dart';
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
+import '../../dto/electric_report/electric_report_response.dart';
 part 'api_client.g.dart';
 
 @RestApi(baseUrl: '')
@@ -146,7 +147,7 @@ abstract class ApiClient {
       );
   // ================= ELECTRIC REPORT =================
   @GET('api/app/electric-report')
-  Future<dynamic> getElectricReport(
+  Future<ElectricReport> getElectricReport(
       @Query('meterId') int meterId,
       @Query('fromDate') String fromDate,
       @Query('toDate') String toDate,

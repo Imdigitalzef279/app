@@ -64,7 +64,7 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
     }
   }
 
-  /// 🔥 TÍNH THỜI GIAN BẢO HÀNH
+  ///  TÍNH THỜI GIAN BẢO HÀNH
   String getWarrantyDuration() {
     if (warranty?.endDate == null) return "--";
 

@@ -13,6 +13,8 @@ import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/
 import '../../../../application/enums/chart_range.dart';
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
+import '../../../../data/repositories/electric/electric_repository.dart';
+import '../../../../data/repositories/electric_report/electric_report_repository.dart';
 import '../../../../data/services/signalr_service.dart';
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
@@ -225,7 +227,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   Future<void> _loadElectricReport() async {
     try {
-      final api = GetIt.instance<ApiClient>();
+      final repo = ElectricReportRepository(GetIt.instance<ApiClient>());
       final now = DateTime.now();
 
       DateTime from;
@@ -234,34 +236,28 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         case ChartRange.day:
           from = DateTime(now.year, now.month, now.day);
           break;
-
         case ChartRange.week:
           from = now.subtract(const Duration(days: 7));
           break;
-
         case ChartRange.month:
           from = DateTime(now.year, now.month, 1);
           break;
-
         case ChartRange.year:
           from = DateTime(now.year, 1, 1);
           break;
-
         default:
           from = DateTime(now.year, now.month, 1);
       }
 
-      final res = await api.getElectricReport(
-        currentDevice.id,
-        from.toIso8601String(),
-        now.toIso8601String(),
+      final report = await repo.getElectricReport(
+        meterId: currentDevice.id,
+        from: from,
+        to: now,
       );
 
-      final t = res["t"];
-
       setState(() {
-        monthEnergy = (t["totalKwh"] ?? 0).toDouble();
-        moneyMonth = (t["totalWithVat"] ?? 0).toDouble();
+        monthEnergy = report.tou.totalKwh;
+        moneyMonth = report.tou.totalWithVat;
       });
 
     } catch (e) {
@@ -429,7 +425,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               ),
 
               const Spacer(),
-              /// 🔥 ICON FULL SCREEN
+              ///  ICON FULL SCREEN
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -525,7 +521,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           Row(
             children: [
-
               GestureDetector(
                 onTap: () {
                   setState(() {
