@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../application/enums/chart_range.dart';
 import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../../../data/dto/device/response/device_response.dart';
+import '../../../../data/dto/energy_report/energy_report_response.dart';
 import '../../Electricity/automat/automat_chart/bloc/automat_chart_cubit.dart';
+import 'bloc/analytics_cubit.dart';
 import 'line_chart_widget.dart';
 
 class AnalyticsDetailScreen extends StatefulWidget {
@@ -24,10 +26,12 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<AutomatChartCubit>().loadChart(
-      widget.device.code!,
-      ChartRange.day,
+    context.read<AnalyticsCubit>().loadEnergy(
+      powerStationId: 1,
+      deviceId: widget.device.id!,
+      type: "day",
     );
+    print("INIT STATE CALLED");
   }
 
   // ================= FILTER =================
@@ -53,9 +57,10 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           selectedRange = range;
         });
 
-        context.read<AutomatChartCubit>().loadChart(
-          widget.device.code!,
-          range,
+        context.read<AnalyticsCubit>().loadEnergy(
+          powerStationId: widget.device.powerStationId ?? 1,
+          deviceId: widget.device.id!,
+          type: range == ChartRange.year ? "month" : range.name,
         );
       },
       child: Container(
@@ -77,8 +82,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
   // ================= TAB CHART =================
   Widget buildChartSelector() {
-    final tabs = ["Dòng điện", "Điện áp", "Nhiệt độ", "Rò điện"];
-
+    final tabs = ["Công suất", "Điện năng", "Tiêu thụ"];
     return Row(
       children: List.generate(tabs.length, (index) {
         final isActive = selectedChart == index;
@@ -115,18 +119,18 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   }
 
   // ================= FILTER DATA =================
-  List<BreakerChartResponse> applyRange(
-      List<BreakerChartResponse> data,
+  List<EnergyReportResponse> applyRange(
+      List<EnergyReportResponse> data,
       ChartRange range,
       ) {
     final now = DateTime.now();
 
-    List<BreakerChartResponse> filtered;
+    List<EnergyReportResponse> filtered;
 
     switch (range) {
       case ChartRange.day:
         filtered = data.where((e) {
-          final d = e.updatedAt;
+          final d = e.time;
           return d != null &&
               d.year == now.year &&
               d.month == now.month &&
@@ -135,7 +139,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         break;
       case ChartRange.week:
         filtered = data.where((e) {
-          final d = e.updatedAt;
+          final d = e.time;
           if (d == null) return false;
 
           final nowWeekday = now.weekday; // thứ hiện tại
@@ -148,7 +152,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         break;
       case ChartRange.month:
         filtered = data.where((e) {
-          final d = e.updatedAt;
+          final d = e.time;
           return d != null &&
               d.year == now.year &&
               d.month == now.month;
@@ -157,14 +161,14 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
       case ChartRange.year:
         filtered = data.where((e) {
-          final d = e.updatedAt;
+          final d = e.time;
           return d != null &&
               d.year == now.year;
         }).toList();
         break;
       case ChartRange.quarter:
         filtered = data.where((e) {
-          final d = e.updatedAt;
+          final d = e.time;
           if (d == null) return false;
 
           final quarter = ((now.month - 1) ~/ 3) + 1;
@@ -175,14 +179,13 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         break;
     }
 
-    // 🔥 SORT theo thời gian
-    filtered.sort((a, b) => a.updatedAt!.compareTo(b.updatedAt!));
-
+    // SORT theo thời gian
+    filtered.sort((a, b) => a.time.compareTo(b.time));
     return filtered;
   }
   List<double> buildAvgLine(
-      List<BreakerChartResponse> data,
-      double? Function(BreakerChartResponse) getY,
+      List<EnergyReportResponse> data,
+      double? Function(EnergyReportResponse) getY,
       ) {
     final values = data.map((e) => getY(e) ?? 0).toList();
 
@@ -193,149 +196,16 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     return List.generate(values.length, (_) => avg);
   }
   // ================= CHART =================
-  Widget buildMainChart(List<BreakerChartResponse> data) {
+  Widget buildMainChart(List<EnergyReportResponse> data) {
     switch (selectedChart) {
       case 0:
-        final displayData = data.length > 12 ? data.sublist(data.length - 12) : data;
-
-        final values = displayData.map((e) => e.ia ?? 0).toList();
-
-        final avg = values.isEmpty
-            ? 0.0
-            : values.reduce((a, b) => a + b) / values.length;
-
-        final latest = values.isNotEmpty ? values.last : 0;
-        final maxValue = values.isEmpty
-            ? 0.0
-            : values.reduce((a, b) => a > b ? a : b);
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 🔥 HEADER
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Dòng điện (Ia)",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                Text(
-                  "${latest.toStringAsFixed(2)} A",
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 6),
-
-            // 🔥 LEGEND
-            Row(
-              children: [
-                _legendDot(Colors.red, "Hiện tại"),
-                SizedBox(width: 12),
-                _legendDot(Colors.blue, "Trung bình"),
-              ],
-            ),
-
-            SizedBox(height: 10),
-
-            // 🔥 CHART
-            SizedBox(
-              height: 220,
-              child: BarChart(
-                BarChartData(
-                  minY: 0,
-                  maxY: maxValue * 1.5,
-                  gridData: FlGridData(show: true),
-                  borderData: FlBorderData(show: false),
-                  barTouchData: BarTouchData(
-                    enabled: true,
-                    touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: Colors.black87,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        final value = rod.toY;
-                        return BarTooltipItem(
-                          value.toStringAsFixed(2),
-                          TextStyle(color: Colors.white),
-                        );
-                      },
-                    ),
-                  ),
-
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true),
-                    ),
-
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          final index = value.toInt();
-                          if (index >= displayData.length) return SizedBox();
-
-                          final time = displayData[index].updatedAt;
-                          return Text(
-                            "${time?.hour ?? ''}h",
-                            style: TextStyle(fontSize: 10),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
-                  barGroups: List.generate(displayData.length, (index) {
-                    final v = values[index];
-                    final isLatest = index == values.length - 1;
-
-                    return BarChartGroupData(
-                      x: index,
-                      barsSpace: 4,
-                      barRods: [
-                        // 🔴 CURRENT
-                        BarChartRodData(
-                          toY: v,
-                          width: 6,
-                          color: isLatest ? Colors.redAccent : Colors.red,
-                        ),
-
-                        // 🔵 AVG
-                        BarChartRodData(
-                          toY: avg,
-                          width: 6,
-                          color: Colors.blue.withOpacity(0.4),
-                        ),
-                      ],
-                    );
-                  }),
-                ),
-              ),
-            ),
-          ],
-        );
+        return _buildProChart(data, (e) => e.p, "Công suất", Colors.red);
 
       case 1:
-        return Column(
-          children: [
-            _buildProChart(data, (e) => e.ua, "Ua", Colors.green),
-            _buildProChart(data, (e) => e.ub, "Ub", Colors.purple),
-            _buildProChart(data, (e) => e.uc, "Uc", Colors.teal),
-          ],
-        );
-
-      case 2:
-        return Column(
-          children: [
-            _buildProChart(data, (e) => e.temp1, "Temp1", Colors.red),
-            _buildProChart(data, (e) => e.temp2, "Temp2", Colors.orange),
-          ],
-        );
+        return _buildProChart(data, (e) => e.epi, "Điện năng", Colors.blue);
 
       default:
-        return _buildProChart(data, (e) => e.lg, "Rò điện", Colors.black);
+        return _buildProChart(data, (e) => e.ct, "Tiêu thụ", Colors.green);
     }
   }
   Widget _legendDot(Color color, String text) {
@@ -355,15 +225,13 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     );
   }
   Widget _buildProChart(
-      List<BreakerChartResponse> data,
-      double? Function(BreakerChartResponse) getY,
+      List<EnergyReportResponse> data,
+      double? Function(EnergyReportResponse) getY,
       String label,
       Color color,
       ) {
     final displayData = data.length > 12 ? data.sublist(data.length - 12) : data;
-
     final values = displayData.map((e) => getY(e) ?? 0).toList();
-
     final avg = values.isEmpty
         ? 0.0
         : values.reduce((a, b) => a + b) / values.length;
@@ -433,8 +301,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     );
   }
   Widget buildCompareBarChart({
-    required List<BreakerChartResponse> data,
-    required double? Function(BreakerChartResponse) getY,
+    required List<EnergyReportResponse> data,
+    required double? Function(EnergyReportResponse) getY,
     required Color color,
   }) {
     final values = data.map((e) => getY(e) ?? 0).toList();
@@ -502,42 +370,23 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   }
 
   // ================= STATS =================
-  Widget buildStatsGrid(List<BreakerChartResponse> data) {
+  Widget buildStatsGrid(List<EnergyReportResponse> data) {
     if (data.isEmpty) return const SizedBox();
 
     return Column(
       children: [
-        _buildSectionCard("Dòng điện", data, [
-          ("Ia", (e) => e.ia),
-          ("Ib", (e) => e.ib),
-          ("Ic", (e) => e.ic),
-        ]),
-
-        _buildSectionCard("Điện áp", data, [
-          ("Ua", (e) => e.ua),
-          ("Ub", (e) => e.ub),
-          ("Uc", (e) => e.uc),
-        ]),
-
-        _buildSectionCard("Nhiệt độ", data, [
-          ("Temp1", (e) => e.temp1),
-          ("Temp2", (e) => e.temp2),
-          ("Temp3", (e) => e.temp3),
-          ("Temp4", (e) => e.temp4),
-        ]),
-
         _buildSectionCard("Năng lượng", data, [
-          ("Rò điện", (e) => e.lg),
           ("Công suất", (e) => e.p),
           ("Điện năng", (e) => e.epi),
+          ("Tiêu thụ", (e) => e.ct),
         ]),
       ],
     );
   }
   Widget _buildSectionCard(
       String title,
-      List<BreakerChartResponse> data,
-      List<(String, double? Function(BreakerChartResponse))> fields,
+      List<EnergyReportResponse> data,
+      List<(String, double? Function(EnergyReportResponse))> fields,
       ) {
     final last = data.last;
 
@@ -699,8 +548,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   // ================= UI =================
   @override
   Widget build(BuildContext context) {
-    final rawData = context.watch<AutomatChartCubit>().state;
-
+    final state = context.watch<AnalyticsCubit>().state;
+    final rawData = state.data;
     final data = applyRange(rawData, selectedRange);
 
     return Scaffold(
@@ -738,7 +587,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               ],
             ),
 
-            if (rawData.isEmpty)
+            if (state.isLoading)
               Positioned.fill(
                 child: Container(
                   color: Colors.white.withOpacity(0.5),

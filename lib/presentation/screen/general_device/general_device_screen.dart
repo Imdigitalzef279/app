@@ -24,6 +24,7 @@ import '../kra_care/kra_care_screen.dart';
 import '../manager_water/manager_water_screen.dart';
 import 'analytics_overview/analytics_overview_screen.dart';
 import 'background/bloc/background_cubit.dart';
+import 'device_grid/device_grid_item.dart';
 import 'notification/notification_screen.dart';
 Color getAdaptiveTextColor(String? bg) {
   if (bg == null) return Colors.black;
@@ -115,9 +116,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     final textColor = Colors.black;
-    final devices =
-        context.select((DeviceCubit c) => c.state.resultDevices.data) ?? [];
-
+    final state = context.watch<DeviceCubit>().state;
+    final devices = state.resultDevices.data ?? [];
     final favoriteDevices =
     devices.where((d) => d.isFavorite).take(6).toList();
 
@@ -149,22 +149,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Text(
-                  //   "Nhà máy ${widget.project.name}",
-                  //   maxLines: 1,
-                  //   overflow: TextOverflow.ellipsis,
-                  //   style: TextStyle(
-                  //     fontWeight: FontWeight.w600,
-                  //     color: textColor,
-                  //   ),
-                  // ),
-                  // Text(
-                  //   "Đang hoạt động",
-                  //   style: TextStyle(
-                  //     fontSize: 12,
-                  //     color: textColor.withOpacity(0.8),
-                  //   ),
-                  // ),
                   Row(
                     children: [
                       Icon(
@@ -577,7 +561,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(right: index != 2 ? 10 : 0),
-                      child: _deviceGridItem(pageDevices[index], textColor),
+                      child: DeviceGridItem(
+                        device: pageDevices[index],
+                        textColor: textColor,
+                      ),
                     ),
                   );
                 }),
@@ -594,7 +581,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(right: index != 2 ? 10 : 0),
-                      child: _deviceGridItem(pageDevices[i], textColor),
+                      child: DeviceGridItem(
+                        device: pageDevices[i],
+                        textColor: textColor,
+                      ),
                     ),
                   );
                 }),
@@ -708,179 +698,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         ],
       ),
         )
-    );
-  }
-  Widget _deviceGridItem(DeviceResponse device, Color textColor) {
-    final state = context.watch<DeviceCubit>().state;
-
-    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-
-    final realStatus =
-    context.read<DeviceCubit>().getRealStatus(device, log);
-    final isSwitching =
-    state.switchingDevices.containsKey(device.id);
-
-    final countdown = state.switchCountdowns[device.id] ?? 0;
-    final isOn = realStatus == 1;
-
-    final gatewayState = (log?.state ?? "").toLowerCase();
-
-    final isOnline =
-        gatewayState == "online" ||
-            gatewayState == "1" ||
-            gatewayState == "connected";
-
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider.value(
-                  value: context.read<DeviceCubit>(),
-                ),
-                BlocProvider(
-                  create: (_) => AtomatDetailCubit(),
-                ),
-                BlocProvider(
-                  create: (_) => AutomatChartCubit(),
-                ),
-              ],
-              child: AutomatDetailScreen(device: device),
-            ),
-          ),
-        );
-      },
-
-      child: Container(
-        height: 105,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        decoration: BoxDecoration(
-          color: textColor == Colors.white
-              ? Colors.black.withOpacity(0.4)
-              : Colors.white.withOpacity(0.85),
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 4,
-            ),
-          ],
-        ),
-
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-
-            Row(
-              children: [
-                Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEAF4F1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Icon(
-                    Icons.power,
-                    size: 13,
-                    color: Color(0xFF6BB6A6),
-                  ),
-                ),
-
-                const SizedBox(width: 6),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        device.name ?? device.code ?? "",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-
-                      const SizedBox(height: 2),
-
-                      Row(
-                        children: [
-                          Container(
-                            width: 5,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: isOnline ? Colors.green : Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            isOnline ? "Online" : "Offline",
-                            style: TextStyle(
-                              fontSize: 9,
-                              color: isOnline ? Colors.green : Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            /// FOOTER
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  isSwitching
-                      ? "Đang gửi..."
-                      : countdown > 0
-                      ? "Đang xử lý (${countdown}s)"
-                      : isOn
-                      ? "Đóng"
-                      : "Cắt",
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: isOn ? Colors.green : Colors.red,
-                  ),
-                ),
-
-                SizedBox(
-                  width: 50,
-                  height: 30,
-                  child: Switch(
-                    value: isOn,
-                    activeColor: Colors.white,
-                    activeTrackColor: const Color(0xFF43A047),
-                    inactiveTrackColor: const Color(0xFFE53935),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    onChanged: (isOnline && !isSwitching && countdown == 0)
-                        ? (value) async {
-                      final password = await showPasswordDialog(context);
-                      if (password == null) return;
-
-                      await context.read<DeviceCubit>().togglePower(
-                        device,
-                        password: password,
-                      );
-                    }
-                        : null,
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
   Widget _statCard({

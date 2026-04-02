@@ -58,6 +58,35 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   double monthEnergy = 0;
   double moneyMonth = 0;
   double epiAtStartOfMonth = 0;
+
+  double calculateHouseholdCost(double kwh) {
+    double cost = 0;
+
+    final tiers = [
+      [50.0, 1806.0],
+      [50.0, 1866.0],
+      [100.0, 2167.0],
+      [100.0, 2729.0],
+      [100.0, 3050.0],
+      [double.infinity, 3151.0],
+    ];
+
+    double remaining = kwh;
+
+    for (var tier in tiers) {
+      final limit = tier[0];
+      final price = tier[1];
+
+      final used = remaining > limit ? limit : remaining;
+
+      cost += used * price;
+      remaining -= used;
+
+      if (remaining <= 0) break;
+    }
+
+    return cost * 1.1; // VAT
+  }
   Timer? _moneyTimer;
 
   final formatted = DateFormat("yyyy-MM-dd'T'00:00:00");
@@ -69,8 +98,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
-    _loadElectricReport();
-
+    _loadStartOfMonthEnergy();
 
     /// chart
     context.read<AutomatChartCubit>().loadChart(
@@ -113,6 +141,22 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       },
     );
   }
+  void _calculateMoney(double energy) {
+    final type = getMeterType();
+
+    double money = 0;
+
+    if (type == MeterType.household) {
+      money = calculateHouseholdCost(energy);
+    } else {
+      money = energy * 2500 * 1.1;
+    }
+
+    setState(() {
+      monthEnergy = energy;
+      moneyMonth = money;
+    });
+  }
   void _handleRealtime(Map<String, dynamic> data) {
     try {
       final dto = data["breakerMeterDataDto"];
@@ -129,11 +173,16 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
       final log = AtomatLogResponse.fromJson(raw);
 
-      /// DÒNG NÀY
+
       context.read<DeviceCubit>().updateRealtimeLogByCode(
         currentDevice.code ?? "",
         log,
       );
+
+      final currentEpi = log.epi ?? 0;
+      final energy = currentEpi - epiAtStartOfMonth;
+
+      _calculateMoney(energy > 0 ? energy : 0);
 
     } catch (e) {
       print("Realtime error: $e");
@@ -165,6 +214,31 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         return chartData;
     }
   }
+  Future<void> _loadStartOfMonthEnergy() async {
+    final api = GetIt.instance<ApiClient>();
+
+    final result = await api.getBreakerLog(currentDevice.code ?? "");
+
+    final logs = result.data;
+    if (logs == null || logs.isEmpty) return;
+
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+
+    final firstLog = logs.firstWhere(
+          (e) => DateTime.parse(e.updatedAt!).isAfter(startOfMonth),
+      orElse: () => logs.first,
+    );
+
+    epiAtStartOfMonth = firstLog.epi ?? 0;
+
+    final lastLog = logs.last;
+    final currentEpi = lastLog.epi ?? 0;
+
+    final energy = currentEpi - epiAtStartOfMonth;
+
+    _calculateMoney(energy > 0 ? energy : 0);
+  }
   Future<void> _loadStartOfDayEnergy() async {
     final api = GetIt.instance<ApiClient>();
 
@@ -177,19 +251,19 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
 
-    /// 👉 log đầu ngày
+    /// log đầu ngày
     final firstLog = logs.firstWhere(
           (e) => DateTime.parse(e.updatedAt!).isAfter(startOfDay),
       orElse: () => logs.first,
     );
 
-    /// 👉 log mới nhất (cuối cùng)
+    ///  log mới nhất (cuối cùng)
     final lastLog = logs.last;
 
-    /// 👉 lưu mốc đầu ngày
+    /// lưu mốc đầu ngày
     epiAtStartOfDay = firstLog.epi ?? 0;
 
-    /// 👉 tính điện năng hôm nay NGAY (không cần realtime)
+    ///  tính điện năng hôm nay NGAY (không cần realtime)
     double currentEpi = lastLog.epi ?? 0;
 
     double energy = currentEpi - epiAtStartOfDay;
@@ -809,7 +883,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           _selectedRange,
         );
 
-        _loadElectricReport();
       },
 
       child: Container(

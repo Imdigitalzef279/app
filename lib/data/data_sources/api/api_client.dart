@@ -26,6 +26,7 @@ import '../../dto/Price/price_config_response.dart';
 import '../../dto/alarm/response/alarm_response.dart';
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../dto/electric_report/electric_report_response.dart';
+import '../../dto/energy_report/energy_report_response.dart';
 part 'api_client.g.dart';
 
 @RestApi(baseUrl: '')
@@ -151,6 +152,14 @@ abstract class ApiClient {
       @Query('meterId') int meterId,
       @Query('fromDate') String fromDate,
       @Query('toDate') String toDate,
+      );
+  // ================= ENERGY REPORT (NEW) =================
+  @GET('api/app/energy-report')
+  Future<List<EnergyReportResponse>> getEnergyReport(
+      @Query('PowerStationId') int powerStationId,
+      @Query('DeviceId') int deviceId,
+      @Query('Type') String type,
+      @Query('Time') String time,
       );
   // ================= Tính tiền điện =================
   @GET('api/app/price-config/by-meter-id/{meterId}')

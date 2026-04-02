@@ -290,6 +290,9 @@ class DeviceCubit extends Cubit<DeviceState> {
         _removeSwitching(device.id);
         return;
       }
+
+      startCountdown(device.id);
+
       await waitBreakerState(
         device.id,
         device.code!,

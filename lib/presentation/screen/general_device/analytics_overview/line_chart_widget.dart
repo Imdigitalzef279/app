@@ -2,9 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
+import '../../../../data/dto/energy_report/energy_report_response.dart';
 
 class LineChartWidget extends StatelessWidget {
-  final List<BreakerChartResponse> data;
+  final List<EnergyReportResponse> data;
   final List<LineConfig> lines;
   final String title;
 
@@ -69,7 +70,7 @@ class LineChartWidget extends StatelessWidget {
 }
 
 class LineConfig {
-  final double Function(BreakerChartResponse)? getY;
+  final double Function(EnergyReportResponse)? getY;
   final List<double>? customData;
   final Color color;
   final bool isDashed;
