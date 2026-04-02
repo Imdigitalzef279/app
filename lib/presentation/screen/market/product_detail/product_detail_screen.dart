@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../data/dto/cart/cart.dart';
+
 class ProductDetailScreen extends StatelessWidget {
   final String name;
   final String price;
@@ -72,9 +74,21 @@ class ProductDetailScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      final product = CartItem(
+                        name: name,
+                        price: int.parse(price.replaceAll('.', '').replaceAll('đ', '')),
+                        image: image,
+                      );
+
+                      Cart.add(product);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Đã thêm vào giỏ hàng")),
+                      );
+                    },
                     child: const Text("Thêm vào giỏ hàng"),
-                  ),
+                  )
                 )
               ],
             ),

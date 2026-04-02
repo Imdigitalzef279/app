@@ -94,8 +94,6 @@ class CategoryScreen extends StatelessWidget {
             ),
 
           ],
-
-
         ),
       ),
     );
