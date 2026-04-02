@@ -547,7 +547,27 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           ),
 
           const SizedBox(height: 10),
-
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                latest != null
+                    ? (chartType == ChartType.power
+                    ? "${latest.p?.toStringAsFixed(2)}"
+                    : "${latest.epi?.toStringAsFixed(0)}")
+                    : "--",
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                chartType == ChartType.power ? "kW" : "kWh",
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
           /// ===== CHART =====
           SizedBox(
             height: 230,
@@ -1222,7 +1242,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-
                 final index = value.toInt();
                 if (index >= data.length) return const SizedBox();
 
@@ -1230,22 +1249,26 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
                 switch (_selectedRange) {
                   case ChartRange.day:
-                    labelCount = 8;   // nhiều giờ hơn
+                    labelCount = 8;
                     break;
                   case ChartRange.week:
-                    labelCount = 7;   // đủ 7 ngày
+                    labelCount = 7;
                     break;
                   case ChartRange.month:
-                    labelCount = 10;  // 30 ngày → lấy 10 mốc
+                    labelCount = 10;
                     break;
                   case ChartRange.year:
-                    labelCount = 12;  // 12 tháng
+                    labelCount = 12;
                     break;
                   default:
                     labelCount = 6;
                 }
 
                 final step = (data.length / labelCount).ceil();
+
+                if (index % step != 0 && index != data.length - 1) {
+                  return const SizedBox();
+                }
 
                 final time = formatTime(data[index].updatedAt);
 
@@ -1289,19 +1312,30 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             isCurved: true,
             curveSmoothness: 0.35,
 
-            barWidth: 3.5,
+            barWidth: 4,
 
-            /// 🔥 gradient line
+            ///  gradient line
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF00C6A7),
+                Color(0xFF00E5C0),
                 Color(0xFF1ABC9C),
               ],
             ),
 
             ///  DOT (chỉ show khi touch)
             dotData: FlDotData(
-              show: false,
+              show: true,
+              getDotPainter: (spot, percent, bar, index) {
+                if (index == data.length - 1) {
+                  return FlDotCirclePainter(
+                    radius: 5,
+                    color: Colors.white,
+                    strokeWidth: 3,
+                    strokeColor: const Color(0xFF1ABC9C),
+                  );
+                }
+                return FlDotCirclePainter(radius: 0);
+              },
             ),
 
             ///  vùng dưới đẹp hơn
@@ -1361,20 +1395,29 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 final unit = chartType == ChartType.power ? "kW" : "kWh";
 
                 return LineTooltipItem(
-                  "$time\n${spot.y.toStringAsFixed(2)} $unit",
-                  const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  "$time\n",
+                  const TextStyle(color: Colors.grey, fontSize: 10),
+                  children: [
+                    TextSpan(
+                      text: "${spot.y.toStringAsFixed(2)} $unit",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 );
 
               }).toList();
             },
           ),
         ),
+        // swapAnimationDuration: const Duration(milliseconds: 400),
+        // swapAnimationCurve: Curves.easeInOut,
       ),
     );
+
   }
   Widget _buildBigStatusCard(DeviceResponse device, AtomatLogResponse? log) {
     final countdown = context.watch<DeviceCubit>()

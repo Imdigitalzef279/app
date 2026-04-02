@@ -3,6 +3,7 @@ import 'package:solar_energy/presentation/screen/market/product_search.dart';
 
 import '../general_device/notification/notification_screen.dart';
 import 'cart_screen.dart';
+import 'category_screen/category_screen.dart';
 
 class MarketScreen extends StatelessWidget {
   const MarketScreen({super.key});
@@ -499,47 +500,48 @@ class _CategoryGrid extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 0.9, // chỉnh tỉ lệ ô
         ),
-        itemBuilder: (context, index) {
-          return Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 6,
-                  offset: Offset(0, 2),
-                )
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+          itemBuilder: (context, index) {
+            final item = items[index];
 
-                /// ICON (KHÔNG NỀN)
-                Image.asset(
-                  items[index]["icon"]!,
-                  height: 60,
-                ),
-
-                const SizedBox(height: 10),
-
-                /// TEXT
-                Text(
-                  items[index]["text"]!,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CategoryScreen(
+                      title: item["text"]!,
+                      type: index,
+                    ),
                   ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      offset: Offset(0, 2),
+                    )
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(item["icon"]!, height: 60),
+                    const SizedBox(height: 10),
+                    Text(
+                      item["text"]!,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
       ),
     );
   }

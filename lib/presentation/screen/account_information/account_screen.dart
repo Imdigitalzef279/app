@@ -41,279 +41,212 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: AnimatedBg(
-            child: Stack(
-                children: [
+        body: Container(
+          color: Color(0xFFF5F6FA), // nền xám nhạt iOS
+          child: BlocConsumer<AccountCubit, AccountState>(
+            listener: (context, state) {
+              state.request.when(
+                loading: () => context.read<AppCubit>().showLoading(),
+                success: (_) => context.read<AppCubit>().hideShowLoading(),
+                error: (_) => context.read<AppCubit>().hideShowLoading(),
+              );
+            },
+            builder: (context, state) {
+              final user = state.request.data;
 
-                  /// 🌟 GLOW (3D effect)
-                  Positioned(
-                    top: -60,
-                    left: -40,
-                    child: Container(
-                      width: 220,
-                      height: 220,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            Colors.white.withOpacity(0.25),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+              return SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
 
-                  Positioned(
-                    bottom: -80,
-                    right: -60,
-                    child: Container(
-                      width: 260,
-                      height: 260,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            Colors.greenAccent.withOpacity(0.08),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  /// 📱 UI chính của bạn
-                  BlocConsumer<AccountCubit, AccountState>(
-                    listener: (context, state) {
-                      state.request.when(
-                        loading: () => context.read<AppCubit>().showLoading(),
-                        success: (_) =>
-                            context.read<AppCubit>().hideShowLoading(),
-                        error: (_) =>
-                            context.read<AppCubit>().hideShowLoading(),
-                      );
-                    },
-                    builder: (context, state) {
-                      final user = state.request.data;
-
-                      return SafeArea(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 8.h),
-                          child: Column(
-                            children: [
-
-                              /// HEADER
-                              Row(
+                        /// ===== HEADER (KHÔNG CARD) =====
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 22,
-                                    backgroundColor: Color(0xFF1ABC9C)
-                                        .withOpacity(0.1),
-                                    child: Icon(
-                                        Icons.person, color: Color(0xFF1ABC9C)),
-                                  ),
-                                  SizedBox(width: 10.w),
-
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment
-                                          .start,
-                                      children: [
-                                        Text(
-                                          user?.name ?? "User",
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          "Tài khoản",
-                                          style: TextStyle(
-                                            fontSize: 11.sp,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
+                                  Text(
+                                    user?.name ?? "User",
+                                    style: TextStyle(
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-
-                                  Image.asset(
-                                    "assets/images/logo.png",
-                                    height: 36,
+                                  SizedBox(height: 2),
+                                  Text(
+                                    "Quản lý tài khoản",
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.grey,
+                                    ),
                                   ),
+                                  SizedBox(height: 8),
 
-                                  SizedBox(width: 6),
-
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(20),
-                                    onTap: () {
-                                      cubit.removeToken();
-                                      Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        RouteName.loginScreen,
-                                            (route) => false,
-                                      );
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.red14.withOpacity(0.1),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Assets.icons.signOutAlt.svg(
-                                        width: 16,
-                                        height: 16,
-                                        colorFilter: const ColorFilter.mode(
-                                          AppColors.red14,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
+                                  /// TAG nhỏ
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      "1 gia đình • 0 thiết bị",
+                                      style: TextStyle(fontSize: 11),
                                     ),
                                   ),
                                 ],
                               ),
+                            ),
 
-                              SizedBox(height: 20.h),
+                            /// AVATAR TO
+                            CircleAvatar(
+                              radius: 28,
+                              backgroundImage:
+                              NetworkImage("https://i.pravatar.cc/150"),
+                            ),
+                          ],
+                        ),
 
+                        SizedBox(height: 16),
+
+                        /// ===== PHONE CARD (CHỈ 1 CÁI) =====
+                        Container(
+                          padding: EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.phone, size: 16, color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text("6861129956"),
                               Spacer(),
-
-                              /// GRID
-                              GridView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: 7,
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 12.w,
-                                  mainAxisSpacing: 12.h,
-                                  childAspectRatio: 0.9,
-                                ),
-                                itemBuilder: (context, index) {
-                                  final items = [
-                                    [Icons.devices, "Quản lý thiết bị"],
-                                    [Icons.menu_book, "Hướng dẫn sử dụng"],
-                                    [Icons.support_agent, "Hỗ trợ kỹ thuật"],
-                                    [Icons.palette, "Giao diện"],
-                                    [Icons.notifications, "Thông báo"],
-                                    [Icons.person, "Tài khoản"],
-                                    [Icons.person, "Quản lý thiết bị bảo hành"],
-                                  ];
-
-                                  return _menuItem(
-                                    items[index][0] as IconData,
-                                    items[index][1] as String,
-                                    index,
-                                  );
-                                },
+                              CircleAvatar(
+                                radius: 10,
+                                backgroundImage:
+                                NetworkImage("https://i.pravatar.cc/100"),
                               ),
-                              Spacer(),
+                              SizedBox(width: 6),
+                              Icon(Icons.add, size: 16),
                             ],
                           ),
                         ),
-                      );
-                    },
-                  ),
-                ]
-            )
-        )
+
+                        SizedBox(height: 16),
+
+                        /// ===== MENU LIST =====
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(18),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              _item(Icons.phone, "Trợ lý thoại", Colors.blue, 0),
+                              _divider(),
+                              _item(Icons.devices, "Quản lý nhiều thiết bị", Colors.green, 1),
+                              _divider(),
+                              _item(Icons.language, "Hỗ trợ đa ngôn ngữ", Colors.orange, 2),
+                              _divider(),
+                              _item(Icons.settings, "Cài đặt khác", Colors.grey, 3),
+                              _divider(),
+                              _item(Icons.help_outline, "Trợ giúp và phản hồi", Colors.blue, 4),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                )
+              );
+            },
+          ),
+        ),
     );
   }
-
-  Widget _menuItem(IconData icon, String title, int index) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: () {
-        switch (index) {
-          case 0:
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => DeviceManagementScreen()));
-            break;
-
-          case 1:
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => GuideScreen()));
-            break;
-
-          case 2:
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => SupportScreen()));
-            break;
-
-          case 3:
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => ThemeScreen()));
-            break;
-
-          case 4:
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => NotificationScreen()));
-            break;
-
-          case 5:
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => AccountDetailScreen()));
-            break;
-
-          case 6:
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => DeviceInfoScreen(
-                  device: DeviceResponse(
-                    id: 1,
-                    name: "Demo Device",
-                    serialNumber: "ABC123",
-                    creator: "KRA",
-                  ),
-                ),
-              ),
-            );
-            break;
-        }
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 12,
-              offset: Offset(0, 6),
-            ),
-          ],
+  Widget _item(IconData icon, String title, Color color, int index) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2),
+      child: ListTile(
+        leading: Container(
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 18, color: color),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 42.w,
-              height: 42.w,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1ABC9C).withOpacity(0.08),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                icon,
-                color: const Color(0xFF1ABC9C),
-                size: 24,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6.w),
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+
+        title: Text(title),
+
+        trailing: Icon(
+          Icons.chevron_right,
+          size: 18,
+          color: Colors.grey.shade400,
         ),
+
+        onTap: () {
+          _handleNavigate(index);
+        },
+      ),
+    );
+  }
+  void _handleNavigate(int index) {
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => GuideScreen()),
+        );
+        break;
+
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => DeviceManagementScreen()),
+        );
+        break;
+
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => SupportScreen()),
+        );
+        break;
+
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => ThemeScreen()),
+        );
+        break;
+
+      case 4:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => NotificationScreen()),
+        );
+        break;
+    }
+  }
+  Widget _divider() {
+    return Padding(
+      padding: EdgeInsets.only(left: 56),
+      child: Divider(
+        height: 0.3,
+        thickness: 0.3,
+        color: Colors.grey.shade300,
       ),
     );
   }
