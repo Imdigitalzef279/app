@@ -260,10 +260,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight, // 🔥 FIX nền xám
+                          minHeight: constraints.maxHeight, // FIX nền xám
                         ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start, // 🔥 đẩy devices xuống
+                          mainAxisAlignment: MainAxisAlignment.start, //  đẩy devices xuống
                           children: [
 
 
@@ -271,7 +271,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               children: [
 
                                 Container(
-                                  height: 180.h, // 🔥 tăng để ăn khoảng trống
+                                  height: 180.h, //  tăng để ăn khoảng trống
                                   width: double.infinity,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),

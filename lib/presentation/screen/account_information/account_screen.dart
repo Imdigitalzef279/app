@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:solar_energy/application/constants/app_color.dart';
-import 'package:solar_energy/application/constants/app_text_style.dart';
-import 'package:solar_energy/application/constants/localizations.dart';
-import 'package:solar_energy/gen/assets.gen.dart';
-import 'package:solar_energy/presentation/routes/route_name.dart';
+
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
 
 import '../../../application/cubit/app_cubit.dart';
-import '../../../data/dto/device/response/device_response.dart';
-import '../Electricity/automat/device_info_screen/device_info_screen.dart';
+
+import '../../../data/dto/power_station/response/power_station_response.dart';
+import '../Electricity/automat/automat_list_screen.dart';
+import '../device/bloc/device_cubit.dart';
 import '../general_device/notification/notification_screen.dart';
-import 'AccountDetailScreen.dart';
-import 'DeviceManagementScreen.dart';
+
+import '../general_device/project_setting_screen.dart';
 import 'GuideScreen.dart';
 import 'SupportScreen.dart';
 import 'ThemeScreen.dart';
@@ -153,15 +151,15 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                           child: Column(
                             children: [
-                              _item(Icons.phone, "Trợ lý thoại", Colors.blue, 0),
-                              _divider(),
+                              // _item(Icons.phone, "Trợ lý thoại", Colors.blue, 0),
+                              // _divider(),
                               _item(Icons.devices, "Quản lý nhiều thiết bị", Colors.green, 1),
                               _divider(),
-                              _item(Icons.language, "Hỗ trợ đa ngôn ngữ", Colors.orange, 2),
+                              // _item(Icons.language, "Hỗ trợ đa ngôn ngữ", Colors.orange, 2),
+                              // _divider(),
+                              _item(Icons.settings, "Cài đặt chung", Colors.grey, 3),
                               _divider(),
-                              _item(Icons.settings, "Cài đặt khác", Colors.grey, 3),
-                              _divider(),
-                              _item(Icons.help_outline, "Trợ giúp và phản hồi", Colors.blue, 4),
+                              // _item(Icons.help_outline, "Trợ giúp và phản hồi", Colors.blue, 4),
                             ],
                           ),
                         ),
@@ -214,7 +212,14 @@ class _AccountScreenState extends State<AccountScreen> {
       case 1:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => DeviceManagementScreen()),
+          MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => DeviceCubit(), //
+              child: AutomatListScreen(
+                powerStationId: 1,
+              ),
+            ),
+          ),
         );
         break;
 
@@ -228,7 +233,11 @@ class _AccountScreenState extends State<AccountScreen> {
       case 3:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => ThemeScreen()),
+          MaterialPageRoute(
+            builder: (_) => ProjectSettingScreen(
+              project: PowerStationResponse(), //
+            ),
+          ),
         );
         break;
 

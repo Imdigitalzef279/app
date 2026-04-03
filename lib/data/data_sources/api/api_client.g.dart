@@ -755,10 +755,10 @@ class _ApiClient implements ApiClient {
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'PowerStationId': powerStationId,
-      r'DeviceId': deviceId,
-      r'Type': type,
-      r'Time': time,
+      r'powerStationId': powerStationId,
+      r'deviceId': deviceId,
+      r'type': type,
+      r'time': time,
     };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;

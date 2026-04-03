@@ -35,14 +35,23 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     String type = "day",
   }) async {
     print("CALL ENERGY API");
+
     emit(state.copyWith(isLoading: true));
 
     try {
+      final time = DateTime.now().toIso8601String();
+
+      print("REQUEST:");
+      print("powerStationId: $powerStationId");
+      print("deviceId: $deviceId");
+      print("type: $type");
+      print("time: $time");
+
       final res = await api.getEnergyReport(
         powerStationId,
         deviceId,
         type,
-        DateTime.now().toString().split(".").first,
+        time,
       );
 
       print("DATA LENGTH: ${res.length}");

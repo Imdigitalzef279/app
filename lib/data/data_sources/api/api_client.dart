@@ -156,10 +156,10 @@ abstract class ApiClient {
   // ================= ENERGY REPORT (NEW) =================
   @GET('api/app/energy-report')
   Future<List<EnergyReportResponse>> getEnergyReport(
-      @Query('PowerStationId') int powerStationId,
-      @Query('DeviceId') int deviceId,
-      @Query('Type') String type,
-      @Query('Time') String time,
+      @Query('powerStationId') int powerStationId,
+      @Query('deviceId') int deviceId,
+      @Query('type') String type,
+      @Query('time') String time,
       );
   // ================= Tính tiền điện =================
   @GET('api/app/price-config/by-meter-id/{meterId}')

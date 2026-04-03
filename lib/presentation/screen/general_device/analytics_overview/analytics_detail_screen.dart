@@ -60,7 +60,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         context.read<AnalyticsCubit>().loadEnergy(
           powerStationId: widget.device.powerStationId ?? 1,
           deviceId: widget.device.id!,
-          type: range == ChartRange.year ? "month" : range.name,
+            type: range.name
         );
       },
       child: Container(
