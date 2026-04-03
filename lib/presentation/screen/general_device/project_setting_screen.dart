@@ -201,6 +201,7 @@ class _ProjectSettingScreenState
             _buildBackgroundSection(),
             const SizedBox(height: 24),
             _buildSaveButton(),
+            _buildLogoutButton(context),
           ],
         ),
       ),
@@ -837,4 +838,67 @@ class _ProjectSettingScreenState
         return key;
     }
   }
+}
+void _confirmLogout(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (_) {
+      return AlertDialog(
+        title: const Text("Đăng xuất"),
+        content: const Text("Bạn có chắc muốn đăng xuất không?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Huỷ"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+
+              /// TODO: clear token + navigate login
+              // context.read<AuthCubit>().logout();
+
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/login',
+                    (route) => false,
+              );
+            },
+            child: const Text("Đăng xuất"),
+          ),
+        ],
+      );
+    },
+  );
+}
+Widget _buildLogoutButton(BuildContext context) {
+  return Container(
+    margin: const EdgeInsets.only(top: 16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(
+          Icons.logout,
+          color: Colors.red,
+        ),
+      ),
+      title: const Text(
+        "Đăng xuất",
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          color: Colors.red,
+        ),
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _confirmLogout(context),
+    ),
+  );
 }

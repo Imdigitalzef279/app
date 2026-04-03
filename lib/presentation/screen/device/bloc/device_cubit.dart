@@ -263,35 +263,23 @@ class DeviceCubit extends Cubit<DeviceState> {
       print("ADDR: ${log?.addr}");
       print("BREAKER: ${device.code}");
       print("COMMAND: $target");
-      final uiStatus = int.parse(target);
 
-      ///  1. UPDATE UI NGAY
-      updateLocalStatus(device.id, uiStatus);
-
-      ///  2. UPDATE LOG LOCAL NGAY
-      final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
-
-      final currentLog = logs[device.code] ?? device.realtimeLog;
-
-      if (currentLog != null) {
-        logs[device.code!] = currentLog.copyWith(
-          rlySta: uiStatus,
-        );
-      }
-
+      /// CHỈ set switching, KHÔNG update trạng thái
       emit(state.copyWith(
-        breakerLogs: logs,
+        switchingDevices: {
+          ...state.switchingDevices,
+          device.id: true,
+        },
       ));
-
       ///  3. GỌI API SAU
+      startCountdown(device.id);
+
       final success = await switchCbsWithForce(device, target, false);
 
       if (!success) {
         _removeSwitching(device.id);
         return;
       }
-
-      startCountdown(device.id);
 
       await waitBreakerState(
         device.id,
@@ -607,9 +595,14 @@ class DeviceCubit extends Cubit<DeviceState> {
         print("⚠ vẫn update log nhưng không override UI");
       }
 
-      emit(state.copyWith(
-        breakerLogs: logs,
-      ));
+      if (!isSwitching) {
+        emit(state.copyWith(
+          breakerLogs: logs,
+        ));
+      } else {
+        // chỉ update log nhưng KHÔNG emit
+        state.breakerLogs.addAll(logs);
+      }
 
 
     } catch (e) {
@@ -655,16 +648,14 @@ class DeviceCubit extends Cubit<DeviceState> {
   // HELPER
   // ============================================================
   int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
+
     if (state.switchingDevices.containsKey(device.id)) {
-      return log?.rlySta ?? device.status ?? 0;
-    }
-    if (log == null) {
-      return -1;
+      return device.status ?? 0; // giữ trạng thái UI hiện tại
     }
 
-    if (log.rlyRepSta == 1) {
-      return 2;
-    }
+    if (log == null) return -1;
+
+    if (log.rlyRepSta == 1) return 2;
 
     if (log.state != null) {
       final s = log.state!.toLowerCase();
@@ -674,9 +665,6 @@ class DeviceCubit extends Cubit<DeviceState> {
     }
 
     final raw = log.rlySta ?? device.status ?? 0;
-
-    if (raw == 1) return 1;
-    if (raw == 0) return 0;
 
     return raw;
   }
@@ -821,25 +809,35 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     if (device == null) return;
 
+    final isSwitching = state.switchingDevices.containsKey(device.id);
+
     final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
     logs[code] = log;
 
     final updatedDevices = (state.resultDevices.data ?? []).map((d) {
+
       if (d.code == code) {
+
+        if (isSwitching) {
+          return d.copyWith(
+            realtimeLog: log,
+          );
+        }
+
         return d.copyWith(
           realtimeLog: log,
           status: log.rlySta ?? d.status ?? 0,
         );
       }
+
       return d;
+
     }).toList();
 
     emit(state.copyWith(
       breakerLogs: logs,
       resultDevices: state.resultDevices.copyWith(data: updatedDevices),
     ));
-
-    _removeSwitching(device.id);
   }
 
   Future<bool> _verifyForceAuth({

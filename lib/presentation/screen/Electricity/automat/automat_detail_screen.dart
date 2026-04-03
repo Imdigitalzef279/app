@@ -1609,13 +1609,17 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
         final deviceCubit = context.watch<DeviceCubit>();
     final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-    final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);
-        // final bool isOn = realStatus == 1;
-    final currentState =
-        log?.rlySta ??
-            device.realtimeLog?.rlySta ??
-            device.status ?? 0;
-    final bool isOn = currentState == 1;
+    // final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);
+    //     // final bool isOn = realStatus == 1;
+    // final currentState =
+    //     log?.rlySta ??
+    //         device.realtimeLog?.rlySta ??
+    //         device.status ?? 0;
+    // final bool isOn = currentState == 1;
+    final realStatus =
+    context.watch<DeviceCubit>().getRealStatus(device, log);
+
+    final bool isOn = realStatus == 1;
         final bool isOffline = realStatus == -1;
         final bool isMaintenance = realStatus == 2;
         final bool isOff = realStatus == 0;
@@ -2023,14 +2027,13 @@ Widget buildStatusCard(
     AtomatLogResponse? log,
     DeviceState state,
     ) {
-  final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);
   final bool isMaintenance = log?.rlyRepSta == 1;
-  // final bool isOn = realStatus == 1;
-  final currentState =
-      log?.rlySta ??
-          device.realtimeLog?.rlySta ??
-          device.status ?? 0;
-  final bool isOn = currentState == 1;
+
+
+  final realStatus =
+  context.watch<DeviceCubit>().getRealStatus(device, log);
+
+  final bool isOn = realStatus == 1;
   String text;
   Color color;
   if (isMaintenance) {

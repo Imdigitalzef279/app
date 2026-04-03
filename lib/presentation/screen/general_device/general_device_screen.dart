@@ -53,7 +53,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late bool isLandscape;
   late SignalRService signalR;
   StreamSubscription? _signalSub;
-  int _currentIndex = 0;
   double _aiTop = 500;
   double _aiLeft = 300;
 

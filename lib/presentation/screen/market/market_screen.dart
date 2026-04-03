@@ -14,21 +14,8 @@ class MarketScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          Container(
-            height: 220, // vùng màu (có thể chỉnh 180-260)
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF50CD5A), // 🟢 xanh lá RẤT NHẸ
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
 
-          /// 📱 CONTENT
+          ///  CONTENT
           SafeArea(
             child: Column(
               children: [

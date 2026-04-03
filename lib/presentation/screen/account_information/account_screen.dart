@@ -161,6 +161,8 @@ class _AccountScreenState extends State<AccountScreen> {
                               _item(Icons.settings, "Cài đặt chung", Colors.grey, 3),
                               _divider(),
                               // _item(Icons.help_outline, "Bảo hành", Colors.blue, 4),
+                              SizedBox(height: 20),
+                              _buildLogoutButton(),
                             ],
                           ),
                         ),
@@ -252,6 +254,59 @@ class _AccountScreenState extends State<AccountScreen> {
         break;
     }
   }
+  void _confirmLogout() {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: Text("Đăng xuất"),
+          content: Text("Bạn có chắc muốn đăng xuất không?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Huỷ"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/login',
+                      (route) => false,
+                );
+              },
+              child: Text("Đăng xuất"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Widget _buildLogoutButton() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: ListTile(
+        leading: Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(Icons.logout, color: Colors.red),
+        ),
+        title: Text(
+          "Đăng xuất",
+          style: TextStyle(color: Colors.red),
+        ),
+        trailing: Icon(Icons.chevron_right),
+        onTap: () => _confirmLogout(),
+      ),
+    );
+  }
   Widget _divider() {
     return Padding(
       padding: EdgeInsets.only(left: 56),
@@ -335,3 +390,4 @@ class _AnimatedBgState extends State<AnimatedBg> {
     );
   }
 }
+
