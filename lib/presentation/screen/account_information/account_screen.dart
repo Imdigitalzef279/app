@@ -8,6 +8,7 @@ import '../../../application/cubit/app_cubit.dart';
 
 import '../../../data/dto/power_station/response/power_station_response.dart';
 import '../Electricity/automat/automat_list_screen.dart';
+import '../Electricity/automat/device_info_screen/device_info_screen.dart';
 import '../device/bloc/device_cubit.dart';
 import '../general_device/notification/notification_screen.dart';
 
@@ -159,7 +160,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               // _divider(),
                               _item(Icons.settings, "Cài đặt chung", Colors.grey, 3),
                               _divider(),
-                              // _item(Icons.help_outline, "Trợ giúp và phản hồi", Colors.blue, 4),
+                              // _item(Icons.help_outline, "Bảo hành", Colors.blue, 4),
                             ],
                           ),
                         ),
@@ -244,7 +245,9 @@ class _AccountScreenState extends State<AccountScreen> {
       case 4:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => NotificationScreen()),
+          MaterialPageRoute(
+            builder: (_) => AutomatListScreen(powerStationId: 1),
+          ),
         );
         break;
     }
