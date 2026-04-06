@@ -74,16 +74,6 @@ void configureDependencies() {
           return handler.next(options);
         },
         onError: (e, handler) async {
-          print("=== ERROR RESPONSE ===");
-          print("URL: ${e.requestOptions.uri}");
-          print("STATUS CODE: ${e.response?.statusCode}");
-          print("DATA: ${e.response?.data}");
-          print("MESSAGE: ${e.message}");
-          print("ERROR TYPE: ${e.type}");
-          print("HEADERS: ${e.response?.headers}");
-          print("REDIRECT LOCATION: ${e.response?.headers['location']}");
-          print("👉 RESPONSE DATA: ${e.response?.data}");
-          print("👉 REDIRECT: ${e.response?.headers}");
           if (e.response?.statusCode == 401) {
             final prefs = getIt<SharedPreferencesHelper>();
             await prefs.removeAccessToken();
@@ -98,12 +88,6 @@ void configureDependencies() {
           return handler.next(e);
         },
         onResponse: (response, handler) {
-          print("=== RESPONSE ===");
-          print("URL: ${response.requestOptions.uri}");
-          print("STATUS CODE: ${response.statusCode}");
-          print("HEADERS: ${response.headers}");
-          print("DATA: ${response.data}");
-
           return handler.next(response);
         },
       ),

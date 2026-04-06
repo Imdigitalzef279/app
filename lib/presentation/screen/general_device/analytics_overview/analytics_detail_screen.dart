@@ -27,11 +27,10 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   void initState() {
     super.initState();
     context.read<AnalyticsCubit>().loadEnergy(
-      powerStationId: 1,
+      powerStationId: widget.device.powerStationId ?? 1,
       deviceId: widget.device.id!,
       type: "day",
     );
-    print("INIT STATE CALLED");
   }
 
   // ================= FILTER =================

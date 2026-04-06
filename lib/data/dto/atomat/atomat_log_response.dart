@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 part 'atomat_log_response.freezed.dart';
 part 'atomat_log_response.g.dart';
 

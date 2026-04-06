@@ -46,7 +46,6 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
       print("deviceId: $deviceId");
       print("type: $type");
       print("time: $time");
-
       final res = await api.getEnergyReport(
         powerStationId,
         deviceId,
