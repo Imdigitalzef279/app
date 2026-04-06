@@ -7,7 +7,6 @@ import 'package:solar_energy/data/repositories/meter_config/meter_config_reposit
 
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
-import '../../../../domain/mcb/entities/mcb_entity.dart';
 import 'device_info_screen/device_info_screen.dart';
 
 const kPrimaryColor = Color(0xFF1ABC9C);
@@ -43,72 +42,70 @@ class _SettingScreenState extends State<SettingScreen> {
   bool isLoading = true;
 
   double getDeviceMax(String unit) {
-    final d = widget.device as McbEntity;
+    final d = widget.device;
 
     switch (unit) {
-
       case "A":
-        return d.ratedCurrent;
-
+        return (d.ratedCurrent ?? 63).toDouble();
 
       case "V":
-        if (d.phaseVoltage.isNotEmpty) {
-          final base = d.phaseVoltage.reduce((a, b) => a > b ? a : b);
-          return base * 1.2; // cho phép vượt 20%
-        }
-        return getVoltageBase(); // fallback động
-
+        final voltage = getVoltageBase();
+        return voltage * 1.2; // cho phép +20%
 
       case "mA":
-        return d.ratedCurrent * 5;
-    // ví dụ: 63A → 315mA (thực tế ~300mA)
-
+        return (d.ratedCurrent ?? 63) * 5;
 
       case "kW":
         final voltage = getVoltageBase();
-        return (1.732 * voltage * d.ratedCurrent) / 1000;
-
+        final current = (d.ratedCurrent ?? 63);
+        return (1.732 * voltage * current) / 1000;
 
       case "°C":
-        return overTemperature + 20;
+        return (d.maxTemperature ?? 100).toDouble();
 
       default:
-        return d.ratedCurrent;
+        return (d.ratedCurrent ?? 63).toDouble();
     }
   }
-  double getVoltageBase() {
-    final d = widget.device as McbEntity;
+  double getDeviceMin(String unit) {
+    final name = widget.device.name ?? "";
 
-    if (d.phaseVoltage.isNotEmpty) {
+    // ===== DÒNG ĐIỆN =====
+    if (unit == "A") {
+      final match = RegExp(r'(\d+)A').firstMatch(name);
+      if (match != null) {
+        final max = double.parse(match.group(1)!);
+
+        // min = ~20% max
+        return (max * 0.2).clamp(5, max);
+      }
+    }
+
+    // ===== ĐIỆN ÁP =====
+    if (unit == "V") {
+      return 180; // hoặc đọc từ device nếu có
+    }
+
+    // ===== DÒNG RÒ =====
+    if (unit == "mA") return 10;
+
+    // ===== CÔNG SUẤT =====
+    if (unit == "kW") return 1;
+
+    // ===== NHIỆT ĐỘ =====
+    if (unit == "°C") return 40;
+
+    return 0;
+  }
+  double getVoltageBase() {
+    final d = widget.device;
+
+    if (d.phaseVoltage != null && d.phaseVoltage.isNotEmpty) {
       return d.phaseVoltage.reduce((a, b) => a > b ? a : b);
     }
 
-    return 220; // fallback duy nhất chấp nhận
+    return 220;
   }
-  double getDeviceMin(String unit) {
-    final d = widget.device as McbEntity;
-
-    switch (unit) {
-      case "A":
-        return (d.ratedCurrent * 0.2).clamp(5, d.ratedCurrent);
-
-      case "V":
-        return getVoltageBase() * 0.8;
-
-      case "mA":
-        return 10;
-
-      case "kW":
-        return 1;
-
-      case "°C":
-        return 40;
-
-      default:
-        return 0;
-    }
-  }
-
   @override
   void initState() {
     super.initState();

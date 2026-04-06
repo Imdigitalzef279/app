@@ -20,6 +20,7 @@ import '../Electricity/automat/automat_list_screen.dart';
 import '../Electricity/automat/bloc/atomat_detail_cubit.dart';
 import '../device/bloc/device_cubit.dart';
 import '../device/device_card/device_card_widget.dart';
+import '../device_water/device_water_screen.dart';
 import '../kra_care/kra_care_screen.dart';
 import '../manager_water/manager_water_screen.dart';
 import 'analytics_overview/analytics_overview_screen.dart';
@@ -358,8 +359,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (_) => ManagerWaterScreen(
-                                                      station: widget.project, //
+                                                    builder: (_) => DeviceWaterScreen(
+                                                      stationId: widget.project.id!,
                                                     ),
                                                   ),
                                                 );
