@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../data/data_sources/api/api_client.dart';
@@ -39,8 +40,7 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      final time = DateTime.now().toIso8601String();
-
+      final time = DateTime.now().toUtc().toIso8601String();
       print("REQUEST:");
       print("powerStationId: $powerStationId");
       print("deviceId: $deviceId");
@@ -61,7 +61,14 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
         isLoading: false,
       ));
     } catch (e) {
-      print("ERROR: $e");
+      print("❌ ERROR: $e");
+
+      if (e is DioException) {
+        print("👉 STATUS: ${e.response?.statusCode}");
+        print("👉 DATA: ${e.response?.data}");
+        print("👉 HEADERS: ${e.response?.headers}");
+      }
+    }
 
       emit(state.copyWith(
         data: [],
@@ -69,4 +76,3 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
       ));
     }
   }
-}

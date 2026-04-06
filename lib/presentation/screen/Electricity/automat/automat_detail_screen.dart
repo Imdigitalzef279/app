@@ -50,7 +50,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   ChartType chartType = ChartType.power;
   double todayEnergy = 0;
   double moneyToday = 0;
-  double pricePerKwh = 0; // có thể lấy từ API sau
   double epiAtStartOfDay = 0;
   double realtimeCost = 0;
   int maintenanceCountdown = 0;
@@ -58,7 +57,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   double monthEnergy = 0;
   double moneyMonth = 0;
   double epiAtStartOfMonth = 0;
-
+  double epiAtStartOfRange = 0;
+  bool isInitDone = false;
   double calculateHouseholdCost(double kwh) {
     double cost = 0;
 
@@ -85,9 +85,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       if (remaining <= 0) break;
     }
 
-    return cost * 1.1; // VAT
+    const VAT = 0.1;
+    return cost * (1 + VAT);
   }
-  Timer? _moneyTimer;
+
 
   final formatted = DateFormat("yyyy-MM-dd'T'00:00:00");
   Timer? _timer;
@@ -98,8 +99,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
-    _loadStartOfMonthEnergy();
-
+    _loadStartOfRangeEnergy();
     /// chart
     context.read<AutomatChartCubit>().loadChart(
       currentDevice.code ?? "",
@@ -115,8 +115,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   @override
   void dispose() {
     _signalSub?.cancel();
-    _moneyTimer?.cancel();
-
     maintenanceTimer?.cancel();
     super.dispose();
   }
@@ -141,23 +139,26 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       },
     );
   }
-  void _calculateMoney(double energy) {
+  void _calculateMoney(double energy) async {
     final type = getMeterType();
 
-    double money = 0;
-
     if (type == MeterType.household) {
-      money = calculateHouseholdCost(energy);
-    } else {
-      money = energy * 2500 * 1.1;
-    }
+      // MCB → bậc thang
+      final money = calculateHouseholdCost(energy);
 
-    setState(() {
-      monthEnergy = energy;
-      moneyMonth = money;
-    });
+      setState(() {
+        monthEnergy = energy;
+        moneyMonth = money;
+        realtimeCost = money;
+      });
+
+    } else {
+      // NOVATECH → gọi API
+      await _loadElectricReport();
+    }
   }
   void _handleRealtime(Map<String, dynamic> data) {
+    if (!isInitDone) return;
     try {
       final dto = data["breakerMeterDataDto"];
       if (dto == null) return;
@@ -180,9 +181,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       );
 
       final currentEpi = log.epi ?? 0;
-      final energy = currentEpi - epiAtStartOfMonth;
-
-      _calculateMoney(energy > 0 ? energy : 0);
+      final energy = (currentEpi - epiAtStartOfRange);
+      final safeEnergy = energy > 0 ? energy : 0.0;
+      _calculateMoney(safeEnergy);
 
     } catch (e) {
       print("Realtime error: $e");
@@ -219,68 +220,35 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     final result = await api.getBreakerLog(currentDevice.code ?? "");
 
-    final logs = result.data;
-    if (logs == null || logs.isEmpty) return;
+    final logs = List.from(result.data ?? []);
+    if (logs.isEmpty) return;
+
+    logs.sort((a, b) =>
+        DateTime.parse(a.updatedAt!)
+            .compareTo(DateTime.parse(b.updatedAt!)));
 
     final now = DateTime.now();
     final startOfMonth = DateTime(now.year, now.month, 1);
 
+    /// log đầu tháng
     final firstLog = logs.firstWhere(
-          (e) => DateTime.parse(e.updatedAt!).isAfter(startOfMonth),
+          (e) => DateTime.parse(e.updatedAt!).isBefore(startOfMonth),
       orElse: () => logs.first,
     );
 
     epiAtStartOfMonth = firstLog.epi ?? 0;
 
+    /// log mới nhất
     final lastLog = logs.last;
     final currentEpi = lastLog.epi ?? 0;
 
-    final energy = currentEpi - epiAtStartOfMonth;
 
-    _calculateMoney(energy > 0 ? energy : 0);
-  }
-  Future<void> _loadStartOfDayEnergy() async {
-    final api = GetIt.instance<ApiClient>();
+    final energy = (currentEpi - epiAtStartOfMonth).toDouble();
 
-    final result = await api.getBreakerLog(currentDevice.code ?? "");
+    _calculateMoney(energy > 0 ? energy : 0.0);
 
-    final logs = result.data;
 
-    if (logs == null || logs.isEmpty) return;
-
-    final today = DateTime.now();
-    final startOfDay = DateTime(today.year, today.month, today.day);
-
-    /// log đầu ngày
-    final firstLog = logs.firstWhere(
-          (e) => DateTime.parse(e.updatedAt!).isAfter(startOfDay),
-      orElse: () => logs.first,
-    );
-
-    ///  log mới nhất (cuối cùng)
-    final lastLog = logs.last;
-
-    /// lưu mốc đầu ngày
-    epiAtStartOfDay = firstLog.epi ?? 0;
-
-    ///  tính điện năng hôm nay NGAY (không cần realtime)
-    double currentEpi = lastLog.epi ?? 0;
-
-    double energy = currentEpi - epiAtStartOfDay;
-
-    if (energy < 0) energy = 0;
-
-    setState(() {
-      todayEnergy = energy;
-    });
-
-    print("START EPI: $epiAtStartOfDay");
-    print("CURRENT EPI: $currentEpi");
-    print("ENERGY TODAY: $energy");
-
-  }
-  void _reloadRealTime() {
-    cubit.getBreakerLog(currentDevice.code ?? "");
+    isInitDone = true;
   }
   MeterType getMeterType() {
     if (currentDevice.meterTypeId == 81 ||
@@ -366,33 +334,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         return DateFormat("MM/yyyy").format(time);
     }
   }
-  /// Convert trạng thái CB -> text hiển thị
-  String _getStatusText(int status) {
-    switch (status) {
-      case 1:
-        return "Đang bật";
-      case 0:
-        return "Đang tắt";
-      case 2:
-        return "Đang bảo trì";
-      default:
-        return "Không xác định";
-    }
-  }
-  /// Convert trạng thái CB -> màu hiển thị
-  Color _getStatusColor(int status) {
-    switch (status) {
-      case 1:
-        return Colors.green;
-      case 0:
-        return Colors.red;
-      case 2:
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-  /// Chọn icon thiết bị theo meterTypeId
+
   Widget _deviceImage(DeviceResponse device) {
     ///  Ưu tiên ảnh user chọn
     if (device.avatar.isNotEmpty) {
@@ -721,7 +663,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                  "Tiền điện tháng ${now.month}/${now.year}",
+                        getTitle(),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey,
@@ -735,7 +677,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                         ),
                       ),
                       Text(
-                        "${monthEnergy.toStringAsFixed(1)} kWh",
+                        "${monthEnergy.toStringAsFixed(2)} kWh",
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey,
@@ -782,48 +724,21 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+  String getTitle() {
+    final now = DateTime.now();
 
-  Widget _rangeChipActive(String text) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE7F6F3),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF1ABC9C),
-        ),
-      ),
-    );
-  }
-  BarChartGroupData _bar(int x, double y1, double y2) {
-    return BarChartGroupData(
-      x: x,
-      barsSpace: 4, // khoảng cách giữa 2 cột (nhỏ lại để sát nhau)
-      barRods: [
-
-        /// cột nhạt
-        BarChartRodData(
-          toY: y1,
-          width: 8, // làm cột to
-          borderRadius: BorderRadius.zero, // bỏ bo góc -> thành hình chữ nhật
-          color: const Color(0xFFAEDDD6),
-        ),
-
-        /// cột đậm
-        BarChartRodData(
-          toY: y2,
-          width: 6,
-          borderRadius: BorderRadius.circular(3),
-          color: const Color(0xFF4FA89E),
-        ),
-      ],
-    );
+    switch (_selectedRange) {
+      case ChartRange.day:
+        return "Tiền điện hôm nay";
+      case ChartRange.week:
+        return "Tiền điện 7 ngày";
+      case ChartRange.month:
+        return "Tiền điện tháng ${now.month}/${now.year}";
+      case ChartRange.quarter:
+        return "Tiền điện Quý ${now.month}/${now.year}";
+      case ChartRange.year:
+        return "Tiền điện năm ${now.year}";
+    }
   }
   Widget _tabItem(
       String text,
@@ -893,17 +808,24 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final bool active = _selectedRange == range;
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedRange = range;
-        });
+        onTap: () async {
+          setState(() {
+            _selectedRange = range;
+          });
 
-        context.read<AutomatChartCubit>().loadChart(
-          currentDevice.code ?? "",
-          _selectedRange,
-        );
+          /// reload chart
+          context.read<AutomatChartCubit>().loadChart(
+            currentDevice.code ?? "",
+            _selectedRange,
+          );
 
-      },
+          /// 🔥 reload tiền điện theo range
+          if (getMeterType() == MeterType.household) {
+            await _loadStartOfRangeEnergy(); // 👈 thêm hàm mới
+          } else {
+            await _loadElectricReport();
+          }
+        },
 
       child: Container(
         margin: const EdgeInsets.only(left: 4),
@@ -1032,27 +954,59 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  Widget _miniMetric(String label, String value) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
+  Future<void> _loadStartOfRangeEnergy() async {
+    final api = GetIt.instance<ApiClient>();
+    final result = await api.getBreakerLog(currentDevice.code ?? "");
+
+    final logs = List.from(result.data ?? []);
+    if (logs.isEmpty) return;
+
+    logs.sort((a, b) =>
+        DateTime.parse(a.updatedAt!)
+            .compareTo(DateTime.parse(b.updatedAt!)));
+
+    final now = DateTime.now();
+
+    DateTime start;
+
+    switch (_selectedRange) {
+      case ChartRange.day:
+        start = DateTime(now.year, now.month, now.day);
+        break;
+      case ChartRange.week:
+        start = now.subtract(const Duration(days: 7));
+        break;
+      case ChartRange.month:
+        start = DateTime(now.year, now.month, 1);
+        break;
+      case ChartRange.year:
+        start = DateTime(now.year, 1, 1);
+        break;
+      default:
+        start = DateTime(now.year, now.month, 1);
+    }
+
+    final firstLog = logs.lastWhere(
+          (e) => DateTime.parse(e.updatedAt!).isBefore(start),
+      orElse: () => logs.first,
     );
+
+    final epiStart = firstLog.epi ?? 0;
+    final lastLog = logs.last;
+    final currentEpi = lastLog.epi ?? 0;
+
+    final energy = (currentEpi - epiStart).toDouble();
+    final safeEnergy = energy > 0 ? energy : 0.0;
+
+    final money = calculateHouseholdCost(safeEnergy);
+
+    setState(() {
+      monthEnergy = safeEnergy;
+      moneyMonth = money;
+      realtimeCost = money;
+    });
+
+    isInitDone = true;
   }
 
   Widget _buildBarChart(List chartData, double maxValue) {
@@ -1609,13 +1563,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
         final deviceCubit = context.watch<DeviceCubit>();
     final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-    // final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);
-    //     // final bool isOn = realStatus == 1;
-    // final currentState =
-    //     log?.rlySta ??
-    //         device.realtimeLog?.rlySta ??
-    //         device.status ?? 0;
-    // final bool isOn = currentState == 1;
     final realStatus =
     context.watch<DeviceCubit>().getRealStatus(device, log);
 
@@ -1840,103 +1787,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         );
 
   }
-  Future<String?> _askPassword(BuildContext context) {
-    return _showPasswordDialog(context);
-  }
-  // ================= GRID SECTION =================
-  Widget _goHomeButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.popUntil(context, (route) => route.isFirst);
-      },
-      child: Container(
-        height: 52,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFF4FA89E),
-              Color(0xFF6CC3B8),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.home, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              "Quay về Home",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  Widget _actionButton({
-    required String text,
-    required IconData icon,
-    required Gradient gradient,
-    required VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 36, // ↓ nhỏ lại
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          gradient: onTap == null
-              ? LinearGradient(
-            colors: [
-              Colors.grey.shade400,
-              Colors.grey.shade400,
-            ],
-          )
-              : gradient,
-          borderRadius: BorderRadius.circular(22), // bo tròn hơn
-          boxShadow: [
-            if (onTap != null)
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
-              ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 16, // ↓ icon nhỏ
-            ),
-            const SizedBox(width: 4), // ↓ khoảng cách nhỏ
-            Text(
-              text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 12, // ↓ chữ nhỏ
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
   Widget _metricCard(String label, String value, String unit) {
     return Container(
       height: 64, // ↓ giảm chiều dài ô

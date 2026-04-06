@@ -576,7 +576,17 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 buildChartSelector(),
                 const SizedBox(height: 12),
 
-                buildChartCard(
+                data.isEmpty
+                    ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      "Chưa có dữ liệu",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                )
+                    : buildChartCard(
                   child: AnimatedSwitcher(
                     duration: Duration(milliseconds: 300),
                     child: buildMainChart(data),
