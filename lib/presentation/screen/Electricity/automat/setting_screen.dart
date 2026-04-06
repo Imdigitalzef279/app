@@ -7,6 +7,7 @@ import 'package:solar_energy/data/repositories/meter_config/meter_config_reposit
 
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
+import '../../../../domain/mcb/entities/mcb_entity.dart';
 import 'device_info_screen/device_info_screen.dart';
 
 const kPrimaryColor = Color(0xFF1ABC9C);
@@ -42,63 +43,72 @@ class _SettingScreenState extends State<SettingScreen> {
   bool isLoading = true;
 
   double getDeviceMax(String unit) {
-    final name = widget.device.name ?? "";
+    final d = widget.device as McbEntity;
 
-    if (unit == "A") {
-      final match = RegExp(r'(\d+)A').firstMatch(name);
-      if (match != null) {
-        return double.parse(match.group(1)!);
-      }
+    switch (unit) {
+
+      case "A":
+        return d.ratedCurrent;
+
+
+      case "V":
+        if (d.phaseVoltage.isNotEmpty) {
+          final base = d.phaseVoltage.reduce((a, b) => a > b ? a : b);
+          return base * 1.2; // cho phép vượt 20%
+        }
+        return getVoltageBase(); // fallback động
+
+
+      case "mA":
+        return d.ratedCurrent * 5;
+    // ví dụ: 63A → 315mA (thực tế ~300mA)
+
+
+      case "kW":
+        final voltage = getVoltageBase();
+        return (1.732 * voltage * d.ratedCurrent) / 1000;
+
+
+      case "°C":
+        return overTemperature + 20;
+
+      default:
+        return d.ratedCurrent;
     }
-
-    if (unit == "kW") return 20;
-    if (unit == "V") return 280;
-    if (unit == "mA") return 300;
-    if (unit == "°C") return 120;
-
-    return 100;
-  }
-  double getDeviceMin(String unit) {
-    final name = widget.device.name ?? "";
-
-    // ===== DÒNG ĐIỆN =====
-    if (unit == "A") {
-      final match = RegExp(r'(\d+)A').firstMatch(name);
-      if (match != null) {
-        final max = double.parse(match.group(1)!);
-
-        // min = ~20% max
-        return (max * 0.2).clamp(5, max);
-      }
-    }
-
-    // ===== ĐIỆN ÁP =====
-    if (unit == "V") {
-      return 180; // hoặc đọc từ device nếu có
-    }
-
-    // ===== DÒNG RÒ =====
-    if (unit == "mA") return 10;
-
-    // ===== CÔNG SUẤT =====
-    if (unit == "kW") return 1;
-
-    // ===== NHIỆT ĐỘ =====
-    if (unit == "°C") return 40;
-
-    return 0;
   }
   double getVoltageBase() {
-    final name = widget.device.name ?? "";
+    final d = widget.device as McbEntity;
 
-    // nếu device có ghi 220V / 380V
-    final match = RegExp(r'(\d+)V').firstMatch(name);
-    if (match != null) {
-      return double.parse(match.group(1)!);
+    if (d.phaseVoltage.isNotEmpty) {
+      return d.phaseVoltage.reduce((a, b) => a > b ? a : b);
     }
 
-    return 220; // mặc định VN
+    return 220; // fallback duy nhất chấp nhận
   }
+  double getDeviceMin(String unit) {
+    final d = widget.device as McbEntity;
+
+    switch (unit) {
+      case "A":
+        return (d.ratedCurrent * 0.2).clamp(5, d.ratedCurrent);
+
+      case "V":
+        return getVoltageBase() * 0.8;
+
+      case "mA":
+        return 10;
+
+      case "kW":
+        return 1;
+
+      case "°C":
+        return 40;
+
+      default:
+        return 0;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -291,21 +301,31 @@ class _SettingScreenState extends State<SettingScreen> {
                 children: [
                   const Icon(Icons.electrical_services, size: 32),
                   const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.device.name ?? '',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "Gateway: ${widget.device.gatewayNumber ?? ''}",
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.grey),
-                      ),
-                    ],
-                  )
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.device.name ?? widget.device.code ?? '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        Text(
+                          "Gateway: ${widget.device.gatewayNumber ?? ''}",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

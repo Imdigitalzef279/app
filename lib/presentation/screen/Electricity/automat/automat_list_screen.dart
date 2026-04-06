@@ -239,61 +239,33 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
           /// INFO
           Expanded(
+            flex: 5,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                Row(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    /// TEXT
-                    Expanded(
-                      child: Text(
-                        device.name.isNotEmpty
-                            ? device.name
-                            : device.code,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 17,
-                        ),
+                    /// 🔹 TEXT FULL WIDTH
+                    Text(
+                      device.name.isNotEmpty
+                          ? device.name
+                          : device.code,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
                       ),
                     ),
 
-
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-
-                        GestureDetector(
-                          onTap: () {
-                            context.read<DeviceCubit>().toggleFavorite(device.id);
-                          },
-                          child: Icon(
-                            device.isFavorite ? Icons.star : Icons.star_border,
-                            color: Colors.amber,
-                            size: 22,
-                          ),
-                        ),
-
-                        const SizedBox(width: 6),
-
-                        GestureDetector(
-                          onTap: () {
-                            showRenameDialog(context, device);
-                          },
-                          child: const Icon(
-                            Icons.edit,
-                            size: 22,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
+                    const SizedBox(height: 4),
                   ],
                 ),
+
                 const SizedBox(height: 4),
 
                 Row(
@@ -321,10 +293,31 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                             : Colors.red,
                       ),
                     ),
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      onTap: () {
+                        context.read<DeviceCubit>().toggleFavorite(device.id);
+                      },
+                      child: Icon(
+                        device.isFavorite ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+
+                    GestureDetector(
+                      onTap: () {
+                        showRenameDialog(context, device);
+                      },
+                      child: const Icon(
+                        Icons.edit,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ],
                 ),
-
-                const SizedBox(height: 4),
 
                 Text(
                   "Gateway: ${device.gatewayNumber ?? ""}",
@@ -339,64 +332,69 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
           ),
 
           /// ACTIONS
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          SizedBox(
+            width: 80,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
 
-              IconButton(
-                icon: const Icon(Icons.history, size: 20),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SwitchLogScreen(
-                        gatewaySn: device.gatewayNumber ?? '',
-                        breakerSn: device.code ?? '',
-                      ),
+                /// ICON ROW
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SwitchLogScreen(
+                              gatewaySn: device.gatewayNumber ?? '',
+                              breakerSn: device.code ?? '',
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Icon(Icons.history, size: 18),
                     ),
-                  );
-                },
-              ),
 
-              IconButton(
-                icon: const Icon(Icons.settings, size: 20),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<DeviceCubit>(),
-                        child: SettingScreen(device: device),
-                      ),
+                    const SizedBox(width: 10),
+
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BlocProvider.value(
+                              value: context.read<DeviceCubit>(),
+                              child: SettingScreen(device: device),
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Icon(Icons.settings, size: 18),
                     ),
-                  );
-                },
-              ),
+                  ],
+                ),
 
-              Column(
-                children: [
+                const SizedBox(height: 6),
 
-                  Transform.scale(
-                    scale: 0.85,
+                /// SWITCH
+                SizedBox(
+                  height: 50,
+                  child: FittedBox(
                     child: isSwitching
-                        ? SizedBox(
-                      width: 20,
-                      height: 20,
+                        ? const SizedBox(
+                      width: 18,
+                      height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                         : Switch(
                       value: isOn,
-                      activeColor: Colors.white,
-                      activeTrackColor: const Color(0xFF43A047),
-
-                      inactiveThumbColor: Colors.white,
-                      inactiveTrackColor: const Color(0xFFE53935),
-                      trackOutlineColor:
-                      WidgetStateProperty.all(Colors.transparent),
-                      materialTapTargetSize:
-                      MaterialTapTargetSize.shrinkWrap,
-
-                      onChanged: (!isFake && !isSwitching && countdown == 0 && !isOffline)
+                      onChanged: (!isFake &&
+                          !isSwitching &&
+                          countdown == 0 &&
+                          !isOffline)
                           ? (value) async {
                         final password =
                         await showPasswordDialog(context);
@@ -409,37 +407,39 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                           : null,
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 4),
+                const SizedBox(height: 4),
 
-                  /// trạng thái thiết bị
-                  Text(
-                    isSwitching
-                        ? "Đang gửi lệnh..."
-                        : countdown > 0
-                        ? "Đang xử lý (${countdown}s)"
-                        : isOffline
-                        ? "Offline"
-                        : isMaintenance
-                        ? "Bảo trì"
+                /// STATUS TEXT
+                Text(
+                  isSwitching
+                      ? "..."
+                      : countdown > 0
+                      ? "${countdown}s"
+                      : isOffline
+                      ? "Off"
+                      : isMaintenance
+                      ? "Maint"
+                      : isOn
+                      ? "Đóng"
+                      : "Cắt",
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: isSwitching || countdown > 0
+                        ? Colors.orange
                         : isOn
-                        ? "Đang đóng"
-                        : "Đang cắt",
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: isSwitching || countdown > 0
-                          ? Colors.orange
-                          : isOn
-                          ? Colors.green
-                          : Colors.red,
-                    ),
+                        ? Colors.green
+                        : Colors.red,
                   ),
-                ],
-              )
-            ],
+                ),
+              ],
+            ),
           )
-
         ],
       ),
         )

@@ -63,12 +63,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     double cost = 0;
 
     final tiers = [
-      [50.0, 1806.0],
-      [50.0, 1866.0],
-      [100.0, 2167.0],
-      [100.0, 2729.0],
-      [100.0, 3050.0],
-      [double.infinity, 3151.0],
+      [50.0, 1984.0],
+      [50.0, 2050.0],
+      [100.0, 2380.0],
+      [100.0, 2998.0],
+      [100.0, 3350.0],
+      [double.infinity, 3460.0], // hoặc 3967 nếu muốn max
     ];
 
     double remaining = kwh;
@@ -85,8 +85,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       if (remaining <= 0) break;
     }
 
-    const VAT = 0.1;
-    return cost * (1 + VAT);
+    return (cost * 1.1).roundToDouble();
   }
 
 
@@ -143,22 +142,49 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final type = getMeterType();
 
     if (type == MeterType.household) {
-      // MCB → bậc thang
-      final money = calculateHouseholdCost(energy);
+
+      final totalMonthEnergy = await _getMonthEnergy(); // 👈 thêm
+
+      final money = calculateHouseholdCost(totalMonthEnergy);
 
       setState(() {
-        monthEnergy = energy;
+        monthEnergy = totalMonthEnergy;
         moneyMonth = money;
         realtimeCost = money;
       });
 
     } else {
-      // NOVATECH → gọi API
       await _loadElectricReport();
     }
   }
+  Future<double> _getMonthEnergy() async {
+    final api = GetIt.instance<ApiClient>();
+    final result = await api.getBreakerLog(currentDevice.code ?? "");
+
+    final logs = List.from(result.data ?? []);
+    if (logs.isEmpty) return 0;
+
+    logs.sort((a, b) =>
+        DateTime.parse(a.updatedAt!)
+            .compareTo(DateTime.parse(b.updatedAt!)));
+
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+
+    final firstLog = logs.lastWhere(
+          (e) => DateTime.parse(e.updatedAt!).isBefore(startOfMonth),
+      orElse: () => logs.first,
+    );
+
+    final epiStart = firstLog.epi ?? 0;
+    final currentEpi = logs.last.epi ?? 0;
+
+    return (currentEpi - epiStart).toDouble();
+  }
   void _handleRealtime(Map<String, dynamic> data) {
+    if (!mounted) return;
     if (!isInitDone) return;
+
     try {
       final dto = data["breakerMeterDataDto"];
       if (dto == null) return;
@@ -174,7 +200,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
       final log = AtomatLogResponse.fromJson(raw);
 
-
       context.read<DeviceCubit>().updateRealtimeLogByCode(
         currentDevice.code ?? "",
         log,
@@ -183,7 +208,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       final currentEpi = log.epi ?? 0;
       final energy = (currentEpi - epiAtStartOfRange);
       final safeEnergy = energy > 0 ? energy : 0.0;
-      _calculateMoney(safeEnergy);
+
+      setState(() {
+      });
 
     } catch (e) {
       print("Realtime error: $e");
@@ -689,7 +716,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
                 /// PRICE
                     Text(
-                      "+${realtimeCost.toStringAsFixed(0)} đ",
+                      "≈ ${NumberFormat("#,###").format(moneyMonth)} đ",
                       style: const TextStyle(
                         color: Colors.green,
                         fontSize: 12,
@@ -819,9 +846,16 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             _selectedRange,
           );
 
-          /// 🔥 reload tiền điện theo range
           if (getMeterType() == MeterType.household) {
-            await _loadStartOfRangeEnergy(); // 👈 thêm hàm mới
+            setState(() {
+              isInitDone = false;
+            });
+
+            await _loadStartOfRangeEnergy();
+
+            setState(() {
+              isInitDone = true;
+            });
           } else {
             await _loadElectricReport();
           }
@@ -997,11 +1031,14 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     final energy = (currentEpi - epiStart).toDouble();
     final safeEnergy = energy > 0 ? energy : 0.0;
-
-    final money = calculateHouseholdCost(safeEnergy);
-
+    print("🔥 RANGE energy: $safeEnergy");
+    final totalMonthEnergy = await _getMonthEnergy();
+    final money = calculateHouseholdCost(totalMonthEnergy);
+    print("🔥 MONTH energy: $totalMonthEnergy");
+    print("🔥 MONEY: $money");
     setState(() {
-      monthEnergy = safeEnergy;
+      epiAtStartOfRange = epiStart;
+      monthEnergy = totalMonthEnergy;
       moneyMonth = money;
       realtimeCost = money;
     });

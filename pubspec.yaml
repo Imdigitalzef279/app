@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  excel: ^2.1.0
   signalr_netcore: 0.1.7+2-nullsafety.3
   image_picker: ^1.0.4
   # The following adds the Cupertino Icons font to your application.
@@ -135,7 +135,6 @@ flutter:
     - assets/icons/
     - assets/icons/icons_new/
     - env/
-
   fonts:
     - family: BeVietNamPro
       fonts:
