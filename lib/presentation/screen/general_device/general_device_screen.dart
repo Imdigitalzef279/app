@@ -48,6 +48,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late final AnimationController _controller;
   late bool isLandscape;
   late SignalRService signalR;
+  List<DeviceResponse> favoriteDevices = [];
   StreamSubscription? _signalSub;
   double _aiTop = 500;
   double _aiLeft = 300;
@@ -61,6 +62,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
 
       final cubit = context.read<DeviceCubit>();
+      await cubit.getAllDevices(
+        powerStationId: widget.project.id!,
+      );
       final devices = cubit.state.resultDevices.data ?? [];
       for (var d in devices) {
         if (d.code != null) {
@@ -113,9 +117,17 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     final textColor = Colors.black;
     final state = context.watch<DeviceCubit>().state;
     final devices = state.resultDevices.data ?? [];
-    final favoriteDevices =
-    devices.where((d) => d.isFavorite).take(6).toList();
+    final favFromApi =
+    devices.where((d) => d.isFavorite).toList();
 
+    favoriteDevices.removeWhere(
+            (d) => !favFromApi.any((f) => f.id == d.id));
+
+    for (var d in favFromApi) {
+      if (!favoriteDevices.any((f) => f.id == d.id)) {
+        favoriteDevices.add(d);
+      }
+    }
     String locationText = "Hà Nội";
 
     final bannerImages = [
@@ -251,12 +263,10 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               SafeArea(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    return SingleChildScrollView(
+                    return Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight, // FIX nền xám
-                        ),
+                      child: SizedBox(
+                        height: constraints.maxHeight,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start, //  đẩy devices xuống
                           children: [
@@ -385,8 +395,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             ),
 
                             /// ===== DEVICES (LUÔN Ở ĐÁY) =====
-                            Container(
-                              child: Column(
+                      Expanded(
+                        child: Container(
+                          child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
@@ -433,17 +444,20 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                   SizedBox(height: 20),
                                   Gap(4.h),
 
-                                  AnimatedSwitcher(
-                                    duration: Duration(milliseconds: 300),
-                                    child: favoriteDevices.isEmpty
-                                        ? Text("Chưa có thiết bị")
-                                        : _isGridView
-                                        ? _buildFixed6AndScroll(favoriteDevices)
-                                        : _buildHorizontalList(favoriteDevices),
+                                  Expanded(
+                                    child: AnimatedSwitcher(
+                                      duration: Duration(milliseconds: 300),
+                                      child: favoriteDevices.isEmpty
+                                          ? Text("Chưa có thiết bị")
+                                          : _isGridView
+                                          ? _buildFixed6AndScroll(favoriteDevices) // grid
+                                          : _buildVerticalPage(favoriteDevices),   // list dọc
+                                    ),
                                   )
                                 ],
                               ),
                             ),
+                      )
                           ],
                         ),
                       ),
@@ -514,77 +528,94 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       ),
     );
   }
-  Widget _buildHorizontalList(List<DeviceResponse> devices) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+  Widget _buildVerticalPage(List<DeviceResponse> devices) {
+    return ReorderableListView.builder(
       itemCount: devices.length,
-      separatorBuilder: (_, __) => SizedBox(height: 10),
+
+      onReorder: (oldIndex, newIndex) {
+        setState(() {
+          if (newIndex > oldIndex) newIndex--;
+
+          final item = favoriteDevices.removeAt(oldIndex);
+          favoriteDevices.insert(newIndex, item);
+        });
+      },
+
       itemBuilder: (context, index) {
-        return DeviceCardWidget(device: devices[index]);
+        final device = devices[index];
+
+        return Container(
+          key: ValueKey(device.id),
+
+          margin: const EdgeInsets.only(bottom: 10),
+          child: DeviceCardWidget(device: device),
+        );
       },
     );
   }
   Widget _buildFixed6AndScroll(List<DeviceResponse> devices) {
-    final chunks = <List<DeviceResponse>>[];
-    final textColor = Colors.black;
-    for (int i = 0; i < devices.length; i += 6) {
-      chunks.add(
-        devices.sublist(
-          i,
-          i + 6 > devices.length ? devices.length : i + 6,
-        ),
-      );
-    }
-
     return SizedBox(
-      height: 105 * 2 + 8,
+      height: 220,
       child: PageView.builder(
-        itemCount: chunks.length,
-        controller: PageController(viewportFraction: 1),
-        physics: const BouncingScrollPhysics(),
+        itemCount: (devices.length / 6).ceil(),
         itemBuilder: (context, pageIndex) {
-          final pageDevices = chunks[pageIndex];
+          final start = pageIndex * 6;
+          final end =
+          (start + 6 > devices.length) ? devices.length : start + 6;
 
-          return Column(
-            children: [
-              Row(
-                children: List.generate(3, (index) {
-                  if (index >= pageDevices.length) {
-                    return Expanded(child: SizedBox());
-                  }
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: index != 2 ? 10 : 0),
-                      child: DeviceGridItem(
-                        device: pageDevices[index],
-                        textColor: textColor,
+          final pageItems = devices.sublist(start, end);
+
+          return GridView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: pageItems.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 10,
+              childAspectRatio: 1.2,
+            ),
+            itemBuilder: (context, index) {
+              final device = pageItems[index];
+
+              final globalIndex = start + index;
+
+              return DragTarget<int>(
+                onAccept: (fromIndex) {
+                  setState(() {
+                    final item = favoriteDevices.removeAt(fromIndex);
+                    favoriteDevices.insert(globalIndex, item);
+                  });
+                },
+                builder: (context, candidateData, rejectedData) {
+                  return LongPressDraggable<int>(
+                    data: globalIndex,
+
+                    feedback: Material(
+                      child: SizedBox(
+                        width: 100,
+                        child: DeviceGridItem(
+                          device: device,
+                          textColor: Colors.black,
+                        ),
                       ),
                     ),
-                  );
-                }),
-              ),
 
-              SizedBox(height: 8),
-
-              Row(
-                children: List.generate(3, (index) {
-                  final i = index + 3;
-                  if (i >= pageDevices.length) {
-                    return Expanded(child: SizedBox());
-                  }
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: index != 2 ? 10 : 0),
+                    childWhenDragging: Opacity(
+                      opacity: 0.3,
                       child: DeviceGridItem(
-                        device: pageDevices[i],
-                        textColor: textColor,
+                        device: device,
+                        textColor: Colors.black,
                       ),
                     ),
+
+                    child: DeviceGridItem(
+                      device: device,
+                      textColor: Colors.black,
+                    ),
                   );
-                }),
-              ),
-            ],
+                },
+              );
+            },
           );
         },
       ),
@@ -693,102 +724,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         ],
       ),
         )
-    );
-  }
-  Widget _statCard({
-    required IconData icon,
-    required String value,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 14.h),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
-        borderRadius: BorderRadius.circular(18.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          )
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: 22.w,
-            color: const Color(0xFF1ABC9C),
-          ),
-          SizedBox(height: 6.h),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1ABC9C),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _deviceCard({
-    required String title,
-    required String status,
-    required Color color,
-    required IconData icon,
-  }) {
-    return Container(
-      width: 150.w,
-      margin: EdgeInsets.only(right: 12.w),
-      padding: EdgeInsets.all(14.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: 14.h),
-          Icon(icon, size: 30.w, color: color),
-          SizedBox(height: 10.h),
-          Row(
-            children: [
-              Container(
-                width: 6.w,
-                height: 6.w,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              SizedBox(width: 6.w),
-              Text(
-                status,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: color,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
   Widget itemService({

@@ -14,6 +14,9 @@ _$ProfileResponseImpl _$$ProfileResponseImplFromJson(
       name: json['name'] as String? ?? "",
       surname: json['surname'] as String? ?? "",
       phoneNumber: json['phoneNumber'] as String? ?? "",
+      avatar: json['avatar'] as String? ?? "",
+      gender: json['gender'] as String? ?? "",
+      birthday: json['birthday'] as String? ?? "",
     );
 
 Map<String, dynamic> _$$ProfileResponseImplToJson(
@@ -24,4 +27,7 @@ Map<String, dynamic> _$$ProfileResponseImplToJson(
       'name': instance.name,
       'surname': instance.surname,
       'phoneNumber': instance.phoneNumber,
+      'avatar': instance.avatar,
+      'gender': instance.gender,
+      'birthday': instance.birthday,
     };

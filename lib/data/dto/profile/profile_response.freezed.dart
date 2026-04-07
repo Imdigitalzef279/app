@@ -30,6 +30,12 @@ mixin _$ProfileResponse {
   String get surname => throw _privateConstructorUsedError;
   @JsonKey(name: 'phoneNumber')
   String get phoneNumber => throw _privateConstructorUsedError;
+  @JsonKey(name: 'avatar')
+  String get avatar => throw _privateConstructorUsedError;
+  @JsonKey(name: 'gender')
+  String get gender => throw _privateConstructorUsedError;
+  @JsonKey(name: 'birthday')
+  String get birthday => throw _privateConstructorUsedError;
 
   /// Serializes this ProfileResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,7 +58,10 @@ abstract class $ProfileResponseCopyWith<$Res> {
       @JsonKey(name: 'email') String email,
       @JsonKey(name: 'name') String name,
       @JsonKey(name: 'surname') String surname,
-      @JsonKey(name: 'phoneNumber') String phoneNumber});
+      @JsonKey(name: 'phoneNumber') String phoneNumber,
+      @JsonKey(name: 'avatar') String avatar,
+      @JsonKey(name: 'gender') String gender,
+      @JsonKey(name: 'birthday') String birthday});
 }
 
 /// @nodoc
@@ -75,6 +84,9 @@ class _$ProfileResponseCopyWithImpl<$Res, $Val extends ProfileResponse>
     Object? name = null,
     Object? surname = null,
     Object? phoneNumber = null,
+    Object? avatar = null,
+    Object? gender = null,
+    Object? birthday = null,
   }) {
     return _then(_value.copyWith(
       userName: null == userName
@@ -97,6 +109,18 @@ class _$ProfileResponseCopyWithImpl<$Res, $Val extends ProfileResponse>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
+      avatar: null == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String,
+      gender: null == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String,
+      birthday: null == birthday
+          ? _value.birthday
+          : birthday // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -114,7 +138,10 @@ abstract class _$$ProfileResponseImplCopyWith<$Res>
       @JsonKey(name: 'email') String email,
       @JsonKey(name: 'name') String name,
       @JsonKey(name: 'surname') String surname,
-      @JsonKey(name: 'phoneNumber') String phoneNumber});
+      @JsonKey(name: 'phoneNumber') String phoneNumber,
+      @JsonKey(name: 'avatar') String avatar,
+      @JsonKey(name: 'gender') String gender,
+      @JsonKey(name: 'birthday') String birthday});
 }
 
 /// @nodoc
@@ -135,6 +162,9 @@ class __$$ProfileResponseImplCopyWithImpl<$Res>
     Object? name = null,
     Object? surname = null,
     Object? phoneNumber = null,
+    Object? avatar = null,
+    Object? gender = null,
+    Object? birthday = null,
   }) {
     return _then(_$ProfileResponseImpl(
       userName: null == userName
@@ -157,6 +187,18 @@ class __$$ProfileResponseImplCopyWithImpl<$Res>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
+      avatar: null == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String,
+      gender: null == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String,
+      birthday: null == birthday
+          ? _value.birthday
+          : birthday // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -169,7 +211,10 @@ class _$ProfileResponseImpl implements _ProfileResponse {
       @JsonKey(name: 'email') this.email = "",
       @JsonKey(name: 'name') this.name = "",
       @JsonKey(name: 'surname') this.surname = "",
-      @JsonKey(name: 'phoneNumber') this.phoneNumber = ""});
+      @JsonKey(name: 'phoneNumber') this.phoneNumber = "",
+      @JsonKey(name: 'avatar') this.avatar = "",
+      @JsonKey(name: 'gender') this.gender = "",
+      @JsonKey(name: 'birthday') this.birthday = ""});
 
   factory _$ProfileResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProfileResponseImplFromJson(json);
@@ -189,10 +234,19 @@ class _$ProfileResponseImpl implements _ProfileResponse {
   @override
   @JsonKey(name: 'phoneNumber')
   final String phoneNumber;
+  @override
+  @JsonKey(name: 'avatar')
+  final String avatar;
+  @override
+  @JsonKey(name: 'gender')
+  final String gender;
+  @override
+  @JsonKey(name: 'birthday')
+  final String birthday;
 
   @override
   String toString() {
-    return 'ProfileResponse(userName: $userName, email: $email, name: $name, surname: $surname, phoneNumber: $phoneNumber)';
+    return 'ProfileResponse(userName: $userName, email: $email, name: $name, surname: $surname, phoneNumber: $phoneNumber, avatar: $avatar, gender: $gender, birthday: $birthday)';
   }
 
   @override
@@ -206,13 +260,17 @@ class _$ProfileResponseImpl implements _ProfileResponse {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.surname, surname) || other.surname == surname) &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.avatar, avatar) || other.avatar == avatar) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.birthday, birthday) ||
+                other.birthday == birthday));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, userName, email, name, surname, phoneNumber);
+  int get hashCode => Object.hash(runtimeType, userName, email, name, surname,
+      phoneNumber, avatar, gender, birthday);
 
   /// Create a copy of ProfileResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -237,7 +295,10 @@ abstract class _ProfileResponse implements ProfileResponse {
           @JsonKey(name: 'email') final String email,
           @JsonKey(name: 'name') final String name,
           @JsonKey(name: 'surname') final String surname,
-          @JsonKey(name: 'phoneNumber') final String phoneNumber}) =
+          @JsonKey(name: 'phoneNumber') final String phoneNumber,
+          @JsonKey(name: 'avatar') final String avatar,
+          @JsonKey(name: 'gender') final String gender,
+          @JsonKey(name: 'birthday') final String birthday}) =
       _$ProfileResponseImpl;
 
   factory _ProfileResponse.fromJson(Map<String, dynamic> json) =
@@ -258,6 +319,15 @@ abstract class _ProfileResponse implements ProfileResponse {
   @override
   @JsonKey(name: 'phoneNumber')
   String get phoneNumber;
+  @override
+  @JsonKey(name: 'avatar')
+  String get avatar;
+  @override
+  @JsonKey(name: 'gender')
+  String get gender;
+  @override
+  @JsonKey(name: 'birthday')
+  String get birthday;
 
   /// Create a copy of ProfileResponse
   /// with the given fields replaced by the non-null parameter values.

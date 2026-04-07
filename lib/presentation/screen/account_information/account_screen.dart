@@ -13,6 +13,7 @@ import '../device/bloc/device_cubit.dart';
 import '../general_device/notification/notification_screen.dart';
 
 import '../general_device/project_setting_screen.dart';
+import 'AccountDetailScreen.dart';
 import 'GuideScreen.dart';
 import 'SupportScreen.dart';
 import 'ThemeScreen.dart';
@@ -103,8 +104,9 @@ class _AccountScreenState extends State<AccountScreen> {
                             /// AVATAR TO
                             CircleAvatar(
                               radius: 28,
-                              backgroundImage:
-                              NetworkImage("https://i.pravatar.cc/150"),
+                              backgroundImage: user?.avatar != null
+                                  ? NetworkImage(user!.avatar!)
+                                  : null,
                             ),
                           ],
                         ),
@@ -122,7 +124,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             children: [
                               Icon(Icons.phone, size: 16, color: Colors.grey),
                               SizedBox(width: 8),
-                              Text("6861129956"),
+                            Text(user?.phoneNumber ?? ""),
                               Spacer(),
                               CircleAvatar(
                                 radius: 10,
@@ -152,8 +154,8 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                           child: Column(
                             children: [
-                              // _item(Icons.phone, "Trợ lý thoại", Colors.blue, 0),
-                              // _divider(),
+                              _item(Icons.person, "Tài khoản", Colors.blue, 0),
+                              _divider(),
                               _item(Icons.devices, "Quản lý nhiều thiết bị", Colors.green, 1),
                               _divider(),
                               // _item(Icons.language, "Hỗ trợ đa ngôn ngữ", Colors.orange, 2),
@@ -208,7 +210,7 @@ class _AccountScreenState extends State<AccountScreen> {
       case 0:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => GuideScreen()),
+          MaterialPageRoute(builder: (_) => AccountDetailScreen()),
         );
         break;
 

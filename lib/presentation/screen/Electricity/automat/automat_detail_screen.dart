@@ -143,12 +143,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     if (type == MeterType.household) {
 
-      final totalMonthEnergy = await _getMonthEnergy(); // 👈 thêm
-
-      final money = calculateHouseholdCost(totalMonthEnergy);
+      final money = calculateHouseholdCost(energy);
 
       setState(() {
-        monthEnergy = totalMonthEnergy;
+        monthEnergy = energy;
         moneyMonth = money;
         realtimeCost = money;
       });
@@ -157,30 +155,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       await _loadElectricReport();
     }
   }
-  Future<double> _getMonthEnergy() async {
-    final api = GetIt.instance<ApiClient>();
-    final result = await api.getBreakerLog(currentDevice.code ?? "");
 
-    final logs = List.from(result.data ?? []);
-    if (logs.isEmpty) return 0;
-
-    logs.sort((a, b) =>
-        DateTime.parse(a.updatedAt!)
-            .compareTo(DateTime.parse(b.updatedAt!)));
-
-    final now = DateTime.now();
-    final startOfMonth = DateTime(now.year, now.month, 1);
-
-    final firstLog = logs.lastWhere(
-          (e) => DateTime.parse(e.updatedAt!).isBefore(startOfMonth),
-      orElse: () => logs.first,
-    );
-
-    final epiStart = firstLog.epi ?? 0;
-    final currentEpi = logs.last.epi ?? 0;
-
-    return (currentEpi - epiStart).toDouble();
-  }
   void _handleRealtime(Map<String, dynamic> data) {
     if (!mounted) return;
     if (!isInitDone) return;
@@ -242,41 +217,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         return chartData;
     }
   }
-  Future<void> _loadStartOfMonthEnergy() async {
-    final api = GetIt.instance<ApiClient>();
 
-    final result = await api.getBreakerLog(currentDevice.code ?? "");
-
-    final logs = List.from(result.data ?? []);
-    if (logs.isEmpty) return;
-
-    logs.sort((a, b) =>
-        DateTime.parse(a.updatedAt!)
-            .compareTo(DateTime.parse(b.updatedAt!)));
-
-    final now = DateTime.now();
-    final startOfMonth = DateTime(now.year, now.month, 1);
-
-    /// log đầu tháng
-    final firstLog = logs.firstWhere(
-          (e) => DateTime.parse(e.updatedAt!).isBefore(startOfMonth),
-      orElse: () => logs.first,
-    );
-
-    epiAtStartOfMonth = firstLog.epi ?? 0;
-
-    /// log mới nhất
-    final lastLog = logs.last;
-    final currentEpi = lastLog.epi ?? 0;
-
-
-    final energy = (currentEpi - epiAtStartOfMonth).toDouble();
-
-    _calculateMoney(energy > 0 ? energy : 0.0);
-
-
-    isInitDone = true;
-  }
   MeterType getMeterType() {
     if (currentDevice.meterTypeId == 81 ||
         currentDevice.meterTypeId == 82) {
@@ -990,14 +931,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   Future<void> _loadStartOfRangeEnergy() async {
     final api = GetIt.instance<ApiClient>();
-    final result = await api.getBreakerLog(currentDevice.code ?? "");
-
-    final logs = List.from(result.data ?? []);
-    if (logs.isEmpty) return;
-
-    logs.sort((a, b) =>
-        DateTime.parse(a.updatedAt!)
-            .compareTo(DateTime.parse(b.updatedAt!)));
 
     final now = DateTime.now();
 
@@ -1007,18 +940,34 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       case ChartRange.day:
         start = DateTime(now.year, now.month, now.day);
         break;
+
       case ChartRange.week:
-        start = now.subtract(const Duration(days: 7));
+        final weekday = now.weekday;
+        final monday = now.subtract(Duration(days: weekday - 1));
+        start = DateTime(monday.year, monday.month, monday.day);
         break;
+
       case ChartRange.month:
         start = DateTime(now.year, now.month, 1);
         break;
+
       case ChartRange.year:
         start = DateTime(now.year, 1, 1);
         break;
+
       default:
         start = DateTime(now.year, now.month, 1);
     }
+
+    /// TẠM THỜI: vẫn dùng API cũ
+    final result = await api.getBreakerLog(currentDevice.code ?? "");
+
+    final logs = List.from(result.data ?? []);
+    if (logs.isEmpty) return;
+
+    logs.sort((a, b) =>
+        DateTime.parse(a.updatedAt!)
+            .compareTo(DateTime.parse(b.updatedAt!)));
 
     final firstLog = logs.lastWhere(
           (e) => DateTime.parse(e.updatedAt!).isBefore(start),
@@ -1026,19 +975,16 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     );
 
     final epiStart = firstLog.epi ?? 0;
-    final lastLog = logs.last;
-    final currentEpi = lastLog.epi ?? 0;
+    final currentEpi = logs.last.epi ?? 0;
 
     final energy = (currentEpi - epiStart).toDouble();
     final safeEnergy = energy > 0 ? energy : 0.0;
-    print("🔥 RANGE energy: $safeEnergy");
-    final totalMonthEnergy = await _getMonthEnergy();
-    final money = calculateHouseholdCost(totalMonthEnergy);
-    print("🔥 MONTH energy: $totalMonthEnergy");
-    print("🔥 MONEY: $money");
+
+    final money = calculateHouseholdCost(safeEnergy);
+
     setState(() {
       epiAtStartOfRange = epiStart;
-      monthEnergy = totalMonthEnergy;
+      monthEnergy = safeEnergy;
       moneyMonth = money;
       realtimeCost = money;
     });

@@ -42,15 +42,49 @@ class _SettingScreenState extends State<SettingScreen> {
   bool exportReport = false;
   bool isLoading = true;
 
+  // double getMax(String param) {
+  //   final v = thresholdMap["${param}_MAX"];
+  //   return (v == null || v == 0) ? 100 : v; // fallback
+  // }
+  //
+  // double getMin(String param) {
+  //   final v = thresholdMap["${param}_MIN"];
+  //   return (v == null) ? 0 : v;
+  // }
   double getMax(String param) {
-    final v = thresholdMap["${param}_MAX"];
-    return (v == null || v == 0) ? 100 : v; // fallback
+    switch (param) {
+      case "I":
+        return 63; // cái này không có trong bảng → giữ tạm OK
+      case "PARAM_LG":
+        return 30;
+      case "PARAM_U":
+        return 220;
+      case "PARAM_P":
+        return 10; // chưa có trong Excel → tạm giữ
+      case "PARAM_TEMP1":
+        return 30;
+      default:
+        return 100;
+    }
   }
 
   double getMin(String param) {
-    final v = thresholdMap["${param}_MIN"];
-    return (v == null) ? 0 : v;
+    switch (param) {
+      case "I":
+        return 0; // Excel có Min = 0
+      case "PARAM_LG":
+        return 0; // fallback hợp lý
+      case "PARAM_U":
+        return 0; // Excel có Min = 0
+      case "PARAM_P":
+        return 0;
+      case "PARAM_TEMP1":
+        return 20;
+      default:
+        return 0;
+    }
   }
+
   @override
   void initState() {
     super.initState();
@@ -60,35 +94,36 @@ class _SettingScreenState extends State<SettingScreen> {
   Future<void> loadAll() async {
     await Future.wait([
       loadConfig(),
-      loadThresholdConfig(),
+      // loadThresholdConfig(),
     ]);
   }
-  Future<void> loadThresholdConfig() async {
-    try {
-      final api = GetIt.instance<ApiClient>();
 
-      final res = await api.getThresholdConfigs(0, 100);
-      print("RAW RESPONSE: $res");
-      final items = res['items'];
-
-      for (var e in items) {
-        final param = e['logParam'];
-        final type = e['queryType'];
-        final value = double.tryParse(e['queryCondition'] ?? '0') ?? 0;
-
-        if (type == 1) {
-          thresholdMap["${param}_MIN"] = value;
-        } else if (type == 2) {
-          thresholdMap["${param}_MAX"] = value;
-        }
-      }
-
-      print("THRESHOLD MAP: $thresholdMap");
-
-    } catch (e) {
-      debugPrint("Threshold error: $e");
-    }
-  }
+  // Future<void> loadThresholdConfig() async {
+  //   try {
+  //     final api = GetIt.instance<ApiClient>();
+  //
+  //     final res = await api.getThresholdConfigs(0, 100);
+  //     print("RAW RESPONSE: $res");
+  //     final items = res['items'];
+  //
+  //     for (var e in items) {
+  //       final param = e['logParam'];
+  //       final type = e['queryType'];
+  //       final value = double.tryParse(e['queryCondition'] ?? '0') ?? 0;
+  //
+  //       if (type == 1) {
+  //         thresholdMap["${param}_MIN"] = value;
+  //       } else if (type == 2) {
+  //         thresholdMap["${param}_MAX"] = value;
+  //       }
+  //     }
+  //
+  //     print("THRESHOLD MAP: $thresholdMap");
+  //
+  //   } catch (e) {
+  //     debugPrint("Threshold error: $e");
+  //   }
+  // }
   // ================= LOAD CONFIG =================
 
   Future<void> loadConfig() async {
@@ -187,7 +222,7 @@ class _SettingScreenState extends State<SettingScreen> {
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "custom_threshold",
-          configValue: customThreshold? 1 : 0,
+          configValue: customThreshold ? 1 : 0,
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
@@ -220,7 +255,7 @@ class _SettingScreenState extends State<SettingScreen> {
       for (final config in configs) {
         await _repo.saveConfig(config);
       }
-
+      await sendProtectionSetting();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Lưu thành công")),
@@ -372,6 +407,7 @@ class _SettingScreenState extends State<SettingScreen> {
               ],
             ),
             const SizedBox(height: 12),
+
             /// 🔹 QUÁ DÒNG
             _buildItemCard(
               title: "Quá dòng",
@@ -482,9 +518,9 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
 
-        const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-        /// 🔹 SWITCH SETTINGS
+            /// 🔹 SWITCH SETTINGS
             _buildItemCard(
               title: "Cài đặt bổ sung",
               child: Column(
@@ -510,15 +546,14 @@ class _SettingScreenState extends State<SettingScreen> {
                 ],
               ),
             )
-      ],
+          ],
         )
     );
   }
-  Widget _buildSwitchItem(
-      String title,
+
+  Widget _buildSwitchItem(String title,
       bool value,
-      Function(bool) onChanged,
-      ) {
+      Function(bool) onChanged,) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -545,8 +580,8 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
     );
   }
-  Future<void> sendProtectionSetting() async {
 
+  Future<void> sendProtectionSetting() async {
     final api = GetIt.instance<ApiClient>();
 
     final command = {
@@ -573,6 +608,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     await api.controlCircuitBreaker(request);
   }
+
   Widget _buildSliderTile({
     required String title,
     required String unit,
@@ -585,9 +621,9 @@ class _SettingScreenState extends State<SettingScreen> {
     bool isOverCurrent = false,
     String? description,
   }) {
-    final percent = (value - min) / (max - min);
-    final safeMax = (max <= min) ? (min + 100) : max;
-    final safeValue = value.clamp(min, safeMax);
+    final percent = ((value - min) / (max - min)).clamp(0.0, 1.0);
+    final safeMax = (max <= min) ? (min + 1) : max;
+    final safeValue = value.clamp(min, max);
     Color valueColor;
     if (!isVoltage) {
       valueColor = kPrimaryColor;
@@ -612,16 +648,18 @@ class _SettingScreenState extends State<SettingScreen> {
             Text(title, style: const TextStyle(fontSize: 14)),
             if (showValue)
               GestureDetector(
-                onTap: () => _showInputDialog(
-                  context,
-                  value,
-                  unit,
-                  min,
-                  max,
-                  onChanged,
-                ),
+                onTap: () =>
+                    _showInputDialog(
+                      context,
+                      value,
+                      unit,
+                      min,
+                      max,
+                      onChanged,
+                    ),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: valueColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -673,8 +711,8 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
 
                   /// active
-                  FractionallySizedBox(
-                    widthFactor: (value - min) / (max - min),
+    FractionallySizedBox(
+    widthFactor: percent,
                     child: Container(
                       height: 6,
                       decoration: BoxDecoration(
@@ -764,77 +802,46 @@ class _SettingScreenState extends State<SettingScreen> {
       ],
     );
   }
-  void _showInputDialog(
-      BuildContext context,
+
+  void _showInputDialog(BuildContext context,
       double current,
       String unit,
       double min,
       double max,
-      Function(double) onChanged,
-      ) {
+      Function(double) onChanged,) {
     final controller =
     TextEditingController(text: current.toInt().toString());
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text("Nhập giá trị ($unit)"),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            suffixText: unit,
-            border: OutlineInputBorder(),
+      builder: (_) =>
+          AlertDialog(
+            title: Text("Nhập giá trị ($unit)"),
+            content: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                suffixText: unit,
+                border: OutlineInputBorder(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text("Hủy"),
+                onPressed: () => Navigator.pop(context),
+              ),
+              ElevatedButton(
+                child: Text("OK"),
+                onPressed: () {
+                  final v = double.tryParse(controller.text);
+                  if (v != null && v >= min && v <= max) {
+                    onChanged(v);
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            child: Text("Hủy"),
-            onPressed: () => Navigator.pop(context),
-          ),
-          ElevatedButton(
-            child: Text("OK"),
-            onPressed: () {
-              final v = double.tryParse(controller.text);
-              if (v != null && v >= min && v <= max) {
-                onChanged(v);
-                Navigator.pop(context);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _buildCheckboxTile({
-    required String title,
-    required bool value,
-    required Function(bool) onChanged,
-  }) {
-    return CheckboxListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(title),
-      value: value,
-      onChanged: (v) => onChanged(v ?? false),
-      controlAffinity: ListTileControlAffinity.leading,
-    );
-  }
-  Widget _buildModernSwitch(
-      String title, bool value, Function(bool) onChanged) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(child: Text(title)),
-          Switch(
-            value: value,
-            activeColor: kPrimaryColor,
-            activeTrackColor: kPrimaryColor.withOpacity(.4),
-            onChanged: onChanged,
-          ),
-        ],
-      ),
     );
   }
 }
@@ -904,76 +911,7 @@ Widget _buildItemCard({
     ),
   );
 }
-class _ShadowThumbShape extends SliderComponentShape {
-  final double thumbRadius;
 
-  const _ShadowThumbShape({this.thumbRadius = 12});
-
-  @override
-  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return Size.fromRadius(thumbRadius);
-  }
-
-  @override
-  void paint(
-      PaintingContext context,
-      Offset center, {
-        required Animation<double> activationAnimation,
-        required Animation<double> enableAnimation,
-        required bool isDiscrete,
-        required TextPainter labelPainter,
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required TextDirection textDirection,
-        required double value,
-        required double textScaleFactor,
-        required Size sizeWithOverflow,
-      }) {
-    final canvas = context.canvas;
-
-    /// Shadow
-    canvas.drawShadow(
-      Path()..addOval(Rect.fromCircle(center: center, radius: thumbRadius)),
-      Colors.black.withOpacity(.3),
-      6,
-      true,
-    );
-
-    /// White thumb
-    final paint = Paint()..color = Colors.white;
-    canvas.drawCircle(center, thumbRadius, paint);
-  }
-}
-Color _getValueColor(double value, double min, double max, bool isVoltage) {
-  if (!isVoltage) return kPrimaryColor;
-
-  final percent = (value - min) / (max - min);
-
-  if (percent < 0.4) {
-    return const Color(0xFF1ABC9C); // an toàn
-  } else if (percent < 0.75) {
-    return const Color(0xFFFFB74D); // cảnh báo
-  } else {
-    return const Color(0xFFE57373); // nguy hiểm
-  }
-}
-class _RoundedTrackShape extends RoundedRectSliderTrackShape {
-  @override
-  Rect getPreferredRect({
-    required RenderBox parentBox,
-    Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
-    bool isEnabled = false,
-    bool isDiscrete = false,
-  }) {
-    final double trackHeight = sliderTheme.trackHeight ?? 6;
-    final double trackLeft = offset.dx;
-    final double trackTop =
-        offset.dy + (parentBox.size.height - trackHeight) / 2;
-    final double trackWidth = parentBox.size.width;
-    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
-  }
-}
 class _ModernThumbShape extends SliderComponentShape {
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {

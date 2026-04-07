@@ -40,7 +40,13 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      final time = DateTime.now().toUtc().toIso8601String();
+      String formatDate(DateTime date) {
+        return "${date.year.toString().padLeft(4, '0')}-"
+            "${date.month.toString().padLeft(2, '0')}-"
+            "${date.day.toString().padLeft(2, '0')}";
+      }
+
+      final time = formatDate(DateTime.now());
       print("REQUEST:");
       print("powerStationId: $powerStationId");
       print("deviceId: $deviceId");

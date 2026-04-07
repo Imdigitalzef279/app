@@ -12,6 +12,9 @@ class ProfileResponse with _$ProfileResponse {
     @JsonKey(name: 'name') @Default("") String name,
     @JsonKey(name: 'surname') @Default("") String surname,
     @JsonKey(name: 'phoneNumber') @Default("") String phoneNumber,
+    @JsonKey(name: 'avatar') @Default("") String avatar,
+    @JsonKey(name: 'gender') @Default("") String gender,
+    @JsonKey(name: 'birthday') @Default("") String birthday,
   }) = _ProfileResponse;
 
   factory ProfileResponse.fromJson(Map<String, dynamic> json) =>

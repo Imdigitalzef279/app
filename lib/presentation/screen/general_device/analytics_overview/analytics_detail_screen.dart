@@ -59,7 +59,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         context.read<AnalyticsCubit>().loadEnergy(
           powerStationId: widget.device.powerStationId ?? 1,
           deviceId: widget.device.id!,
-            type: range.name
+            type: range.name[0].toUpperCase() + range.name.substring(1)
         );
       },
       child: Container(
