@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -158,8 +159,8 @@ class _AccountScreenState extends State<AccountScreen> {
                               _divider(),
                               _item(Icons.devices, "Quản lý nhiều thiết bị", Colors.green, 1),
                               _divider(),
-                              // _item(Icons.language, "Hỗ trợ đa ngôn ngữ", Colors.orange, 2),
-                              // _divider(),
+                              _item(Icons.language, "Ngôn ngữ", Colors.orange, 2),
+                              _divider(),
                               _item(Icons.settings, "Cài đặt chung", Colors.grey, 3),
                               _divider(),
                               // _item(Icons.help_outline, "Bảo hành", Colors.blue, 4),
@@ -229,10 +230,7 @@ class _AccountScreenState extends State<AccountScreen> {
         break;
 
       case 2:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => SupportScreen()),
-        );
+        _showLanguageBottomSheet();
         break;
 
       case 3:
@@ -309,6 +307,47 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
     );
   }
+  void _showLanguageBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Chọn ngôn ngữ",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16),
+
+              ListTile(
+                leading: Text("🇻🇳"),
+                title: Text("Tiếng Việt"),
+                onTap: () {
+                  context.setLocale(Locale('vi'));
+                  Navigator.pop(context);
+                },
+              ),
+
+              ListTile(
+                leading: Text("🇺🇸"),
+                title: Text("English"),
+                onTap: () {
+                  context.setLocale(Locale('en'));
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
   Widget _divider() {
     return Padding(
       padding: EdgeInsets.only(left: 56),
@@ -320,6 +359,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 }
+
 class AnimatedBg extends StatefulWidget {
   final Widget child;
   const AnimatedBg({super.key, required this.child});

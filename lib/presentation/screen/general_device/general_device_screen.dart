@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -327,7 +328,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                           children: [
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_energy_meter.png",
-                                              title: "Năng lượng",
+                                              title: 'energy'.tr(),
                                               onTap: () {
                                                 Navigator.push(
                                                   context,
@@ -344,7 +345,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                             ),
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
-                                              title: "Phân tích",
+                                              title: "analysis".tr(),
                                               onTap: () {
                                                 final devices =
                                                     context.read<DeviceCubit>().state.resultDevices.data ?? [];
@@ -359,7 +360,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                             ),
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_environment.png",
-                                              title: "Môi trường",
+                                              title: "environment".tr(),
                                               onTap: () {
                                                 Navigator.push(
                                                   context,
@@ -373,7 +374,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                             ),
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
-                                              title: "KRA Care",
+                                              title: "KRA Care".tr(),
                                               onTap: () {
                                                 Navigator.push(
                                                   context,
@@ -409,8 +410,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                           color: Colors.black.withOpacity(0.45),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
-                                        child: Text(
-                                          "Thiết bị hay dùng",
+                                        child: Text("device.favorite".tr(),
                                           style: TextStyle(
                                             fontSize: 13.sp,
                                             fontWeight: FontWeight.w700,
@@ -448,7 +448,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                     child: AnimatedSwitcher(
                                       duration: Duration(milliseconds: 300),
                                       child: favoriteDevices.isEmpty
-                                          ? Text("Chưa có thiết bị")
+                                          ? Text("device.empty".tr())
                                           : _isGridView
                                           ? _buildFixed6AndScroll(favoriteDevices) // grid
                                           : _buildVerticalPage(favoriteDevices),   // list dọc
@@ -811,7 +811,7 @@ Widget _buildChatBox() {
               Icon(Icons.smart_toy, color: Colors.white),
               SizedBox(width: 8),
               Text(
-                "AI Tư vấn",
+                "AI Tư vấn".tr(),
                 style: TextStyle(color: Colors.white),
               ),
             ],
@@ -822,8 +822,8 @@ Widget _buildChatBox() {
           child: ListView(
             padding: EdgeInsets.all(8),
             children: [
-              Text("Xin chào 👋"),
-              Text("Bạn cần hỗ trợ gì?"),
+              Text("Xin chào 👋").tr(),
+              Text("Bạn cần hỗ trợ gì?").tr(),
             ],
           ),
         ),
@@ -832,7 +832,7 @@ Widget _buildChatBox() {
           padding: EdgeInsets.all(8),
           child: TextField(
             decoration: InputDecoration(
-              hintText: "Nhập câu hỏi...",
+              hintText: "Nhập câu hỏi...".tr(),
               border: OutlineInputBorder(),
             ),
           ),

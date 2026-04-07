@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -65,8 +66,8 @@ class _ProjectSettingScreenState
   Future<void> _handleSave() async {
     if (nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Tên dự án không được để trống")),
+        SnackBar(
+            content: Text("Tên dự án không được để trống".tr())),
       );
       return;
     }
@@ -129,7 +130,7 @@ class _ProjectSettingScreenState
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text("Huỷ"),
+                        child: Text("Huỷ".tr()),
                       ),
                     ),
                     SizedBox(width: 10),
@@ -139,7 +140,7 @@ class _ProjectSettingScreenState
                           context.read<BackgroundCubit>().setBg(path);
                           Navigator.pop(context);
                         },
-                        child: Text("Áp dụng"),
+                        child: Text("Áp dụng".tr()),
                       ),
                     ),
                   ],
@@ -163,7 +164,7 @@ class _ProjectSettingScreenState
       context.read<BackgroundCubit>().setBg(file.path);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Đã đổi hình nền")),
+         SnackBar(content: Text("Đã đổi hình nền".tr())),
       );
     }
   }
@@ -176,7 +177,7 @@ class _ProjectSettingScreenState
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xFFF3F6FB),
-        title: const Text("Cài đặt chung"),
+        title:  Text("Cài đặt chung".tr()),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -231,8 +232,8 @@ class _ProjectSettingScreenState
             mainAxisAlignment:
             MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Thông tin dự án",
+               Text(
+                "Thông tin dự án".tr(),
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -248,11 +249,11 @@ class _ProjectSettingScreenState
                     borderRadius:
                     BorderRadius.circular(20),
                   ),
-                  child: const Row(
+                  child:  Row(
                     children: [
                       Icon(Icons.edit, size: 16),
                       SizedBox(width: 6),
-                      Text("Chỉnh sửa"),
+                      Text("Chỉnh sửa".tr()),
                     ],
                   ),
                 ),
@@ -302,8 +303,8 @@ class _ProjectSettingScreenState
         CrossAxisAlignment.start,
         children: [
 
-          const Text(
-            "Vai trò tài khoản",
+           Text(
+            "Vai trò tài khoản".tr(),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -324,22 +325,22 @@ class _ProjectSettingScreenState
 
               _roleCard(
                 "Admin",
-                "Toàn quyền hệ thống",
+                "Toàn quyền hệ thống".tr(),
                 AccountType.admin,
               ),
               _roleCard(
                 "Kỹ thuật",
-                "Cài đặt + bảo trì",
+                "Cài đặt + bảo trì".tr(),
                 AccountType.technician,
               ),
               _roleCard(
                 "Người dùng",
-                "Chỉ xem dữ liệu",
+                "Chỉ xem dữ liệu".tr(),
                 AccountType.user,
               ),
               _roleCard(
                 "Web Pro",
-                "Trả phí - báo cáo nâng cao",
+                "Trả phí - báo cáo nâng cao".tr(),
                 AccountType.webPaid,
               ),
             ],
@@ -477,8 +478,8 @@ class _ProjectSettingScreenState
         CrossAxisAlignment.start,
         children: [
 
-          const Text(
-            "Phân quyền",
+         Text(
+            "Phân quyền".tr(),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -533,8 +534,8 @@ class _ProjectSettingScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          const Text(
-            "Gói dịch vụ",
+           Text(
+            "Gói dịch vụ".tr(),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -547,8 +548,8 @@ class _ProjectSettingScreenState
             children: [
               Expanded(
                 child: _packageCard(
-                  "Basic",
-                  "Miễn phí",
+                  "Basic".tr(),
+                  "Miễn phí".tr(),
                   PackageType.basic,
                 ),
               ),
@@ -556,7 +557,7 @@ class _ProjectSettingScreenState
               Expanded(
                 child: _packageCard(
                   "Pro",
-                  "299k/tháng",
+                  "299k/tháng".tr(),
                   PackageType.pro,
                 ),
               ),
@@ -564,7 +565,7 @@ class _ProjectSettingScreenState
               Expanded(
                 child: _packageCard(
                   "Enterprise",
-                  "Theo hợp đồng",
+                  "Theo hợp đồng".tr(),
                   PackageType.enterprise,
                 ),
               ),
@@ -591,8 +592,8 @@ class _ProjectSettingScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Hình nền",
+           Text(
+            "Hình nền".tr(),
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
 
@@ -639,7 +640,7 @@ class _ProjectSettingScreenState
                       _previewBackground(file.path);
                     }
                   },
-                  child: Text("Chọn ảnh"),
+                  child: Text("Chọn ảnh".tr()),
                 ),
               ),
 
@@ -650,7 +651,7 @@ class _ProjectSettingScreenState
                   onPressed: () {
                     context.read<BackgroundCubit>().clear();
                   },
-                  child: Text("Mặc định"),
+                  child: Text("Mặc định".tr()),
                 ),
               ),
             ],
@@ -694,7 +695,7 @@ class _ProjectSettingScreenState
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        height: 90, // 🔥 ÉP CAO BẰNG NHAU
+        height: 90,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
@@ -706,7 +707,7 @@ class _ProjectSettingScreenState
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // 🔥 CĂN GIỮA
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               title,
@@ -770,8 +771,8 @@ class _ProjectSettingScreenState
                 strokeWidth: 2.5,
               ),
             )
-                : const Text(
-              "Lưu thay đổi",
+                :  Text(
+              "Lưu thay đổi".tr(),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 17, // 🔥 to hơn
@@ -793,27 +794,27 @@ class _ProjectSettingScreenState
       builder: (_) {
         return AlertDialog(
           title:
-          const Text("Chỉnh sửa tên dự án"),
+           Text("Chỉnh sửa tên dự án".tr()),
           content: TextField(
             controller: nameController,
             decoration:
-            const InputDecoration(
+             InputDecoration(
               hintText:
-              "Nhập tên dự án",
+              "Nhập tên dự án".tr(),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () =>
                   Navigator.pop(context),
-              child: const Text("Huỷ"),
+              child: Text("Huỷ".tr()),
             ),
             ElevatedButton(
               onPressed: () {
                 setState(() {});
                 Navigator.pop(context);
               },
-              child: const Text("Lưu"),
+              child:  Text("Lưu".tr()),
             ),
           ],
         );
@@ -843,12 +844,12 @@ void _confirmLogout(BuildContext context) {
     context: context,
     builder: (_) {
       return AlertDialog(
-        title: const Text("Đăng xuất"),
-        content: const Text("Bạn có chắc muốn đăng xuất không?"),
+        title:  Text("Đăng xuất".tr()),
+        content: Text("Bạn có chắc muốn đăng xuất không?".tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Huỷ"),
+            child:  Text("Huỷ".tr()),
           ),
           ElevatedButton(
             onPressed: () {
@@ -863,7 +864,7 @@ void _confirmLogout(BuildContext context) {
                     (route) => false,
               );
             },
-            child: const Text("Đăng xuất"),
+            child:  Text("Đăng xuất".tr()),
           ),
         ],
       );
@@ -889,8 +890,8 @@ Widget _buildLogoutButton(BuildContext context) {
           color: Colors.red,
         ),
       ),
-      title: const Text(
-        "Đăng xuất",
+      title:  Text(
+        "Đăng xuất".tr(),
         style: TextStyle(
           fontWeight: FontWeight.w500,
           color: Colors.red,

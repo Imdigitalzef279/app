@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -68,7 +69,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: const Text("Đổi tên thiết bị"),
+          title:  Text("device.rename".tr()),
 
           content: TextField(
             controller: controller,
@@ -78,14 +79,14 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Huỷ"),
+              child:  Text("Huỷ".tr()),
             ),
 
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context, controller.text);
               },
-              child: const Text("Lưu"),
+              child:  Text("Lưu".tr()),
             ),
 
           ],

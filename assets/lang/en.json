@@ -1,0 +1,63 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "confirm": "Confirm",
+    "logout": "Logout"
+  },
+
+  "account": {
+    "title": "Account",
+    "manage": "Account Management",
+    "language": "Language",
+    "setting": "General Settings"
+  },
+
+  "home": {
+    "features": "Features"
+  },
+
+  "energy": "Energy",
+  "analysis": "Analytics",
+  "environment": "Environment",
+  "kra_care": "KRA Care",
+
+  "device": {
+    "favorite": "Favorite devices",
+    "empty": "No devices",
+    "rename": "Rename device",
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    }
+  },
+
+  "location": {
+    "hanoi": "Hanoi"
+  },
+
+  "chat": {
+    "title": "AI Assistant",
+    "hello": "Hello 👋",
+    "ask": "How can I help you?",
+    "hint": "Enter your question..."
+  },
+
+  "notification": {
+    "title": "Notifications",
+    "empty": "No notifications"
+  },
+
+  "setting": {
+    "title": "Settings",
+    "general": "General Settings",
+    "theme": "Theme"
+  },
+
+  "error": {
+    "network": "Network error",
+    "unknown": "Something went wrong"
+  }
+}

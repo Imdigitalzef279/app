@@ -1,0 +1,63 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Huỷ",
+    "save": "Lưu",
+    "close": "Đóng",
+    "confirm": "Xác nhận",
+    "logout": "Đăng xuất"
+  },
+
+  "account": {
+    "title": "Tài khoản",
+    "manage": "Quản lý tài khoản",
+    "language": "Ngôn ngữ",
+    "setting": "Cài đặt chung"
+  },
+
+  "home": {
+    "features": "Tính năng"
+  },
+
+  "energy": "Năng lượng",
+  "analysis": "Phân tích",
+  "environment": "Môi trường",
+  "kra_care": "KRA Care",
+
+  "device": {
+    "favorite": "Thiết bị hay dùng",
+    "empty": "Chưa có thiết bị",
+    "rename": "Đổi tên thiết bị",
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    }
+  },
+
+  "location": {
+    "hanoi": "Hà Nội"
+  },
+
+  "chat": {
+    "title": "AI Tư vấn",
+    "hello": "Xin chào 👋",
+    "ask": "Bạn cần hỗ trợ gì?",
+    "hint": "Nhập câu hỏi..."
+  },
+
+  "notification": {
+    "title": "Thông báo",
+    "empty": "Không có thông báo"
+  },
+
+  "setting": {
+    "title": "Cài đặt",
+    "general": "Cài đặt chung",
+    "theme": "Giao diện"
+  },
+
+  "error": {
+    "network": "Lỗi kết nối mạng",
+    "unknown": "Có lỗi xảy ra"
+  }
+}

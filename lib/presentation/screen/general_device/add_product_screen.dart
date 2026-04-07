@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
@@ -14,7 +15,7 @@ class AddProductScreen extends StatelessWidget {
         backgroundColor: AppColors.white,
         elevation: 0,
         title: Text(
-          "Thêm sản phẩm",
+          "Thêm sản phẩm".tr(),
           style: AppTextStyle.textBase.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -28,7 +29,7 @@ class AddProductScreen extends StatelessWidget {
             /// Tên sản phẩm
             TextField(
               decoration: InputDecoration(
-                labelText: "Tên sản phẩm",
+                labelText: "Tên sản phẩm".tr(),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
                 ),
@@ -40,7 +41,7 @@ class AddProductScreen extends StatelessWidget {
             /// Mã thiết bị
             TextField(
               decoration: InputDecoration(
-                labelText: "Mã thiết bị",
+                labelText: "Mã thiết bị".tr(),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.r),
                 ),
@@ -64,7 +65,7 @@ class AddProductScreen extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 child: Text(
-                  "Lưu sản phẩm",
+                  "Lưu sản phẩm".tr(),
                   style: AppTextStyle.textSm.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
