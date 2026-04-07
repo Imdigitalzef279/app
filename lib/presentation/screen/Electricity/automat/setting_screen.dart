@@ -9,6 +9,7 @@ import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
 import 'device_info_screen/device_info_screen.dart';
 
+Map<String, double> thresholdMap = {};
 const kPrimaryColor = Color(0xFF1ABC9C);
 const kBackgroundColor = Color(0xFFF4F7F8);
 class SettingScreen extends StatefulWidget {
@@ -41,77 +42,53 @@ class _SettingScreenState extends State<SettingScreen> {
   bool exportReport = false;
   bool isLoading = true;
 
-  double getDeviceMax(String unit) {
-    final d = widget.device;
-
-    switch (unit) {
-      case "A":
-        return (d.ratedCurrent ?? 63).toDouble();
-
-      case "V":
-        final voltage = getVoltageBase();
-        return voltage * 1.2; // cho phép +20%
-
-      case "mA":
-        return (d.ratedCurrent ?? 63) * 5;
-
-      case "kW":
-        final voltage = getVoltageBase();
-        final current = (d.ratedCurrent ?? 63);
-        return (1.732 * voltage * current) / 1000;
-
-      case "°C":
-        return (d.maxTemperature ?? 100).toDouble();
-
-      default:
-        return (d.ratedCurrent ?? 63).toDouble();
-    }
+  double getMax(String param) {
+    final v = thresholdMap["${param}_MAX"];
+    return (v == null || v == 0) ? 100 : v; // fallback
   }
-  double getDeviceMin(String unit) {
-    final name = widget.device.name ?? "";
 
-    // ===== DÒNG ĐIỆN =====
-    if (unit == "A") {
-      final match = RegExp(r'(\d+)A').firstMatch(name);
-      if (match != null) {
-        final max = double.parse(match.group(1)!);
-
-        // min = ~20% max
-        return (max * 0.2).clamp(5, max);
-      }
-    }
-
-    // ===== ĐIỆN ÁP =====
-    if (unit == "V") {
-      return 180; // hoặc đọc từ device nếu có
-    }
-
-    // ===== DÒNG RÒ =====
-    if (unit == "mA") return 10;
-
-    // ===== CÔNG SUẤT =====
-    if (unit == "kW") return 1;
-
-    // ===== NHIỆT ĐỘ =====
-    if (unit == "°C") return 40;
-
-    return 0;
-  }
-  double getVoltageBase() {
-    final d = widget.device;
-
-    if (d.phaseVoltage != null && d.phaseVoltage.isNotEmpty) {
-      return d.phaseVoltage.reduce((a, b) => a > b ? a : b);
-    }
-
-    return 220;
+  double getMin(String param) {
+    final v = thresholdMap["${param}_MIN"];
+    return (v == null) ? 0 : v;
   }
   @override
   void initState() {
     super.initState();
-    loadConfig();
+    loadAll();
   }
 
+  Future<void> loadAll() async {
+    await Future.wait([
+      loadConfig(),
+      loadThresholdConfig(),
+    ]);
+  }
+  Future<void> loadThresholdConfig() async {
+    try {
+      final api = GetIt.instance<ApiClient>();
+
+      final res = await api.getThresholdConfigs(0, 100);
+      print("RAW RESPONSE: $res");
+      final items = res['items'];
+
+      for (var e in items) {
+        final param = e['logParam'];
+        final type = e['queryType'];
+        final value = double.tryParse(e['queryCondition'] ?? '0') ?? 0;
+
+        if (type == 1) {
+          thresholdMap["${param}_MIN"] = value;
+        } else if (type == 2) {
+          thresholdMap["${param}_MAX"] = value;
+        }
+      }
+
+      print("THRESHOLD MAP: $thresholdMap");
+
+    } catch (e) {
+      debugPrint("Threshold error: $e");
+    }
+  }
   // ================= LOAD CONFIG =================
 
   Future<void> loadConfig() async {
@@ -395,40 +372,40 @@ class _SettingScreenState extends State<SettingScreen> {
               ],
             ),
             const SizedBox(height: 12),
-        /// 🔹 QUÁ DÒNG
-        _buildItemCard(
-          title: "Quá dòng",
-          child: Column(
-            children: [
-              _buildSliderTile(
-                title: "Quá dòng",
-                unit: "A",
-                value: overCurrent,
-                min: getDeviceMin("A"),
-                max: getDeviceMax("A"),
-                isOverCurrent: true,
-                description: "Ngưỡng cắt khi dòng vượt mức cho phép",
-                onChanged: (v) => setState(() => overCurrent = v),
+            /// 🔹 QUÁ DÒNG
+            _buildItemCard(
+              title: "Quá dòng",
+              child: Column(
+                children: [
+                  _buildSliderTile(
+                    title: "Quá dòng",
+                    unit: "A",
+                    value: overCurrent,
+                    min: getMin("I"),
+                    max: getMax("I"),
+                    isOverCurrent: true,
+                    description: "Ngưỡng cắt khi dòng vượt mức cho phép",
+                    onChanged: (v) => setState(() => overCurrent = v),
+                  ),
+                  _buildRecommendBox(),
+                ],
               ),
-              _buildRecommendBox(),
-            ],
-          ),
-        ),
+            ),
 
-        /// 🔹 DÒNG RÒ
-        _buildItemCard(
-          title: "Dòng rò",
-          child: _buildSliderTile(
-            title: "Dòng rò",
-            unit: "mA",
-            value: leakageCurrent,
-            min: getDeviceMin("mA"),
-            max: getDeviceMax("mA"),
-            description: "Phát hiện rò điện để đảm bảo an toàn",
-            onChanged: (v) => setState(() => leakageCurrent = v),
-          ),
+            /// 🔹 DÒNG RÒ
+            _buildItemCard(
+              title: "Dòng rò",
+              child: _buildSliderTile(
+                title: "Dòng rò",
+                unit: "mA",
+                value: leakageCurrent,
+                min: getMin("PARAM_LG"),
+                max: getMax("PARAM_LG"),
+                description: "Phát hiện rò điện để đảm bảo an toàn",
+                onChanged: (v) => setState(() => leakageCurrent = v),
+              ),
+            ),
 
-        ),
             Row(
               children: [
                 Container(
@@ -446,65 +423,64 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
 
-        /// 🔹 QUÁ ÁP
+            /// 🔹 QUÁ ÁP
             _buildItemCard(
               title: "Quá áp",
               child: _buildSliderTile(
                 title: "Quá áp",
                 unit: "V",
                 value: overVoltage,
-                min: getVoltageBase(),
-                max: getVoltageBase() * 1.3,
+                min: getMin("PARAM_U"),
+                max: getMax("PARAM_U"),
                 isVoltage: true,
                 description: "Ngắt khi điện áp vượt ngưỡng an toàn",
                 onChanged: (v) => setState(() => overVoltage = v),
               ),
             ),
 
-        /// 🔹 THẤP ÁP
+            /// 🔹 THẤP ÁP
             _buildItemCard(
               title: "Thấp áp",
               child: _buildSliderTile(
                 title: "Thấp áp",
                 unit: "V",
                 value: underVoltage,
-                min: getVoltageBase() * 0.8,
-                max: getVoltageBase(),
+                min: getMin("PARAM_U"),
+                max: getMax("PARAM_U"),
                 isVoltage: true,
                 description: "Ngắt khi điện áp thấp hơn mức cho phép",
                 onChanged: (v) => setState(() => underVoltage = v),
               ),
             ),
 
-        /// 🔹 QUÁ CÔNG SUẤT
-        _buildItemCard(
-          title: "Quá công suất",
-          child: _buildSliderTile(
-            title: "Quá công suất",
-            unit: "kW",
-            value: overPower,
-            min: getDeviceMin("kW"),
-            max: getDeviceMax("kW"),
-            description: "Ngắt khi điện áp vượt ngưỡng an toàn",
-            onChanged: (v) => setState(() => overPower = v),
-          ),
-        ),
+            /// 🔹 QUÁ CÔNG SUẤT
+            _buildItemCard(
+              title: "Quá công suất",
+              child: _buildSliderTile(
+                title: "Quá công suất",
+                unit: "kW",
+                value: overPower,
+                min: getMin("PARAM_P"),
+                max: getMax("PARAM_P"),
+                description: "Ngắt khi công suất vượt ngưỡng",
+                onChanged: (v) => setState(() => overPower = v),
+              ),
+            ),
 
-        /// 🔹 QUÁ NHIỆT
-        _buildItemCard(
-          title: "Quá nhiệt",
-          child: _buildSliderTile(
-            title: "Quá nhiệt",
-            unit: "°C",
-            value: overTemperature,
-            min: getDeviceMin("°C"),
-            max: getDeviceMax("°C"),
-            description: "Ngắt khi điện áp vượt ngưỡng an toàn",
-            onChanged: (v) => setState(() => overTemperature = v),
-          ),
-        ),
+            /// 🔹 QUÁ NHIỆT (cái này bạn đã đúng)
+            _buildItemCard(
+              title: "Quá nhiệt",
+              child: _buildSliderTile(
+                title: "Quá nhiệt",
+                unit: "°C",
+                value: overTemperature,
+                min: getMin("PARAM_TEMP1"),
+                max: getMax("PARAM_TEMP1"),
+                description: "Ngắt khi nhiệt độ vượt ngưỡng",
+                onChanged: (v) => setState(() => overTemperature = v),
+              ),
+            ),
 
         const SizedBox(height: 10),
 
@@ -610,7 +586,8 @@ class _SettingScreenState extends State<SettingScreen> {
     String? description,
   }) {
     final percent = (value - min) / (max - min);
-
+    final safeMax = (max <= min) ? (min + 100) : max;
+    final safeValue = value.clamp(min, safeMax);
     Color valueColor;
     if (!isVoltage) {
       valueColor = kPrimaryColor;
@@ -730,10 +707,10 @@ class _SettingScreenState extends State<SettingScreen> {
                       overlayShape: SliderComponentShape.noOverlay,
                     ),
                     child: Slider(
-                      value: value,
+                      value: safeValue,
                       min: min,
-                      max: max,
-                      onChanged: onChanged,
+                      max: safeMax,
+                      onChanged: (v) => onChanged(v),
                     ),
                   ),
                 ],

@@ -170,4 +170,10 @@ abstract class ApiClient {
   Future<MeterConfigResponse> createMeterConfig(
       @Body() MeterConfigRequest request,
       );
+  // ================= Phân tích nang luong =================
+  @GET('api/app/alarm-config')
+  Future<dynamic> getThresholdConfigs(
+      @Query('SkipCount') int skipCount,
+      @Query('MaxResultCount') int maxResultCount,
+      );
 }
