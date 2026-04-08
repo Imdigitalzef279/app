@@ -105,10 +105,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       _selectedRange,
     );
 
-    /// realtime
-    final signalR = SignalRService();
-    signalR.connect(meterCode: currentDevice.code ?? "");
-    _signalSub = signalR.stream.listen(_handleRealtime);
 
   }
   @override
@@ -1361,7 +1357,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         .state.switchCountdowns[device.id] ?? 0;
 
     final isWaiting = countdown > 0;
-    final state = context.read<DeviceCubit>().state;
+    final state = context.watch<DeviceCubit>().state;
     final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);;
     String statusText;
     IconData icon;
@@ -1537,6 +1533,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           (d) => d.id == widget.device.id,
       orElse: () => widget.device,
     );
+    print("===== DETAIL BUILD =====");
+    print("DEVICE ID: ${device?.id}");
+    print("DEVICE.STATUS: ${device?.status}");
         if (device == null) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -1546,13 +1545,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
         final deviceCubit = context.watch<DeviceCubit>();
     final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+    print("LOG.rlySta: ${log?.rlySta}");
     final realStatus =
     context.watch<DeviceCubit>().getRealStatus(device, log);
-
+    print("REAL STATUS: $realStatus");
     final bool isOn = realStatus == 1;
-        final bool isOffline = realStatus == -1;
+
         final bool isMaintenance = realStatus == 2;
-        final bool isOff = realStatus == 0;
         final countdown = state.switchCountdowns[device.id] ?? 0;
         final isSwitching = deviceCubit.isDeviceSwitching(device.id);
         return Scaffold(

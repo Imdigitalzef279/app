@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/dto/power_station/response/power_station_response.dart';
 import 'background/bloc/background_cubit.dart';
 
@@ -852,11 +853,11 @@ void _confirmLogout(BuildContext context) {
             child:  Text("Huỷ".tr()),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
 
-              /// TODO: clear token + navigate login
-              // context.read<AuthCubit>().logout();
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('token');
 
               Navigator.pushNamedAndRemoveUntil(
                 context,

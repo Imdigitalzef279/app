@@ -50,6 +50,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late bool isLandscape;
   late SignalRService signalR;
   List<DeviceResponse> favoriteDevices = [];
+
   StreamSubscription? _signalSub;
   double _aiTop = 500;
   double _aiLeft = 300;
@@ -118,17 +119,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     final textColor = Colors.black;
     final state = context.watch<DeviceCubit>().state;
     final devices = state.resultDevices.data ?? [];
-    final favFromApi =
+    final favoriteDevices =
     devices.where((d) => d.isFavorite).toList();
-
-    favoriteDevices.removeWhere(
-            (d) => !favFromApi.any((f) => f.id == d.id));
-
-    for (var d in favFromApi) {
-      if (!favoriteDevices.any((f) => f.id == d.id)) {
-        favoriteDevices.add(d);
-      }
-    }
     String locationText = "Hà Nội";
 
     final bannerImages = [
@@ -328,7 +320,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                           children: [
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_energy_meter.png",
-                                              title: 'energy'.tr(),
+                                              title: 'Năng Lượng'.tr(),
                                               onTap: () {
                                                 Navigator.push(
                                                   context,
@@ -345,7 +337,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                             ),
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
-                                              title: "analysis".tr(),
+                                              title: "Phân tích".tr(),
                                               onTap: () {
                                                 final devices =
                                                     context.read<DeviceCubit>().state.resultDevices.data ?? [];
@@ -360,7 +352,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                             ),
                                             featureItem(
                                               iconPath: "assets/icons/icons_new/icon_environment.png",
-                                              title: "environment".tr(),
+                                              title: "Môi Trường".tr(),
                                               onTap: () {
                                                 Navigator.push(
                                                   context,
@@ -410,7 +402,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                           color: Colors.black.withOpacity(0.45),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
-                                        child: Text("device.favorite".tr(),
+                                        child: Text("Thiết bị hay dùng".tr(),
                                           style: TextStyle(
                                             fontSize: 13.sp,
                                             fontWeight: FontWeight.w700,
@@ -571,7 +563,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               mainAxisSpacing: 8,
-              crossAxisSpacing: 10,
+              crossAxisSpacing: 8,
               childAspectRatio: 1.2,
             ),
             itemBuilder: (context, index) {

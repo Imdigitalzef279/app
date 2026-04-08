@@ -107,11 +107,10 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   Widget buildDeviceCard(BuildContext context, device) {
     final isFake = (device.id ?? 0) < 0;
     final state = context.watch<DeviceCubit>().state;
-    final log = state.breakerLogs[device.code] ?? device.realtimeLog;    ///  Gateway status (ONLINE / OFFLINE)
-    final isGatewayOnline = log == null
-        ? true
-        : ["online", "1", "connected"]
-        .contains((log.state ?? "").toLowerCase());
+    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+    final isGatewayOnline = log != null &&
+        ["online", "1", "connected"]
+            .contains((log.state ?? "").toLowerCase());
     final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
     final isOn = realStatus == 1;
     final isMaintenance = realStatus == 2;
@@ -383,15 +382,19 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                 /// SWITCH
                 SizedBox(
                   height: 50,
-                  child: FittedBox(
-                    child: isSwitching
-                        ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                        : Switch(
-                      value: isOn,
+                  child: SizedBox(
+                    height: 50,
+                    child: Center(
+                      child: isSwitching
+                          ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                          : Switch(
+                        value: isOn,
                       onChanged: (!isFake &&
                           !isSwitching &&
                           countdown == 0 &&
@@ -407,6 +410,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       }
                           : null,
                     ),
+                  ),
                   ),
                 ),
 

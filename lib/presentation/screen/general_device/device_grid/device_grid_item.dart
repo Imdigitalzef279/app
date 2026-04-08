@@ -21,13 +21,19 @@ class DeviceGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DeviceCubit, DeviceState>(
+      buildWhen: (prev, curr) =>
+      prev.resultDevices != curr.resultDevices ||
+          prev.breakerLogs != curr.breakerLogs,
       builder: (context, state) {
-        final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+        final state = context.watch<DeviceCubit>().state;
+        final latestDevice = state.resultDevices.data
+            ?.firstWhere((d) => d.id == device.id, orElse: () => device) ?? device;
 
-        final cubit = context.read<DeviceCubit>();
-        final realStatus = cubit.getRealStatus(device, log);
+        final log = state.breakerLogs[latestDevice.code] ?? latestDevice.realtimeLog;
+        final realStatus = context.watch<DeviceCubit>().getRealStatus(latestDevice, log);
 
         final isOn = realStatus == 1;
+
         final isSwitching =
         state.switchingDevices.containsKey(device.id);
 
@@ -59,7 +65,9 @@ class DeviceGridItem extends StatelessWidget {
               ),
             );
           },
-          child: Container(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
             height: 105,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
@@ -187,6 +195,7 @@ class DeviceGridItem extends StatelessWidget {
               ],
             ),
           ),
+            )
         );
       },
     );
