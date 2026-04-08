@@ -8,6 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:solar_energy/presentation/routes/routes.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/services/update_service.dart';
 import '../common_widgets/app_loading_indicator.dart';
 
 class MyApp extends StatefulWidget {
@@ -18,6 +19,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UpdateService.checkUpdate(context);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
