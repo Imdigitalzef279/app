@@ -251,18 +251,35 @@ class _SettingScreenState extends State<SettingScreen> {
         ),
       ];
 
-      // Gửi tuần tự
+      ///  1. Lưu DB
       for (final config in configs) {
         await _repo.saveConfig(config);
       }
-      await sendProtectionSetting();
+
+      ///  2. Gửi xuống thiết bị + check kết quả
+      final ok = await sendProtectionSetting(); // <-- QUAN TRỌNG
+
+      ///  3. Hiển thị đúng trạng thái
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Lưu thành công")),
+          SnackBar(
+            content: Text(ok ? "Lưu thành công" : "Thiết bị không phản hồi"),
+            backgroundColor: ok ? Colors.green : Colors.red,
+          ),
         );
       }
+
     } catch (e) {
       debugPrint("Save error: $e");
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Lưu thất bại"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -581,32 +598,40 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Future<void> sendProtectionSetting() async {
-    final api = GetIt.instance<ApiClient>();
+  Future<bool> sendProtectionSetting() async {
+    try {
+      final api = GetIt.instance<ApiClient>();
 
-    final command = {
-      "method": "operate",
-      "payload": {
-        "addr": "1_1",
-        "IHighVal01": overCurrent.toInt().toString(),
-        "LgHighVal01": leakageCurrent.toInt().toString(),
-        "UHighVal01": overVoltage.toInt().toString(),
-        "ULowVal01": underVoltage.toInt().toString(),
-        "PHighVal01": overPower.toString(),
-        "T1HighVal01": overTemperature.toInt().toString(),
-      }
-    };
+      final command = {
+        "method": "operate",
+        "payload": {
+          "addr": "1_1",
+          "IHighVal01": overCurrent.toInt().toString(),
+          "LgHighVal01": leakageCurrent.toInt().toString(),
+          "UHighVal01": overVoltage.toInt().toString(),
+          "ULowVal01": underVoltage.toInt().toString(),
+          "PHighVal01": overPower.toInt().toString(), // FIX QUAN TRỌNG
+          "T1HighVal01": overTemperature.toInt().toString(),
+        }
+      };
 
-    final request = CbsMeterRequest(
-      gatewaySn: widget.device.gatewaySn,
-      breakerSn: widget.device.breakerSn,
-      addr: "1_1",
-      createdBy: "app",
-      commandValue: jsonEncode(command),
-      isForce: true,
-    );
+      final request = CbsMeterRequest(
+        gatewaySn: widget.device.gatewaySn,
+        breakerSn: widget.device.breakerSn,
+        addr: "1_1",
+        createdBy: "app",
+        commandValue: jsonEncode(command),
+        isForce: true,
+      );
 
-    await api.controlCircuitBreaker(request);
+      final res = await api.controlCircuitBreaker(request);
+
+      return res != null;
+
+    } catch (e) {
+      debugPrint("CBS error: $e");
+      return false;
+    }
   }
 
   Widget _buildSliderTile({

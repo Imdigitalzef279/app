@@ -270,7 +270,8 @@ class DeviceCubit extends Cubit<DeviceState> {
         },
       ));
       final success = await switchCbsWithForce(device, target, true);
-
+      final targetInt = int.parse(target);
+      updateLocalStatus(device.id, targetInt);
       if (!success) {
         _removeSwitching(device.id);
         AppToast.showToastError(title: "Gửi lệnh thất bại");
@@ -305,6 +306,8 @@ class DeviceCubit extends Cubit<DeviceState> {
       }
 
 
+
+      startCountdown(device.id);
 
       await waitBreakerState(
         device.id,
@@ -640,17 +643,25 @@ class DeviceCubit extends Cubit<DeviceState> {
         }
       }
 
-      logs[breakerSn] = log;
+      final currentDevice = state.resultDevices.data
+          ?.firstWhere((d) => d.code == breakerSn);
 
+      if (currentDevice != null &&
+          state.switchingDevices.containsKey(currentDevice.id)) {
+
+        print("⛔ BỎ LOG vì đang switching");
+        return;
+      }
+
+      logs[breakerSn] = log;
       final updatedDevices = (state.resultDevices.data ?? []).map((d) {
 
-        if (state.switchingDevices.containsKey(d.id)) {
-          return d;
-        }
+
 
         if (d.code == breakerSn) {
           return d.copyWith(
             status: log.rlySta ?? d.status ?? 0,
+            realtimeLog: log,
           );
         }
 
@@ -675,41 +686,32 @@ class DeviceCubit extends Cubit<DeviceState> {
       int expectedState,
       ) async {
 
-    int retry = 10;
-    await Future.delayed(const Duration(seconds: 1));
-    bool success = false;
+    int retry = 5;
 
     while (retry > 0) {
 
-      await Future.delayed(const Duration(seconds: 1));
-      retry--;
-
+      await Future.delayed(const Duration(seconds: 2));
       await loadBreakerLog(breakerSn);
 
       final log = state.breakerLogs[breakerSn];
-      final current = log?.rlySta ?? 0;
-
-      print("WAIT STATE: current=$current | expected=$expectedState");
+      final current = log?.rlySta;
 
       if (current == expectedState) {
-        updateLocalStatus(deviceId, expectedState);
-        success = true;
         break;
       }
+
+      retry--;
     }
 
-    if (success) {
-      _removeSwitching(deviceId);
-    } else {
-      _removeSwitching(deviceId);
-      AppToast.showToastError(title: "Thiết bị không phản hồi");
-    }
+    _removeSwitching(deviceId);
   }
   // ============================================================
   // HELPER
   // ============================================================
   int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
-    if (log == null) return -1;
+    if (log == null) {
+      return device.status ?? 0;
+    }
 
     if (log.rlyRepSta == 1) return 2;
 

@@ -24,8 +24,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   void initState() {
     super.initState();
     context.read<AnalyticsCubit>().loadEnergy(
-      powerStationId: widget.device.powerStationId ?? 1,
-      deviceId: widget.device.id!,
+      powerStationId: widget.device.powerStationId,
+      deviceId: widget.device.id,
       type: "DAY",
     );
   }
@@ -50,8 +50,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         setState(() => selectedRange = range);
 
         context.read<AnalyticsCubit>().loadEnergy(
-          powerStationId: widget.device.powerStationId ?? 1,
-          deviceId: widget.device.id!,
+          powerStationId: widget.device.powerStationId,
+          deviceId: widget.device.id,
           type: range.name.toUpperCase(),
         );
       },
@@ -162,29 +162,22 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
   // ================= CHART =================
   Widget buildChart(List<EnergyReportResponse> data) {
-
     final displayData = data;
+
     final rawValues = displayData.map<double>((e) {
       return selectedChart == 0 ? e.p : e.epi;
     }).toList();
 
-
-    final maxRaw = rawValues.isEmpty ? 1.0 : rawValues.reduce((a, b) => a > b ? a : b);
-
+    final maxRaw =
+    rawValues.isEmpty ? 1.0 : rawValues.reduce((a, b) => a > b ? a : b);
 
     final scaleFactor = maxRaw < 10 ? 1000 : 1;
 
     final values = rawValues.map((e) => e * scaleFactor).toList();
-    final spots = values
-        .asMap()
-        .entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value))
-        .toList();
 
-    final max = values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b);
-    final min = values.isEmpty ? 0.0 : values.reduce((a, b) => a < b ? a : b);
+    final max =
+    values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b);
 
-    final padding = (max - min) * 0.3;
     final maxIndex = values.indexOf(max);
 
     return SingleChildScrollView(
@@ -192,14 +185,16 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       child: SizedBox(
         width: displayData.length * 40,
         height: 260,
-        child: LineChart(
-          LineChartData(
-            minY: 0,
+        child: BarChart(
+          BarChartData(
+            alignment: BarChartAlignment.spaceBetween,
             maxY: max == 0 ? 1 : max * 1.2,
+
             gridData: FlGridData(
               show: true,
               drawVerticalLine: false,
             ),
+
             borderData: FlBorderData(show: false),
 
             titlesData: FlTitlesData(
@@ -210,7 +205,6 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  interval: 1,
                   getTitlesWidget: (value, _) {
                     final index = value.toInt();
                     if (index >= displayData.length) return SizedBox();
@@ -245,53 +239,26 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               ),
             ),
 
-            lineTouchData: LineTouchData(
-              touchTooltipData: LineTouchTooltipData(
-                getTooltipItems: (spots) {
-                  return spots.map((e) {
-                    return LineTooltipItem(
-                      (e.y / scaleFactor).toStringAsFixed(2),
-                      TextStyle(color: Colors.white),
-                    );
-                  }).toList();
-                },
-              ),
-            ),
+            barGroups: values.asMap().entries.map((e) {
+              final index = e.key;
+              final value = e.value;
 
-            lineBarsData: [
-              LineChartBarData(
-                spots: spots,
-                isCurved: true,
-                barWidth: 2.5,
-                color: selectedChart == 0 ? Colors.orange : Colors.blue,
-
-                dotData: FlDotData(
-                  show: true,
-                  getDotPainter: (spot, percent, bar, index) {
-                    if (index == maxIndex) {
-                      return FlDotCirclePainter(
-                        radius: 4,
-                        color: selectedChart == 0 ? Colors.orange : Colors.blue,
-                      );
-                    }
-                    return FlDotCirclePainter(
-                      radius: 3,
-                      color: Colors.blue,
-                    );
-                  },
-                ),
-
-                belowBarData: BarAreaData(
-                  show: true,
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.blue.withOpacity(0.3),
-                      Colors.transparent,
-                    ],
+              return BarChartGroupData(
+                x: index,
+                barRods: [
+                  BarChartRodData(
+                    toY: value,
+                    width: 14,
+                    borderRadius: BorderRadius.circular(4),
+                    color: index == maxIndex
+                        ? Colors.orange
+                        : (selectedChart == 0
+                        ? Colors.teal
+                        : Colors.blue),
                   ),
-                ),
-              ),
-            ],
+                ],
+              );
+            }).toList(),
           ),
         ),
       ),

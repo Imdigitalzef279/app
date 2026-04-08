@@ -54,8 +54,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   double realtimeCost = 0;
   int maintenanceCountdown = 0;
   Timer? maintenanceTimer;
-  double monthEnergy = 0;
-  double moneyMonth = 0;
   double epiAtStartOfMonth = 0;
   double epiAtStartOfRange = 0;
   bool isInitDone = false;
@@ -134,59 +132,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       },
     );
   }
-  void _calculateMoney(double energy) async {
-    final type = getMeterType();
 
-    if (type == MeterType.household) {
-
-      final money = calculateHouseholdCost(energy);
-
-      setState(() {
-        monthEnergy = energy;
-        moneyMonth = money;
-        realtimeCost = money;
-      });
-
-    } else {
-      await _loadElectricReport();
-    }
-  }
-
-  void _handleRealtime(Map<String, dynamic> data) {
-    if (!mounted) return;
-    if (!isInitDone) return;
-
-    try {
-      final dto = data["breakerMeterDataDto"];
-      if (dto == null) return;
-
-      final raw = Map<String, dynamic>.from(dto);
-
-      raw.updateAll((key, value) {
-        if (value is String) {
-          return num.tryParse(value) ?? value;
-        }
-        return value;
-      });
-
-      final log = AtomatLogResponse.fromJson(raw);
-
-      context.read<DeviceCubit>().updateRealtimeLogByCode(
-        currentDevice.code ?? "",
-        log,
-      );
-
-      final currentEpi = log.epi ?? 0;
-      final energy = (currentEpi - epiAtStartOfRange);
-      final safeEnergy = energy > 0 ? energy : 0.0;
-
-      setState(() {
-      });
-
-    } catch (e) {
-      print("Realtime error: $e");
-    }
-  }
   List getDisplayData(List chartData) {
     switch (_selectedRange) {
       case ChartRange.day:
@@ -236,24 +182,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       final repo = ElectricReportRepository(GetIt.instance<ApiClient>());
       final now = DateTime.now();
 
-      DateTime from;
-
-      switch (_selectedRange) {
-        case ChartRange.day:
-          from = DateTime(now.year, now.month, now.day);
-          break;
-        case ChartRange.week:
-          from = now.subtract(const Duration(days: 7));
-          break;
-        case ChartRange.month:
-          from = DateTime(now.year, now.month, 1);
-          break;
-        case ChartRange.year:
-          from = DateTime(now.year, 1, 1);
-          break;
-        default:
-          from = DateTime(now.year, now.month, 1);
-      }
+      final from = DateTime(now.year, now.month, now.day);
 
       final report = await repo.getElectricReport(
         meterId: currentDevice.id,
@@ -262,8 +191,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       );
 
       setState(() {
-        monthEnergy = report.tou.totalKwh;
-        moneyMonth = report.tou.totalWithVat;
+        todayEnergy = report.tou.totalKwh;
+        moneyToday = report.tou.totalWithVat;
       });
 
     } catch (e) {
@@ -634,14 +563,14 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                         ),
                       ),
                       Text(
-                        "${NumberFormat("#,###").format(moneyMonth)} đ",
+                        "${NumberFormat("#,###").format(moneyToday)} đ",
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "${monthEnergy.toStringAsFixed(2)} kWh",
+                        "${todayEnergy.toStringAsFixed(2)} kWh",
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey,
@@ -653,7 +582,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
                 /// PRICE
                     Text(
-                      "≈ ${NumberFormat("#,###").format(moneyMonth)} đ",
+                      "≈ ${NumberFormat("#,###").format(moneyToday)} đ",
                       style: const TextStyle(
                         color: Colors.green,
                         fontSize: 12,
@@ -689,20 +618,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     );
   }
   String getTitle() {
-    final now = DateTime.now();
-
-    switch (_selectedRange) {
-      case ChartRange.day:
-        return "Tiền điện hôm nay";
-      case ChartRange.week:
-        return "Tiền điện 7 ngày";
-      case ChartRange.month:
-        return "Tiền điện tháng ${now.month}/${now.year}";
-      case ChartRange.quarter:
-        return "Tiền điện Quý ${now.month}/${now.year}";
-      case ChartRange.year:
-        return "Tiền điện năm ${now.year}";
-    }
+    return "Tiền điện hôm nay";
   }
   Widget _tabItem(
       String text,
@@ -930,30 +846,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     final now = DateTime.now();
 
-    DateTime start;
-
-    switch (_selectedRange) {
-      case ChartRange.day:
-        start = DateTime(now.year, now.month, now.day);
-        break;
-
-      case ChartRange.week:
-        final weekday = now.weekday;
-        final monday = now.subtract(Duration(days: weekday - 1));
-        start = DateTime(monday.year, monday.month, monday.day);
-        break;
-
-      case ChartRange.month:
-        start = DateTime(now.year, now.month, 1);
-        break;
-
-      case ChartRange.year:
-        start = DateTime(now.year, 1, 1);
-        break;
-
-      default:
-        start = DateTime(now.year, now.month, 1);
-    }
+    final start = DateTime(now.year, now.month, now.day);
 
     /// TẠM THỜI: vẫn dùng API cũ
     final result = await api.getBreakerLog(currentDevice.code ?? "");
@@ -980,8 +873,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     setState(() {
       epiAtStartOfRange = epiStart;
-      monthEnergy = safeEnergy;
-      moneyMonth = money;
+      todayEnergy = safeEnergy;
+      moneyToday = money;
       realtimeCost = money;
     });
 
@@ -1359,9 +1252,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     final isSwitching = deviceCubit.isDeviceSwitching(device.id);
 
-    final realStatus = isSwitching
-        ? device.status
-        : deviceCubit.getRealStatus(device, log);
+    final realStatus = deviceCubit.getRealStatus(device, log);
 
     String statusText;
     IconData icon;
@@ -1525,12 +1416,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     print("LOG.rlySta: ${log?.rlySta}");
     final isSwitching = deviceCubit.isDeviceSwitching(device.id);
 
-    final realStatus = isSwitching
-        ? device.status
-        : deviceCubit.getRealStatus(device, log);
+    final realStatus = deviceCubit.getRealStatus(device, log);
     print("REAL STATUS: $realStatus");
     final bool isOn = realStatus == 1;
-
         final bool isMaintenance = realStatus == 2;
         final countdown = state.switchCountdowns[device.id] ?? 0;
         return Scaffold(
@@ -1600,7 +1488,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                                 : BreakerColors.on,
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: (isMaintenance || isSwitching)
+                          onPressed: (isMaintenance || isSwitching || countdown > 0)
                               ? null
                               : () async {
                             final password = await _showPasswordDialog(context);
@@ -1611,7 +1499,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                               password: password,
                             );
                           },
-                          child: isSwitching
+                          child: (isSwitching || countdown > 0)
                               ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -1621,7 +1509,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               ),
                               SizedBox(width: 8),
-                  Text(isOn ? "Đang cắt..." : "Đang đóng..."),
+                              Text(
+                                countdown > 0
+                                    ? "${countdown}s"
+                                    : (isOn ? "Đang cắt..." : "Đang đóng..."),
+                              ),
                             ],
                           )
                               : Row(
@@ -1846,10 +1738,7 @@ Widget buildStatusCard(
 
   final isSwitching = deviceCubit.isDeviceSwitching(device.id);
 
-  final realStatus = isSwitching
-      ? device.status
-      : (device.status ?? deviceCubit.getRealStatus(device, log));
-
+  final realStatus = deviceCubit.getRealStatus(device, log);
   final bool isOn = realStatus == 1;
   String text;
   Color color;

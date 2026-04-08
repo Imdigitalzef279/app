@@ -157,8 +157,8 @@ abstract class ApiClient {
   // ================= ENERGY REPORT (NEW) =================
   @GET('api/app/energy-report')
   Future<List<EnergyReportResponse>> getEnergyReport(
-      @Query('stationId') int stationId,
-      @Query('meterId') int meterId,
+      @Query('powerStationId') int powerStationId,
+      @Query('deviceId') int deviceId,
       @Query('type') String type,
       @Query('time') String time,
       );

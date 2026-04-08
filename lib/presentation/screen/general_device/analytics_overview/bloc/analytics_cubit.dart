@@ -46,7 +46,8 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
             "${date.day.toString().padLeft(2, '0')}";
       }
 
-      final time = formatDate(DateTime.now());
+      final now = DateTime.now().toUtc().add(Duration(hours: 7));
+      final time = formatDate(now);
 
       print("REQUEST:");
       print("powerStationId: $powerStationId");
