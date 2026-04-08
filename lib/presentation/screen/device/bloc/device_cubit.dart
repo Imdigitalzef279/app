@@ -228,8 +228,6 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     try {
 
-      ///  load log mới nhất
-      await loadBreakerLog(device.code!);
 
       final log = state.breakerLogs[device.code] ?? device.realtimeLog;
       if (log == null) {
@@ -239,17 +237,17 @@ class DeviceCubit extends Cubit<DeviceState> {
       ///  FIX QUAN TRỌNG: dùng chung logic với UI
 
 
+
       final realStatus = getRealStatus(device, log);
 
-      final currentState = device.status ?? 0;
-
-      final target = currentState == 1 ? "0" : "1";
-
-      if (int.parse(target) == currentState) {
-        AppToast.showToastError(title: "Thiết bị đã ở trạng thái này");
+      if (realStatus != 0 && realStatus != 1) {
+        AppToast.showToastError(title: "Trạng thái không hợp lệ");
         _removeSwitching(device.id);
         return;
       }
+
+      final target = realStatus == 1 ? "0" : "1";
+
 
       ///  không cho đóng cắt nếu:
       if (realStatus == -1) {
@@ -271,7 +269,6 @@ class DeviceCubit extends Cubit<DeviceState> {
           device.id: true,
         },
       ));
-      startCountdown(device.id);
       final success = await switchCbsWithForce(device, target, true);
 
       if (!success) {
@@ -280,10 +277,34 @@ class DeviceCubit extends Cubit<DeviceState> {
         return;
       }
 
+      final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
 
-      updateLocalStatus(device.id, int.parse(target));
-      await Future.delayed(const Duration(seconds: 2));
-      await loadBreakerLog(device.code!);
+      final oldLog = logs[device.code] ?? device.realtimeLog;
+
+      if (oldLog != null) {
+        logs[device.code!] = oldLog.copyWith(
+          rlySta: int.parse(target),
+        );
+      }
+
+      final updatedDevices = (state.resultDevices.data ?? []).map((d) {
+        if (d.id == device.id) {
+          return d.copyWith(status: int.parse(target));
+        }
+        return d;
+      }).toList();
+
+      emit(state.copyWith(
+        breakerLogs: logs,
+        resultDevices: state.resultDevices.copyWith(data: updatedDevices),
+      ));
+      if (!success) {
+        _removeSwitching(device.id);
+        AppToast.showToastError(title: "Gửi lệnh thất bại");
+        return;
+      }
+
+
 
       await waitBreakerState(
         device.id,
@@ -622,14 +643,19 @@ class DeviceCubit extends Cubit<DeviceState> {
       logs[breakerSn] = log;
 
       final updatedDevices = (state.resultDevices.data ?? []).map((d) {
+
+        if (state.switchingDevices.containsKey(d.id)) {
+          return d;
+        }
+
         if (d.code == breakerSn) {
           return d.copyWith(
-            status: state.switchingDevices.containsKey(d.id)
-                ? d.status
-                : (log.rlySta ?? d.status ?? 0),
+            status: log.rlySta ?? d.status ?? 0,
           );
         }
+
         return d;
+
       }).toList();
 
       emit(state.copyWith(
@@ -649,9 +675,8 @@ class DeviceCubit extends Cubit<DeviceState> {
       int expectedState,
       ) async {
 
-    int retry = 20;
-    await Future.delayed(const Duration(seconds: 3));
-
+    int retry = 10;
+    await Future.delayed(const Duration(seconds: 1));
     bool success = false;
 
     while (retry > 0) {
@@ -668,7 +693,6 @@ class DeviceCubit extends Cubit<DeviceState> {
 
       if (current == expectedState) {
         updateLocalStatus(deviceId, expectedState);
-
         success = true;
         break;
       }
@@ -676,8 +700,8 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     if (success) {
       _removeSwitching(deviceId);
-    }
-    if (!success) {
+    } else {
+      _removeSwitching(deviceId);
       AppToast.showToastError(title: "Thiết bị không phản hồi");
     }
   }
@@ -685,10 +709,6 @@ class DeviceCubit extends Cubit<DeviceState> {
   // HELPER
   // ============================================================
   int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
-    if (state.switchingDevices.containsKey(device.id)) {
-      return device.status ?? log?.rlySta ?? 0;
-    }
-
     if (log == null) return -1;
 
     if (log.rlyRepSta == 1) return 2;
@@ -699,7 +719,7 @@ class DeviceCubit extends Cubit<DeviceState> {
         return -1;
       }
     }
-    // return device.status ?? log.rlySta ?? 0; này sai
+
     return log.rlySta ?? device.status ?? 0;
   }
   void updateDeviceAvatar(int deviceId, String path) {
@@ -849,9 +869,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       if (d.code == code) {
         return d.copyWith(
           realtimeLog: log,
-          status: state.switchingDevices.containsKey(d.id)
-              ? d.status
-              : (log.rlySta ?? d.status ?? 0),
+          status: log.rlySta ?? d.status ?? 0,
         );
       }
       return d;

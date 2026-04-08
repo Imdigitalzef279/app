@@ -1353,46 +1353,26 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
   }
   Widget _buildBigStatusCard(DeviceResponse device, AtomatLogResponse? log) {
-    final countdown = context.watch<DeviceCubit>()
-        .state.switchCountdowns[device.id] ?? 0;
 
-    final isWaiting = countdown > 0;
-    final state = context.watch<DeviceCubit>().state;
-    final realStatus = context.watch<DeviceCubit>().getRealStatus(device, log);;
+    final deviceCubit = context.watch<DeviceCubit>();
+
+
+    final isSwitching = deviceCubit.isDeviceSwitching(device.id);
+
+    final realStatus = isSwitching
+        ? device.status
+        : deviceCubit.getRealStatus(device, log);
+
     String statusText;
     IconData icon;
     List<Color> gradientColors;
-    if (isWaiting) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          gradient: LinearGradient(
-            colors: [
-              Colors.blue.withOpacity(0.7),
-              Colors.blue,
-            ],
-          ),
-        ),
-        child: Row(
-          children: [
-            CircularProgressIndicator(color: Colors.white),
-            SizedBox(width: 10),
-            Text(
-              "Đang xử lý (${countdown}s)",
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ],
-        ),
-      );
-    }
+
     switch (realStatus) {
 
     /// OFFLINE
       case -1:
         statusText = "Ngoại tuyến";
         icon = Icons.cloud_off;
-
         gradientColors = [
           Colors.grey.shade400,
           Colors.grey.shade600,
@@ -1403,7 +1383,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       case 2:
         statusText = "Bảo trì";
         icon = Icons.build;
-
         gradientColors = [
           BreakerColors.maintenance.withOpacity(0.8),
           BreakerColors.maintenance,
@@ -1414,7 +1393,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       case 1:
         statusText = "Đóng";
         icon = Icons.flash_on;
-
         gradientColors = [
           BreakerColors.on.withOpacity(0.7),
           BreakerColors.on,
@@ -1425,7 +1403,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       default:
         statusText = "Cắt";
         icon = Icons.power_off;
-
         gradientColors = [
           BreakerColors.off.withOpacity(0.7),
           BreakerColors.off,
@@ -1481,9 +1458,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     letterSpacing: 1,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
                   statusText,
                   style: const TextStyle(
@@ -1529,10 +1504,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final state = context.watch<DeviceCubit>().state;
 
 
-    final device = state.resultDevices.data?.firstWhere(
-          (d) => d.id == widget.device.id,
-      orElse: () => widget.device,
-    );
+    final device = state.resultDevices.data
+        ?.firstWhere((d) => d.id == widget.device.id);
+
+    if (device == null) {
+      return const SizedBox();
+    }
     print("===== DETAIL BUILD =====");
     print("DEVICE ID: ${device?.id}");
     print("DEVICE.STATUS: ${device?.status}");
@@ -1546,14 +1523,16 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         final deviceCubit = context.watch<DeviceCubit>();
     final log = state.breakerLogs[device.code] ?? device.realtimeLog;
     print("LOG.rlySta: ${log?.rlySta}");
-    final realStatus =
-    context.watch<DeviceCubit>().getRealStatus(device, log);
+    final isSwitching = deviceCubit.isDeviceSwitching(device.id);
+
+    final realStatus = isSwitching
+        ? device.status
+        : deviceCubit.getRealStatus(device, log);
     print("REAL STATUS: $realStatus");
     final bool isOn = realStatus == 1;
 
         final bool isMaintenance = realStatus == 2;
         final countdown = state.switchCountdowns[device.id] ?? 0;
-        final isSwitching = deviceCubit.isDeviceSwitching(device.id);
         return Scaffold(
           extendBodyBehindAppBar: true,
           backgroundColor: Colors.transparent,
@@ -1863,8 +1842,13 @@ Widget buildStatusCard(
   final bool isMaintenance = log?.rlyRepSta == 1;
 
 
-  final realStatus =
-  context.watch<DeviceCubit>().getRealStatus(device, log);
+  final deviceCubit = context.watch<DeviceCubit>();
+
+  final isSwitching = deviceCubit.isDeviceSwitching(device.id);
+
+  final realStatus = isSwitching
+      ? device.status
+      : (device.status ?? deviceCubit.getRealStatus(device, log));
 
   final bool isOn = realStatus == 1;
   String text;

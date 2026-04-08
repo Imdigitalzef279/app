@@ -47,22 +47,22 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
       }
 
       final time = formatDate(DateTime.now());
+
       print("REQUEST:");
       print("powerStationId: $powerStationId");
       print("deviceId: $deviceId");
       print("type: $type");
       print("time: $time");
-      final res = await api.getEnergyReport(
+
+      final data = await api.getEnergyReport(
         powerStationId,
         deviceId,
-        type,
+        type.toUpperCase(),
         time,
       );
 
-      print("DATA LENGTH: ${res.length}");
-
       emit(state.copyWith(
-        data: res,
+        data: data,
         isLoading: false,
       ));
     } catch (e) {
@@ -73,7 +73,6 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
         print("👉 DATA: ${e.response?.data}");
         print("👉 HEADERS: ${e.response?.headers}");
       }
-    }
 
       emit(state.copyWith(
         data: [],
@@ -81,3 +80,4 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
       ));
     }
   }
+}

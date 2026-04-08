@@ -27,6 +27,7 @@ import '../../dto/alarm/response/alarm_response.dart';
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../dto/electric_report/electric_report_response.dart';
 import '../../dto/energy_report/energy_report_response.dart';
+import '../../dto/result_response/result_response.dart';
 part 'api_client.g.dart';
 
 @RestApi(baseUrl: '')
@@ -156,8 +157,8 @@ abstract class ApiClient {
   // ================= ENERGY REPORT (NEW) =================
   @GET('api/app/energy-report')
   Future<List<EnergyReportResponse>> getEnergyReport(
-      @Query('powerStationId') int powerStationId,
-      @Query('deviceId') int deviceId,
+      @Query('stationId') int stationId,
+      @Query('meterId') int meterId,
       @Query('type') String type,
       @Query('time') String time,
       );

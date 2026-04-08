@@ -2,15 +2,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../application/enums/chart_range.dart';
-import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../../../data/dto/device/response/device_response.dart';
 import '../../../../data/dto/energy_report/energy_report_response.dart';
-import '../../Electricity/automat/automat_chart/bloc/automat_chart_cubit.dart';
 import 'bloc/analytics_cubit.dart';
-import 'line_chart_widget.dart';
 
 class AnalyticsDetailScreen extends StatefulWidget {
   final DeviceResponse device;
+
   const AnalyticsDetailScreen({super.key, required this.device});
 
   @override
@@ -19,9 +17,8 @@ class AnalyticsDetailScreen extends StatefulWidget {
 }
 
 class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
-
-  int selectedChart = 0;
   ChartRange selectedRange = ChartRange.day;
+  int selectedChart = 0;
 
   @override
   void initState() {
@@ -29,7 +26,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     context.read<AnalyticsCubit>().loadEnergy(
       powerStationId: widget.device.powerStationId ?? 1,
       deviceId: widget.device.id!,
-      type: "day",
+      type: "DAY",
     );
   }
 
@@ -38,40 +35,37 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _filterButton("Ngày", ChartRange.day),
-        const SizedBox(width: 8),
-        _filterButton("Tháng", ChartRange.month),
-        const SizedBox(width: 8),
-        _filterButton("Năm", ChartRange.year),
+        _filter("Ngày", ChartRange.day),
+        _filter("Tháng", ChartRange.month),
+        _filter("Năm", ChartRange.year),
       ],
     );
   }
 
-  Widget _filterButton(String text, ChartRange range) {
-    final isActive = selectedRange == range;
+  Widget _filter(String text, ChartRange range) {
+    final active = selectedRange == range;
 
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedRange = range;
-        });
+        setState(() => selectedRange = range);
 
         context.read<AnalyticsCubit>().loadEnergy(
           powerStationId: widget.device.powerStationId ?? 1,
           deviceId: widget.device.id!,
-            type: range.name[0].toUpperCase() + range.name.substring(1)
+          type: range.name.toUpperCase(),
         );
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        margin: EdgeInsets.only(left: 8),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isActive ? Colors.green : Colors.grey[200],
+          color: active ? Colors.green : Colors.grey[200],
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           text,
           style: TextStyle(
-            color: isActive ? Colors.white : Colors.black87,
+            color: active ? Colors.white : Colors.black87,
             fontSize: 12,
           ),
         ),
@@ -79,34 +73,31 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     );
   }
 
-  // ================= TAB CHART =================
-  Widget buildChartSelector() {
-    final tabs = ["Công suất", "Điện năng", "Tiêu thụ"];
+  // ================= TAB =================
+  Widget buildTabs() {
+    final tabs = ["Công suất (kW)", "Điện năng (kWh)"];
+
     return Row(
-      children: List.generate(tabs.length, (index) {
-        final isActive = selectedChart == index;
+      children: List.generate(tabs.length, (i) {
+        final active = selectedChart == i;
 
         return Expanded(
           child: GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedChart = index;
-              });
-            },
+            onTap: () => setState(() => selectedChart = i),
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              padding: EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
-                color: isActive ? Colors.green : Colors.grey[200],
+                color: active ? Colors.green : Colors.grey[200],
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
                 child: Text(
-                  tabs[index],
+                  tabs[i],
                   style: TextStyle(
-                    color: isActive ? Colors.white : Colors.black87,
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
+                    color: active ? Colors.white : Colors.black87,
                   ),
                 ),
               ),
@@ -114,6 +105,196 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           ),
         );
       }),
+    );
+  }
+  // ================= KPI =================
+  Widget buildHeader(List<EnergyReportResponse> data) {
+    if (data.isEmpty) return SizedBox();
+
+
+    final values = data.map((e) {
+      return selectedChart == 0 ? e.p : e.epi;
+    }).toList();
+
+    final total = values.fold(0.0, (a, b) => a + b);
+    final avg = values.reduce((a, b) => a + b) / values.length;
+    final max = values.reduce((a, b) => a > b ? a : b);
+    return Row(
+      children: [
+        _kpi(
+          selectedChart == 0 ? "Công suất" : "Điện năng",
+          total,
+          selectedChart == 0 ? "kW" : "kWh",
+        ),
+        _kpi("TB", avg, "kW"),
+        _kpi("Peak", max, "kW"),
+      ],
+    );
+  }
+
+  Widget _kpi(String title, double value, String unit) {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 4),
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Color(0xFFF69C21),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Text(title, style: TextStyle(color: Colors.white70, fontSize: 12)),
+            SizedBox(height: 6),
+            Text(
+              value.toStringAsFixed(1),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            Text(unit, style: TextStyle(color: Colors.white54, fontSize: 10)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ================= CHART =================
+  Widget buildChart(List<EnergyReportResponse> data) {
+
+    final displayData = data;
+    final rawValues = displayData.map<double>((e) {
+      return selectedChart == 0 ? e.p : e.epi;
+    }).toList();
+
+
+    final maxRaw = rawValues.isEmpty ? 1.0 : rawValues.reduce((a, b) => a > b ? a : b);
+
+
+    final scaleFactor = maxRaw < 10 ? 1000 : 1;
+
+    final values = rawValues.map((e) => e * scaleFactor).toList();
+    final spots = values
+        .asMap()
+        .entries
+        .map((e) => FlSpot(e.key.toDouble(), e.value))
+        .toList();
+
+    final max = values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b);
+    final min = values.isEmpty ? 0.0 : values.reduce((a, b) => a < b ? a : b);
+
+    final padding = (max - min) * 0.3;
+    final maxIndex = values.indexOf(max);
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        width: displayData.length * 40,
+        height: 260,
+        child: LineChart(
+          LineChartData(
+            minY: 0,
+            maxY: max == 0 ? 1 : max * 1.2,
+            gridData: FlGridData(
+              show: true,
+              drawVerticalLine: false,
+            ),
+            borderData: FlBorderData(show: false),
+
+            titlesData: FlTitlesData(
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  interval: 1,
+                  getTitlesWidget: (value, _) {
+                    final index = value.toInt();
+                    if (index >= displayData.length) return SizedBox();
+
+                    final time = displayData[index].time;
+
+                    if (selectedRange == ChartRange.day) {
+                      return Text("${time.hour}h",
+                          style: TextStyle(fontSize: 10));
+                    } else if (selectedRange == ChartRange.month) {
+                      return Text("${time.day}",
+                          style: TextStyle(fontSize: 10));
+                    } else {
+                      return Text("${time.month}",
+                          style: TextStyle(fontSize: 10));
+                    }
+                  },
+                ),
+              ),
+
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 45,
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      (value / scaleFactor).toStringAsFixed(1),
+                      style: TextStyle(fontSize: 10),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            lineTouchData: LineTouchData(
+              touchTooltipData: LineTouchTooltipData(
+                getTooltipItems: (spots) {
+                  return spots.map((e) {
+                    return LineTooltipItem(
+                      (e.y / scaleFactor).toStringAsFixed(2),
+                      TextStyle(color: Colors.white),
+                    );
+                  }).toList();
+                },
+              ),
+            ),
+
+            lineBarsData: [
+              LineChartBarData(
+                spots: spots,
+                isCurved: true,
+                barWidth: 2.5,
+                color: selectedChart == 0 ? Colors.orange : Colors.blue,
+
+                dotData: FlDotData(
+                  show: true,
+                  getDotPainter: (spot, percent, bar, index) {
+                    if (index == maxIndex) {
+                      return FlDotCirclePainter(
+                        radius: 4,
+                        color: selectedChart == 0 ? Colors.orange : Colors.blue,
+                      );
+                    }
+                    return FlDotCirclePainter(
+                      radius: 3,
+                      color: Colors.blue,
+                    );
+                  },
+                ),
+
+                belowBarData: BarAreaData(
+                  show: true,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.blue.withOpacity(0.3),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -124,489 +305,73 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       ) {
     final now = DateTime.now();
 
-    List<EnergyReportResponse> filtered;
+    final filtered = data.where((e) {
+      final d = e.time;
 
-    switch (range) {
-      case ChartRange.day:
-        filtered = data.where((e) {
-          final d = e.time;
-          return d != null &&
-              d.year == now.year &&
+      switch (range) {
+        case ChartRange.day:
+          return d.day == now.day &&
               d.month == now.month &&
-              d.day == now.day;
-        }).toList();
-        break;
-      case ChartRange.week:
-        filtered = data.where((e) {
-          final d = e.time;
-          if (d == null) return false;
-
-          final nowWeekday = now.weekday; // thứ hiện tại
-          final startOfWeek = now.subtract(Duration(days: nowWeekday - 1));
-          final endOfWeek = startOfWeek.add(const Duration(days: 6));
-
-          return d.isAfter(startOfWeek.subtract(const Duration(seconds: 1))) &&
-              d.isBefore(endOfWeek.add(const Duration(days: 1)));
-        }).toList();
-        break;
-      case ChartRange.month:
-        filtered = data.where((e) {
-          final d = e.time;
-          return d != null &&
-              d.year == now.year &&
-              d.month == now.month;
-        }).toList();
-        break;
-
-      case ChartRange.year:
-        filtered = data.where((e) {
-          final d = e.time;
-          return d != null &&
               d.year == now.year;
-        }).toList();
-        break;
-      case ChartRange.quarter:
-        filtered = data.where((e) {
-          final d = e.time;
-          if (d == null) return false;
 
-          final quarter = ((now.month - 1) ~/ 3) + 1;
-          final itemQuarter = ((d.month - 1) ~/ 3) + 1;
+        case ChartRange.month:
+          return d.month == now.month && d.year == now.year;
 
-          return d.year == now.year && itemQuarter == quarter;
-        }).toList();
-        break;
-    }
+        case ChartRange.year:
+          return d.year == now.year;
 
-    // SORT theo thời gian
+        default:
+          return true;
+      }
+    }).toList();
+
     filtered.sort((a, b) => a.time.compareTo(b.time));
     return filtered;
   }
-  List<double> buildAvgLine(
-      List<EnergyReportResponse> data,
-      double? Function(EnergyReportResponse) getY,
-      ) {
-    final values = data.map((e) => getY(e) ?? 0).toList();
 
-    if (values.isEmpty) return [];
-
-    final avg = values.reduce((a, b) => a + b) / values.length;
-
-    return List.generate(values.length, (_) => avg);
-  }
-  // ================= CHART =================
-  Widget buildMainChart(List<EnergyReportResponse> data) {
-    switch (selectedChart) {
-      case 0:
-        return _buildProChart(data, (e) => e.p, "Công suất", Colors.red);
-
-      case 1:
-        return _buildProChart(data, (e) => e.epi, "Điện năng", Colors.blue);
-
-      default:
-        return _buildProChart(data, (e) => e.ct, "Tiêu thụ", Colors.green);
-    }
-  }
-  Widget _legendDot(Color color, String text) {
-    return Row(
-      children: [
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-        SizedBox(width: 4),
-        Text(text, style: TextStyle(fontSize: 12)),
-      ],
-    );
-  }
-  Widget _buildProChart(
-      List<EnergyReportResponse> data,
-      double? Function(EnergyReportResponse) getY,
-      String label,
-      Color color,
-      ) {
-    final displayData = data.length > 12 ? data.sublist(data.length - 12) : data;
-    final values = displayData.map((e) => getY(e) ?? 0).toList();
-    final avg = values.isEmpty
-        ? 0.0
-        : values.reduce((a, b) => a + b) / values.length;
-
-    final latest = values.isNotEmpty ? values.last : 0;
-    final maxValue = values.isEmpty
-        ? 0.0
-        : values.reduce((a, b) => a > b ? a : b);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 12),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(
-              latest.toStringAsFixed(2),
-              style: TextStyle(color: color, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-
-        SizedBox(height: 6),
-
-        Row(
-          children: [
-            _legendDot(color, "Hiện tại"),
-            SizedBox(width: 12),
-            _legendDot(color.withOpacity(0.4), "TB"),
-          ],
-        ),
-
-        SizedBox(height: 10),
-
-        SizedBox(
-          height: 180,
-          child: BarChart(
-            BarChartData(
-              minY: 0,
-              maxY: maxValue * 2.5,
-              gridData: FlGridData(show: true),
-              borderData: FlBorderData(show: false),
-
-              barGroups: List.generate(displayData.length, (index) {
-                final v = values[index];
-
-                return BarChartGroupData(
-                  x: index,
-                  barsSpace: 4,
-                  barRods: [
-                    BarChartRodData(toY: v, width: 6, color: color),
-                    BarChartRodData(
-                      toY: avg,
-                      width: 6,
-                      color: color.withOpacity(0.4),
-                    ),
-                  ],
-                );
-              }),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-  Widget buildCompareBarChart({
-    required List<EnergyReportResponse> data,
-    required double? Function(EnergyReportResponse) getY,
-    required Color color,
-  }) {
-    final values = data.map((e) => getY(e) ?? 0).toList();
-
-    final avg = values.isEmpty
-        ? 0.0
-        : values.reduce((a, b) => a + b) / values.length;
-
-    return BarChart(
-      BarChartData(
-        gridData: FlGridData(show: true),
-        borderData: FlBorderData(show: false),
-
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-
-        barGroups: List.generate(values.length, (index) {
-          final v = values[index];
-
-          return BarChartGroupData(
-            x: index,
-            barsSpace: 4,
-            barRods: [
-              // Current
-              BarChartRodData(
-                toY: v,
-                borderRadius: BorderRadius.zero,
-                width: 6,
-                color: color,
-              ),
-
-              // Avg
-              BarChartRodData(
-                toY: avg,
-                width: 6,
-                color: color.withOpacity(0.4),
-              ),
-            ],
-          );
-        }),
-      ),
-    );
-  }
-  Widget buildChartCard({required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(12),
-      child: child,
-    );
-  }
-
-  // ================= STATS =================
-  Widget buildStatsGrid(List<EnergyReportResponse> data) {
-    if (data.isEmpty) return const SizedBox();
-
-    return Column(
-      children: [
-        _buildSectionCard("Năng lượng", data, [
-          ("Công suất", (e) => e.p),
-          ("Điện năng", (e) => e.epi),
-          ("Tiêu thụ", (e) => e.ct),
-        ]),
-      ],
-    );
-  }
-  Widget _buildSectionCard(
-      String title,
-      List<EnergyReportResponse> data,
-      List<(String, double? Function(EnergyReportResponse))> fields,
-      ) {
-    final last = data.last;
-
-    double avg(List<double?> values) {
-      final valid = values.whereType<double>().toList();
-      if (valid.isEmpty) return 0;
-      return valid.reduce((a, b) => a + b) / valid.length;
-    }
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 🔥 TITLE
-          Row(
-            children: [
-              Icon(Icons.analytics, size: 18, color: Colors.green),
-              const SizedBox(width: 6),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 10),
-
-          // HEADER
-          Row(
-            children: const [
-              Expanded(flex: 2, child: Text("Thông số")),
-              Expanded(child: Text("Hiện tại", textAlign: TextAlign.center)),
-              Expanded(child: Text("TB", textAlign: TextAlign.center)),
-            ],
-          ),
-
-          const Divider(),
-
-          // DATA
-          ...fields.map((f) {
-            final current = f.$2(last);
-            final avgValue = avg(data.map((e) => f.$2(e)).toList());
-
-            return _rowComparePro(f.$1, current, avgValue);
-          }),
-        ],
-      ),
-    );
-  }
-  Widget _rowComparePro(String label, double? current, double avg) {
-    final currentValue = current ?? 0;
-    final isHigher = currentValue > avg;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Expanded(flex: 2, child: Text(label)),
-
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  isHigher ? Icons.arrow_upward : Icons.arrow_downward,
-                  size: 14,
-                  color: isHigher ? Colors.red : Colors.green,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  currentValue.toStringAsFixed(2),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: isHigher ? Colors.red : Colors.green,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Expanded(
-            child: Text(
-              avg.toStringAsFixed(2),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _row(String label, double? value) {
-    final v = (value ?? 0).toStringAsFixed(2);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label),
-          Text(
-            v,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _rowCompare(String label, double? current, double avg) {
-    final currentValue = (current ?? 0);
-    final currentText = currentValue.toStringAsFixed(2);
-    final avgText = avg.toStringAsFixed(2);
-
-    final isHigher = currentValue > avg;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Expanded(flex: 2, child: Text(label)),
-
-          Expanded(
-            child: Text(
-              currentText,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isHigher ? Colors.red : Colors.green,
-              ),
-            ),
-          ),
-
-          Expanded(
-            child: Text(
-              avgText,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
   // ================= UI =================
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AnalyticsCubit>().state;
-    final rawData = state.data;
-    final data = applyRange(rawData, selectedRange);
+    final data = applyRange(state.data, selectedRange);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.device.name ?? ""),
-      ),
+      appBar: AppBar(title: Text(widget.device.name ?? "")),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFE8F5E9),
-              Colors.white,
-            ],
-          ),
-        ),
+        color: Color(0xFFF5F7FB),
         child: Stack(
           children: [
             ListView(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               children: [
                 buildFilterBar(),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
-                buildChartSelector(),
-                const SizedBox(height: 12),
+                buildTabs(),
+                SizedBox(height: 12),
 
-                data.isEmpty
-                    ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text(
-                      "Chưa có dữ liệu",
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                buildHeader(data),
+                SizedBox(height: 12),
+
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                )
-                    : buildChartCard(
-                  child: AnimatedSwitcher(
-                    duration: Duration(milliseconds: 300),
-                    child: buildMainChart(data),
-                  ),
+                  child: buildChart(data),
                 ),
 
-                buildStatsGrid(data),
+                SizedBox(height: 20),
               ],
             ),
 
             if (state.isLoading)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.white.withOpacity(0.5),
-                  child: Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ),
+              Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
               ),
           ],
