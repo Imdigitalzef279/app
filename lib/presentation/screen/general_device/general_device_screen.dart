@@ -10,6 +10,7 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/general_device/project_setting_screen.dart';
 import 'package:solar_energy/presentation/screen/general_device/scan_qr/scan_qr_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../data/dto/device/response/device_response.dart';
 import '../../../data/dto/power_station/response/power_station_response.dart';
@@ -123,11 +124,23 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     devices.where((d) => d.isFavorite).toList();
     String locationText = "Hà Nội";
 
-    final bannerImages = [
-      "assets/images/matis/1.png",
-      "assets/images/matis/Enertrek System.png",
-      "assets/images/matis/4.png",
-      "assets/images/matis/5.png",
+    final bannerData = [
+      {
+        "img": "assets/images/matis/1.png",
+        "url": "https://krapower.com.vn/en/groups"
+      },
+      {
+        "img": "assets/images/matis/Enertrek System.png",
+        "url": "https://krapower.com.vn/en/groups"
+      },
+      {
+        "img": "assets/images/matis/4.png",
+        "url": "https://krapower.com.vn/en/groups"
+      },
+      {
+        "img": "assets/images/matis/5.png",
+        "url": "https://krapower.com.vn/en/groups"
+      },
     ];
 
     return Scaffold(
@@ -274,11 +287,22 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: PageView.builder(
-                                      itemCount: bannerImages.length,
+                                      itemCount: bannerData.length,
                                       itemBuilder: (context, index) {
-                                        return Image.asset(
-                                          bannerImages[index],
-                                          fit: BoxFit.cover,
+                                        final item = bannerData[index];
+
+                                        return GestureDetector(
+                                          onTap: () async {
+                                            final url = Uri.parse(item["url"]!);
+
+                                            if (await canLaunchUrl(url)) {
+                                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                                            }
+                                          },
+                                          child: Image.asset(
+                                            item["img"]!,
+                                            fit: BoxFit.cover,
+                                          ),
                                         );
                                       },
                                     ),

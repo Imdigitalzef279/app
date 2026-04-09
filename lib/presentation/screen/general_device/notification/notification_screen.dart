@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solar_energy/data/dto/alarm/response/alarm_response.dart';
 import '../../../../data/data_sources/api/api_client.dart';
+import '../../../../data/dto/notification_item/notification_item.dart';
 import '../../../../data/repositories/alarm/alarm_repository.dart';
 import '../../../../di.dart';
 import '../alarm/bloc/alarm_cubit.dart';
@@ -12,26 +16,53 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AlarmCubit(
+      create: (_) =>
+      AlarmCubit(
           AlarmRepository(getIt<ApiClient>())
-      )..loadAlarms(),
+      )
+        ..loadAlarms(),
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Thông báo"),
         ),
-        body: BlocBuilder<AlarmCubit, List<AlarmResponse>>(
-          builder: (context, alarms) {
-            if (alarms.isEmpty) {
-              return const Center(
-                child: Text("Không có thông báo"),
-              );
-            }
+        body: FutureBuilder<List<NotificationItem>>(
+          future: loadLocalNotifications(),
+          builder: (context, snapshot) {
+            final local = snapshot.data ?? [];
 
-            return ListView.builder(
-              itemCount: alarms.length,
-              itemBuilder: (context, index) {
-                final alarm = alarms[index];
-                return _item(alarm);
+            return BlocBuilder<AlarmCubit, List<AlarmResponse>>(
+              builder: (context, alarms) {
+                // convert API → NotificationItem
+                final apiList = alarms.map((e) =>
+                    NotificationItem(
+                      title: e.deviceName,
+                      message: e.message,
+                      time: DateTime.now(),
+                      isAlert: e.status == 1,
+                    )).toList();
+
+                // merge
+                var all = [
+                  ...apiList,
+                  ...local,
+                ];
+
+
+                all.sort((a, b) => b.time.compareTo(a.time));
+                all = all.toSet().toList();
+                final display = all.take(20).toList();
+                if (display.isEmpty) {
+                  return const Center(
+                    child: Text("Không có thông báo"),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: display.length,
+                  itemBuilder: (context, index) {
+                    return _itemNew(display[index]);
+                  },
+                );
               },
             );
           },
@@ -40,29 +71,46 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
+  Future<List<NotificationItem>> loadLocalNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final data = prefs.getString("local_notifications");
+    if (data == null) return [];
+
+    final list = jsonDecode(data) as List;
+
+    return list.map((e) =>
+        NotificationItem(
+          title: e["title"],
+          message: e["message"],
+          time: DateTime.parse(e["time"]),
+          isAlert: e["isAlert"],
+        )).toList();
+  }
+
   /// ITEM UI
-  Widget _item(AlarmResponse alarm) {
-    final isActive = alarm.status == 1;
+  Widget _itemNew(NotificationItem item) {
+    final isAlert = item.isAlert;
 
     IconData icon;
     Color color;
+    Color bg;
 
-    if (alarm.message.toLowerCase().contains("mất kết nối")) {
-      icon = Icons.flash_on;
-      color = Colors.orange;
-    } else if (alarm.message.toLowerCase().contains("quá tải")) {
-      icon = Icons.local_fire_department;
+    if (isAlert) {
+      icon = Icons.warning_amber_rounded;
       color = Colors.red;
+      bg = Colors.red.shade50;
     } else {
-      icon = Icons.check_circle;
-      color = Colors.green;
+      icon = Icons.lightbulb_outline;
+      color = Colors.blue;
+      bg = Colors.blue.shade50;
     }
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isActive ? Colors.red.shade50 : Colors.green.shade50,
+        color: bg,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -75,23 +123,23 @@ class NotificationScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  alarm.deviceName,
+                  item.title,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                Text(alarm.message),
+                Text(item.message),
               ],
             ),
           ),
 
           const SizedBox(width: 8),
 
-          /// STATUS DOT
+          /// DOT
           Container(
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: isActive ? Colors.red : Colors.green,
+              color: color,
               shape: BoxShape.circle,
             ),
           )

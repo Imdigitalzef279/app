@@ -13,9 +13,7 @@ import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/
 import '../../../../application/enums/chart_range.dart';
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
-import '../../../../data/repositories/electric/electric_repository.dart';
 import '../../../../data/repositories/electric_report/electric_report_repository.dart';
-import '../../../../data/services/signalr_service.dart';
 import '../../device/bloc/device_cubit.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'full_chart/full_chart_screen.dart';
@@ -885,133 +883,189 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     final limitedData = getDisplayData(chartData);
 
-    return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        groupsSpace: 4,
-        maxY: maxValue == 0 ? 5 : getMaxY(maxValue),
-        borderData: FlBorderData(show: false),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: BouncingScrollPhysics(),
+      child: SizedBox(
+        width: _getChartWidth(limitedData.length),
+        child: BarChart(
+          BarChartData(
+            barTouchData: BarTouchData(
+              enabled: true,
+              touchTooltipData: BarTouchTooltipData(
+                tooltipBgColor: Colors.black87,
+                tooltipRoundedRadius: 10,
+                tooltipPadding: const EdgeInsets.all(8),
+                tooltipMargin: 16,
+                fitInsideHorizontally: true,
+                fitInsideVertically: true,
 
-        /// GRID
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          horizontalInterval: maxValue == 0 ? 1 : maxValue / 6,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey.withOpacity(0.15),
-              strokeWidth: 1,
-            );
-          },
-        ),
+                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                  final item = limitedData[group.x.toInt()];
+                  final time = item.updatedAt;
 
-        /// TITLES
-        titlesData: FlTitlesData(
+                  String timeLabel;
 
-          /// LEFT AXIS
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 34,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toStringAsFixed(1),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey,
-                  ),
+                  switch (_selectedRange) {
+                    case ChartRange.day:
+                      timeLabel = DateFormat("HH:mm").format(time);
+                      break;
+                    case ChartRange.week:
+                      timeLabel = DateFormat("EEE dd/MM", "vi").format(time);
+                      break;
+                    case ChartRange.month:
+                      timeLabel = DateFormat("dd/MM").format(time);
+                      break;
+                    case ChartRange.year:
+                      timeLabel = DateFormat("MM/yyyy").format(time);
+                      break;
+                    default:
+                      timeLabel = "";
+                  }
+
+                  final unit = chartType == ChartType.power ? "kW" : "kWh";
+
+                  return BarTooltipItem(
+                    "$timeLabel\n",
+                    const TextStyle(color: Colors.grey, fontSize: 10),
+                    children: [
+                      TextSpan(
+                        text: "${rod.toY.toStringAsFixed(2)} $unit",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            alignment: BarChartAlignment.spaceAround,
+            groupsSpace: 6,
+            maxY: maxValue == 0 ? 5 : getMaxY(maxValue),
+            borderData: FlBorderData(show: false),
+
+            /// GRID
+            gridData: FlGridData(
+              show: true,
+              drawVerticalLine: false,
+              horizontalInterval: maxValue == 0 ? 1 : maxValue / 6,
+              getDrawingHorizontalLine: (value) {
+                return FlLine(
+                  color: Colors.grey.withOpacity(0.15),
+                  strokeWidth: 1,
                 );
               },
             ),
-          ),
 
-          /// BOTTOM TIME
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 28,
-              getTitlesWidget: (value, meta) {
+            /// TITLES
+            titlesData: FlTitlesData(
 
-                final index = value.toInt();
-
-                if (index >= limitedData.length) {
-                  return const SizedBox();
-                }
-
-                final total = limitedData.length;
-
-                int labelCount = 5;
-                if (_selectedRange == ChartRange.year) labelCount = 6;
-                if (_selectedRange == ChartRange.week) labelCount = 4;
-
-                final interval = (total / labelCount).ceil();
-
-                if (index % interval != 0 && index != total - 1) {
-                  return const SizedBox();
-                }
-
-                final time = formatTime(limitedData[index].updatedAt);
-
-                return Padding(
-                  padding: EdgeInsets.only(
-                    top: 6,
-                    right: index == total - 1 ? 8 : 0,
-                  ),
-                  child: Text(
-                    time,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: Colors.grey,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          topTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-
-          rightTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-
-        /// BAR DATA
-        barGroups: List.generate(limitedData.length, (i) {
-
-          final item = limitedData[i];
-
-
-          final y = chartType == ChartType.power
-              ? (item.p ?? 0)
-              : (item.epi ?? 0);
-
-          return BarChartGroupData(
-            x: i,
-            barsSpace: 4,
-            barRods: [
-
-              BarChartRodData(
-                toY: y.toDouble(),
-                width: 6, // giảm width để tránh sọc
-                borderRadius: BorderRadius.circular(4),
-
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF1ABC9C),
-                    Color(0xFF6CC3B8),
-                  ],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
+              /// LEFT
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 40,
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      value.toStringAsFixed(1),
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
                 ),
               ),
 
-            ],
-          );
+              /// BOTTOM
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 70,
+                  getTitlesWidget: (value, meta) {
 
-        }),
+                    final index = value.toInt();
+                    if (index >= limitedData.length) return const SizedBox();
+
+                    final time = limitedData[index].updatedAt;
+
+                    String label;
+
+                    switch (_selectedRange) {
+                      case ChartRange.day:
+                        label = "${time.hour}h";
+                        break;
+                      case ChartRange.week:
+                        label = DateFormat("EEE", "vi").format(time);
+                        break;
+                      case ChartRange.month:
+                        label = DateFormat("dd").format(time);
+                        break;
+                      case ChartRange.year:
+                        label = DateFormat("MM").format(time);
+                        break;
+                      default:
+                        label = "";
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+            ),
+
+            /// BAR DATA
+            barGroups: List.generate(limitedData.length, (i) {
+
+              final item = limitedData[i];
+
+              final y = chartType == ChartType.power
+                  ? (item.p ?? 0)
+                  : (item.epi ?? 0);
+
+              return BarChartGroupData(
+                x: i,
+                barsSpace: 4,
+                barRods: [
+                  BarChartRodData(
+                    toY: y.toDouble(),
+                    width: 8,
+                    borderRadius: BorderRadius.circular(4),
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF1ABC9C),
+                        Color(0xFF6CC3B8),
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ),
+
+        ),
       ),
     );
   }
@@ -1019,231 +1073,239 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     final data = getDisplayData(chartData);
 
-    return LineChart(
-      LineChartData(
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: BouncingScrollPhysics(),
+      child: SizedBox(
+        width: _getChartWidth(data.length),
+        child: LineChart(
+          LineChartData(
+            lineTouchData: LineTouchData(
+              enabled: true,
 
-        minX: 0,
-        maxX: (data.length - 1).toDouble(),
+              handleBuiltInTouches: true,
 
-        minY: 0,
-        maxY: getMaxY(maxValue),
+              touchTooltipData: LineTouchTooltipData(
+                tooltipBgColor: Colors.black87,
+                tooltipRoundedRadius: 10,
+                tooltipPadding: const EdgeInsets.all(8),
 
-        borderData: FlBorderData(show: false),
+                fitInsideHorizontally: true,
+                fitInsideVertically: true,
 
-        /// ===== GRID (mịn hơn) =====
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          horizontalInterval: maxValue == 0 ? 1 : maxValue / 6,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey.withOpacity(0.12),
-              strokeWidth: 1,
-              dashArray: [4, 4],
-            );
-          },
-        ),
+                getTooltipItems: (touchedSpots) {
+                  return touchedSpots.map((spot) {
+                    final item = data[spot.x.toInt()];
+                    final time = item.updatedAt;
 
-        titlesData: FlTitlesData(
+                    String timeLabel;
 
-          /// ===== TRỤC Y (gọn hơn) =====
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 34,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toStringAsFixed(0),
-                  style: const TextStyle(
-                    fontSize: 9,
-                    color: Colors.grey,
-                  ),
-                );
-              },
-            ),
-          ),
+                    switch (_selectedRange) {
+                      case ChartRange.day:
+                        timeLabel = DateFormat("HH:mm").format(time);
+                        break;
+                      case ChartRange.week:
+                        timeLabel = DateFormat("EEE dd/MM", "vi").format(time);
+                        break;
+                      case ChartRange.month:
+                        timeLabel = DateFormat("dd/MM").format(time);
+                        break;
+                      case ChartRange.year:
+                        timeLabel = DateFormat("MM/yyyy").format(time);
+                        break;
+                      default:
+                        timeLabel = "";
+                    }
 
-          /// ===== TRỤC X (5 mốc đẹp) =====
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                final index = value.toInt();
-                if (index >= data.length) return const SizedBox();
+                    final unit = chartType == ChartType.power ? "kW" : "kWh";
 
-                int labelCount;
-
-                switch (_selectedRange) {
-                  case ChartRange.day:
-                    labelCount = 8;
-                    break;
-                  case ChartRange.week:
-                    labelCount = 7;
-                    break;
-                  case ChartRange.month:
-                    labelCount = 10;
-                    break;
-                  case ChartRange.year:
-                    labelCount = 12;
-                    break;
-                  default:
-                    labelCount = 6;
-                }
-
-                final step = (data.length / labelCount).ceil();
-
-                if (index % step != 0 && index != data.length - 1) {
-                  return const SizedBox();
-                }
-
-                final time = formatTime(data[index].updatedAt);
-
-                return Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text(
-                    time,
-                    style: const TextStyle(
-                      fontSize: 9,
-                      color: Colors.grey,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          topTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-
-          rightTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-
-        /// ===== LINE STYLE PRO =====
-        lineBarsData: [
-          LineChartBarData(
-
-            spots: List.generate(data.length, (i) {
-              final item = data[i];
-
-              final y = chartType == ChartType.power
-                  ? (item.p ?? 0)
-                  : (item.epi ?? 0);
-
-              return FlSpot(i.toDouble(), y.toDouble());
-            }),
-
-            isCurved: true,
-            curveSmoothness: 0.35,
-
-            barWidth: 4,
-
-            ///  gradient line
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFF00E5C0),
-                Color(0xFF1ABC9C),
-              ],
-            ),
-
-            ///  DOT (chỉ show khi touch)
-            dotData: FlDotData(
-              show: true,
-              getDotPainter: (spot, percent, bar, index) {
-                if (index == data.length - 1) {
-                  return FlDotCirclePainter(
-                    radius: 5,
-                    color: Colors.white,
-                    strokeWidth: 3,
-                    strokeColor: const Color(0xFF1ABC9C),
-                  );
-                }
-                return FlDotCirclePainter(radius: 0);
-              },
-            ),
-
-            ///  vùng dưới đẹp hơn
-            belowBarData: BarAreaData(
-              show: true,
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFF1ABC9C).withOpacity(0.25),
-                  Colors.transparent,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+                    return LineTooltipItem(
+                      "$timeLabel\n",
+                      const TextStyle(color: Colors.grey, fontSize: 10),
+                      children: [
+                        TextSpan(
+                          text: "${spot.y.toStringAsFixed(2)} $unit",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList();
+                },
               ),
+
+              getTouchedSpotIndicator: (barData, spotIndexes) {
+                return spotIndexes.map((index) {
+                  return TouchedSpotIndicatorData(
+                    FlLine(color: Colors.transparent),
+                    FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, bar, index) =>
+                          FlDotCirclePainter(
+                            radius: 5,
+                            color: Colors.white,
+                            strokeWidth: 2,
+                            strokeColor: const Color(0xFF1ABC9C),
+                          ),
+                    ),
+                  );
+                }).toList();
+              },
             ),
-          ),
-        ],
+            minX: 0,
+            maxX: (data.length - 1).toDouble(),
 
-        /// ===== TOUCH PRO =====
-        lineTouchData: LineTouchData(
-          enabled: true,
+            minY: 0,
+            maxY: getMaxY(maxValue),
 
-          /// highlight line
-          getTouchedSpotIndicator: (barData, spotIndexes) {
-            return spotIndexes.map((index) {
-              return TouchedSpotIndicatorData(
-                FlLine(
-                  color: Colors.grey.withOpacity(0.3),
+            borderData: FlBorderData(show: false),
+
+            gridData: FlGridData(
+              show: true,
+              drawVerticalLine: false,
+              horizontalInterval: maxValue == 0 ? 1 : maxValue / 6,
+              getDrawingHorizontalLine: (value) {
+                return FlLine(
+                  color: Colors.grey.withOpacity(0.12),
                   strokeWidth: 1,
-                  dashArray: [3,3],
-                ),
-                FlDotData(
-                  getDotPainter: (spot, percent, bar, index) {
-                    return FlDotCirclePainter(
-                      radius: 4,
-                      color: const Color(0xFF1ABC9C),
-                      strokeWidth: 2,
-                      strokeColor: Colors.white,
+                  dashArray: [4, 4],
+                );
+              },
+            ),
+
+            titlesData: FlTitlesData(
+
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 40,
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      value.toStringAsFixed(0),
+                      style: const TextStyle(
+                        fontSize: 9,
+                        color: Colors.grey,
+                      ),
                     );
                   },
                 ),
-              );
-            }).toList();
-          },
+              ),
 
-          touchTooltipData: LineTouchTooltipData(
-            tooltipRoundedRadius: 12,
-            tooltipPadding: const EdgeInsets.all(10),
-            tooltipBgColor: Colors.black.withOpacity(0.85),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 50,
+                  getTitlesWidget: (value, meta) {
 
-            getTooltipItems: (spots) {
-              return spots.map((spot) {
+                    final index = value.toInt();
+                    if (index >= data.length) return const SizedBox();
 
-                final index = spot.x.toInt();
-                final item = data[index];
+                    final time = data[index].updatedAt;
 
-                final time = formatTime(item.updatedAt);
-                final unit = chartType == ChartType.power ? "kW" : "kWh";
+                    String label;
 
-                return LineTooltipItem(
-                  "$time\n",
-                  const TextStyle(color: Colors.grey, fontSize: 10),
-                  children: [
-                    TextSpan(
-                      text: "${spot.y.toStringAsFixed(2)} $unit",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                    switch (_selectedRange) {
+                      case ChartRange.day:
+                        label = "${time.hour}h";
+                        break;
+                      case ChartRange.week:
+                        label = DateFormat("EEE", "vi").format(time);
+                        break;
+                      case ChartRange.month:
+                        label = DateFormat("dd").format(time);
+                        break;
+                      case ChartRange.year:
+                        label = DateFormat("MM").format(time);
+                        break;
+                      default:
+                        label = "";
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 9,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
-                );
+                    );
+                  },
+                ),
+              ),
 
-              }).toList();
-            },
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+            ),
+
+            lineBarsData: [
+              LineChartBarData(
+                spots: List.generate(data.length, (i) {
+                  final item = data[i];
+                  final y = chartType == ChartType.power
+                      ? (item.p ?? 0)
+                      : (item.epi ?? 0);
+                  return FlSpot(i.toDouble(), y.toDouble());
+                }),
+                isCurved: true,
+                curveSmoothness: 0.35,
+                barWidth: 4,
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF00E5C0),
+                    Color(0xFF1ABC9C),
+                  ],
+                ),
+                dotData: FlDotData(show: false),
+                belowBarData: BarAreaData(
+                  show: true,
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF1ABC9C).withOpacity(0.25),
+                      const Color(0xFF1ABC9C).withOpacity(0.05),
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        // swapAnimationDuration: const Duration(milliseconds: 400),
-        // swapAnimationCurve: Curves.easeInOut,
       ),
     );
+  }
+  double _getChartWidth(int length) {
+    double baseWidth;
 
+    switch (_selectedRange) {
+      case ChartRange.day:
+        baseWidth = 28;
+        break;
+      case ChartRange.week:
+        baseWidth = 40;
+        break;
+      case ChartRange.month:
+        baseWidth = 22;
+        break;
+      case ChartRange.year:
+        baseWidth = 40;
+        break;
+      default:
+        baseWidth = 24;
+    }
+
+    return (length * baseWidth).clamp(320, 2000).toDouble();
   }
   Widget _buildBigStatusCard(DeviceResponse device, AtomatLogResponse? log) {
 

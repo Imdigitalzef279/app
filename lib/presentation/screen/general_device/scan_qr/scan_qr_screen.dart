@@ -38,7 +38,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     loadDevices();
   }
 
-  /// 🔥 LOAD DEVICE
+
   Future<void> loadDevices() async {
     setState(() => isLoading = true);
 
@@ -47,11 +47,19 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     if (result.status == LoadStatus.success && result.data != null) {
       deviceList = result.data!;
 
-      debugPrint("===== DEVICE LIST =====");
+      debugPrint("===== DEVICE LIST FULL =====");
+
       for (var d in deviceList) {
-        debugPrint("ID: ${d.id} | SERIAL: ${d.serialNumber}");
+        debugPrint("""
+ID: ${d.id}
+SERIAL: ${d.serialNumber}
+CODE: ${d.code}
+GATEWAY: ${d.gatewayNumber}
+------------------------
+""");
       }
-      debugPrint("=======================");
+
+      debugPrint("============================");
     }
 
     setState(() => isLoading = false);
@@ -101,7 +109,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
         ),
       );
 
-      /// 👉 reset scan lại
+
       setState(() {
         isScanned = false;
         isLoading = false;
