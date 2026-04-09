@@ -25,12 +25,13 @@ class DeviceGridItem extends StatelessWidget {
       prev.resultDevices != curr.resultDevices ||
           prev.breakerLogs != curr.breakerLogs,
       builder: (context, state) {
-        final state = context.watch<DeviceCubit>().state;
         final latestDevice = state.resultDevices.data
             ?.firstWhere((d) => d.id == device.id, orElse: () => device) ?? device;
 
-        final log = state.breakerLogs[latestDevice.code] ?? latestDevice.realtimeLog;
-        final realStatus = context.watch<DeviceCubit>().getRealStatus(latestDevice, log);
+        final log = state.breakerLogs[latestDevice.code];
+
+        final realStatus = context.read<DeviceCubit>()
+            .getRealStatus(latestDevice, log);
 
         final isOn = realStatus == 1;
 

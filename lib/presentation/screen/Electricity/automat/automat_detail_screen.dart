@@ -43,7 +43,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   bool isForceMode = false;
   ChartRange _selectedRange = ChartRange.month;
   ChartDisplayType chartDisplayType = ChartDisplayType.line;
-  late DeviceResponse currentDevice;
   late AtomatDetailCubit cubit;
   ChartType chartType = ChartType.power;
   double todayEnergy = 0;
@@ -92,15 +91,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   void initState() {
     super.initState();
 
-    currentDevice = widget.device;
     cubit = context.read<AtomatDetailCubit>();
-    _loadStartOfRangeEnergy();
-    /// chart
-    context.read<AutomatChartCubit>().loadChart(
-      currentDevice.code ?? "",
-      _selectedRange,
-    );
-
 
   }
   @override
@@ -158,9 +149,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     }
   }
 
-  MeterType getMeterType() {
-    if (currentDevice.meterTypeId == 81 ||
-        currentDevice.meterTypeId == 82) {
+  MeterType getMeterType(DeviceResponse device) {
+    if (device.meterTypeId == 81 || device.meterTypeId == 82) {
       return MeterType.household;
     }
     return MeterType.business;
@@ -175,7 +165,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       },
     );
   }
-  Future<void> _loadElectricReport() async {
+  Future<void> _loadElectricReport(DeviceResponse device) async {
     try {
       final repo = ElectricReportRepository(GetIt.instance<ApiClient>());
       final now = DateTime.now();
@@ -183,7 +173,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       final from = DateTime(now.year, now.month, now.day);
 
       final report = await repo.getElectricReport(
-        meterId: currentDevice.id,
+        meterId: device.id,
         from: from,
         to: now,
       );
@@ -369,10 +359,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 child: Row(
                   children: [
                     /// UI button chọn range chart (1D / 7D / 30D)
-                    _rangeChip("1D", ChartRange.day),
-                    _rangeChip("7D", ChartRange.week),
-                    _rangeChip("1M", ChartRange.month),
-                    _rangeChip("1Y", ChartRange.year),
+                    _rangeChip("1D", ChartRange.day, device),
+                    _rangeChip("7D", ChartRange.week, device),
+                    _rangeChip("1M", ChartRange.month, device),
+                    _rangeChip("1Y", ChartRange.year, device),
                   ],
                 ),
               ),
@@ -599,15 +589,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             ),
             child: Row(
               children: [
-                _tabItem("Tổng quan", true),
-                _tabItem("Thông số", false),
-                _tabItem(
-                  "Lịch sử",
-                  false,
-                  isHistory: true,
-                  context: context,
-                ),
-                _tabItem("Home", false, isHome: true, context: context),
+                _tabItem("Tổng quan", true, device),
+                _tabItem("Thông số", false, device),
+                _tabItem("Lịch sử", false, device, isHistory: true, context: context),
+                _tabItem("Home", false, device, isHome: true, context: context),
               ],
             ),
           ),
@@ -620,7 +605,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   }
   Widget _tabItem(
       String text,
-      bool active, {
+      bool active,
+      DeviceResponse device,{
         bool isHome = false,
         bool isHistory = false,
         BuildContext? context,
@@ -636,8 +622,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               context,
               MaterialPageRoute(
                 builder: (_) => SwitchLogScreen(
-                  gatewaySn: currentDevice.gatewayNumber ?? '',
-                  breakerSn: currentDevice.code ?? "",
+                  gatewaySn: device.gatewayNumber ?? '',
+                  breakerSn: device.code ?? "",
                 ),
               ),
             );
@@ -682,7 +668,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  Widget _rangeChip(String text, ChartRange range) {
+  Widget _rangeChip(String text, ChartRange range, DeviceResponse device) {
     final bool active = _selectedRange == range;
 
     return GestureDetector(
@@ -693,22 +679,22 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           /// reload chart
           context.read<AutomatChartCubit>().loadChart(
-            currentDevice.code ?? "",
+            device.code ?? "",
             _selectedRange,
           );
 
-          if (getMeterType() == MeterType.household) {
+          if (getMeterType(device) == MeterType.household) {
             setState(() {
               isInitDone = false;
             });
 
-            await _loadStartOfRangeEnergy();
+            await _loadStartOfRangeEnergy(device);
 
             setState(() {
               isInitDone = true;
             });
           } else {
-            await _loadElectricReport();
+            await _loadElectricReport(device);
           }
         },
 
@@ -839,7 +825,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  Future<void> _loadStartOfRangeEnergy() async {
+  Future<void> _loadStartOfRangeEnergy(DeviceResponse device) async {
     final api = GetIt.instance<ApiClient>();
 
     final now = DateTime.now();
@@ -847,7 +833,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final start = DateTime(now.year, now.month, now.day);
 
     /// TẠM THỜI: vẫn dùng API cũ
-    final result = await api.getBreakerLog(currentDevice.code ?? "");
+    final result = await api.getBreakerLog(device.code ?? "");
 
     final logs = List.from(result.data ?? []);
     if (logs.isEmpty) return;
@@ -1463,6 +1449,22 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     if (device == null) {
       return const SizedBox();
     }
+    if (!isInitDone) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (getMeterType(device) == MeterType.household) {
+          await _loadStartOfRangeEnergy(device);
+        } else {
+          await _loadElectricReport(device);
+        }
+
+        context.read<AutomatChartCubit>().loadChart(
+          device.code ?? "",
+          _selectedRange,
+        );
+
+        isInitDone = true;
+      });
+    }
     print("===== DETAIL BUILD =====");
     print("DEVICE ID: ${device?.id}");
     print("DEVICE.STATUS: ${device?.status}");
@@ -1474,7 +1476,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
 
         final deviceCubit = context.watch<DeviceCubit>();
-    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+    final log = state.breakerLogs[device.code];
     print("LOG.rlySta: ${log?.rlySta}");
     final isSwitching = deviceCubit.isDeviceSwitching(device.id);
 

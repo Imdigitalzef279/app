@@ -107,11 +107,12 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   Widget buildDeviceCard(BuildContext context, device) {
     final isFake = (device.id ?? 0) < 0;
     final state = context.watch<DeviceCubit>().state;
-    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
+    final log = state.breakerLogs[device.code];
     final isGatewayOnline = log != null &&
         ["online", "1", "connected"]
             .contains((log.state ?? "").toLowerCase());
-    final realStatus = context.read<DeviceCubit>().getRealStatus(device, log);
+    final deviceCubit = context.watch<DeviceCubit>();
+    final realStatus = deviceCubit.getRealStatus(device, log);
     final isOn = realStatus == 1;
     final isMaintenance = realStatus == 2;
     final isOffline = !isGatewayOnline;

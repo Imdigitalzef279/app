@@ -74,9 +74,10 @@ class DeviceCardWidget extends StatelessWidget {
 
     final cubit = context.watch<DeviceCubit>();
 
-    final log = state.breakerLogs[device.code] ?? device.realtimeLog;
-
-    final realStatus = cubit.getRealStatus(device, log);
+    final latestDevice = state.resultDevices.data
+        ?.firstWhere((d) => d.id == device.id, orElse: () => device) ?? device;
+    final log = state.breakerLogs[latestDevice.code];
+    final realStatus = cubit.getRealStatus(latestDevice, log);
 
     final isOn = realStatus == 1;
 
