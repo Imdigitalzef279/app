@@ -793,6 +793,52 @@ class _ApiClient implements ApiClient {
   }
 
   @override
+  Future<List<EnergyReportResponse>> getEnergyReportByDateRange(
+    int powerStationId,
+    int deviceId,
+    String fromDate,
+    String toDate,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'PowerStationId': powerStationId,
+      r'DeviceId': deviceId,
+      r'FromDate': fromDate,
+      r'ToDate': toDate,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<List<EnergyReportResponse>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'api/app/energy-report/by-date-range',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<EnergyReportResponse> _value;
+    try {
+      _value = _result.data!
+          .map((dynamic i) =>
+              EnergyReportResponse.fromJson(i as Map<String, dynamic>))
+          .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<List<PriceConfigResponse>> getPriceConfig(int meterId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

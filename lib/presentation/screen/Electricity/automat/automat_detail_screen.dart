@@ -15,6 +15,7 @@ import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/repositories/electric_report/electric_report_repository.dart';
 import '../../device/bloc/device_cubit.dart';
+import 'ElectricHistoryScreen/ElectricHistoryScreen.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'full_chart/full_chart_screen.dart';
 enum ChartType {
@@ -510,76 +511,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               ),
             ],
           ),
+                _buildElectricCard(),
 
-          const SizedBox(height: 14),
 
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0,4),
-                )
-              ],
-            ),
-            child: Row(
-              children: [
 
-                /// ICON
-                const Icon(
-                  Icons.savings,
-                  color: Color(0xFFFFB300),
-                  size: 28,
-                ),
-
-                const SizedBox(width: 10),
-
-                /// TEXT
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        getTitle(),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        "${NumberFormat("#,###").format(moneyToday)} đ",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "${todayEnergy.toStringAsFixed(2)} kWh",
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                /// PRICE
-                    Text(
-                      "≈ ${NumberFormat("#,###").format(moneyToday)} đ",
-                      style: const TextStyle(
-                        color: Colors.green,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                )
-          ),
-          const SizedBox(height: 8),
+      const SizedBox(height: 8),
 
           Container(
             padding: const EdgeInsets.all(4),
@@ -596,13 +532,128 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               ],
             ),
           ),
-        ],
-      ),
+]
+      )
     );
   }
   String getTitle() {
     return "Tiền điện hôm nay";
   }
+  Widget _buildElectricCard() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 16,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          /// ===== HEADER =====
+          Row(
+            children: const [
+              Icon(Icons.savings, size: 18, color: Color(0xFF1ABC9C)),
+              SizedBox(width: 6),
+              Text(
+                "Tiền điện hôm nay",
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              /// TIỀN
+              Text(
+                "${NumberFormat("#,###").format(moneyToday)} đ",
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              /// kWh
+              Text(
+                "${todayEnergy.toStringAsFixed(2)} kWh",
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              /// BUTTON nằm ngang
+              Row(
+                children: [
+                  Expanded(
+                    child: _textBtn("Lịch sử", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ElectricHistoryScreen(device: widget.device),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _textBtn("Biểu đồ", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SettingScreen(device: widget.device),
+                        ),
+                      );
+                    }),
+                  ),
+                ],
+              )
+            ],
+          )
+        ],
+      )
+    );
+  }
+  Widget _textBtn(String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF1F3F5),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1ABC9C),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _tabItem(
       String text,
       bool active,
@@ -1386,7 +1437,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
                   "TRẠNG THÁI",
@@ -1552,7 +1603,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                                 : BreakerColors.on,
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: (isMaintenance || isSwitching || countdown > 0)
+                          onPressed: (isMaintenance || isSwitching)
                               ? null
                               : () async {
                             final password = await _showPasswordDialog(context);

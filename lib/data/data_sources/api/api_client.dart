@@ -162,6 +162,14 @@ abstract class ApiClient {
       @Query('type') String type,
       @Query('time') String time,
       );
+  // ================= ENERGY REPORT BY DATE RANGE =================
+  @GET('api/app/energy-report/by-date-range')
+  Future<List<EnergyReportResponse>> getEnergyReportByDateRange(
+      @Query('PowerStationId') int powerStationId,
+      @Query('DeviceId') int deviceId,
+      @Query('FromDate') String fromDate,
+      @Query('ToDate') String toDate,
+      );
   // ================= Tính tiền điện =================
   @GET('api/app/price-config/by-meter-id/{meterId}')
   Future<List<PriceConfigResponse>> getPriceConfig(

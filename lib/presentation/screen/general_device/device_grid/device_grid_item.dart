@@ -181,10 +181,8 @@ class DeviceGridItem extends StatelessWidget {
                           await showPasswordDialog(context);
                           if (password == null) return;
 
-                          await context
-                              .read<DeviceCubit>()
-                              .togglePower(
-                            device,
+                          await context.read<DeviceCubit>().togglePower(
+                            latestDevice,
                             password: password,
                           );
                         }
