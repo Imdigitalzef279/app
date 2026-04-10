@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
 
@@ -267,9 +268,11 @@ class _AccountScreenState extends State<AccountScreen> {
               child: Text("Huỷ"),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context);
 
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   '/login',

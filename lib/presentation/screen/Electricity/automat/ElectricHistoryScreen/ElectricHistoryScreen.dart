@@ -4,36 +4,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../../data/data_sources/api/api_client.dart';
 import '../../../../../data/dto/device/response/device_response.dart';
+import '../../../../../data/dto/electric_report/electric_report_response.dart';
 import '../../../../../data/dto/energy_report/energy_report_response.dart';
+import '../../../../../data/dto/power_station/response/power_station_response.dart';
 import '../../../../../data/repositories/EnergyRepository/EnergyRepository.dart';
 
-/// ================= CUBIT =================
-class ElectricHistoryCubit extends Cubit<List<EnergyReportResponse>> {
+class EnergyState {
+  final List<EnergyReportResponse> chart;
+  final ElectricReport report;
+
+  EnergyState({
+    required this.chart,
+    required this.report,
+  });
+}
+class ElectricHistoryCubit extends Cubit<EnergyState?> {
   final EnergyRepository repo;
 
-  ElectricHistoryCubit(this.repo) : super([]);
+  ElectricHistoryCubit(this.repo) : super(null);
 
   Future<void> load({
     required int stationId,
     required int deviceId,
+    required int meterId,
     required DateTime from,
     required DateTime to,
   }) async {
-    try {
-      final res = await repo.getByDateRange(
-        stationId: stationId,
-        deviceId: deviceId,
-        from: from,
-        to: to,
-      );
-      emit(res);
-    } catch (_) {}
+
+    final chart = await repo.getByDateRange(
+      stationId: stationId,
+      deviceId: deviceId,
+      from: from,
+      to: to,
+    );
+
+    final report = await repo.getElectricReport(
+      meterId: meterId,
+      from: from,
+      to: to,
+    );
+
+    emit(EnergyState(chart: chart, report: report));
   }
 }
-
 /// ================= SCREEN =================
 class ElectricHistoryScreen extends StatefulWidget {
   final DeviceResponse device;
@@ -48,7 +65,9 @@ class ElectricHistoryScreen extends StatefulWidget {
 class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
   int selectedIndex = 1; // 0=7d,1=30d,2=90d
-
+  DateTime focusedDay = DateTime.now();
+  DateTime? startDate;
+  DateTime? endDate;
   DateTimeRange get range {
     final now = DateTime.now();
     if (selectedIndex == 0) {
@@ -60,27 +79,25 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
     return DateTimeRange(start: now.subtract(const Duration(days: 90)), end: now);
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    /// 🔥 AUTO LOAD
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ElectricHistoryCubit>().load(
-        stationId: widget.device.powerStationId ?? 0,
-        deviceId: widget.device.id,
-        from: range.start,
-        to: range.end,
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ElectricHistoryCubit(
-        EnergyRepository(GetIt.instance<ApiClient>()),
-      ),
+      create: (_) {
+        final cubit = ElectricHistoryCubit(
+          EnergyRepository(GetIt.instance<ApiClient>()),
+        );
+
+        cubit.load(
+          stationId: widget.device.powerStationId ?? 0,
+          deviceId: widget.device.id,
+          meterId: widget.device.id,
+          from: range.start,
+          to: range.end,
+        );
+
+        return cubit;
+      },
       child: Scaffold(
         backgroundColor: const Color(0xFFF6F8FC),
         appBar: AppBar(
@@ -99,18 +116,18 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
 
               Expanded(
-                child: BlocBuilder<ElectricHistoryCubit, List<EnergyReportResponse>>(
-                  builder: (context, data) {
+                child: BlocBuilder<ElectricHistoryCubit, EnergyState?>(
+                  builder: (context, state) {
 
-                    if (data.isEmpty) {
+                    if (state == null) {
                       return _emptyState();
                     }
 
                     return ListView(
                       children: [
-                        _summary(data),
+                        _summary(state.report),
                         const SizedBox(height: 16),
-                        _chart(data),
+                        _chart(state.chart),
                       ],
                     );
                   },
@@ -123,7 +140,11 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
     );
   }
   DateTimeRange? selectedRange;
+  List<PowerStationResponse> stations = [];
+  List<DeviceResponse> devices = [];
 
+  PowerStationResponse? selectedStation;
+  DeviceResponse? selectedDevice;
   Widget _filter() {
     return Column(
       children: [
@@ -131,9 +152,38 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
         /// ROW 1
         Row(
           children: [
-            Expanded(child: _dropdown("Trạm")),
+            Expanded(
+              child: _dropdown<PowerStationResponse>(
+                hint: "Trạm",
+                value: selectedStation,
+                items: stations,
+                getLabel: (e) => e.name ?? "",
+                onChanged: (v) {
+                  setState(() {
+                    selectedStation = v;
+                    selectedDevice = null;
+                  });
+
+                  if (v != null) {
+                    _loadDevices(v.id);
+                  }
+                },
+              ),
+            ),
             const SizedBox(width: 10),
-            Expanded(child: _dropdown("Thiết bị")),
+            Expanded(
+              child: _dropdown<DeviceResponse>(
+                hint: "Thiết bị",
+                value: selectedDevice,
+                items: devices,
+                getLabel: (e) => e.name ?? "",
+                onChanged: (v) {
+                  setState(() {
+                    selectedDevice = v;
+                  });
+                },
+              ),
+            ),
           ],
         ),
 
@@ -151,10 +201,25 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Text(
-                    selectedRange == null
-                        ? "Chọn thời gian"
-                        : "${_f(selectedRange!.start)} - ${_f(selectedRange!.end)}",
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          selectedRange == null
+                              ? "Chọn thời gian"
+                              : "${DateFormat('dd/MM/yyyy').format(selectedRange!.start)} - "
+                              "${DateFormat('dd/MM/yyyy').format(selectedRange!.end)}",
+                          style: TextStyle(
+                            color: selectedRange == null
+                                ? Colors.grey
+                                : Colors.black87,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -178,37 +243,151 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
       ],
     );
   }
-  Future<void> _pickDate() async {
-    final result = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+  @override
+  void initState() {
+    super.initState();
+
+    selectedRange = DateTimeRange(
+      start: DateTime.now().subtract(const Duration(days: 7)),
+      end: DateTime.now(),
     );
 
-    if (result != null) {
-      setState(() {
-        selectedRange = result;
-      });
-    }
+    _loadStations();
   }
+  Future<void> _loadStations() async {
+    final res = await GetIt.instance<ApiClient>()
+        .getPowerStation(1);
 
+    setState(() {
+      stations = res;
+    });
+  }
+  Future<void> _loadDevices(int stationId) async {
+    final res = await GetIt.instance<ApiClient>()
+        .getDevices(stationId);
+
+    setState(() {
+      devices = res;
+    });
+  }
+  Future<void> _pickDate() async {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) {
+          return StatefulBuilder(
+              builder: (context, setStateModal) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                      const Text(
+                        "Chọn khoảng thời gian",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      /// CALENDAR
+                      TableCalendar(
+                        firstDay: DateTime(2020),
+                        lastDay: DateTime(2100),
+                        focusedDay: focusedDay,
+
+                        rangeStartDay: startDate,
+                        rangeEndDay: endDate,
+                        rangeSelectionMode: RangeSelectionMode.toggledOn,
+
+                        onRangeSelected: (start, end, focused) {
+                          setStateModal(() {
+                            startDate = start;
+                            endDate = end;
+                            focusedDay = focused;
+                          });
+                        },
+
+                        calendarStyle: const CalendarStyle(
+                          todayDecoration: BoxDecoration(
+                            color: Color(0xFF1ABC9C),
+                            shape: BoxShape.circle,
+                          ),
+
+                          rangeHighlightColor: Color(0x331ABC9C),
+                          rangeStartDecoration: BoxDecoration(
+                            color: Color(0xFF1ABC9C),
+                            shape: BoxShape.circle,
+                          ),
+                          rangeEndDecoration: BoxDecoration(
+                            color: Color(0xFF1ABC9C),
+                            shape: BoxShape.circle,
+                          ),
+
+                          defaultTextStyle: TextStyle(color: Colors.black),
+                          weekendTextStyle: TextStyle(color: Colors.black),
+                          outsideTextStyle: TextStyle(color: Colors.black),
+                          disabledTextStyle: TextStyle(color: Colors.black),
+                        ),
+
+                        headerStyle: const HeaderStyle(
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      /// BUTTON
+                      ElevatedButton(
+                        onPressed: () {
+                          if (startDate != null && endDate != null) {
+                            setState(() {
+                              selectedRange = DateTimeRange(
+                                start: startDate!,
+                                end: endDate!,
+                              );
+                            });
+                          }
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1ABC9C),
+                        ),
+                        child: const Text("Áp dụng"),
+                      )
+                    ],
+                  ),
+                );
+              });
+        }
+    );
+  }
   void _search() {
-    if (selectedRange == null) return;
+    if (selectedRange == null || selectedDevice == null) return;
 
-    final from = DateFormat("yyyy-MM-dd").format(selectedRange!.start);
-    final to = DateFormat("yyyy-MM-dd").format(selectedRange!.end);
-    print("FROM: $from");
-    print("TO: $to");
     context.read<ElectricHistoryCubit>().load(
-      stationId: widget.device.powerStationId ?? 0,
-      deviceId: widget.device.id,
-      from: DateTime.parse(from),
-      to: DateTime.parse(to),
+      stationId: selectedStation!.id,
+      deviceId: selectedDevice!.id,
+      meterId: selectedDevice!.id,
+      from: selectedRange!.start,
+      to: selectedRange!.end,
     );
   }
 
   String _f(DateTime d) => "${d.day}/${d.month}/${d.year}";
-  Widget _dropdown(String title) {
+  Widget _dropdown<T>({
+    required String hint,
+    required T? value,
+    required List<T> items,
+    required String Function(T) getLabel,
+    required Function(T?) onChanged,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
@@ -216,30 +395,34 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
         borderRadius: BorderRadius.circular(14),
       ),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: "1",
-          items: const [
-            DropdownMenuItem(value: "1", child: Text("NOVA-0017")),
-          ],
-          onChanged: (_) {},
+        child: DropdownButton<T>(
+          hint: Text(hint),
+          value: value,
+          isExpanded: true,
+          items: items.map((e) {
+            return DropdownMenuItem(
+              value: e,
+              child: Text(getLabel(e)),
+            );
+          }).toList(),
+          onChanged: onChanged,
         ),
       ),
     );
   }
 
 
-
   /// ================= SUMMARY =================
-  Widget _summary(List<EnergyReportResponse> data) {
-    final kwh = data.fold(0.0, (s, e) => s + e.epi);
-    final money = kwh * 2500;
+  Widget _summary(ElectricReport report) {
+    final tou = report.tou;
 
-    /// DEMO chia tỉ lệ (sau có thể thay bằng API thật)
-    final low = kwh * 0.2;
-    final mid = kwh * 0.5;
-    final high = kwh * 0.3;
-    final percent = ((mid / kwh).clamp(0, 1)).toDouble();
+    final total = tou.totalKwh;
 
+    final low = tou.lowKwh;
+    final mid = tou.midKwh;
+    final high = tou.highKwh;
+
+    final double percent = total == 0 ? 0.0 : (mid / total);
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -251,62 +434,43 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          /// ===== TITLE =====
-          const Text("Tổng tiêu thụ", style: TextStyle(color: Colors.grey)),
-
-          const SizedBox(height: 6),
+          const Text("Tổng tiêu thụ"),
 
           Text(
-            "${NumberFormat("#,###").format(money)} đ",
+            "${NumberFormat("#,###").format(tou.totalWithVat)} đ",
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
 
-          Text("${kwh.toStringAsFixed(2)} kWh"),
+          Text("${tou.totalKwh.toStringAsFixed(2)} kWh"),
 
           const SizedBox(height: 20),
 
-          /// ===== SOLAR STYLE BLOCK =====
           Row(
             children: [
 
-              /// 🔥 CIRCLE %
+              /// circle
               SizedBox(
                 width: 90,
                 height: 90,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    SizedBox(
-                      width: 90,
-                      height: 90,
-                      child: CircularProgressIndicator(
-                        value: percent,
-                        strokeWidth: 8,
-                        backgroundColor: Colors.grey.shade200,
-                        valueColor: const AlwaysStoppedAnimation(Color(0xFF1ABC9C)),
-                      ),
+                    CircularProgressIndicator(
+                      value: percent,
+                      strokeWidth: 8,
                     ),
-                    Text(
-                      "${(percent * 100).toStringAsFixed(0)}%",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    )
+                    Text("${(percent * 100).toStringAsFixed(0)}%"),
                   ],
                 ),
               ),
 
               const SizedBox(width: 20),
 
-
               Expanded(
                 child: Column(
                   children: [
                     _energyItem("Thấp điểm", low, Colors.blue),
-                    const SizedBox(height: 10),
                     _energyItem("Trung bình", mid, Colors.orange),
-                    const SizedBox(height: 10),
                     _energyItem("Cao điểm", high, Colors.green),
                   ],
                 ),
@@ -353,14 +517,24 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
   }
   /// ==============  === CHART =================
   Widget _chart(List<EnergyReportResponse> data) {
+    if (data.isEmpty) return _emptyState();
+
+    data.sort((a, b) => a.time.compareTo(b.time));
+
+    double sum = 0;
 
     final spots = data.asMap().entries.map((e) {
-      return FlSpot(e.key.toDouble(), e.value.epi);
-    }).toList();
+      sum += e.value.epi;
 
-    double maxY = spots.isEmpty
-        ? 10
-        : spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.2;
+      return FlSpot(
+        e.key.toDouble(),
+        sum,
+      );
+    }).toList();
+    final minY = spots.map((e) => e.y).reduce((a, b) => a < b ? a : b);
+    final maxY2 = spots.map((e) => e.y).reduce((a, b) => a > b ? a : b);
+    final maxY = (data.map((e) => e.epi).reduce((a, b) => a > b ? a : b) * 1.2)
+        .ceilToDouble();
 
     return Container(
       height: 280,
@@ -371,26 +545,22 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
       ),
       child: LineChart(
         LineChartData(
-          minY: 0,
-          maxY: maxY,
+          minX: 0,
+          maxX: spots.length.toDouble() - 1,
+          minY: minY * 0.995,
+          maxY: maxY2 * 1.005,
 
-          /// GRID (đẹp hơn)
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: maxY / 5,
-            getDrawingHorizontalLine: (value) {
-              return FlLine(
-                color: Colors.white.withOpacity(0.05),
-                strokeWidth: 1,
-              );
-            },
+            getDrawingHorizontalLine: (value) => FlLine(
+              color: Colors.white.withOpacity(0.05),
+              strokeWidth: 1,
+            ),
           ),
 
-          /// BORDER
           borderData: FlBorderData(show: false),
 
-          /// TITLE (trục X)
           titlesData: FlTitlesData(
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
@@ -411,16 +581,20 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
+                interval: (spots.length / 5).ceilToDouble(),
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
-                  if (index >= data.length) return const SizedBox();
 
-                  final time = data[index].time;
+                  if (index < 0 || index >= data.length) {
+                    return const SizedBox();
+                  }
+
+                  final date = data[index].time;
 
                   return Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      "${time.day}/${time.month}",
+                      "${date.day}/${date.month}",
                       style: const TextStyle(
                         fontSize: 10,
                         color: Colors.white38,
@@ -431,29 +605,20 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
               ),
             ),
 
-            topTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-
-            rightTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           ),
 
-          /// TOUCH (tooltip xịn)
           lineTouchData: LineTouchData(
             enabled: true,
             touchTooltipData: LineTouchTooltipData(
               tooltipBgColor: Colors.black87,
-              tooltipRoundedRadius: 12,
               getTooltipItems: (spots) {
                 return spots.map((spot) {
-
-                  final index = spot.x.toInt();
-                  final time = data[index].time;
+                  final date = data[spot.x.toInt()].time;
 
                   return LineTooltipItem(
-                    "${time.day}/${time.month}\n",
+                    "${date.day}/${date.month}\n",
                     const TextStyle(color: Colors.grey, fontSize: 10),
                     children: [
                       TextSpan(
@@ -461,7 +626,6 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 13,
                         ),
                       ),
                     ],
@@ -471,54 +635,41 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
             ),
           ),
 
-          /// LINE
           lineBarsData: [
-          LineChartBarData(
-          spots: spots,
-          isCurved: true,
-          curveSmoothness: 0.4,
-          barWidth: 4,
-
-          /// 🔥 gradient giống app mẫu
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFFFF7A18),
-              Color(0xFFFFB347),
-            ],
-          ),
-
-          /// DOT khi touch
-          dotData: FlDotData(
-            show: true,
-            getDotPainter: (spot, percent, bar, index) {
-              return FlDotCirclePainter(
-                radius: 4,
-                color: Colors.white,
-                strokeWidth: 2,
-                strokeColor: const Color(0xFFFF7A18),
-              );
-            },
-          ),
-
-          /// vùng fill dưới
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                const Color(0xFFFF7A18).withOpacity(0.3),
-                Colors.transparent,
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+            LineChartBarData(
+              spots: spots,
+              curveSmoothness: 0.8,
+              isCurved: true,
+              barWidth: 2,
+              gradient: const LinearGradient(
+                colors: [Color(0xFF3B82F6), Color(0xFF60A5FA)],
+              ),
+          dotData: FlDotData(show: false,
+                getDotPainter: (spot, percent, bar, index) {
+                  return FlDotCirclePainter(
+                    radius: 3,
+                    color: Colors.orange,
+                    strokeWidth: 0,
+                  );
+                },
+              ),
+              belowBarData: BarAreaData(
+                show: true,
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFFFF7A18).withOpacity(0.3),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
-        ]
       ),
-    ),
     );
   }
-
 
   Widget _emptyState() {
     return Center(

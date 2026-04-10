@@ -94,6 +94,20 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     cubit = context.read<AtomatDetailCubit>();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final device = widget.device;
+
+      if (getMeterType(device) == MeterType.household) {
+        await _loadStartOfRangeEnergy(device);
+      } else {
+        await _loadElectricReport(device);
+      }
+
+      context.read<AutomatChartCubit>().loadChart(
+        device.code ?? "",
+        _selectedRange,
+      );
+    });
   }
   @override
   void dispose() {
@@ -171,8 +185,28 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       final repo = ElectricReportRepository(GetIt.instance<ApiClient>());
       final now = DateTime.now();
 
-      final from = DateTime(now.year, now.month, now.day);
+      DateTime from;
 
+      switch (_selectedRange) {
+        case ChartRange.day:
+          from = DateTime(now.year, now.month, now.day);
+          break;
+
+        case ChartRange.week:
+          from = now.subtract(Duration(days: 7));
+          break;
+
+        case ChartRange.month:
+          from = DateTime(now.year, now.month, 1);
+          break;
+
+        case ChartRange.year:
+          from = DateTime(now.year, 1, 1);
+          break;
+
+        default:
+          from = DateTime(now.year, now.month, now.day);
+      }
       final report = await repo.getElectricReport(
         meterId: device.id,
         from: from,
@@ -537,7 +571,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     );
   }
   String getTitle() {
-    return "Tiền điện hôm nay";
+    switch (_selectedRange) {
+      case ChartRange.day:
+        return "Tiền điện hôm nay";
+      case ChartRange.week:
+        return "Tiền điện 7 ngày";
+      case ChartRange.month:
+        return "Tiền điện tháng này";
+      case ChartRange.year:
+        return "Tiền điện năm nay";
+      default:
+        return "Tiền điện";
+    }
   }
   Widget _buildElectricCard() {
     return Container(
@@ -559,12 +604,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
           /// ===== HEADER =====
           Row(
-            children: const [
+            children:  [
               Icon(Icons.savings, size: 18, color: Color(0xFF1ABC9C)),
               SizedBox(width: 6),
               Text(
-                "Tiền điện hôm nay",
-                style: TextStyle(
+                getTitle(),
+                style: const TextStyle(
                   fontSize: 13,
                   color: Colors.grey,
                 ),
@@ -723,31 +768,19 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final bool active = _selectedRange == range;
 
     return GestureDetector(
-        onTap: () async {
-          setState(() {
-            _selectedRange = range;
-          });
+      onTap: () async {
+        setState(() {
+          _selectedRange = range;
+        });
 
-          /// reload chart
-          context.read<AutomatChartCubit>().loadChart(
-            device.code ?? "",
-            _selectedRange,
-          );
 
-          if (getMeterType(device) == MeterType.household) {
-            setState(() {
-              isInitDone = false;
-            });
+        context.read<AutomatChartCubit>().loadChart(
+          device.code ?? "",
+          _selectedRange,
+        );
 
-            await _loadStartOfRangeEnergy(device);
-
-            setState(() {
-              isInitDone = true;
-            });
-          } else {
-            await _loadElectricReport(device);
-          }
-        },
+        await _loadElectricReport(device);
+      },
 
       child: Container(
         margin: const EdgeInsets.only(left: 4),
@@ -881,8 +914,28 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     final now = DateTime.now();
 
-    final start = DateTime(now.year, now.month, now.day);
+    DateTime start;
 
+    switch (_selectedRange) {
+      case ChartRange.day:
+        start = DateTime(now.year, now.month, now.day);
+        break;
+
+      case ChartRange.week:
+        start = now.subtract(Duration(days: 7));
+        break;
+
+      case ChartRange.month:
+        start = DateTime(now.year, now.month, 1);
+        break;
+
+      case ChartRange.year:
+        start = DateTime(now.year, 1, 1);
+        break;
+
+      default:
+        start = DateTime(now.year, now.month, now.day);
+    }
     /// TẠM THỜI: vẫn dùng API cũ
     final result = await api.getBreakerLog(device.code ?? "");
 
@@ -1489,6 +1542,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<DeviceCubit>().state;
@@ -1499,22 +1553,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
     if (device == null) {
       return const SizedBox();
-    }
-    if (!isInitDone) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (getMeterType(device) == MeterType.household) {
-          await _loadStartOfRangeEnergy(device);
-        } else {
-          await _loadElectricReport(device);
-        }
-
-        context.read<AutomatChartCubit>().loadChart(
-          device.code ?? "",
-          _selectedRange,
-        );
-
-        isInitDone = true;
-      });
     }
     print("===== DETAIL BUILD =====");
     print("DEVICE ID: ${device?.id}");
