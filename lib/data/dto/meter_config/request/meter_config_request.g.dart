@@ -11,7 +11,7 @@ _$MeterConfigRequestImpl _$$MeterConfigRequestImplFromJson(
     _$MeterConfigRequestImpl(
       meterId: (json['meterId'] as num).toInt(),
       configKey: json['configKey'] as String,
-      configValue: (json['configValue'] as num).toInt(),
+      configValue: json['configValue'] as String,
     );
 
 Map<String, dynamic> _$$MeterConfigRequestImplToJson(

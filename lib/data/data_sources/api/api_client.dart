@@ -22,8 +22,10 @@ import 'package:solar_energy/data/dto/water/response/meter_water_response.dart';
 import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
 import 'package:solar_energy/data/dto/meter_config/response/meter_config_response.dart';
 
+import '../../dto/AlarmConfigMeter/alarm_config_meter_response.dart';
 import '../../dto/Price/price_config_response.dart';
 import '../../dto/alarm/response/alarm_response.dart';
+import '../../dto/alarm_config/response/alarm_config_response.dart';
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../dto/electric_report/electric_report_response.dart';
 import '../../dto/energy_report/energy_report_response.dart';
@@ -180,9 +182,27 @@ abstract class ApiClient {
       @Body() MeterConfigRequest request,
       );
   // ================= Phân tích nang luong =================
+
   @GET('api/app/alarm-config')
-  Future<dynamic> getThresholdConfigs(
+  Future<dynamic> getAlarmConfigs(
       @Query('SkipCount') int skipCount,
       @Query('MaxResultCount') int maxResultCount,
+      );
+
+  @GET('api/app/alarm-config/meters-by-config/{configId}')
+  Future<List<AlarmConfigMeterResponse>> getMetersByConfig(
+      @Path('configId') int configId,
+      );
+  @GET('api/app/alarm-config/available-meters/{configId}')
+  Future<List<DeviceResponse>> getAvailableMeters(
+      @Path('configId') int configId,
+      );
+  @POST('api/app/alarm-config')
+  Future<void> createAlarmConfig(
+      @Body() Map<String, dynamic> body,
+      );
+  @GET('/api/app/alarm-config/meters-by-config/{configId}')
+  Future<List<AlarmConfigMeterResponse>> getThresholdByConfig(
+      @Path('configId') int configId,
       );
 }

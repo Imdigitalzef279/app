@@ -33,4 +33,22 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
       rethrow;
     }
   }
+  @override
+  Future<void> saveConfigs(List<MeterConfigRequest> configs) async {
+    print("====== POST LIST CONFIG ======");
+
+    try {
+      for (final config in configs) {
+        print("BODY: ${config.toJson()}");
+        await _api.createMeterConfig(config);
+      }
+
+      print("====== RESPONSE SUCCESS ======");
+
+    } catch (e) {
+      print("====== RESPONSE ERROR ======");
+      print(e);
+      rethrow;
+    }
+  }
 }

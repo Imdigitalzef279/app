@@ -12,6 +12,9 @@ _$AlarmConfigResponseImpl _$$AlarmConfigResponseImplFromJson(
       id: (json['id'] as num?)?.toInt() ?? 0,
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
+      logParam: json['logParam'] as String? ?? '',
+      queryType: json['queryType'] as String? ?? '',
+      queryCondition: json['queryCondition'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$AlarmConfigResponseImplToJson(
@@ -20,4 +23,7 @@ Map<String, dynamic> _$$AlarmConfigResponseImplToJson(
       'id': instance.id,
       'name': instance.name,
       'description': instance.description,
+      'logParam': instance.logParam,
+      'queryType': instance.queryType,
+      'queryCondition': instance.queryCondition,
     };

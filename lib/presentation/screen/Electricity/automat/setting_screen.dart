@@ -2,14 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
 import 'package:solar_energy/data/repositories/meter_config/meter_config_repository.dart';
 
 import '../../../../data/data_sources/api/api_client.dart';
+import '../../../../data/dto/AlarmConfigMeter/alarm_config_meter_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
 import 'device_info_screen/device_info_screen.dart';
-
+Map<String, double> minMap = {};
+Map<String, double> maxMap = {};
+Map<String, double> deviceOverrideMap = {};
 Map<String, double> thresholdMap = {};
+Map<String, String> queryTypeMap = {};
+Map<String, String> conditionMap = {};
 const kPrimaryColor = Color(0xFF1ABC9C);
 const kBackgroundColor = Color(0xFFF4F7F8);
 class SettingScreen extends StatefulWidget {
@@ -25,7 +31,7 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-
+  String pricingType = "time_of_use";
   final _repo = GetIt.instance<MeterConfigRepository>();
 
   double overCurrent = 63;
@@ -42,89 +48,130 @@ class _SettingScreenState extends State<SettingScreen> {
   bool exportReport = false;
   bool isLoading = true;
 
-  // double getMax(String param) {
-  //   final v = thresholdMap["${param}_MAX"];
-  //   return (v == null || v == 0) ? 100 : v; // fallback
-  // }
-  //
-  // double getMin(String param) {
-  //   final v = thresholdMap["${param}_MIN"];
-  //   return (v == null) ? 0 : v;
-  // }
-  double getMax(String param) {
-    switch (param) {
-      case "I":
-        return 63; // cái này không có trong bảng → giữ tạm OK
-      case "PARAM_LG":
-        return 30;
-      case "PARAM_U":
-        return 220;
-      case "PARAM_P":
-        return 10; // chưa có trong Excel → tạm giữ
-      case "PARAM_TEMP1":
-        return 30;
-      default:
-        return 100;
-    }
-  }
-
   double getMin(String param) {
+    if (minMap.containsKey(param)) {
+      return minMap[param]!;
+    }
+    return defaultMin(param);
+  }
+
+  double getMax(String param) {
+    if (maxMap.containsKey(param)) {
+      return maxMap[param]!;
+    }
+    return defaultMax(param);
+  }
+  double defaultMin(String param) {
     switch (param) {
-      case "I":
-        return 0; // Excel có Min = 0
-      case "PARAM_LG":
-        return 0; // fallback hợp lý
-      case "PARAM_U":
-        return 0; // Excel có Min = 0
-      case "PARAM_P":
-        return 0;
-      case "PARAM_TEMP1":
-        return 20;
-      default:
-        return 0;
+      case "I": return 0;
+      case "PARAM_LG": return 0;
+      case "PARAM_U": return 180;
+      case "PARAM_P": return 0;
+      case "PARAM_TEMP1": return 0;
+      default: return 0;
     }
   }
 
+  double defaultMax(String param) {
+    switch (param) {
+      case "I": return 100;
+      case "PARAM_LG": return 100;
+      case "PARAM_U": return 260;
+      case "PARAM_P": return 10;
+      case "PARAM_TEMP1": return 120;
+      default: return 100;
+    }
+  }
   @override
   void initState() {
     super.initState();
     loadAll();
   }
+  Future<void> loadThreshold() async {
+    final api = GetIt.instance<ApiClient>();
 
+    try {
+      final res = await api.getAlarmConfigs(0, 100);
+
+      queryTypeMap.clear();
+      conditionMap.clear();
+
+      for (var e in res['items']) {
+        final param = e['logParam'];
+
+        queryTypeMap[param] = e['queryType'];
+        conditionMap[param] = e['queryCondition'];
+      }
+
+      print("QUERY TYPE: $queryTypeMap");
+      print("CONDITION: $conditionMap");
+
+      setState(() {});
+    } catch (e) {
+      debugPrint("Load threshold error: $e");
+    }
+  }
+  bool isOverThreshold(String param, double value) {
+    final type = queryTypeMap[param];
+    final condition = conditionMap[param];
+
+    if (type == null || condition == null) return false;
+
+    if (type == "Max") {
+      return value > double.parse(condition);
+    }
+
+    if (type == "Min") {
+      return value < double.parse(condition);
+    }
+
+    if (type == "Between") {
+      final parts = condition.split("AND");
+      final min = double.parse(parts[0].trim());
+      final max = double.parse(parts[1].trim());
+      return value < min || value > max;
+    }
+
+    return false;
+  }
+  void mapThreshold(List<AlarmConfigMeterResponse> data) {
+    minMap.clear();
+    maxMap.clear();
+
+    for (var e in data) {
+      final code = mapParam(e.meterCode);
+      final v = double.tryParse(e.thresholdValue) ?? 0;
+
+      if (e.thresholdType == "Max") {
+        maxMap[code] = v;
+      } else if (e.thresholdType == "Min") {
+        minMap[code] = v;
+      } else if (e.thresholdType == "Between") {
+        final parts = e.thresholdValue.split("AND");
+        minMap[code] = double.parse(parts[0].trim());
+        maxMap[code] = double.parse(parts[1].trim());
+      }
+    }
+
+    setState(() {});
+  }
+  String mapParam(String code) {
+    switch (code) {
+      case "PARAM_I": return "I";
+      case "PARAM_LG": return "PARAM_LG";
+      case "PARAM_U":
+      case "PARAM_UA": return "PARAM_U"; // FIX
+      case "PARAM_P": return "PARAM_P";
+      case "PARAM_TEMP1": return "PARAM_TEMP1";
+      default: return code;
+    }
+  }
   Future<void> loadAll() async {
     await Future.wait([
       loadConfig(),
-      // loadThresholdConfig(),
+      loadThreshold(),
     ]);
   }
-
-  // Future<void> loadThresholdConfig() async {
-  //   try {
-  //     final api = GetIt.instance<ApiClient>();
-  //
-  //     final res = await api.getThresholdConfigs(0, 100);
-  //     print("RAW RESPONSE: $res");
-  //     final items = res['items'];
-  //
-  //     for (var e in items) {
-  //       final param = e['logParam'];
-  //       final type = e['queryType'];
-  //       final value = double.tryParse(e['queryCondition'] ?? '0') ?? 0;
-  //
-  //       if (type == 1) {
-  //         thresholdMap["${param}_MIN"] = value;
-  //       } else if (type == 2) {
-  //         thresholdMap["${param}_MAX"] = value;
-  //       }
-  //     }
-  //
-  //     print("THRESHOLD MAP: $thresholdMap");
-  //
-  //   } catch (e) {
-  //     debugPrint("Threshold error: $e");
-  //   }
-  // }
-  // ================= LOAD CONFIG =================
 
   Future<void> loadConfig() async {
     try {
@@ -166,7 +213,11 @@ class _SettingScreenState extends State<SettingScreen> {
           case 'save_log':
             saveLog = e.configValue == 'true';
             break;
-
+          case 'pricing_type':
+            pricingType = e.configValue.toString() == '1'
+                ? "tiered"
+                : "time_of_use";
+            break;
           case 'export_report':
             exportReport = e.configValue == 'true';
             break;
@@ -192,73 +243,76 @@ class _SettingScreenState extends State<SettingScreen> {
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_current",
-          configValue: overCurrent.toInt(),
+          configValue: overCurrent.toInt().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "leakage_current",
-          configValue: leakageCurrent.toInt(),
+          configValue: leakageCurrent.toInt().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_voltage",
-          configValue: overVoltage.toInt(),
+          configValue: overVoltage.toInt().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "under_voltage",
-          configValue: underVoltage.toInt(),
+          configValue: underVoltage.toInt().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_power",
-          configValue: overPower.toInt(),
+          configValue: overPower.toInt().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "phase_loss",
-          configValue: phaseLoss ? 1 : 0,
+          configValue: phaseLoss.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "custom_threshold",
-          configValue: customThreshold ? 1 : 0,
+          configValue: customThreshold.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "notify_app",
-          configValue: notifyApp ? 1 : 0,
+          configValue: notifyApp.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "notify_email",
-          configValue: notifyEmail ? 1 : 0,
+          configValue: notifyEmail.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "save_log",
-          configValue: saveLog ? 1 : 0,
+          configValue: saveLog.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "export_report",
-          configValue: exportReport ? 1 : 0,
+          configValue: exportReport.toString(),
+        ),
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "pricing_type",
+          configValue: (pricingType == "tiered" ? 1 : 0).toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_temperature",
-          configValue: overTemperature.toInt(),
+          configValue: overTemperature.toInt().toString(),
         ),
       ];
 
-      ///  1. Lưu DB
-      for (final config in configs) {
-        await _repo.saveConfig(config);
-      }
 
+      await _repo.saveConfigs(configs);
       ///  2. Gửi xuống thiết bị + check kết quả
       final ok = await sendProtectionSetting(); // <-- QUAN TRỌNG
-
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("pricing_type", pricingType);
       ///  3. Hiển thị đúng trạng thái
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -551,7 +605,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
                   _buildSwitchItem("Cảnh báo qua App", notifyApp,
                           (v) => setState(() => notifyApp = v)),
-
                   _buildSwitchItem("Cảnh báo Email", notifyEmail,
                           (v) => setState(() => notifyEmail = v)),
 
@@ -560,8 +613,87 @@ class _SettingScreenState extends State<SettingScreen> {
 
                   _buildSwitchItem("Xuất báo cáo", exportReport,
                           (v) => setState(() => exportReport = v)),
-                ],
+              _buildItemCard(
+                title: "Cài đặt biểu giá",
+                child: Row(
+                  children: [
+
+                    /// HỘ GIA ĐÌNH (EVN)
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => pricingType = "tiered");
+                        },
+                        child: Container(
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: pricingType == "tiered"
+                                ? kPrimaryColor.withOpacity(0.15)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: pricingType == "tiered"
+                                  ? kPrimaryColor
+                                  : Colors.grey.shade300,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Hộ gia đình",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: pricingType == "tiered"
+                                    ? kPrimaryColor
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    /// CÔNG NGHIỆP (3 GIÁ)
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => pricingType = "time_of_use");
+                        },
+                        child: Container(
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: pricingType == "time_of_use"
+                                ? kPrimaryColor.withOpacity(0.15)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: pricingType == "time_of_use"
+                                  ? kPrimaryColor
+                                  : Colors.grey.shade300,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Công nghiệp",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: pricingType == "time_of_use"
+                                    ? kPrimaryColor
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              ]
+            )
             )
           ],
         )
@@ -646,9 +778,10 @@ class _SettingScreenState extends State<SettingScreen> {
     bool isOverCurrent = false,
     String? description,
   }) {
-    final percent = ((value - min) / (max - min)).clamp(0.0, 1.0);
     final safeMax = (max <= min) ? (min + 1) : max;
-    final safeValue = value.clamp(min, max);
+    final safeValue = value.clamp(min, safeMax);
+
+    final percent = ((safeValue - min) / (safeMax - min)).clamp(0.0, 1.0);
     Color valueColor;
     if (!isVoltage) {
       valueColor = kPrimaryColor;
@@ -896,41 +1029,26 @@ Widget _buildItemCard({
 }) {
   return Container(
     margin: const EdgeInsets.only(bottom: 14),
-    padding: const EdgeInsets.all(16),
+    padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
-      color: Colors.white,
       gradient: LinearGradient(
-        colors: [
-          Colors.white,
-          Color(0xFFB2E6B4),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+        colors: [Colors.white, Color(0xFFB2E6B4)],
       ),
-      borderRadius: BorderRadius.circular(20),
-
-      boxShadow: [
-
-        /// shadow dưới (đổ bóng)
-        BoxShadow(
-          color: Colors.black.withOpacity(0.10),
-          blurRadius: 18,
-          spreadRadius: 1,
-          offset: const Offset(0, 8),
-        ),
-
-        /// highlight trên (tạo hiệu ứng nổi)
-        BoxShadow(
-          color: Colors.white.withOpacity(0.9),
-          blurRadius: 6,
-          spreadRadius: -2,
-          offset: const Offset(-2, -2),
-        ),
-      ],
+      borderRadius: BorderRadius.circular(16),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
         child,
       ],
     ),

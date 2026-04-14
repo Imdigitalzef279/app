@@ -22,7 +22,7 @@ MeterConfigRequest _$MeterConfigRequestFromJson(Map<String, dynamic> json) {
 mixin _$MeterConfigRequest {
   int get meterId => throw _privateConstructorUsedError;
   String get configKey => throw _privateConstructorUsedError;
-  int get configValue => throw _privateConstructorUsedError;
+  String get configValue => throw _privateConstructorUsedError;
 
   /// Serializes this MeterConfigRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +40,7 @@ abstract class $MeterConfigRequestCopyWith<$Res> {
           MeterConfigRequest value, $Res Function(MeterConfigRequest) then) =
       _$MeterConfigRequestCopyWithImpl<$Res, MeterConfigRequest>;
   @useResult
-  $Res call({int meterId, String configKey, int configValue});
+  $Res call({int meterId, String configKey, String configValue});
 }
 
 /// @nodoc
@@ -74,7 +74,7 @@ class _$MeterConfigRequestCopyWithImpl<$Res, $Val extends MeterConfigRequest>
       configValue: null == configValue
           ? _value.configValue
           : configValue // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
     ) as $Val);
   }
 }
@@ -87,7 +87,7 @@ abstract class _$$MeterConfigRequestImplCopyWith<$Res>
       __$$MeterConfigRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int meterId, String configKey, int configValue});
+  $Res call({int meterId, String configKey, String configValue});
 }
 
 /// @nodoc
@@ -119,7 +119,7 @@ class __$$MeterConfigRequestImplCopyWithImpl<$Res>
       configValue: null == configValue
           ? _value.configValue
           : configValue // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
     ));
   }
 }
@@ -140,7 +140,7 @@ class _$MeterConfigRequestImpl implements _MeterConfigRequest {
   @override
   final String configKey;
   @override
-  final int configValue;
+  final String configValue;
 
   @override
   String toString() {
@@ -184,7 +184,7 @@ abstract class _MeterConfigRequest implements MeterConfigRequest {
   const factory _MeterConfigRequest(
       {required final int meterId,
       required final String configKey,
-      required final int configValue}) = _$MeterConfigRequestImpl;
+      required final String configValue}) = _$MeterConfigRequestImpl;
 
   factory _MeterConfigRequest.fromJson(Map<String, dynamic> json) =
       _$MeterConfigRequestImpl.fromJson;
@@ -194,7 +194,7 @@ abstract class _MeterConfigRequest implements MeterConfigRequest {
   @override
   String get configKey;
   @override
-  int get configValue;
+  String get configValue;
 
   /// Create a copy of MeterConfigRequest
   /// with the given fields replaced by the non-null parameter values.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../../../../data/data_sources/api/api_client.dart';
 import '../../../../../data/dto/device/response/device_response.dart';
@@ -11,7 +12,7 @@ import '../../../../../data/dto/electric_report/electric_report_response.dart';
 import '../../../../../data/dto/energy_report/energy_report_response.dart';
 import '../../../../../data/dto/power_station/response/power_station_response.dart';
 import '../../../../../data/repositories/EnergyRepository/EnergyRepository.dart';
-
+String pricingType = "time_of_use";
 class EnergyState {
   final List<EnergyReportResponse> chart;
   final ElectricReport report;
@@ -154,7 +155,8 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
   Widget _touTable(ElectricReport report) {
 
-    if (report.type == "TIER") {
+    /// ===== BẬC THANG =====
+    if (pricingType == "tiered") {
       final tiers = report.tiers;
 
       return Container(
@@ -167,10 +169,8 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            const Text(
-              "Chi tiết bậc thang",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            const Text("Chi tiết bậc thang",
+                style: TextStyle(fontWeight: FontWeight.bold)),
 
             const SizedBox(height: 10),
 
@@ -185,19 +185,16 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
             const Divider(),
 
-            ...tiers.map((e) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  children: [
-                    Expanded(child: Text("Bậc ${e.stepOrder}")),
-                    Expanded(child: Text("${e.price}")),
-                    Expanded(child: Text("${e.kwhInStep}")),
-                    Expanded(child: Text(
-                      NumberFormat("#,###").format(e.stepCost),
-                    )),
-                  ],
-                ),
+            ...report.tiers.map((e) {
+              return Row(
+                children: [
+                  Expanded(child: Text("Bậc ${e.stepOrder}")),
+                  Expanded(child: Text("${e.price}")),
+                  Expanded(child: Text("${e.kwhInStep}")),
+                  Expanded(child: Text(
+                    NumberFormat("#,###").format(e.stepCost),
+                  )),
+                ],
               );
             }).toList(),
           ],
@@ -299,13 +296,19 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
   @override
   void initState() {
     super.initState();
-
+    loadPricingType();
     selectedRange = DateTimeRange(
       start: DateTime.now().subtract(const Duration(days: 7)),
       end: DateTime.now(),
     );
 
     _loadStations();
+  }
+  Future<void> loadPricingType() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      pricingType = prefs.getString("pricing_type") ?? "time_of_use";
+    });
   }
   Future<void> _loadStations() async {
     final res = await GetIt.instance<ApiClient>()
@@ -566,7 +569,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
   Widget _summary(ElectricReport report) {
 
 
-    if (report.type == "TIER") {
+    if (pricingType == "tiered") {
       final tiers = report.tiers;
 
       final totalKwh = tiers.fold<double>(
@@ -660,6 +663,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
               ),
             ],
           ),
+
 
           const SizedBox(height: 6),
 

@@ -8,7 +8,7 @@ class MeterConfigRequest with _$MeterConfigRequest {
   const factory MeterConfigRequest({
     required int meterId,
     required String configKey,
-    required int configValue,
+    required String configValue,
   }) = _MeterConfigRequest;
 
   factory MeterConfigRequest.fromJson(Map<String, dynamic> json) =>

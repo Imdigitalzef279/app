@@ -24,6 +24,11 @@ mixin _$AlarmConfigResponse {
   String get name => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
 
+  /// 🔥 QUAN TRỌNG
+  String get logParam => throw _privateConstructorUsedError;
+  String get queryType => throw _privateConstructorUsedError;
+  String get queryCondition => throw _privateConstructorUsedError;
+
   /// Serializes this AlarmConfigResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -40,7 +45,13 @@ abstract class $AlarmConfigResponseCopyWith<$Res> {
           AlarmConfigResponse value, $Res Function(AlarmConfigResponse) then) =
       _$AlarmConfigResponseCopyWithImpl<$Res, AlarmConfigResponse>;
   @useResult
-  $Res call({int id, String name, String description});
+  $Res call(
+      {int id,
+      String name,
+      String description,
+      String logParam,
+      String queryType,
+      String queryCondition});
 }
 
 /// @nodoc
@@ -61,6 +72,9 @@ class _$AlarmConfigResponseCopyWithImpl<$Res, $Val extends AlarmConfigResponse>
     Object? id = null,
     Object? name = null,
     Object? description = null,
+    Object? logParam = null,
+    Object? queryType = null,
+    Object? queryCondition = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -75,6 +89,18 @@ class _$AlarmConfigResponseCopyWithImpl<$Res, $Val extends AlarmConfigResponse>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
+      logParam: null == logParam
+          ? _value.logParam
+          : logParam // ignore: cast_nullable_to_non_nullable
+              as String,
+      queryType: null == queryType
+          ? _value.queryType
+          : queryType // ignore: cast_nullable_to_non_nullable
+              as String,
+      queryCondition: null == queryCondition
+          ? _value.queryCondition
+          : queryCondition // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -87,7 +113,13 @@ abstract class _$$AlarmConfigResponseImplCopyWith<$Res>
       __$$AlarmConfigResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, String description});
+  $Res call(
+      {int id,
+      String name,
+      String description,
+      String logParam,
+      String queryType,
+      String queryCondition});
 }
 
 /// @nodoc
@@ -106,6 +138,9 @@ class __$$AlarmConfigResponseImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? description = null,
+    Object? logParam = null,
+    Object? queryType = null,
+    Object? queryCondition = null,
   }) {
     return _then(_$AlarmConfigResponseImpl(
       id: null == id
@@ -120,6 +155,18 @@ class __$$AlarmConfigResponseImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
+      logParam: null == logParam
+          ? _value.logParam
+          : logParam // ignore: cast_nullable_to_non_nullable
+              as String,
+      queryType: null == queryType
+          ? _value.queryType
+          : queryType // ignore: cast_nullable_to_non_nullable
+              as String,
+      queryCondition: null == queryCondition
+          ? _value.queryCondition
+          : queryCondition // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -128,7 +175,12 @@ class __$$AlarmConfigResponseImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$AlarmConfigResponseImpl implements _AlarmConfigResponse {
   const _$AlarmConfigResponseImpl(
-      {this.id = 0, this.name = '', this.description = ''});
+      {this.id = 0,
+      this.name = '',
+      this.description = '',
+      this.logParam = '',
+      this.queryType = '',
+      this.queryCondition = ''});
 
   factory _$AlarmConfigResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$AlarmConfigResponseImplFromJson(json);
@@ -143,9 +195,20 @@ class _$AlarmConfigResponseImpl implements _AlarmConfigResponse {
   @JsonKey()
   final String description;
 
+  /// 🔥 QUAN TRỌNG
+  @override
+  @JsonKey()
+  final String logParam;
+  @override
+  @JsonKey()
+  final String queryType;
+  @override
+  @JsonKey()
+  final String queryCondition;
+
   @override
   String toString() {
-    return 'AlarmConfigResponse(id: $id, name: $name, description: $description)';
+    return 'AlarmConfigResponse(id: $id, name: $name, description: $description, logParam: $logParam, queryType: $queryType, queryCondition: $queryCondition)';
   }
 
   @override
@@ -156,12 +219,19 @@ class _$AlarmConfigResponseImpl implements _AlarmConfigResponse {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            (identical(other.logParam, logParam) ||
+                other.logParam == logParam) &&
+            (identical(other.queryType, queryType) ||
+                other.queryType == queryType) &&
+            (identical(other.queryCondition, queryCondition) ||
+                other.queryCondition == queryCondition));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, description);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, description, logParam, queryType, queryCondition);
 
   /// Create a copy of AlarmConfigResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -184,7 +254,10 @@ abstract class _AlarmConfigResponse implements AlarmConfigResponse {
   const factory _AlarmConfigResponse(
       {final int id,
       final String name,
-      final String description}) = _$AlarmConfigResponseImpl;
+      final String description,
+      final String logParam,
+      final String queryType,
+      final String queryCondition}) = _$AlarmConfigResponseImpl;
 
   factory _AlarmConfigResponse.fromJson(Map<String, dynamic> json) =
       _$AlarmConfigResponseImpl.fromJson;
@@ -195,6 +268,14 @@ abstract class _AlarmConfigResponse implements AlarmConfigResponse {
   String get name;
   @override
   String get description;
+
+  /// 🔥 QUAN TRỌNG
+  @override
+  String get logParam;
+  @override
+  String get queryType;
+  @override
+  String get queryCondition;
 
   /// Create a copy of AlarmConfigResponse
   /// with the given fields replaced by the non-null parameter values.
