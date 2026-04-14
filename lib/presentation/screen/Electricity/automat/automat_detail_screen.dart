@@ -213,10 +213,32 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         to: now,
       );
 
-      setState(() {
-        todayEnergy = report.tou.totalKwh;
-        moneyToday = report.tou.totalWithVat;
-      });
+      if (report.type == "TIER") {
+        final tiers = report.tiers;
+
+        final totalKwh = tiers.fold<double>(
+          0,
+              (sum, e) => sum + e.kwhInStep,
+        );
+
+        final totalMoney = tiers.fold<double>(
+          0,
+              (sum, e) => sum + e.stepCost,
+        );
+
+        setState(() {
+          todayEnergy = totalKwh;
+          moneyToday = totalMoney;
+        });
+
+      } else {
+        final tou = report.tou!;
+
+        setState(() {
+          todayEnergy = tou.totalKwh;
+          moneyToday = tou.totalWithVat;
+        });
+      }
 
     } catch (e) {
       print("❌ ElectricReport error: $e");

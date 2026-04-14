@@ -5,6 +5,7 @@ class EnergyReportResponse {
   final double ct;
   final String source;
 
+
   EnergyReportResponse({
     required this.time,
     required this.p,
