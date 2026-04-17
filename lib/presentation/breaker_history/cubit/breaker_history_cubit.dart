@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 
-import '../../../data/dto/breaker_command/breaker_command_dto.dart';
 import '../../../data/repositories/breaker/breaker_repository.dart';
 import 'breaker_history_state.dart';
 

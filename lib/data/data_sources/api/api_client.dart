@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:solar_energy/data/dto/api_response/api_response.dart';
 import 'package:solar_energy/data/dto/atomat/atomat_log_response.dart';
-import 'package:solar_energy/data/dto/atomat/atomat_request.dart';
 import 'package:solar_energy/data/dto/auth/response/auth_response.dart';
 import 'package:solar_energy/data/dto/cbs/request/cbs_meter_request.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
@@ -25,11 +24,11 @@ import 'package:solar_energy/data/dto/meter_config/response/meter_config_respons
 import '../../dto/AlarmConfigMeter/alarm_config_meter_response.dart';
 import '../../dto/Price/price_config_response.dart';
 import '../../dto/alarm/response/alarm_response.dart';
-import '../../dto/alarm_config/response/alarm_config_response.dart';
+
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../dto/electric_report/electric_report_response.dart';
 import '../../dto/energy_report/energy_report_response.dart';
-import '../../dto/result_response/result_response.dart';
+
 part 'api_client.g.dart';
 
 @RestApi(baseUrl: '')

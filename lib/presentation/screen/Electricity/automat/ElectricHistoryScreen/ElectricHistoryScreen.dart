@@ -155,7 +155,6 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
   Widget _touTable(ElectricReport report) {
 
-    /// ===== BẬC THANG =====
     if (pricingType == "tiered") {
       final tiers = report.tiers;
 
@@ -523,7 +522,6 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
                 const SizedBox(height: 16),
 
-                /// ===== BUTTON =====
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1ABC9C),
@@ -709,7 +707,6 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
       ],
     );
   }
-  /// ==============  === CHART =================
   Widget _chart(List<EnergyReportResponse> data) {
     if (data.isEmpty) return _emptyState();
 
@@ -806,7 +803,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
           lineTouchData: LineTouchData(
             enabled: true,
             touchTooltipData: LineTouchTooltipData(
-              tooltipBgColor: Colors.black87,
+              getTooltipColor: (touchedSpot) => Colors.black87,
               getTooltipItems: (spots) {
                 return spots.map((spot) {
                   final date = data[spot.x.toInt()].time;

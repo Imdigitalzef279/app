@@ -48,37 +48,45 @@ class _SettingScreenState extends State<SettingScreen> {
   bool exportReport = false;
   bool isLoading = true;
 
-  double getMin(String param) {
-    if (minMap.containsKey(param)) {
-      return minMap[param]!;
-    }
-    return defaultMin(param);
+  double getMax(String param) {
+    return maxMap[param] ?? defaultMax(param);
   }
 
-  double getMax(String param) {
-    if (maxMap.containsKey(param)) {
-      return maxMap[param]!;
-    }
-    return defaultMax(param);
+  double getMin(String param) {
+    return minMap[param] ?? defaultMin(param);
   }
   double defaultMin(String param) {
     switch (param) {
       case "I": return 0;
+
       case "PARAM_LG": return 0;
+
       case "PARAM_U": return 180;
+
+      case "PARAM_TEMP1": return 20;
+
+      case "PARAM_HUMI1": return 30;
+
       case "PARAM_P": return 0;
-      case "PARAM_TEMP1": return 0;
+
       default: return 0;
     }
   }
 
   double defaultMax(String param) {
     switch (param) {
-      case "I": return 100;
+      case "I": return 63;
+
       case "PARAM_LG": return 100;
-      case "PARAM_U": return 260;
+
+      case "PARAM_U": return 220;
+
+      case "PARAM_TEMP1": return 30;
+
+      case "PARAM_HUMI1": return 70;
+
       case "PARAM_P": return 10;
-      case "PARAM_TEMP1": return 120;
+
       default: return 100;
     }
   }
@@ -93,18 +101,49 @@ class _SettingScreenState extends State<SettingScreen> {
     try {
       final res = await api.getAlarmConfigs(0, 100);
 
-      queryTypeMap.clear();
-      conditionMap.clear();
+      minMap.clear();
+      maxMap.clear();
 
       for (var e in res['items']) {
-        final param = e['logParam'];
+        final param = mapParam(e['logParam']);
+        final type = e['queryType'];
+        final condition = e['queryCondition'];
 
-        queryTypeMap[param] = e['queryType'];
-        conditionMap[param] = e['queryCondition'];
+        if (param.isEmpty) continue;
+
+        if (type == "Max") {
+          final v = double.parse(condition);
+
+          if (!maxMap.containsKey(param) || v > maxMap[param]!) {
+            maxMap[param] = v;
+          }
+        }
+
+        else if (type == "Min") {
+          final v = double.parse(condition);
+
+          if (!minMap.containsKey(param) || v < minMap[param]!) {
+            minMap[param] = v;
+          }
+        }
+
+        else if (type == "Between") {
+          final parts = condition.split("AND");
+          final min = double.parse(parts[0].trim());
+          final max = double.parse(parts[1].trim());
+
+          if (!minMap.containsKey(param) || min < minMap[param]!) {
+            minMap[param] = min;
+          }
+
+          if (!maxMap.containsKey(param) || max > maxMap[param]!) {
+            maxMap[param] = max;
+          }
+        }
       }
 
-      print("QUERY TYPE: $queryTypeMap");
-      print("CONDITION: $conditionMap");
+      print("MIN MAP: $minMap");
+      print("MAX MAP: $maxMap");
 
       setState(() {});
     } catch (e) {
@@ -160,7 +199,7 @@ class _SettingScreenState extends State<SettingScreen> {
       case "PARAM_I": return "I";
       case "PARAM_LG": return "PARAM_LG";
       case "PARAM_U":
-      case "PARAM_UA": return "PARAM_U"; // FIX
+      case "PARAM_UA": return "PARAM_U";
       case "PARAM_P": return "PARAM_P";
       case "PARAM_TEMP1": return "PARAM_TEMP1";
       default: return code;
@@ -479,7 +518,6 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             const SizedBox(height: 12),
 
-            /// 🔹 QUÁ DÒNG
             _buildItemCard(
               title: "Quá dòng",
               child: Column(
@@ -499,7 +537,6 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
 
-            /// 🔹 DÒNG RÒ
             _buildItemCard(
               title: "Dòng rò",
               child: _buildSliderTile(
@@ -531,7 +568,6 @@ class _SettingScreenState extends State<SettingScreen> {
               ],
             ),
 
-            /// 🔹 QUÁ ÁP
             _buildItemCard(
               title: "Quá áp",
               child: _buildSliderTile(
@@ -546,7 +582,6 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
 
-            /// 🔹 THẤP ÁP
             _buildItemCard(
               title: "Thấp áp",
               child: _buildSliderTile(
@@ -561,7 +596,7 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
 
-            /// 🔹 QUÁ CÔNG SUẤT
+            /// QUÁ CÔNG SUẤT
             _buildItemCard(
               title: "Quá công suất",
               child: _buildSliderTile(
@@ -575,7 +610,7 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
 
-            /// 🔹 QUÁ NHIỆT (cái này bạn đã đúng)
+            /// QUÁ NHIỆT (cái này bạn đã đúng)
             _buildItemCard(
               title: "Quá nhiệt",
               child: _buildSliderTile(
@@ -591,7 +626,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
             const SizedBox(height: 10),
 
-            /// 🔹 SWITCH SETTINGS
             _buildItemCard(
               title: "Cài đặt bổ sung",
               child: Column(
@@ -861,7 +895,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
                   /// nền xám
                   Container(
-                    height: 6,
+                    height: 20,
                     decoration: BoxDecoration(
                       color: const Color(0xFFE5E5E5),
                       borderRadius: BorderRadius.circular(30),
@@ -872,7 +906,7 @@ class _SettingScreenState extends State<SettingScreen> {
     FractionallySizedBox(
     widthFactor: percent,
                     child: Container(
-                      height: 6,
+                      height: 20,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         gradient: isOverCurrent
@@ -1090,8 +1124,8 @@ class _ModernThumbShape extends SliderComponentShape {
     /// vòng trắng
     canvas.drawCircle(center, 18, Paint()..color = Colors.white);
 
+
     /// viền xanh nhạt
-    ///
     canvas.drawCircle(
       center,
       12,
@@ -1103,5 +1137,6 @@ class _ModernThumbShape extends SliderComponentShape {
 
     /// chấm xanh
     canvas.drawCircle(center, 4, Paint()..color = kPrimaryColor);
+
   }
 }

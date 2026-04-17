@@ -10,15 +10,13 @@ import '../../../application/cubit/app_cubit.dart';
 
 import '../../../data/dto/power_station/response/power_station_response.dart';
 import '../Electricity/automat/automat_list_screen.dart';
-import '../Electricity/automat/device_info_screen/device_info_screen.dart';
+
 import '../device/bloc/device_cubit.dart';
-import '../general_device/notification/notification_screen.dart';
+
 
 import '../general_device/project_setting_screen.dart';
 import 'AccountDetailScreen.dart';
-import 'GuideScreen.dart';
-import 'SupportScreen.dart';
-import 'ThemeScreen.dart';
+
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});

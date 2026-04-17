@@ -260,7 +260,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
             barTouchData: BarTouchData(
               enabled: true,
               touchTooltipData: BarTouchTooltipData(
-                tooltipBgColor: Colors.black87, // nền tối
+                getTooltipColor: (touchedSpot) => Colors.black87,
                 getTooltipItem: (group, groupIndex, rod, rodIndex) {
                   final index = group.x.toInt();
                   final item = displayData[index];

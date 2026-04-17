@@ -114,10 +114,10 @@ class ManagerWaterCubit extends Cubit<ManagerWaterState> {
     List<WaterIndexModel> listWaterIndex = [...state.listWaterIndex];
     List<WaterIndexModel> listSelected = [...state.listSelected];
     if (isAdd) {
-      if (listSelected.length >= 4) {
-        ToastUtils.show(LocalizationsUtils.localizations.showMax4Indicators);
-        return;
-      }
+      // if (listSelected.length >= 4) {
+      //   ToastUtils.show(LocalizationsUtils.localizations.showMax4Indicators);
+      //   return;
+      // }
       listWaterIndex.remove(waterIndex);
       listSelected.add(waterIndex);
     } else {

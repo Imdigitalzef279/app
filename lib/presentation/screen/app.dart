@@ -4,11 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/application/cubit/app_cubit.dart';
 import 'package:solar_energy/application/utils/app_utils.dart';
 import 'package:solar_energy/application/utils/navigation_utils.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:solar_energy/presentation/routes/routes.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/update_service.dart';
+import '../../l10n/app_localizations.dart';
 import '../common_widgets/app_loading_indicator.dart';
 
 class MyApp extends StatefulWidget {

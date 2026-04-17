@@ -93,14 +93,11 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
         );
       },
     );
-
     if (newName != null && newName.isNotEmpty) {
-
       context.read<DeviceCubit>().updateDeviceName(
         device.id,
         newName,
       );
-
     }
   }
   /// ================= DEVICE CARD =================
@@ -332,7 +329,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
             ),
           ),
 
-          /// ACTIONS
+
           SizedBox(
             width: 80,
             child: Column(

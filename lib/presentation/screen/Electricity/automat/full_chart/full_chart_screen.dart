@@ -254,7 +254,7 @@ class FullChartScreen extends StatelessWidget {
                   /// ===== TOOLTIP =====
                   lineTouchData: LineTouchData(
                     touchTooltipData: LineTouchTooltipData(
-                      tooltipBgColor: Colors.black87,
+                      getTooltipColor: (touchedSpot) => Colors.black87,
                       getTooltipItems: (spots) {
                         return spots.map((spot) {
                           final index = spot.x.toInt();

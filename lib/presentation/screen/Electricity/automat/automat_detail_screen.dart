@@ -1005,8 +1005,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
             barTouchData: BarTouchData(
               enabled: true,
               touchTooltipData: BarTouchTooltipData(
-                tooltipBgColor: Colors.black87,
-                tooltipRoundedRadius: 10,
+                getTooltipColor: (touchedSpot) => Colors.black87,
+                tooltipBorderRadius: BorderRadius.circular(10),
                 tooltipPadding: const EdgeInsets.all(8),
                 tooltipMargin: 16,
                 fitInsideHorizontally: true,
@@ -1198,8 +1198,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               handleBuiltInTouches: true,
 
               touchTooltipData: LineTouchTooltipData(
-                tooltipBgColor: Colors.black87,
-                tooltipRoundedRadius: 10,
+                getTooltipColor: (touchedSpot) => Colors.black87,
+                tooltipBorderRadius: BorderRadius.circular(10),
                 tooltipPadding: const EdgeInsets.all(8),
 
                 fitInsideHorizontally: true,
