@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
@@ -25,15 +24,12 @@ part 'device_state.dart';
 part 'device_cubit.freezed.dart';
 
 class DeviceCubit extends Cubit<DeviceState> {
-
   DeviceCubit() : super(DeviceState.init());
   final _repo = getIt.get<DeviceRepository>();
-  String? _cachedUserName;
-  final _api = GetIt.instance<ApiClient>();
   final _cbs = getIt.get<CbsRepository>();
-  final _authRepo = getIt.get<AuthRepository>();
   final Map<int, DateTime> _lastCommandTime = {};
   final _timers = <int, Timer>{};
+
   ProfileResponse? profile;
 
   double calculateTodayMoney({
@@ -154,15 +150,16 @@ class DeviceCubit extends Cubit<DeviceState> {
         final old = state.resultDevices.data
             ?.firstWhereOrNull((e) => e.id == d.id);
 
+        final localFav = prefs.getBool("favorite_${d.id}");
+
         updatedDevices.add(
           d.copyWith(
-            status: log?.rlySta
-                ?? old?.status
-                ?? d.status,
+            status: log?.rlySta ?? old?.status ?? d.status,
             realtimeLog: log ?? old?.realtimeLog,
             avatar: avatar ?? "",
             name: localName ?? d.name,
-            isFavorite: isFavorite,
+
+            isFavorite: localFav ?? d.isFavorite,
           ),
         );
       }
@@ -185,7 +182,32 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     }
   }
+  Future<void> importDevices(List<DeviceResponse> newDevices) async {
 
+    final prefs = await SharedPreferences.getInstance();
+
+    final current = state.resultDevices.data ?? [];
+
+    final merged = [...current];
+
+    for (var d in newDevices) {
+
+      final exists = current.any((e) => e.code == d.code);
+
+      if (!exists) {
+
+        merged.add(d);
+
+        await prefs.setString("device_${d.id}", d.toJson().toString());
+      }
+    }
+
+    emit(state.copyWith(
+      resultDevices: state.resultDevices.copyWith(
+        data: merged,
+      ),
+    ));
+  }
   // ============================================================
   // GET FIRST DEVICE
   // ============================================================
@@ -278,11 +300,6 @@ class DeviceCubit extends Cubit<DeviceState> {
       updateLocalStatus(device.id, targetInt);
       _lastCommandTime[device.id] = DateTime.now();
       _removeSwitching(device.id);
-      if (!success) {
-        _removeSwitching(device.id);
-        AppToast.showToastError(title: "Gửi lệnh thất bại");
-        return;
-      }
 
       final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
 
@@ -436,31 +453,42 @@ class DeviceCubit extends Cubit<DeviceState> {
       int expected,
       ) async {
 
-    int countdown = 5;
+    int countdown = 10;
 
     while (countdown > 0) {
-
-      final map = Map<int,int>.from(state.switchCountdowns);
+      final map = Map<int, int>.from(state.switchCountdowns);
       map[deviceId] = countdown;
+      emit(state.copyWith(switchCountdowns: map));
 
-      emit(state.copyWith(
-        switchCountdowns: map,
-      ));
+      // 2. Chờ 2 giây mỗi lần để tránh spam API quá nhanh (Server/Gateway cần thời gian xử lý)
+      await Future.delayed(const Duration(seconds: 2));
+      countdown -= 2;
 
-      await Future.delayed(const Duration(seconds: 1));
-      countdown--;
-
-      ///  reload mỗi vòng
+      // 3. Load log mới nhất từ Server
       await loadBreakerLog(breakerSn);
 
+      // 4. KIỂM TRA TRẠNG THÁI
       final log = state.breakerLogs[breakerSn];
-      final current = log?.rlySta;
 
-      if (current == expected) {
+      // Lưu ý: Bảo trì thường check ở field rlyRepSta
+      // Nếu thiết bị của bạn trả về bảo trì ở field khác, hãy thay thế tên field ở đây
+      final currentMaintenanceStatus = log?.rlyRepSta;
+
+      print("Checking Maintenance: Current=$currentMaintenanceStatus, Expected=$expected");
+
+      if (currentMaintenanceStatus == expected) {
+        print("✅ Maintenance state matched!");
         break;
       }
     }
+
+    // 5. Kết thúc: Xóa trạng thái loading/countdown trên UI
     _removeSwitching(deviceId);
+
+    // Xóa số giây đếm ngược còn thừa trên UI
+    final finalMap = Map<int, int>.from(state.switchCountdowns);
+    finalMap.remove(deviceId);
+    emit(state.copyWith(switchCountdowns: finalMap));
   }
   // ============================================================
   // Force on off
@@ -930,5 +958,12 @@ class DeviceCubit extends Cubit<DeviceState> {
     }
 
     return false;
+  }
+  @override
+  Future<void> close() {
+    // Hủy tất cả các timer đang chạy đếm ngược
+    _timers.values.forEach((timer) => timer.cancel());
+    _timers.clear();
+    return super.close();
   }
 }

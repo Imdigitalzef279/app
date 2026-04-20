@@ -1,11 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
 import 'package:solar_energy/data/repositories/meter_config/meter_config_repository.dart';
-
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/AlarmConfigMeter/alarm_config_meter_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
@@ -47,7 +45,12 @@ class _SettingScreenState extends State<SettingScreen> {
   bool saveLog = false;
   bool exportReport = false;
   bool isLoading = true;
-
+  bool enableOverPower = false;
+  double currentPower = 0;
+  bool isOverPowerNow() {
+    if (!enableOverPower) return false;
+    return currentPower > overPower;
+  }
   double getMax(String param) {
     return maxMap[param] ?? defaultMax(param);
   }
@@ -85,9 +88,19 @@ class _SettingScreenState extends State<SettingScreen> {
 
       case "PARAM_HUMI1": return 70;
 
-      case "PARAM_P": return 10;
+      case "PARAM_P": return 100;
 
       default: return 100;
+    }
+  }
+  void checkPowerAlert() {
+    if (isOverPowerNow() && notifyApp) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("⚠ Quá công suất!"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
   @override
@@ -263,6 +276,9 @@ class _SettingScreenState extends State<SettingScreen> {
           case 'over_temperature':
             overTemperature = double.parse(e.configValue);
             break;
+          case 'enable_over_power':
+            enableOverPower = e.configValue == 'true';
+            break;
         }
       }
     } catch (e) {
@@ -344,15 +360,18 @@ class _SettingScreenState extends State<SettingScreen> {
           configKey: "over_temperature",
           configValue: overTemperature.toInt().toString(),
         ),
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "enable_over_power",
+          configValue: enableOverPower.toString(),
+        ),
       ];
 
 
       await _repo.saveConfigs(configs);
-      ///  2. Gửi xuống thiết bị + check kết quả
       final ok = await sendProtectionSetting(); // <-- QUAN TRỌNG
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("pricing_type", pricingType);
-      ///  3. Hiển thị đúng trạng thái
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -409,7 +428,6 @@ class _SettingScreenState extends State<SettingScreen> {
         child: Column(
           children: [
 
-            /// DEVICE CARD
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -596,21 +614,64 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
 
-            /// QUÁ CÔNG SUẤT
+
             _buildItemCard(
               title: "Quá công suất",
-              child: _buildSliderTile(
-                title: "Quá công suất",
-                unit: "kW",
-                value: overPower,
-                min: getMin("PARAM_P"),
-                max: getMax("PARAM_P"),
-                description: "Ngắt khi công suất vượt ngưỡng",
-                onChanged: (v) => setState(() => overPower = v),
+              child: Column(
+                children: [
+
+                  /// SWITCH
+                  _buildSwitchItem(
+                    "Bật bảo vệ quá công suất",
+                    enableOverPower,
+                        (v) => setState(() => enableOverPower = v),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  /// SLIDER (chỉ hiện khi bật)
+                  if (enableOverPower)
+                    _buildSliderTile(
+                      title: "Ngưỡng công suất",
+                      unit: "kW",
+                      value: overPower,
+                      min: getMin("PARAM_P"),
+                      max: getMax("PARAM_P"),
+                      description: "Ngắt khi vượt ngưỡng",
+                      onChanged: (v) => setState(() => overPower = v),
+                    ),
+
+                  /// CẢNH BÁO REALTIME
+                  if (isOverPowerNow())
+                    Container(
+                      margin: const EdgeInsets.only(top: 10),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.warning, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              "⚠ Quá công suất (${currentPower.toStringAsFixed(1)} kW)",
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                ],
               ),
             ),
 
-            /// QUÁ NHIỆT (cái này bạn đã đúng)
             _buildItemCard(
               title: "Quá nhiệt",
               child: _buildSliderTile(
@@ -776,7 +837,9 @@ class _SettingScreenState extends State<SettingScreen> {
           "LgHighVal01": leakageCurrent.toInt().toString(),
           "UHighVal01": overVoltage.toInt().toString(),
           "ULowVal01": underVoltage.toInt().toString(),
-          "PHighVal01": overPower.toInt().toString(), // FIX QUAN TRỌNG
+          "PHighVal01": enableOverPower
+              ? overPower.toInt().toString()
+              : "0",
           "T1HighVal01": overTemperature.toInt().toString(),
         }
       };
@@ -1112,7 +1175,7 @@ class _ModernThumbShape extends SliderComponentShape {
       }) {
     final canvas = context.canvas;
 
-    /// shadow
+
 
     canvas.drawShadow(
       Path()..addOval(Rect.fromCircle(center: center, radius: 12)),
@@ -1121,11 +1184,10 @@ class _ModernThumbShape extends SliderComponentShape {
       true,
     );
 
-    /// vòng trắng
+
     canvas.drawCircle(center, 18, Paint()..color = Colors.white);
 
 
-    /// viền xanh nhạt
     canvas.drawCircle(
       center,
       12,
@@ -1135,7 +1197,6 @@ class _ModernThumbShape extends SliderComponentShape {
         ..strokeWidth = 2,
     );
 
-    /// chấm xanh
     canvas.drawCircle(center, 4, Paint()..color = kPrimaryColor);
 
   }

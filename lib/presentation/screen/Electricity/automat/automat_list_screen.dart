@@ -14,6 +14,7 @@ import '../../device/bloc/device_cubit.dart';
 import '../../device/device_card/device_card_widget.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'automat_detail_screen.dart';
+import 'import_device/import_device_screen.dart';
 
 class AutomatListScreen extends StatefulWidget {
   final int powerStationId;
@@ -507,6 +508,19 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
       appBar: AppBar(
         title: const Text("Danh mục"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.upload_file),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ImportDeviceScreen(),
+                ),
+              );
+            },
+          )
+        ],
       ),
 
       body: BlocBuilder<DeviceCubit, DeviceState>(

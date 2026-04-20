@@ -151,7 +151,6 @@ class AnalyticsOverviewScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             // arrow
             const Icon(Icons.chevron_right, color: Colors.grey),
           ],

@@ -50,6 +50,28 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late final AnimationController _controller;
   late bool isLandscape;
   late SignalRService signalR;
+  late final PageController bannerController;
+  late final Timer bannerTimer;
+  int bannerIndex = 0;
+
+  final bannerData = [
+    {
+      "img": "assets/images/matis/1.png",
+      "url": "https://krapower.com.vn/en/groups"
+    },
+    {
+      "img": "assets/images/matis/Enertrek System.png",
+      "url": "https://krapower.com.vn/en/groups"
+    },
+    {
+      "img": "assets/images/matis/4.png",
+      "url": "https://krapower.com.vn/en/groups"
+    },
+    {
+      "img": "assets/images/matis/5.png",
+      "url": "https://krapower.com.vn/en/groups"
+    },
+  ];
   List<DeviceResponse> favoriteDevices = [];
 
   StreamSubscription? _signalSub;
@@ -62,6 +84,23 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     super.initState();
     _controller = AnimationController(vsync: this);
     signalR = SignalRService();
+    bannerController = PageController();
+
+    bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (!mounted) return;
+
+      if (bannerIndex < bannerData.length - 1) {
+        bannerIndex++;
+      } else {
+        bannerIndex = 0;
+      }
+
+      bannerController.animateToPage(
+        bannerIndex,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
 
       final cubit = context.read<DeviceCubit>();
@@ -111,6 +150,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     _signalSub?.cancel();
     signalR.disconnect();
     _controller.dispose();
+    bannerController.dispose();
+    bannerTimer.cancel();
     super.dispose();
   }
   @override
@@ -124,24 +165,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     devices.where((d) => d.isFavorite).toList();
     String locationText = "Hà Nội";
 
-    final bannerData = [
-      {
-        "img": "assets/images/matis/1.png",
-        "url": "https://krapower.com.vn/en/groups"
-      },
-      {
-        "img": "assets/images/matis/Enertrek System.png",
-        "url": "https://krapower.com.vn/en/groups"
-      },
-      {
-        "img": "assets/images/matis/4.png",
-        "url": "https://krapower.com.vn/en/groups"
-      },
-      {
-        "img": "assets/images/matis/5.png",
-        "url": "https://krapower.com.vn/en/groups"
-      },
-    ];
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -287,6 +310,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
                                     child: PageView.builder(
+                                      controller: bannerController,
                                       itemCount: bannerData.length,
                                       itemBuilder: (context, index) {
                                         final item = bannerData[index];

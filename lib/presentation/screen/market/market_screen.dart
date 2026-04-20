@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:solar_energy/presentation/screen/market/product_search.dart';
-
 import '../general_device/notification/notification_screen.dart';
 import 'cart_screen.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'category_screen/category_screen.dart';
 
 class MarketScreen extends StatelessWidget {
@@ -114,7 +116,6 @@ class _Banner extends StatefulWidget {
 }
 
 class _BannerState extends State<_Banner> {
-  final PageController _controller = PageController();
   int current = 0;
 
   final banners = [
@@ -127,60 +128,63 @@ class _BannerState extends State<_Banner> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 140,
-      child: Stack(
-        children: [
-          PageView.builder(
-            controller: _controller,
-            itemCount: banners.length,
-            onPageChanged: (index) {
+    return Column(
+      children: [
+
+        /// SLIDER
+        cs.CarouselSlider(
+          options: cs.CarouselOptions(
+            height: 140,
+            autoPlay: true,
+            enlargeCenterPage: false,
+            viewportFraction: 1, // full width
+            onPageChanged: (index, reason) {
               setState(() {
                 current = index;
               });
             },
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    banners[index],
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            },
           ),
-
-          /// DOT
-          Positioned(
-            bottom: 8,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                banners.length,
-                    (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: current == index ? 8 : 6,
-                  height: current == index ? 8 : 6,
-                  decoration: BoxDecoration(
-                    color: current == index
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.5),
-                    shape: BoxShape.circle,
-                  ),
+          items: banners.map((item) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  item,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
                 ),
+              ),
+            );
+          }).toList(),
+        ),
+
+        const SizedBox(height: 6),
+
+        /// DOT
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            banners.length,
+                (index) => Container(
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: current == index ? 8 : 6,
+              height: current == index ? 8 : 6,
+              decoration: BoxDecoration(
+                color: current == index
+                    ? Colors.black
+                    : Colors.black.withOpacity(0.3),
+                shape: BoxShape.circle,
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
+
+
 
 class _ProductSlider extends StatefulWidget {
   const _ProductSlider();
@@ -191,8 +195,8 @@ class _ProductSlider extends StatefulWidget {
 
 class _ProductSliderState extends State<_ProductSlider> {
 
-  final PageController controller = PageController();
-
+  late final PageController controller;
+  late final Timer timer;
   int current = 0;
 
   final products = [
@@ -204,6 +208,35 @@ class _ProductSliderState extends State<_ProductSlider> {
     "assets/icons/icons_new/icon_heat_pump.png",
   ];
 
+  @override
+  void initState() {
+    super.initState();
+
+    controller = PageController();
+
+    timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (!mounted) return;
+
+      if (current < products.length - 1) {
+        current++;
+      } else {
+        current = 0;
+      }
+
+      controller.animateToPage(
+        current,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    timer.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -407,42 +440,7 @@ class _ProductCard extends StatelessWidget {
     );
   }
 }
-class _HotProduct extends StatelessWidget {
-  const _HotProduct();
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      height: 120,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.orange.shade200,
-      ),
-      child: Row(
-        children: [
-
-          const SizedBox(width: 16),
-
-          const Expanded(
-            child: Text(
-              "Sản phẩm cho dân dụng",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          Image.asset(
-            "assets/images/device.png",
-            width: 100,
-          )
-        ],
-      ),
-    );
-  }
-}
 class _CategoryGrid extends StatelessWidget {
   const _CategoryGrid();
 

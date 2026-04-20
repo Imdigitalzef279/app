@@ -34,7 +34,7 @@ class DeviceGridItem extends StatelessWidget {
             .getRealStatus(latestDevice, log);
 
         final isOn = realStatus == 1;
-
+        final isMaintenance = realStatus == 2;
         final isSwitching =
         state.switchingDevices.containsKey(device.id);
 
@@ -149,23 +149,26 @@ class DeviceGridItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                isSwitching
-                ? (isOn ? "Đang đóng..." : "Đang cắt...")
-              : countdown > 0
-        ? "Đợi (${countdown}s)"
-            : isOn
-        ? "Đóng"
-            : "Cắt",
+                      isSwitching
+                          ? (isOn ? "Đang cắt..." : "Đang đóng...") // Sửa: Đảo ngược lại cho đúng hành động
+                          : countdown > 0
+                          ? "Đợi (${countdown}s)"
+                          : isMaintenance
+                          ? "Bảo trì" // Thêm: Hiển thị bảo trì giống màn Detail
+                          : (isOnline ? (isOn ? "Đóng" : "Cắt") : "Ngoại tuyến"),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: isOn ? Colors.green : Colors.red,
+                        color: isSwitching || countdown > 0
+                            ? Colors.orange // Đổi màu cam khi đang xử lý/đợi
+                            : (isMaintenance ? Colors.blue : (isOn ? Colors.green : Colors.red)),
                       ),
                     ),
-
-                    SizedBox(
-                      width: 50,
-                      height: 30,
+                    Transform.scale(
+                      scale: 0.6,
+                    child: SizedBox(
+                      width: 45,
+                      height: 25,
                       child: Switch(
                         value: isOn,
                         activeColor: Colors.white,
@@ -175,7 +178,7 @@ class DeviceGridItem extends StatelessWidget {
                         MaterialTapTargetSize.shrinkWrap,
                         onChanged: (isOnline &&
                             !isSwitching &&
-                            countdown == 0)
+                            countdown == 0 && !isMaintenance)
                             ? (value) async {
                           final password =
                           await showPasswordDialog(context);
@@ -188,6 +191,7 @@ class DeviceGridItem extends StatelessWidget {
                         }
                             : null,
                       ),
+                    ),
                     )
                   ],
                 ),

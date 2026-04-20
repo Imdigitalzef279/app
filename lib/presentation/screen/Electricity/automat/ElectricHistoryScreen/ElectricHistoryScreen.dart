@@ -168,7 +168,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            const Text("Chi tiết bậc thang",
+            const Text("Chi tiết tính tiền theo bậc thang",
                 style: TextStyle(fontWeight: FontWeight.bold)),
 
             const SizedBox(height: 10),
@@ -240,7 +240,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          const Text("Chi tiết tiêu thụ",
+          const Text("Chi tiết tiêu thụ theo khung giờ",
               style: TextStyle(fontWeight: FontWeight.bold)),
 
           const SizedBox(height: 10),
@@ -305,9 +305,23 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
   }
   Future<void> loadPricingType() async {
     final prefs = await SharedPreferences.getInstance();
+
+    final type = prefs.getString("pricing_type") ?? "time_of_use";
+
     setState(() {
-      pricingType = prefs.getString("pricing_type") ?? "time_of_use";
+      pricingType = type;
     });
+
+    /// reload lại dữ liệu
+    if (selectedRange != null) {
+      context.read<ElectricHistoryCubit>().load(
+        stationId: widget.device.powerStationId ?? 0,
+        deviceId: widget.device.id,
+        meterId: widget.device.id,
+        from: selectedRange!.start,
+        to: selectedRange!.end,
+      );
+    }
   }
   Future<void> _loadStations() async {
     final res = await GetIt.instance<ApiClient>()
@@ -389,6 +403,18 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 4),
+
+                Text(
+                  pricingType == "tiered"
+                      ? "Biểu giá: Hộ gia đình (Bậc thang)"
+                      : "Biểu giá: Công nghiệp (Theo khung giờ)",
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -647,7 +673,24 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
                   ),
                 ),
               ),
-
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: pricingType == "tiered"
+                      ? Colors.orange.withOpacity(0.1)
+                      : Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  pricingType == "tiered" ? "Bậc thang" : "TOU",
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: pricingType == "tiered" ? Colors.orange : Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               Expanded(
                 flex: 5,
                 child: Row(
