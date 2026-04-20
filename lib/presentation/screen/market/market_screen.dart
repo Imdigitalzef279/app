@@ -117,7 +117,7 @@ class _Banner extends StatefulWidget {
 
 class _BannerState extends State<_Banner> {
   int current = 0;
-
+  final cs.CarouselSliderController controller = cs.CarouselSliderController();
   final banners = [
     "assets/images/matis/1.png",
     "assets/images/matis/2.png",
@@ -133,6 +133,7 @@ class _BannerState extends State<_Banner> {
 
         /// SLIDER
         cs.CarouselSlider(
+          carouselController: controller,
           options: cs.CarouselOptions(
             height: 140,
             autoPlay: true,
@@ -166,15 +167,20 @@ class _BannerState extends State<_Banner> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
             banners.length,
-                (index) => Container(
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              width: current == index ? 8 : 6,
-              height: current == index ? 8 : 6,
-              decoration: BoxDecoration(
-                color: current == index
-                    ? Colors.black
-                    : Colors.black.withOpacity(0.3),
-                shape: BoxShape.circle,
+                (index) => GestureDetector(
+              onTap: () {
+                controller.animateToPage(index);
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: current == index ? 8 : 6,
+                height: current == index ? 8 : 6,
+                decoration: BoxDecoration(
+                  color: current == index
+                      ? Colors.black
+                      : Colors.black.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
               ),
             ),
           ),
@@ -301,15 +307,24 @@ class _ProductSliderState extends State<_ProductSlider> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 products.length,
-                    (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: current == index ? 8 : 6,
-                  height: current == index ? 8 : 6,
-                  decoration: BoxDecoration(
-                    color: current == index
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.5),
-                    shape: BoxShape.circle,
+                    (index) => GestureDetector(
+                  onTap: () {
+                    controller.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: current == index ? 8 : 6,
+                    height: current == index ? 8 : 6,
+                    decoration: BoxDecoration(
+                      color: current == index
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
               ),

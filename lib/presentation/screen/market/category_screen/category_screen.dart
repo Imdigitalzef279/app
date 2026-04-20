@@ -90,19 +90,6 @@ class CategoryScreen extends StatelessWidget {
         child: Column(
           children: [
 
-            ///  BANNER
-            Container(
-              height: 180,
-              margin: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                image: const DecorationImage(
-                  image: AssetImage("assets/images/backgrounds/ảnh bìa.png"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-
             /// TITLE
             const Padding(
               padding: EdgeInsets.all(12),

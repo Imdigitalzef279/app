@@ -508,19 +508,6 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
       appBar: AppBar(
         title: const Text("Danh mục"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.upload_file),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ImportDeviceScreen(),
-                ),
-              );
-            },
-          )
-        ],
       ),
 
       body: BlocBuilder<DeviceCubit, DeviceState>(
@@ -556,8 +543,8 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                 return sample.copyWith(
                   id: -100 - i,
                   name: "CB phòng ${i + 1}",
-                  status: i % 2 == 0 ? 1 : 0, // fake ON/OFF xen kẽ
-                  realtimeLog: null, // ❗ không dùng log thật
+                  status: i % 2 == 0 ? 1 : 0,
+                  realtimeLog: null,
                 );
               });
 

@@ -153,22 +153,7 @@ class _ProjectSettingScreenState
       },
     );
   }
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
 
-    final file = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-
-    if (file != null) {
-      context.read<BackgroundCubit>().setBg(file.path);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text("Đã đổi hình nền".tr())),
-      );
-    }
-  }
   // ================= BUILD =================
 
   @override
@@ -414,7 +399,7 @@ class _ProjectSettingScreenState
               ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? roleColor.withOpacity(0.15)
+                    ? roleColor.withValues(alpha:0.15)
                     : const Color(0xFFF3F4F6),
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -468,7 +453,7 @@ class _ProjectSettingScreenState
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha:0.05),
             blurRadius: 14,
             offset: const Offset(0, 6),
           ),
@@ -525,7 +510,7 @@ class _ProjectSettingScreenState
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha:0.05),
             blurRadius: 14,
             offset: const Offset(0, 6),
           ),
@@ -776,8 +761,8 @@ class _ProjectSettingScreenState
               "Lưu thay đổi".tr(),
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 17, // 🔥 to hơn
-                fontWeight: FontWeight.w700, // 🔥 đậm hơn
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
               ),
             ),
@@ -883,7 +868,7 @@ Widget _buildLogoutButton(BuildContext context) {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.1),
+          color: Colors.red..withValues(alpha:0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: const Icon(
