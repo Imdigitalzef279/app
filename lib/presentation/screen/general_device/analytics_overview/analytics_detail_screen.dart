@@ -9,7 +9,7 @@ import '../../../../data/dto/device/response/device_response.dart';
 import '../../../../data/dto/energy_report/energy_report_response.dart';
 import '../../../../data/dto/notification_item/notification_item.dart';
 import 'bloc/analytics_cubit.dart';
-
+import 'dart:math' as math;
 class AnalyticsDetailScreen extends StatefulWidget {
   final DeviceResponse device;
 
@@ -191,7 +191,51 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       ],
     );
   }
+  bool isPremium = false;
+  Widget buildPremiumBlock(List<EnergyReportResponse> data) {
+    if (!isPremium) {
+      return Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.orange.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Text("🔒 Tính năng Premium"),
+            SizedBox(height: 6),
+            Text("Mở khóa AI phân tích & dự đoán tiền điện"),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {},
+              child: Text("Nâng cấp"),
+            )
+          ],
+        ),
+      );
+    }
 
+    final bill = predictBill(data);
+    final insight = generateAIInsight(data);
+
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("🤖 Phân tích AI"),
+          SizedBox(height: 6),
+          Text(insight),
+          SizedBox(height: 10),
+          Text("💸 Dự đoán: ${bill.toStringAsFixed(0)} đ"),
+        ],
+      ),
+    );
+  }
   Widget _kpi(String title, double value, String unit) {
     return Expanded(
       child: Container(
@@ -233,7 +277,17 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   // ================= CHART =================
   Widget buildChart(List<EnergyReportResponse> data) {
     final displayData = data;
-
+    if (selectedRange == ChartRange.day && displayData.length <= 1) {
+      return SizedBox(
+        height: 260,
+        child: Center(
+          child: Text(
+            "Chưa có đủ dữ liệu trong ngày",
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+      );
+    }
     final rawValues = displayData.map<double>((e) {
       return selectedChart == 0 ? e.p : e.epi;
     }).toList();
@@ -253,7 +307,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SizedBox(
-        width: displayData.length * 40,
+        width: math.max(displayData.length * 40, MediaQuery.of(context).size.width),
         height: 260,
         child: BarChart(
           BarChartData(
@@ -295,9 +349,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               horizontalInterval: max / 3,
               getDrawingHorizontalLine: (value) {
                 return FlLine(
-                  color: Colors.grey.withOpacity(0.2),
-                  strokeWidth: 1,
-                  dashArray: [5, 5],
+                  color: Colors.grey.withOpacity(0.15),
+                  strokeWidth: 0.8,
                 );
               },
             ),
@@ -486,6 +539,31 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
     return ((currentTotal - prevTotal) / prevTotal) * 100;
   }
+  double predictBill(List<EnergyReportResponse> data) {
+    if (data.isEmpty) return 0;
+
+    final total = data.fold(0.0, (a, b) => a + b.epi);
+    final days = DateTime.now().day;
+
+    final avgPerDay = total / days;
+
+    return avgPerDay * 30 * 2500; // giá điện VN
+  }
+  String generateAIInsight(List<EnergyReportResponse> data) {
+    if (data.isEmpty) return "Chưa có dữ liệu";
+
+    final values = data.map((e) => e.epi).toList();
+    final avg = values.reduce((a, b) => a + b) / values.length;
+    final max = values.reduce((a, b) => a > b ? a : b);
+
+    if (max > avg * 1.5) {
+      return "⚠️ Có mức tiêu thụ bất thường, nên kiểm tra thiết bị";
+    } else if (avg > 5) {
+      return "💡 Mức tiêu thụ khá cao, có thể tối ưu để tiết kiệm";
+    } else {
+      return "✅ Tiêu thụ điện ổn định";
+    }
+  }
   // ================= FILTER DATA =================
   List<EnergyReportResponse> applyRange(
       List<EnergyReportResponse> data,
@@ -557,7 +635,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                 buildHeader(data),
                 SizedBox(height: 12),
-
+                buildPremiumBlock(data),
+                SizedBox(height: 12),
                 Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(

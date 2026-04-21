@@ -64,7 +64,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       [100.0, 2380.0],
       [100.0, 2998.0],
       [100.0, 3350.0],
-      [double.infinity, 3460.0], // hoặc 3967 nếu muốn max
+      [double.infinity, 3460.0],
     ];
 
     double remaining = kwh;
@@ -97,11 +97,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final device = widget.device;
 
-      if (getMeterType(device) == MeterType.household) {
-        await _loadStartOfRangeEnergy(device);
-      } else {
-        await _loadElectricReport(device);
-      }
+      await _loadElectricReport(device);
 
       context.read<AutomatChartCubit>().loadChart(
         device.code ?? "",
@@ -180,6 +176,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       },
     );
   }
+  DateTime getStartOfWeek(DateTime now) {
+    int weekday = now.weekday;
+    return DateTime(now.year, now.month, now.day)
+        .subtract(Duration(days: weekday - 1));
+  }
   Future<void> _loadElectricReport(DeviceResponse device) async {
     try {
       final repo = ElectricReportRepository(GetIt.instance<ApiClient>());
@@ -193,7 +194,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           break;
 
         case ChartRange.week:
-          from = now.subtract(Duration(days: 7));
+          from = getStartOfWeek(now);
           break;
 
         case ChartRange.month:
@@ -207,13 +208,19 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         default:
           from = DateTime(now.year, now.month, now.day);
       }
+
+      print("FROM: $from");
+      print("TO: $now");
+
+      final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
       final report = await repo.getElectricReport(
         meterId: device.id,
         from: from,
         to: now,
       );
 
-      if (report.type == "TIER") {
+      if (report.type == "TIER" && report.tiers.isNotEmpty) {
         final tiers = report.tiers;
 
         final totalKwh = tiers.fold<double>(
@@ -232,11 +239,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         });
 
       } else {
-        final tou = report.tou!;
+
+        final energy = context
+            .read<AutomatChartCubit>()
+            .state
+            .last
+            ?.epi ?? 0;
+
+        final money = calculateHouseholdCost(energy);
 
         setState(() {
-          todayEnergy = tou.totalKwh;
-          moneyToday = tou.totalWithVat;
+          todayEnergy = energy;
+          moneyToday = money;
         });
       }
 
@@ -597,11 +611,11 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       case ChartRange.day:
         return "Tiền điện hôm nay";
       case ChartRange.week:
-        return "Tiền điện 7 ngày";
+        return "Tiền điện 7 ngày gần nhất";
       case ChartRange.month:
-        return "Tiền điện tháng này";
+        return "Tiền điện từ đầu tháng";
       case ChartRange.year:
-        return "Tiền điện năm nay";
+        return "Tiền điện từ đầu năm";
       default:
         return "Tiền điện";
     }
@@ -931,65 +945,65 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  Future<void> _loadStartOfRangeEnergy(DeviceResponse device) async {
-    final api = GetIt.instance<ApiClient>();
-
-    final now = DateTime.now();
-
-    DateTime start;
-
-    switch (_selectedRange) {
-      case ChartRange.day:
-        start = DateTime(now.year, now.month, now.day);
-        break;
-
-      case ChartRange.week:
-        start = now.subtract(Duration(days: 7));
-        break;
-
-      case ChartRange.month:
-        start = DateTime(now.year, now.month, 1);
-        break;
-
-      case ChartRange.year:
-        start = DateTime(now.year, 1, 1);
-        break;
-
-      default:
-        start = DateTime(now.year, now.month, now.day);
-    }
-    /// TẠM THỜI: vẫn dùng API cũ
-    final result = await api.getBreakerLog(device.code ?? "");
-
-    final logs = List.from(result.data ?? []);
-    if (logs.isEmpty) return;
-
-    logs.sort((a, b) =>
-        DateTime.parse(a.updatedAt!)
-            .compareTo(DateTime.parse(b.updatedAt!)));
-
-    final firstLog = logs.lastWhere(
-          (e) => DateTime.parse(e.updatedAt!).isBefore(start),
-      orElse: () => logs.first,
-    );
-
-    final epiStart = firstLog.epi ?? 0;
-    final currentEpi = logs.last.epi ?? 0;
-
-    final energy = (currentEpi - epiStart).toDouble();
-    final safeEnergy = energy > 0 ? energy : 0.0;
-
-    final money = calculateHouseholdCost(safeEnergy);
-
-    setState(() {
-      epiAtStartOfRange = epiStart;
-      todayEnergy = safeEnergy;
-      moneyToday = money;
-      realtimeCost = money;
-    });
-
-    isInitDone = true;
-  }
+  // Future<void> _loadStartOfRangeEnergy(DeviceResponse device) async {
+  //   final api = GetIt.instance<ApiClient>();
+  //
+  //   final now = DateTime.now();
+  //
+  //   DateTime start;
+  //
+  //   switch (_selectedRange) {
+  //     case ChartRange.day:
+  //       start = DateTime(now.year, now.month, now.day);
+  //       break;
+  //
+  //     case ChartRange.week:
+  //       start = now.subtract(Duration(days: 7));
+  //       break;
+  //
+  //     case ChartRange.month:
+  //       start = DateTime(now.year, now.month, 1);
+  //       break;
+  //
+  //     case ChartRange.year:
+  //       start = DateTime(now.year, 1, 1);
+  //       break;
+  //
+  //     default:
+  //       start = DateTime(now.year, now.month, now.day);
+  //   }
+  //   /// TẠM THỜI: vẫn dùng API cũ
+  //   final result = await api.getBreakerLog(device.code ?? "");
+  //
+  //   final logs = List.from(result.data ?? []);
+  //   if (logs.isEmpty) return;
+  //
+  //   logs.sort((a, b) =>
+  //       DateTime.parse(a.updatedAt!)
+  //           .compareTo(DateTime.parse(b.updatedAt!)));
+  //
+  //   final firstLog = logs.lastWhere(
+  //         (e) => DateTime.parse(e.updatedAt!).isBefore(start),
+  //     orElse: () => logs.first,
+  //   );
+  //
+  //   final epiStart = firstLog.epi ?? 0;
+  //   final currentEpi = logs.last.epi ?? 0;
+  //
+  //   final energy = (currentEpi - epiStart).toDouble();
+  //   final safeEnergy = energy > 0 ? energy : 0.0;
+  //
+  //   final money = calculateHouseholdCost(safeEnergy);
+  //
+  //   setState(() {
+  //     epiAtStartOfRange = epiStart;
+  //     todayEnergy = safeEnergy;
+  //     moneyToday = money;
+  //     realtimeCost = money;
+  //   });
+  //
+  //   isInitDone = true;
+  // }
 
   Widget _buildBarChart(List chartData, double maxValue) {
 

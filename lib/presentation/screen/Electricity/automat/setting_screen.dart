@@ -424,19 +424,19 @@ class _SettingScreenState extends State<SettingScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: [
 
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.electrical_services, size: 32),
+                  const Icon(Icons.electrical_services, size: 22),
                   const SizedBox(width: 12),
 
                   Expanded(
@@ -475,7 +475,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
             SizedBox(
               width: double.infinity,
-              height: 55,
+              height: 40,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryColor,
@@ -550,7 +550,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     description: "Ngưỡng cắt khi dòng vượt mức cho phép",
                     onChanged: (v) => setState(() => overCurrent = v),
                   ),
-                  _buildRecommendBox(),
+                  // _buildRecommendBox(),
                 ],
               ),
             ),
@@ -587,30 +587,33 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
 
             _buildItemCard(
-              title: "Quá áp",
-              child: _buildSliderTile(
-                title: "Quá áp",
-                unit: "V",
-                value: overVoltage,
-                min: getMin("PARAM_U"),
-                max: getMax("PARAM_U"),
-                isVoltage: true,
-                description: "Ngắt khi điện áp vượt ngưỡng an toàn",
-                onChanged: (v) => setState(() => overVoltage = v),
-              ),
-            ),
+              title: "Điện áp",
+              child: Column(
+                children: [
 
-            _buildItemCard(
-              title: "Thấp áp",
-              child: _buildSliderTile(
-                title: "Thấp áp",
-                unit: "V",
-                value: underVoltage,
-                min: getMin("PARAM_U"),
-                max: getMax("PARAM_U"),
-                isVoltage: true,
-                description: "Ngắt khi điện áp thấp hơn mức cho phép",
-                onChanged: (v) => setState(() => underVoltage = v),
+
+                  _buildSliderTile(
+                    title: "Quá áp",
+                    unit: "V",
+                    value: overVoltage,
+                    min: getMin("PARAM_U"),
+                    max: getMax("PARAM_U"),
+                    isVoltage: true,
+                    onChanged: (v) => setState(() => overVoltage = v),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  _buildSliderTile(
+                    title: "Thấp áp",
+                    unit: "V",
+                    value: underVoltage,
+                    min: getMin("PARAM_U"),
+                    max: getMax("PARAM_U"),
+                    isVoltage: true,
+                    onChanged: (v) => setState(() => underVoltage = v),
+                  ),
+                ],
               ),
             ),
 
@@ -689,9 +692,15 @@ class _SettingScreenState extends State<SettingScreen> {
 
             _buildItemCard(
               title: "Cài đặt bổ sung",
-              child: Column(
-                children: [
+              child: GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 6,
+                crossAxisSpacing: 6,
+                childAspectRatio: 3.2,
 
+                children: [
                   _buildSwitchItem("Mất pha", phaseLoss,
                           (v) => setState(() => phaseLoss = v)),
 
@@ -700,6 +709,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
                   _buildSwitchItem("Cảnh báo qua App", notifyApp,
                           (v) => setState(() => notifyApp = v)),
+
                   _buildSwitchItem("Cảnh báo Email", notifyEmail,
                           (v) => setState(() => notifyEmail = v)),
 
@@ -708,6 +718,9 @@ class _SettingScreenState extends State<SettingScreen> {
 
                   _buildSwitchItem("Xuất báo cáo", exportReport,
                           (v) => setState(() => exportReport = v)),
+                ],
+              ),
+            ),
               _buildItemCard(
                 title: "Cài đặt biểu giá",
                 child: Row(
@@ -720,7 +733,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           setState(() => pricingType = "tiered");
                         },
                         child: Container(
-                          height: 36,
+                          height: 35,
                           decoration: BoxDecoration(
                             color: pricingType == "tiered"
                                 ? kPrimaryColor.withOpacity(0.15)
@@ -757,7 +770,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           setState(() => pricingType = "time_of_use");
                         },
                         child: Container(
-                          height: 36,
+                          height: 35,
                           decoration: BoxDecoration(
                             color: pricingType == "time_of_use"
                                 ? kPrimaryColor.withOpacity(0.15)
@@ -789,21 +802,23 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               ]
             )
-            )
-          ],
-        )
     );
   }
 
-  Widget _buildSwitchItem(String title,
+  Widget _buildSwitchItem(
+      String title,
       bool value,
-      Function(bool) onChanged,) {
+      Function(bool) onChanged,
+      ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 6,
+      ),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9), // xanh nhạt
-        borderRadius: BorderRadius.circular(14),
+        color: const Color(0xFFE8F5E9),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -811,14 +826,22 @@ class _SettingScreenState extends State<SettingScreen> {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(fontSize: 14),
+              style: const TextStyle(
+                fontSize: 12,
+              ),
             ),
           ),
-          Switch(
-            value: value,
-            activeColor: kPrimaryColor,
-            activeTrackColor: kPrimaryColor.withOpacity(.4),
-            onChanged: onChanged,
+
+
+          Transform.scale(
+            scale: 0.75,
+            child: Switch(
+              value: value,
+              activeColor: kPrimaryColor,
+              activeTrackColor: kPrimaryColor.withOpacity(.4),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              onChanged: onChanged,
+            ),
           ),
         ],
       ),
@@ -871,14 +894,14 @@ class _SettingScreenState extends State<SettingScreen> {
     required double max,
     required Function(double) onChanged,
     bool isVoltage = false,
-    bool showValue = true,
     bool isOverCurrent = false,
     String? description,
   }) {
     final safeMax = (max <= min) ? (min + 1) : max;
     final safeValue = value.clamp(min, safeMax);
-
     final percent = ((safeValue - min) / (safeMax - min)).clamp(0.0, 1.0);
+
+    /// 🎨 GIỮ NGUYÊN LOGIC MÀU
     Color valueColor;
     if (!isVoltage) {
       valueColor = kPrimaryColor;
@@ -892,169 +915,137 @@ class _SettingScreenState extends State<SettingScreen> {
       }
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
 
-        /// TITLE
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(title, style: const TextStyle(fontSize: 14)),
-            if (showValue)
-              GestureDetector(
-                onTap: () =>
-                    _showInputDialog(
-                      context,
-                      value,
-                      unit,
-                      min,
-                      max,
-                      onChanged,
-                    ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: valueColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        "${value.toInt()}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: valueColor,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(unit, style: TextStyle(color: valueColor)),
-                      const SizedBox(width: 4),
-                      Icon(Icons.edit, size: 14, color: valueColor),
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        ),
-
-        const SizedBox(height: 12),
-
-        Container(
-          margin: const EdgeInsets.only(top: 6),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
-              /// TRACK + SLIDER
-              Stack(
-                alignment: Alignment.centerLeft,
-                children: [
-
-                  /// nền xám
-                  Container(
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE5E5E5),
-                      borderRadius: BorderRadius.circular(30),
+              Expanded(
+                child: Row(
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontSize: 11),
                     ),
-                  ),
 
-                  /// active
-    FractionallySizedBox(
-    widthFactor: percent,
-                    child: Container(
-                      height: 20,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        gradient: isOverCurrent
-                            ? const LinearGradient(
-                          colors: [
-                            Color(0xFF1ABC9C), // xanh
-                            Color(0xFFF69C21), // cam (max)
-                          ],
-                        )
-                            : const LinearGradient(
-                          colors: [
-                            Color(0xFF1ABC9C),
-                            Color(0xFFFFB74D),
-                            Color(0xFFE53935),
-                          ],
+                    if (description != null) ...[
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          " - $description",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.orange,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-
-                  /// slider thật
-                  SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      trackHeight: 30,
-                      activeTrackColor: Colors.transparent,
-                      inactiveTrackColor: Colors.transparent,
-                      thumbShape: _ModernThumbShape(),
-                      overlayShape: SliderComponentShape.noOverlay,
-                    ),
-                    child: Slider(
-                      value: safeValue,
-                      min: min,
-                      max: safeMax,
-                      onChanged: (v) => onChanged(v),
-                    ),
-                  ),
-                ],
+                    ],
+                  ],
+                ),
               ),
 
-              const SizedBox(height: 6),
-
-              /// LABEL
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("${min.toInt()}",
-                      style: TextStyle(fontSize: 11, color: Colors.grey)),
-                  Text("${(min + max) ~/ 2}",
-                      style: TextStyle(fontSize: 11, color: Colors.grey)),
-                  Text("${max.toInt()}",
-                      style: TextStyle(fontSize: 11, color: Colors.grey)),
-                ],
-              ),
-              if (description != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
-                  ),
+              GestureDetector(
+                onTap: () => _showInputDialog(
+                  context,
+                  value,
+                  unit,
+                  min,
+                  max,
+                  onChanged,
                 ),
-              if (percent > 0.8)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    "⚠ Gần ngưỡng nguy hiểm",
-                    style: TextStyle(color: Colors.orange, fontSize: 11),
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  "(${min.toInt()} - ${max.toInt()} $unit)",
-                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                  "${value.toInt()} $unit",
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: valueColor,
+                  ),
                 ),
               ),
             ],
           ),
 
-        )
+          const SizedBox(height: 4),
 
-      ],
+          /// 🔹 SLIDER + WARNING GỘP 1 CHỖ
+          Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+
+              /// nền xám
+              Container(
+                height: 10,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5E5E5),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+
+              /// gradient giữ nguyên
+              FractionallySizedBox(
+                widthFactor: percent,
+                child: Container(
+                  height: 10,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: isOverCurrent
+                        ? const LinearGradient(
+                      colors: [
+                        Color(0xFF1ABC9C),
+                        Color(0xFFF69C21),
+                      ],
+                    )
+                        : const LinearGradient(
+                      colors: [
+                        Color(0xFF1ABC9C),
+                        Color(0xFFFFB74D),
+                        Color(0xFFE53935),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              /// slider
+              SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 20,
+                  activeTrackColor: Colors.transparent,
+                  inactiveTrackColor: Colors.transparent,
+                  thumbShape: _ModernThumbShape(),
+                  overlayShape: SliderComponentShape.noOverlay,
+                ),
+                child: Slider(
+                  value: safeValue,
+                  min: min,
+                  max: safeMax,
+                  onChanged: (v) => onChanged(v),
+                ),
+              ),
+
+              /// ⚠ warning overlay (KHÔNG TĂNG HEIGHT)
+              if (percent > 0.85)
+                Positioned(
+                  right: 0,
+                  child: const Text(
+                    "⚠",
+                    style: TextStyle(fontSize: 10, color: Colors.orange),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -1100,33 +1091,33 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 }
-Widget _buildRecommendBox() {
-  return Container(
-    margin: const EdgeInsets.only(top: 10),
-    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-    decoration: BoxDecoration(
-      color: const Color(0xFFF1F5F4),
-      borderRadius: BorderRadius.circular(14),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          "Khuyến nghị cho gia đình: 40–63A",
-          style: TextStyle(fontSize: 13),
-        ),
-        const Icon(Icons.keyboard_arrow_down_rounded)
-      ],
-    ),
-  );
-}
+// Widget _buildRecommendBox() {
+//   return Container(
+//     margin: const EdgeInsets.only(top: 10),
+//     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+//     decoration: BoxDecoration(
+//       color: const Color(0xFFF1F5F4),
+//       borderRadius: BorderRadius.circular(14),
+//     ),
+//     // child: Row(
+//     //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//     //   children: [
+//     //     const Text(
+//     //       "Khuyến nghị cho gia đình: 40–63A",
+//     //       style: TextStyle(fontSize: 13),
+//     //     ),
+//     //     const Icon(Icons.keyboard_arrow_down_rounded)
+//     //   ],
+//     // ),
+//   );
+// }
 Widget _buildItemCard({
   required String title,
   required Widget child,
 }) {
   return Container(
-    margin: const EdgeInsets.only(bottom: 14),
-    padding: const EdgeInsets.all(14),
+    padding: const EdgeInsets.all(6),
+    margin: const EdgeInsets.only(bottom: 4),
     decoration: BoxDecoration(
       gradient: LinearGradient(
         colors: [Colors.white, Color(0xFFB2E6B4)],
@@ -1144,7 +1135,7 @@ Widget _buildItemCard({
           ),
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: 6),
 
         child,
       ],
@@ -1155,7 +1146,7 @@ Widget _buildItemCard({
 class _ModernThumbShape extends SliderComponentShape {
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return const Size(28, 28);
+    return const Size(18, 18);
   }
 
   @override

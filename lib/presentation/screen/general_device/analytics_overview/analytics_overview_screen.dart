@@ -75,7 +75,7 @@ class _AnalyticsOverviewScreenState extends State<AnalyticsOverviewScreen> {
               ),
             ),
 
-            // 👉 kéo project
+            //  kéo project
             ReorderableDragStartListener(
               index: projectIndex,
               child: const Icon(Icons.drag_handle),
@@ -126,7 +126,7 @@ class _AnalyticsOverviewScreenState extends State<AnalyticsOverviewScreen> {
       child: Row(
         children: [
 
-          // 👉 kéo device
+          //  kéo device
           ReorderableDragStartListener(
             index: index,
             child: const Icon(Icons.drag_indicator),

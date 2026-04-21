@@ -46,6 +46,7 @@ class GeneralDeviceScreen extends StatefulWidget {
 class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
     with TickerProviderStateMixin {
+  int? draggingIndex;
   bool _isGridView = true;
   late final AnimationController _controller;
   late bool isLandscape;
@@ -108,6 +109,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         powerStationId: widget.project.id!,
       );
       final devices = cubit.state.resultDevices.data ?? [];
+      favoriteDevices = devices.where((d) => d.isFavorite).toList();
       for (var d in devices) {
         if (d.code != null) {
           await cubit.loadBreakerLog(d.code);
@@ -161,8 +163,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     final textColor = Colors.black;
     final state = context.watch<DeviceCubit>().state;
     final devices = state.resultDevices.data ?? [];
-    final favoriteDevices =
-    devices.where((d) => d.isFavorite).toList();
     String locationText = "Hà Nội";
 
 
@@ -620,22 +620,47 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               final globalIndex = start + index;
 
               return DragTarget<int>(
+                onWillAccept: (fromIndex) {
+                  return true;
+                },
+
                 onAccept: (fromIndex) {
                   setState(() {
                     final item = favoriteDevices.removeAt(fromIndex);
                     favoriteDevices.insert(globalIndex, item);
                   });
                 },
+
                 builder: (context, candidateData, rejectedData) {
                   return LongPressDraggable<int>(
                     data: globalIndex,
 
+
+                    rootOverlay: false,
+
+                    onDragStarted: () {
+                      draggingIndex = globalIndex;
+                    },
+
+
+                    onDraggableCanceled: (_, __) {
+                      draggingIndex = null;
+                    },
+
+                    onDragEnd: (_) {
+                      draggingIndex = null;
+                    },
+
                     feedback: Material(
-                      child: SizedBox(
-                        width: 100,
-                        child: DeviceGridItem(
-                          device: device,
-                          textColor: Colors.black,
+                      color: Colors.transparent,
+                      child: Transform.scale(
+                        scale: 1.05,
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width / 3 - 16,
+                          child: DeviceGridItem(
+                            device: device,
+                            textColor: Colors.black,
+                          ),
                         ),
                       ),
                     ),
