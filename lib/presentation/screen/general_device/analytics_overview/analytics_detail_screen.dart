@@ -113,19 +113,22 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   }
   // ================= KPI =================
   Widget buildHeader(List<EnergyReportResponse> data) {
-    if (data.isEmpty) return SizedBox();
-
-    final percent = calculatePercentChange(data, context.read<AnalyticsCubit>().state.data);
-
-    final values = data.map((e) {
-      return selectedChart == 0 ? e.p : e.epi;
-    }).toList();
+    final values = data.isEmpty
+        ? [0.0]
+        : data.map((e) => selectedChart == 0 ? e.p : e.epi).toList();
 
     final total = values.fold(0.0, (a, b) => a + b);
     final avg = values.reduce((a, b) => a + b) / values.length;
     final max = values.reduce((a, b) => a > b ? a : b);
-    final maxIndex = values.indexOf(max);
-    final peakTime = data[maxIndex].time;
+
+    final peakTime = data.isEmpty
+        ? DateTime.now()
+        : data[values.indexOf(max)].time;
+
+    final percent = data.isEmpty
+        ? 0
+        : calculatePercentChange(data, context.read<AnalyticsCubit>().state.data);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -276,18 +279,15 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
   // ================= CHART =================
   Widget buildChart(List<EnergyReportResponse> data) {
-    final displayData = data;
-    if (selectedRange == ChartRange.day && displayData.length <= 1) {
-      return SizedBox(
-        height: 260,
-        child: Center(
-          child: Text(
-            "Chưa có đủ dữ liệu trong ngày",
-            style: TextStyle(color: Colors.grey),
-          ),
-        ),
-      );
-    }
+    final displayData = data.isEmpty
+        ? List.generate(24, (i) => EnergyReportResponse(
+      time: DateTime.now().copyWith(hour: i),
+      p: 0,
+      epi: 0,
+      ct: 0,
+      source: "system",
+    ))
+        : data;
     final rawValues = displayData.map<double>((e) {
       return selectedChart == 0 ? e.p : e.epi;
     }).toList();
@@ -301,7 +301,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
     final max =
     values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b);
-
+    final safeMax = max == 0 ? 1 : max;
     final maxIndex = values.indexOf(max);
 
     return SingleChildScrollView(
@@ -341,12 +341,11 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               ),
             ),
             alignment: BarChartAlignment.spaceBetween,
-            maxY: max == 0 ? 1 : max * 1.2,
-
+            maxY: safeMax * 1.2,
             gridData: FlGridData(
               show: true,
               drawVerticalLine: false,
-              horizontalInterval: max / 3,
+              horizontalInterval: safeMax / 3,
               getDrawingHorizontalLine: (value) {
                 return FlLine(
                   color: Colors.grey.withOpacity(0.15),
@@ -632,10 +631,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                 buildTabs(),
                 SizedBox(height: 12),
-
                 buildHeader(data),
-                SizedBox(height: 12),
-                buildPremiumBlock(data),
                 SizedBox(height: 12),
                 Container(
                   padding: EdgeInsets.all(16),
@@ -666,7 +662,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                     ],
                   ),
                 ),
-
+                SizedBox(height: 12),
+                buildPremiumBlock(data),
                 SizedBox(height: 20),
               ],
             ),

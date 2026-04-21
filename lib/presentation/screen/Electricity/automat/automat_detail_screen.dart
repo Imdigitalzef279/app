@@ -97,12 +97,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final device = widget.device;
 
-      await _loadElectricReport(device);
-
-      context.read<AutomatChartCubit>().loadChart(
+      await context.read<AutomatChartCubit>().loadChart(
         device.code ?? "",
         _selectedRange,
       );
+
+
+      await _loadElectricReport(device);
     });
   }
   @override
@@ -192,27 +193,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         case ChartRange.day:
           from = DateTime(now.year, now.month, now.day);
           break;
-
         case ChartRange.week:
           from = getStartOfWeek(now);
           break;
-
         case ChartRange.month:
           from = DateTime(now.year, now.month, 1);
           break;
-
         case ChartRange.year:
           from = DateTime(now.year, 1, 1);
           break;
-
         default:
           from = DateTime(now.year, now.month, now.day);
       }
-
-      print("FROM: $from");
-      print("TO: $now");
-
-      final formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
       final report = await repo.getElectricReport(
         meterId: device.id,
@@ -220,39 +212,35 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         to: now,
       );
 
+      double energy = 0;
+      double money = 0;
+
+      /// ===== TIER =====
       if (report.type == "TIER" && report.tiers.isNotEmpty) {
-        final tiers = report.tiers;
-
-        final totalKwh = tiers.fold<double>(
-          0,
-              (sum, e) => sum + e.kwhInStep,
-        );
-
-        final totalMoney = tiers.fold<double>(
-          0,
-              (sum, e) => sum + e.stepCost,
-        );
-
-        setState(() {
-          todayEnergy = totalKwh;
-          moneyToday = totalMoney;
-        });
-
-      } else {
-
-        final energy = context
-            .read<AutomatChartCubit>()
-            .state
-            .last
-            ?.epi ?? 0;
-
-        final money = calculateHouseholdCost(energy);
-
-        setState(() {
-          todayEnergy = energy;
-          moneyToday = money;
-        });
+        energy = report.tiers.fold(0, (s, e) => s + e.kwhInStep);
+        money = report.tiers.fold(0, (s, e) => s + e.stepCost);
       }
+
+      /// ===== TOU =====
+      else if (report.tou != null && report.tou!.totalKwh > 0) {
+        energy = report.tou!.totalKwh;
+        money = report.tou!.totalWithVat;
+      }
+
+      /// ===== KHÔNG CÓ DATA =====
+      else {
+        energy = 0;
+        money = 0;
+      }
+
+
+      setState(() {
+        todayEnergy = energy;
+        moneyToday = money;
+      });
+
+      print("✅ ENERGY: $energy kWh");
+      print("💰 MONEY: $money đ");
 
     } catch (e) {
       print("❌ ElectricReport error: $e");
@@ -269,7 +257,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       case ChartRange.year:
         return maxValue * 1.5;
       case ChartRange.quarter:
-        return maxValue * 1.45; // thêm dòng này
+        return maxValue * 1.45;
     }
   }
   String formatTime(DateTime time) {
@@ -661,7 +649,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
               /// TIỀN
               Text(
-                "${NumberFormat("#,###").format(moneyToday)} đ",
+    "${NumberFormat("#,###", "vi_VN").format(moneyToday)} đ",
                 style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
@@ -810,7 +798,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
         });
 
 
-        context.read<AutomatChartCubit>().loadChart(
+        await context.read<AutomatChartCubit>().loadChart(
           device.code ?? "",
           _selectedRange,
         );
