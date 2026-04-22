@@ -7,7 +7,11 @@ import 'package:solar_energy/data/repositories/meter_config/meter_config_reposit
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/AlarmConfigMeter/alarm_config_meter_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
+import '../../general_device/analytics_overview/bloc/analytics_cubit.dart';
 import 'device_info_screen/device_info_screen.dart';
+import '../../../../data/dto/energy_report/energy_report_response.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
 Map<String, double> minMap = {};
 Map<String, double> maxMap = {};
 Map<String, double> deviceOverrideMap = {};
@@ -29,9 +33,12 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  Timer? _timer;
   String pricingType = "time_of_use";
   final _repo = GetIt.instance<MeterConfigRepository>();
-
+  String energyType = "DAY";
+  double energyThreshold = 10;
+  bool autoCut = false;
   double overCurrent = 63;
   double leakageCurrent = 30;
   double overVoltage = 240;
@@ -47,6 +54,7 @@ class _SettingScreenState extends State<SettingScreen> {
   bool isLoading = true;
   bool enableOverPower = false;
   double currentPower = 0;
+
   bool isOverPowerNow() {
     if (!enableOverPower) return false;
     return currentPower > overPower;
@@ -60,53 +68,169 @@ class _SettingScreenState extends State<SettingScreen> {
   }
   double defaultMin(String param) {
     switch (param) {
-      case "I": return 0;
 
-      case "PARAM_LG": return 0;
+    ///  Quá dòng (100% → 63A)
+      case "I":
+        return 63;
 
-      case "PARAM_U": return 180;
+    ///  Dòng rò
+      case "PARAM_LG":
+        return 20;
 
-      case "PARAM_TEMP1": return 20;
+    ///  Điện áp (40% của 220V)
+      case "PARAM_U":
+        return 88;
 
-      case "PARAM_HUMI1": return 30;
+    ///  Nhiệt độ
+      case "PARAM_TEMP1":
+        return 45;
 
-      case "PARAM_P": return 0;
+    ///  Công suất (nếu có dùng)
+      case "PARAM_P":
+        return 0;
 
-      default: return 0;
+      default:
+        return 0;
     }
   }
 
   double defaultMax(String param) {
     switch (param) {
-      case "I": return 63;
 
-      case "PARAM_LG": return 100;
+    ///  Quá dòng (120% × 63)
+      case "I":
+        return 76; // 75.6 làm tròn
 
-      case "PARAM_U": return 220;
+    ///  Dòng rò
+      case "PARAM_LG":
+        return 1000;
 
-      case "PARAM_TEMP1": return 30;
+    ///  Điện áp (140% × 220)
+      case "PARAM_U":
+        return 308;
 
-      case "PARAM_HUMI1": return 70;
+    ///  Nhiệt độ
+      case "PARAM_TEMP1":
+        return 140;
 
-      case "PARAM_P": return 100;
+    ///  Công suất
+      case "PARAM_P":
+        return 100;
 
-      default: return 100;
+      default:
+        return 100;
     }
   }
   void checkPowerAlert() {
-    if (isOverPowerNow() && notifyApp) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("⚠ Quá công suất!"),
-          backgroundColor: Colors.red,
-        ),
-      );
+    print("👉 checkOverEnergy CALLED");
+
+    if (!enableOverPower) {
+      print("❌ OverPower OFF");
+      return;
     }
+    checkOverEnergy();
   }
   @override
   void initState() {
     super.initState();
+
+    print("🔥 INIT STATE");
+
     loadAll();
+
+    // chạy ngay
+    Future.delayed(Duration(seconds: 1), () {
+      print("🚀 FIRST RUN");
+      checkOverEnergy();
+    });
+
+    // timer
+    _timer = Timer.periodic(Duration(seconds: 10), (t) {
+      print("⏱ TIMER RUN");
+      checkOverEnergy();
+    });
+  }
+  Future<List<EnergyReportResponse>> loadEnergyData() async {
+    final cubit = context.read<AnalyticsCubit>();
+
+    await cubit.loadEnergy(
+      powerStationId: widget.device.powerStationId,
+      deviceId: widget.device.id,
+      type: energyType,
+    );
+
+    return cubit.state.data;
+  }
+  Future<void> checkOverEnergy() async {
+    if (!enableOverPower) {
+      print("❌ OverPower OFF");
+      return;
+    }
+
+    print("🚀 CHECK OVER ENERGY");
+    print("👉 Type: $energyType");
+    print("👉 Threshold: $energyThreshold kWh");
+
+    final data = await loadEnergyData();
+
+    print("📊 Data length: ${data.length}");
+
+    if (data.isEmpty) {
+      print("❌ No data");
+      return;
+    }
+
+    final total = data.fold(0.0, (a, b) => a + b.epi);
+
+    print("⚡ TOTAL ENERGY: $total kWh");
+
+    if (total > energyThreshold) {
+      print("🔥 VƯỢT NGƯỠNG");
+
+      /// ⚠ cảnh báo
+      if (notifyApp) {
+        print("📢 SHOW ALERT");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("⚠ Vượt điện năng $energyType")),
+        );
+      }
+
+      /// 🔌 cắt thiết bị
+      if (autoCut) {
+        print("🔌 AUTO CUT DEVICE");
+        await sendOffCommand();
+      }
+
+    } else {
+      print("✅ OK - chưa vượt");
+    }
+  }
+  Future<void> sendOffCommand() async {
+    final api = GetIt.instance<ApiClient>();
+
+    final command = {
+      "method": "operate",
+      "payload": {
+        "addr": "1_1",
+        "status": "OFF"
+      }
+    };
+
+    final request = CbsMeterRequest(
+      gatewaySn: widget.device.gatewaySn,
+      breakerSn: widget.device.breakerSn,
+      addr: "1_1",
+      createdBy: "app",
+      commandValue: jsonEncode(command),
+      isForce: true,
+    );
+
+    await api.controlCircuitBreaker(request);
+  }
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
   Future<void> loadThreshold() async {
     final api = GetIt.instance<ApiClient>();
@@ -369,7 +493,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
 
       await _repo.saveConfigs(configs);
-      final ok = await sendProtectionSetting(); // <-- QUAN TRỌNG
+      final ok = await sendProtectionSetting();
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("pricing_type", pricingType);
       if (mounted) {
@@ -619,57 +743,85 @@ class _SettingScreenState extends State<SettingScreen> {
 
 
             _buildItemCard(
-              title: "Quá công suất",
+              title: "Quá điện năng",
               child: Column(
                 children: [
 
                   /// SWITCH
                   _buildSwitchItem(
-                    "Bật bảo vệ quá công suất",
+                    "Tính năng quá điện năng",
                     enableOverPower,
-                        (v) => setState(() => enableOverPower = v),
+                        (v) {
+                      setState(() {
+                        enableOverPower = v;
+
+                        if (!v) {
+                          autoCut = false;
+                        }
+                      });
+
+                      if (v) {
+                        checkOverEnergy();
+                      }
+                    },
                   ),
 
                   const SizedBox(height: 8),
 
                   /// SLIDER (chỉ hiện khi bật)
-                  if (enableOverPower)
-                    _buildSliderTile(
-                      title: "Ngưỡng công suất",
-                      unit: "kW",
-                      value: overPower,
-                      min: getMin("PARAM_P"),
-                      max: getMax("PARAM_P"),
-                      description: "Ngắt khi vượt ngưỡng",
-                      onChanged: (v) => setState(() => overPower = v),
-                    ),
+                  if (enableOverPower) ...[
 
-                  /// CẢNH BÁO REALTIME
-                  if (isOverPowerNow())
-                    Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.warning, color: Colors.red),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              "⚠ Quá công suất (${currentPower.toStringAsFixed(1)} kW)",
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.w600,
+                    /// chọn thời gian
+                    Row(
+                      children: ["DAY", "WEEK", "MONTH", "YEAR"].map((e) {
+                        final active = energyType == e;
+
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () => setState(() => energyType = e),
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 2),
+                              padding: EdgeInsets.symmetric(vertical: 6),
+                              decoration: BoxDecoration(
+                                color: active ? kPrimaryColor : Colors.grey[200],
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  e,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: active ? Colors.white : Colors.black,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      }).toList(),
                     ),
+
+                    SizedBox(height: 8),
+
+                    /// input kWh
+                    _buildSliderTile(
+                      title: "Ngưỡng điện năng",
+                      unit: "kWh",
+                      value: energyThreshold,
+                      min: 0,
+                      max: 100,
+                      description: "Nhập tổng điện năng tối đa ($energyType)",
+                      onChanged: (v) => setState(() => energyThreshold = v),
+                    ),
+
+                    /// auto cut
+                    _buildSwitchItem(
+                      "Tự động cắt thiết bị",
+                      autoCut,
+                          (v) => setState(() => autoCut = v),
+                    ),
+
+                  ],
 
                 ],
               ),
@@ -901,7 +1053,7 @@ class _SettingScreenState extends State<SettingScreen> {
     final safeValue = value.clamp(min, safeMax);
     final percent = ((safeValue - min) / (safeMax - min)).clamp(0.0, 1.0);
 
-    /// 🎨 GIỮ NGUYÊN LOGIC MÀU
+    ///  GIỮ NGUYÊN LOGIC MÀU
     Color valueColor;
     if (!isVoltage) {
       valueColor = kPrimaryColor;
@@ -977,7 +1129,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
           const SizedBox(height: 4),
 
-          /// 🔹 SLIDER + WARNING GỘP 1 CHỖ
+          ///  SLIDER + WARNING GỘP 1 CHỖ
           Stack(
             alignment: Alignment.centerLeft,
             children: [
@@ -1033,7 +1185,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ),
 
-              /// ⚠ warning overlay (KHÔNG TĂNG HEIGHT)
+              ///  warning overlay (KHÔNG TĂNG HEIGHT)
               if (percent > 0.85)
                 Positioned(
                   right: 0,
@@ -1091,26 +1243,6 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 }
-// Widget _buildRecommendBox() {
-//   return Container(
-//     margin: const EdgeInsets.only(top: 10),
-//     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-//     decoration: BoxDecoration(
-//       color: const Color(0xFFF1F5F4),
-//       borderRadius: BorderRadius.circular(14),
-//     ),
-//     // child: Row(
-//     //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//     //   children: [
-//     //     const Text(
-//     //       "Khuyến nghị cho gia đình: 40–63A",
-//     //       style: TextStyle(fontSize: 13),
-//     //     ),
-//     //     const Icon(Icons.keyboard_arrow_down_rounded)
-//     //   ],
-//     // ),
-//   );
-// }
 Widget _buildItemCard({
   required String title,
   required Widget child,

@@ -10,7 +10,7 @@ class AlarmConfigResponse with _$AlarmConfigResponse {
     @Default('') String name,
     @Default('') String description,
 
-    /// 🔥 QUAN TRỌNG
+    ///  QUAN TRỌNG
     @Default('') String logParam,
     @Default('') String queryType,
     @Default('') String queryCondition,

@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../application/enums/chart_range.dart';
 import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';

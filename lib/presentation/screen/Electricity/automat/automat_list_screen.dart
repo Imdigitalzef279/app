@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +13,7 @@ import '../../device/bloc/device_cubit.dart';
 import '../../device/device_card/device_card_widget.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'automat_detail_screen.dart';
-import 'import_device/import_device_screen.dart';
+
 
 class AutomatListScreen extends StatefulWidget {
   final int powerStationId;
@@ -723,19 +722,15 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                               buildTree(
                                   cabinetDevices,
                                   rootDevice.id),
-
                             ],
                           );
-
                         }).toList(),
                       ),
                     )
-
                   ],
                 ),
                   ),
               );
-
             }).toList(),
           );
         },

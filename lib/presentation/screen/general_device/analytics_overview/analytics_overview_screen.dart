@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/device/response/device_response.dart';
-
 import 'analytics_detail_screen.dart';
 import 'bloc/analytics_cubit.dart';
 

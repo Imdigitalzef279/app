@@ -3,16 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
-
 import 'package:solar_energy/data/dto/power_station/response/power_station_response.dart';
 import 'package:solar_energy/gen/assets.gen.dart';
-
 import 'package:solar_energy/presentation/common_widgets/app_load_more.dart';
-
 import 'package:solar_energy/presentation/screen/Electricity/bloc/electric_cubit.dart';
 import 'package:solar_energy/presentation/screen/Electricity/widget/item_data_electric.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
-
 import '../../../application/constants/app_color.dart';
 import '../../../application/constants/app_text_style.dart';
 import '../../../application/cubit/app_cubit.dart';

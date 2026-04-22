@@ -684,7 +684,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _textBtn("Biểu đồ", () {
+                    child: _textBtn("Cài đặt", () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -933,65 +933,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       ),
     );
   }
-  // Future<void> _loadStartOfRangeEnergy(DeviceResponse device) async {
-  //   final api = GetIt.instance<ApiClient>();
-  //
-  //   final now = DateTime.now();
-  //
-  //   DateTime start;
-  //
-  //   switch (_selectedRange) {
-  //     case ChartRange.day:
-  //       start = DateTime(now.year, now.month, now.day);
-  //       break;
-  //
-  //     case ChartRange.week:
-  //       start = now.subtract(Duration(days: 7));
-  //       break;
-  //
-  //     case ChartRange.month:
-  //       start = DateTime(now.year, now.month, 1);
-  //       break;
-  //
-  //     case ChartRange.year:
-  //       start = DateTime(now.year, 1, 1);
-  //       break;
-  //
-  //     default:
-  //       start = DateTime(now.year, now.month, now.day);
-  //   }
-  //   /// TẠM THỜI: vẫn dùng API cũ
-  //   final result = await api.getBreakerLog(device.code ?? "");
-  //
-  //   final logs = List.from(result.data ?? []);
-  //   if (logs.isEmpty) return;
-  //
-  //   logs.sort((a, b) =>
-  //       DateTime.parse(a.updatedAt!)
-  //           .compareTo(DateTime.parse(b.updatedAt!)));
-  //
-  //   final firstLog = logs.lastWhere(
-  //         (e) => DateTime.parse(e.updatedAt!).isBefore(start),
-  //     orElse: () => logs.first,
-  //   );
-  //
-  //   final epiStart = firstLog.epi ?? 0;
-  //   final currentEpi = logs.last.epi ?? 0;
-  //
-  //   final energy = (currentEpi - epiStart).toDouble();
-  //   final safeEnergy = energy > 0 ? energy : 0.0;
-  //
-  //   final money = calculateHouseholdCost(safeEnergy);
-  //
-  //   setState(() {
-  //     epiAtStartOfRange = epiStart;
-  //     todayEnergy = safeEnergy;
-  //     moneyToday = money;
-  //     realtimeCost = money;
-  //   });
-  //
-  //   isInitDone = true;
-  // }
 
   Widget _buildBarChart(List chartData, double maxValue) {
 
@@ -1820,7 +1761,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
   Widget _metricCard(String label, String value, String unit) {
     return Container(
-      height: 64, // ↓ giảm chiều dài ô
+      height: 64,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -1912,8 +1853,6 @@ Widget buildStatusCard(
 
 
   final deviceCubit = context.watch<DeviceCubit>();
-
-  final isSwitching = deviceCubit.isDeviceSwitching(device.id);
 
   final realStatus = deviceCubit.getRealStatus(device, log);
   final bool isOn = realStatus == 1;
