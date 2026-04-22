@@ -16,6 +16,12 @@ Map<String, double> minMap = {};
 Map<String, double> maxMap = {};
 Map<String, double> deviceOverrideMap = {};
 Map<String, double> thresholdMap = {};
+final leakageLevels = [
+  {"value": 0.0, "label": "An toàn"},
+  {"value": 20.0, "label": "Giật nhẹ"},
+  {"value": 50.0, "label": "Khó thở"},
+  {"value": 100.0, "label": "Nguy hiểm"},
+];
 Map<String, String> queryTypeMap = {};
 Map<String, String> conditionMap = {};
 const kPrimaryColor = Color(0xFF1ABC9C);
@@ -75,7 +81,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     ///  Dòng rò
       case "PARAM_LG":
-        return 20;
+        return 0;
 
     ///  Điện áp (40% của 220V)
       case "PARAM_U":
@@ -103,7 +109,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     ///  Dòng rò
       case "PARAM_LG":
-        return 1000;
+        return 100;
 
     ///  Điện áp (140% × 220)
       case "PARAM_U":
@@ -120,6 +126,13 @@ class _SettingScreenState extends State<SettingScreen> {
       default:
         return 100;
     }
+  }
+  String getLeakageDescription(double value) {
+    if (value < 10) return "An toàn";
+    if (value < 20) return "Giật nhẹ";
+    if (value < 50) return "Khó thở, co giật";
+    if (value < 100) return "Nguy hiểm";
+    return "Nguy cơ ngừng tim";
   }
   void checkPowerAlert() {
     print("👉 checkOverEnergy CALLED");
@@ -687,7 +700,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 value: leakageCurrent,
                 min: getMin("PARAM_LG"),
                 max: getMax("PARAM_LG"),
-                description: "Phát hiện rò điện để đảm bảo an toàn",
+                description: getLeakageLevel(leakageCurrent),
                 onChanged: (v) => setState(() => leakageCurrent = v),
               ),
             ),
@@ -843,7 +856,7 @@ class _SettingScreenState extends State<SettingScreen> {
             const SizedBox(height: 10),
 
             _buildItemCard(
-              title: "Cài đặt bổ sung",
+              title: "Thông báo",
               child: GridView.count(
                 crossAxisCount: 2,
                 shrinkWrap: true,
@@ -956,7 +969,27 @@ class _SettingScreenState extends State<SettingScreen> {
             )
     );
   }
+  String getLeakageLevel(double value) {
+    double closest = 0;
+    double minDiff = double.infinity;
 
+    for (var e in leakageLevels) {
+      final v = e["value"] as double;
+      final diff = (value - v).abs();
+
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = v;
+      }
+    }
+
+    return leakageLevels
+        .firstWhere((e) => e["value"] == closest)["label"]
+        .toString();
+  }
+  bool isNearLevel(double value, double target) {
+    return (value - target).abs() < 3;
+  }
   Widget _buildSwitchItem(
       String title,
       bool value,
@@ -1055,9 +1088,19 @@ class _SettingScreenState extends State<SettingScreen> {
 
     ///  GIỮ NGUYÊN LOGIC MÀU
     Color valueColor;
-    if (!isVoltage) {
-      valueColor = kPrimaryColor;
-    } else {
+
+    if (title == "Dòng rò") {
+      if (value >= 100) {
+        valueColor = Colors.red;
+      } else if (value >= 50) {
+        valueColor = Colors.orange;
+      } else if (value >= 20) {
+        valueColor = Colors.amber;
+      } else {
+        valueColor = kPrimaryColor;
+      }
+    }
+    else if (isVoltage) {
       if (percent < 0.5) {
         valueColor = const Color(0xFF1ABC9C);
       } else if (percent < 0.8) {
@@ -1065,6 +1108,9 @@ class _SettingScreenState extends State<SettingScreen> {
       } else {
         valueColor = const Color(0xFFE53935);
       }
+    }
+    else {
+      valueColor = kPrimaryColor;
     }
 
     return Container(
@@ -1130,7 +1176,9 @@ class _SettingScreenState extends State<SettingScreen> {
           const SizedBox(height: 4),
 
           ///  SLIDER + WARNING GỘP 1 CHỖ
-          Stack(
+          SizedBox(
+              height: 30,
+              child:Stack(
             alignment: Alignment.centerLeft,
             children: [
 
@@ -1167,7 +1215,16 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                 ),
               ),
-
+              // FractionallySizedBox(
+              //   widthFactor: percent,
+              //   child: Container(
+              //     height: 10,
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(20),
+              //       color: _getDynamicColor(percent),
+              //     ),
+              //   ),
+              // )
               /// slider
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
@@ -1194,13 +1251,63 @@ class _SettingScreenState extends State<SettingScreen> {
                     style: TextStyle(fontSize: 10, color: Colors.orange),
                   ),
                 ),
+              if (title == "Dòng rò")
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = constraints.maxWidth;
+
+                    /// ⚠ Slider có padding 16 mỗi bên
+                    const sliderPadding = 16.0;
+                    final usableWidth = width - (sliderPadding * 2);
+
+                    return Stack(
+                      children: [
+                        for (var e in leakageLevels.where((e) => e["value"] != 0))
+                          Positioned(
+                            top: 10,
+                            left: sliderPadding +
+                                (((e["value"] as double) / max) * usableWidth)
+                                    .clamp(0.0, usableWidth),
+                            child: Container(
+                              width: 3,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(2),
+                                color: (e["value"] == 20)
+                                    ? Colors.amber
+                                    : (e["value"] == 50)
+                                    ? Colors.orange
+                                    : Colors.red,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 3,
+                                    offset: Offset(0, 1),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                )
             ],
+          ),
           ),
         ],
       ),
     );
   }
-
+  Color _getDynamicColor(double percent) {
+    if (percent < 0.5) {
+      return const Color(0xFF1ABC9C); // xanh
+    } else if (percent < 0.8) {
+      return const Color(0xFFFF9800); // cam
+    } else {
+      return const Color(0xFFE53935); // đỏ
+    }
+  }
   void _showInputDialog(BuildContext context,
       double current,
       String unit,
