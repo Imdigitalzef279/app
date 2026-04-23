@@ -12,6 +12,8 @@ import 'device_info_screen/device_info_screen.dart';
 import '../../../../data/dto/energy_report/energy_report_response.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
+bool isTablet(BuildContext context) =>
+    MediaQuery.of(context).size.width >= 600;
 Map<String, double> minMap = {};
 Map<String, double> maxMap = {};
 Map<String, double> deviceOverrideMap = {};
@@ -863,7 +865,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 physics: NeverScrollableScrollPhysics(),
                 mainAxisSpacing: 6,
                 crossAxisSpacing: 6,
-                childAspectRatio: 3.2,
+                childAspectRatio: isTablet(context) ? 5.5 : 3.2,
 
                 children: [
                   _buildSwitchItem("Mất pha", phaseLoss,
@@ -997,9 +999,9 @@ class _SettingScreenState extends State<SettingScreen> {
       ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 6,
+      padding: EdgeInsets.symmetric(
+        horizontal: isTablet(context) ? 8 : 10,
+        vertical: isTablet(context) ? 2 : 6,
       ),
       decoration: BoxDecoration(
         color: const Color(0xFFE8F5E9),

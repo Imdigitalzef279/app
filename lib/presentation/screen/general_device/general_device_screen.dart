@@ -24,6 +24,8 @@ import 'analytics_overview/analytics_overview_screen.dart';
 import 'background/bloc/background_cubit.dart';
 import 'device_grid/device_grid_item.dart';
 import 'notification/notification_screen.dart';
+bool isTablet(BuildContext context) =>
+    MediaQuery.of(context).size.width >= 600;
 Color getAdaptiveTextColor(String? bg) {
   if (bg == null) return Colors.black;
 
@@ -73,7 +75,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       "url": "https://krapower.com.vn/en/groups"
     },
   ];
-  List<DeviceResponse> favoriteDevices = [];
 
   StreamSubscription? _signalSub;
   double _aiTop = 500;
@@ -109,7 +110,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
         powerStationId: widget.project.id!,
       );
       final devices = cubit.state.resultDevices.data ?? [];
-      favoriteDevices = devices.where((d) => d.isFavorite).toList();
       for (var d in devices) {
         if (d.code != null) {
           await cubit.loadBreakerLog(d.code);
@@ -163,6 +163,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     final textColor = Colors.black;
     final state = context.watch<DeviceCubit>().state;
     final devices = state.resultDevices.data ?? [];
+    final favoriteDevices = devices.where((d) => d.isFavorite).toList();
     String locationText = "Hà Nội";
 
 
@@ -263,6 +264,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       body: BlocBuilder<BackgroundCubit, String?>(
         builder: (context, bg) {
           final textColor = getAdaptiveTextColor(bg);
+          final isTab = isTablet(context);
           return Stack(
             children: [
 
@@ -293,11 +295,14 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isTablet(context) ? 24 : 10.w,
+                        vertical: isTablet(context) ? 16 : 6.h,
+                      ),
                       child: SizedBox(
                         height: constraints.maxHeight,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start, //  đẩy devices xuống
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
 
 
@@ -305,7 +310,12 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                               children: [
 
                                 Container(
-                                  height: 180.h, //  tăng để ăn khoảng trống
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isTablet(context) ? 0 : 0,
+                                  ),
+                                  height: isTablet(context)
+                                      ? MediaQuery.of(context).size.height * 0.25
+                                      : 180.h,
                                   width: double.infinity,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(20),
@@ -361,72 +371,75 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                       ),
                                       Gap(10.h),
 
-                                      SizedBox(
-                                        height: 70.h,
-                                        child: ListView(
-                                          scrollDirection: Axis.horizontal,
-                                          children: [
-                                            featureItem(
-                                              iconPath: "assets/icons/icons_new/icon_energy_meter.png",
-                                              title: 'Năng Lượng'.tr(),
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) => BlocProvider.value(
-                                                      value: context.read<DeviceCubit>(),
-                                                      child: AutomatListScreen(
-                                                        powerStationId: widget.project.id!,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            featureItem(
-                                              iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
-                                              title: "Phân tích".tr(),
-                                              onTap: () {
-                                                final devices =
-                                                    context.read<DeviceCubit>().state.resultDevices.data ?? [];
-
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) => AnalyticsOverviewScreen(devices: devices),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            featureItem(
-                                              iconPath: "assets/icons/icons_new/icon_environment.png",
-                                              title: "Môi Trường".tr(),
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) => DeviceWaterScreen(
-                                                      stationId: widget.project.id!,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            featureItem(
-                                              iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
-                                              title: "KRA Care".tr(),
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) => KraCareScreen(),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      )
+                                      // SizedBox(
+                                      //   height: isTablet(context) ? 90 : 70.h,
+                                      //   child: ListView(
+                                      //     scrollDirection: Axis.horizontal,
+                                      //     children: [
+                                      //       featureItem(
+                                      //         iconPath: "assets/icons/icons_new/icon_energy_meter.png",
+                                      //         title: 'Năng Lượng'.tr(),
+                                      //         onTap: () {
+                                      //           Navigator.push(
+                                      //             context,
+                                      //             MaterialPageRoute(
+                                      //               builder: (_) => BlocProvider.value(
+                                      //                 value: context.read<DeviceCubit>(),
+                                      //                 child: AutomatListScreen(
+                                      //                   powerStationId: widget.project.id!,
+                                      //                 ),
+                                      //               ),
+                                      //             ),
+                                      //           );
+                                      //         },
+                                      //       ),
+                                      //       featureItem(
+                                      //         iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
+                                      //         title: "Phân tích".tr(),
+                                      //         onTap: () {
+                                      //           final devices =
+                                      //               context.read<DeviceCubit>().state.resultDevices.data ?? [];
+                                      //
+                                      //           Navigator.push(
+                                      //             context,
+                                      //             MaterialPageRoute(
+                                      //               builder: (_) => AnalyticsOverviewScreen(devices: devices),
+                                      //             ),
+                                      //           );
+                                      //         },
+                                      //       ),
+                                      //       featureItem(
+                                      //         iconPath: "assets/icons/icons_new/icon_environment.png",
+                                      //         title: "Môi Trường".tr(),
+                                      //         onTap: () {
+                                      //           Navigator.push(
+                                      //             context,
+                                      //             MaterialPageRoute(
+                                      //               builder: (_) => DeviceWaterScreen(
+                                      //                 stationId: widget.project.id!,
+                                      //               ),
+                                      //             ),
+                                      //           );
+                                      //         },
+                                      //       ),
+                                      //       featureItem(
+                                      //         iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
+                                      //         title: "KRA Care".tr(),
+                                      //         onTap: () {
+                                      //           Navigator.push(
+                                      //             context,
+                                      //             MaterialPageRoute(
+                                      //               builder: (_) => KraCareScreen(),
+                                      //             ),
+                                      //           );
+                                      //         },
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // )
+                                      isTablet(context)
+                                          ? _buildFeatureTablet()
+                                          : _buildFeatureMobile(),
                                     ],
                                   ),
                                 ),
@@ -445,14 +458,17 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isTablet(context) ? 30 : 10.w,
+                                          vertical: isTablet(context) ? 6 : 4,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: Colors.black.withOpacity(0.45),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: Text("Thiết bị hay dùng".tr(),
                                           style: TextStyle(
-                                            fontSize: 13.sp,
+                                            fontSize: isTablet(context) ? 12 : 13.sp,
                                             fontWeight: FontWeight.w700,
                                             color: Colors.white,
                                           ),
@@ -481,7 +497,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 20),
+                                  SizedBox(height: isTablet(context) ? 12 : 20),
                                   Gap(4.h),
 
                                   Expanded(
@@ -540,6 +556,181 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       ),
     );
   }
+  Widget _buildFeatureTablet() {
+    return SizedBox(
+        height: 100,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _featureTabletItem(
+            iconPath: "assets/icons/icons_new/icon_energy_meter.png",
+            title: 'Năng Lượng'.tr(),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<DeviceCubit>(),
+                    child: AutomatListScreen(
+                      powerStationId: widget.project.id!,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+              _featureTabletItem(
+            iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
+            title: "Phân tích".tr(),
+            onTap: () {
+              final devices =
+                  context.read<DeviceCubit>().state.resultDevices.data ?? [];
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AnalyticsOverviewScreen(devices: devices),
+                ),
+              );
+            },
+          ),
+              _featureTabletItem(
+            iconPath: "assets/icons/icons_new/icon_environment.png",
+            title: "Môi Trường".tr(),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DeviceWaterScreen(
+                    stationId: widget.project.id!,
+                  ),
+                ),
+              );
+            },
+          ),
+              _featureTabletItem(
+            iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
+            title: "KRA Care".tr(),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => KraCareScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+        )
+    );
+  }
+  Widget _featureTabletItem({
+    required String iconPath,
+    required String title,
+    VoidCallback? onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Image.asset(
+                iconPath,
+                width: 32,
+                height: 32,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildFeatureMobile() {
+    return SizedBox(
+      height: 70.h,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          featureItem(
+            iconPath: "assets/icons/icons_new/icon_energy_meter.png",
+            title: 'Năng Lượng'.tr(),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<DeviceCubit>(),
+                    child: AutomatListScreen(
+                      powerStationId: widget.project.id!,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          featureItem(
+            iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
+            title: "Phân tích".tr(),
+            onTap: () {
+              final devices =
+                  context.read<DeviceCubit>().state.resultDevices.data ?? [];
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AnalyticsOverviewScreen(devices: devices),
+                ),
+              );
+            },
+          ),
+          featureItem(
+            iconPath: "assets/icons/icons_new/icon_environment.png",
+            title: "Môi Trường".tr(),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DeviceWaterScreen(
+                    stationId: widget.project.id!,
+                  ),
+                ),
+              );
+            },
+          ),
+          featureItem(
+            iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
+            title: "KRA Care".tr(),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => KraCareScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildAppBarIcon({
     required IconData icon,
     required VoidCallback onTap,
@@ -575,9 +766,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       onReorder: (oldIndex, newIndex) {
         setState(() {
           if (newIndex > oldIndex) newIndex--;
+          final item = devices.removeAt(oldIndex);
+          devices.insert(newIndex, item);
 
-          final item = favoriteDevices.removeAt(oldIndex);
-          favoriteDevices.insert(newIndex, item);
         });
       },
 
@@ -594,8 +785,30 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     );
   }
   Widget _buildFixed6AndScroll(List<DeviceResponse> devices) {
+    if (isTablet(context)) {
+      return SizedBox(
+        height: 200,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          itemCount: devices.length,
+          itemBuilder: (context, index) {
+            final device = devices[index];
+
+            return Container(
+              width: 200,
+              margin: EdgeInsets.only(right: 20),
+              child: DeviceGridItem(
+                device: device,
+                textColor: Colors.black,
+              ),
+            );
+          },
+        ),
+      );
+    }
     return SizedBox(
-      height: 220,
+      height: isTablet(context) ? 380 : 220,
       child: PageView.builder(
         itemCount: (devices.length / 6).ceil(),
         itemBuilder: (context, pageIndex) {
@@ -604,15 +817,15 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
           (start + 6 > devices.length) ? devices.length : start + 6;
 
           final pageItems = devices.sublist(start, end);
-
+          final isTab = isTablet(context);
           return GridView.builder(
             physics: NeverScrollableScrollPhysics(),
             itemCount: pageItems.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+              crossAxisCount: isTablet(context) ? 5 : 3,
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
-              childAspectRatio: 1.2,
+              childAspectRatio: isTablet(context) ? 1.4 : 1.2,
             ),
             itemBuilder: (context, index) {
               final device = pageItems[index];
@@ -626,8 +839,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
                 onAccept: (fromIndex) {
                   setState(() {
-                    final item = favoriteDevices.removeAt(fromIndex);
-                    favoriteDevices.insert(globalIndex, item);
+                    final item = devices.removeAt(fromIndex);
+                    devices.insert(globalIndex, item);
                   });
                 },
 
@@ -696,7 +909,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
-          width: 70.w,
+          width: isTablet(context) ? 120 : 70.w,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -6,7 +6,8 @@ import '../general_device/notification/notification_screen.dart';
 import 'cart_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'category_screen/category_screen.dart';
-
+bool isTablet(BuildContext context) =>
+    MediaQuery.of(context).size.width >= 600;
 class MarketScreen extends StatelessWidget {
   const MarketScreen({super.key});
 
@@ -29,11 +30,11 @@ class MarketScreen extends StatelessWidget {
                       children: [
                         _Banner(),
 
-                        SizedBox(height: 14),
+                        SizedBox(height: isTablet(context) ? 20 : 14),
 
                         _ProductSlider(),
 
-                        SizedBox(height: 16),
+                        SizedBox(height: isTablet(context) ? 24 : 16),
 
                         _CategoryGrid(),
                       ],
@@ -135,7 +136,7 @@ class _BannerState extends State<_Banner> {
         cs.CarouselSlider(
           carouselController: controller,
           options: cs.CarouselOptions(
-            height: 140,
+            height: isTablet(context) ? 200 : 140,
             autoPlay: true,
             enlargeCenterPage: false,
             viewportFraction: 1, // full width
@@ -345,7 +346,7 @@ class _ProductCard extends StatelessWidget {
     final images = icons;
 
     return Container(
-      height: 170,
+      height: isTablet(context) ? 180 : 170,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
@@ -382,20 +383,20 @@ class _ProductCard extends StatelessWidget {
 
                 const SizedBox(height: 6),
 
-                const Text(
+                 Text(
                   "Sản phẩm đa chất lượng",
                   style: TextStyle(
-                      fontSize: 16,
+                      fontSize: isTablet(context) ? 15 : 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
 
                 const SizedBox(height: 4),
 
-                const Text(
+                 Text(
                   "Khám phá sản phẩm và lựa chọn cho bạn",
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: isTablet(context) ? 11 : 11,
                     color: Colors.white,
                   ),
                 ),
@@ -420,24 +421,24 @@ class _ProductCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(width: 10),
+          SizedBox(height: isTablet(context) ? 6 : 10),
 
           /// GRID ICON
           SizedBox(
-            width: 150,
-            height: 100,
+            width: isTablet(context) ? 260 : 150,
+            height: isTablet(context) ? 160 : 100,
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               itemCount: images.length,
               gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+              SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: isTablet(context) ? 3 : 3,
                 mainAxisSpacing: 6,
                 crossAxisSpacing: 6,
               ),
               itemBuilder: (context, index) {
                 return Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(isTablet(context) ? 6 : 8),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
@@ -445,6 +446,8 @@ class _ProductCard extends StatelessWidget {
                   child: Image.asset(
                     images[index],
                     fit: BoxFit.contain,
+                    width: isTablet(context) ? 26 : null,
+                    height: isTablet(context) ? 26 : null,
                   ),
                 );
               },
@@ -494,11 +497,11 @@ class _CategoryGrid extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: items.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, // 3 cột đẹp hơn
+        gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: isTablet(context) ? 6 : 3,
+          childAspectRatio: isTablet(context) ? 1.2 : 0.9,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          childAspectRatio: 0.9, // chỉnh tỉ lệ ô
         ),
           itemBuilder: (context, index) {
             final item = items[index];
@@ -516,7 +519,10 @@ class _CategoryGrid extends StatelessWidget {
                 );
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                padding: EdgeInsets.symmetric(
+                  vertical: isTablet(context) ? 8 : 12,
+                  horizontal: isTablet(context) ? 6 : 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
@@ -531,11 +537,17 @@ class _CategoryGrid extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(item["icon"]!, height: 60),
+                    Image.asset(
+                      item["icon"]!,
+                      height: isTablet(context) ? 48 : 60,
+                    ),
                     const SizedBox(height: 10),
                     Text(
                       item["text"]!,
                       textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: isTablet(context) ? 10 : 13,
+                      ),
                     ),
                   ],
                 ),

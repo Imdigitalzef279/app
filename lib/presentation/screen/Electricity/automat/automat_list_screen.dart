@@ -519,6 +519,7 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
           }
 
           final devices = state.resultDevices.data ?? [];
+          final favoriteDevices = devices.where((d) => d.isFavorite).toList();
           if (devices.isEmpty) {
             return const Center(
               child: Text("Không có thiết bị"),

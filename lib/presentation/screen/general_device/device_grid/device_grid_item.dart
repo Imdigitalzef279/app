@@ -7,7 +7,8 @@ import '../../Electricity/automat/automat_detail_screen.dart';
 import '../../Electricity/automat/bloc/atomat_detail_cubit.dart';
 import '../../Electricity/automat/automat_chart/bloc/automat_chart_cubit.dart';
 import '../../device/bloc/device_cubit.dart';
-
+bool isTablet(BuildContext context) =>
+    MediaQuery.of(context).size.width >= 600;
 class DeviceGridItem extends StatelessWidget {
   final DeviceResponse device;
   final Color textColor;
@@ -46,7 +47,7 @@ class DeviceGridItem extends StatelessWidget {
             gatewayState == "online" ||
                 gatewayState == "1" ||
                 gatewayState == "connected";
-
+        final isTab = MediaQuery.of(context).size.width >= 600;
         return InkWell(
           borderRadius: BorderRadius.circular(14),
           onTap: () {
@@ -71,18 +72,27 @@ class DeviceGridItem extends StatelessWidget {
               child: Container(
             height: 105,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            decoration: BoxDecoration(
-              color: textColor == Colors.white
-                  ? Colors.black.withOpacity(0.4)
-                  : Colors.white.withOpacity(0.85),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 4,
+                decoration: BoxDecoration(
+                  color: textColor == Colors.white
+                      ? Colors.black.withOpacity(0.4)
+                      : Colors.white.withOpacity(0.85),
+                  borderRadius: BorderRadius.circular(14),
+
+                  boxShadow: isTab
+                      ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 12,
+                      offset: Offset(0, 4),
+                    )
+                  ]
+                      : [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 4,
+                    )
+                  ],
                 ),
-              ],
-            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
