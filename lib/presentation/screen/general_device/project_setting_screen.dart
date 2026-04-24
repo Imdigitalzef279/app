@@ -167,27 +167,27 @@ class _ProjectSettingScreenState
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
             _buildProjectInfoCard(),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
 
             _buildRoleSection(),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
 
             _buildPermissionSection(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             _buildPackageSection(),
-            const SizedBox(height: 30),
+            const SizedBox(height: 16),
             _buildBackgroundSection(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             _buildSaveButton(),
-            _buildLogoutButton(context),
+            // _buildLogoutButton(context),
           ],
         ),
       ),
@@ -201,7 +201,7 @@ class _ProjectSettingScreenState
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -272,10 +272,10 @@ class _ProjectSettingScreenState
 
   Widget _buildRoleSection() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -304,9 +304,9 @@ class _ProjectSettingScreenState
             physics:
             const NeverScrollableScrollPhysics(),
             crossAxisCount: 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 1.35,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 1.5,
             children: [
 
               _roleCard(
@@ -447,10 +447,10 @@ class _ProjectSettingScreenState
 
   Widget _buildPermissionSection() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha:0.05),
@@ -504,10 +504,10 @@ class _ProjectSettingScreenState
 
   Widget _buildPackageSection() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha:0.05),
@@ -570,10 +570,10 @@ class _ProjectSettingScreenState
     ];
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
