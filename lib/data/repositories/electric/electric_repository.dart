@@ -16,7 +16,7 @@ abstract class ElectricRepository {
     required int meterId,
   });
 
-  /// 🔥 thêm hàm tính tiền điện
+  /// thêm hàm tính tiền điện
   double calculateElectricCost({
     required double kwh,
     required double price,

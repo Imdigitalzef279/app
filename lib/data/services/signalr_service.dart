@@ -72,7 +72,7 @@ class SignalRService {
     if (_currentMeterCode == null) return;
 
     try {
-      print("🔥🔥🔥 JOIN METER: $_currentMeterCode 🔥🔥🔥"); // 👈 THÊM DÒNG NÀY
+      print("🔥🔥🔥 JOIN METER: $_currentMeterCode 🔥🔥🔥");
 
       await _connection!.invoke("JoinMeter", args: [_currentMeterCode]);
 

@@ -30,7 +30,7 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   Future<void> loadWarranty() async {
     final data = await warrantyRepo.getWarranty(widget.device.id);
 
-    debugPrint("👉 WARRANTY: ${data?.startDate} - ${data?.endDate}");
+    debugPrint("WARRANTY: ${data?.startDate} - ${data?.endDate}");
 
     if (!mounted) return;
 
@@ -90,7 +90,7 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
     }
   }
 
-  /// 🔥 FORMAT DATE
+  /// FORMAT DATE
   String formatDate(String? time) {
     if (time == null || time.isEmpty) return "--";
 
@@ -192,7 +192,7 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
             item("Tên sản phẩm", device.name),
             item("Mã hàng", device.name),
 
-            /// 🔥 FIX CHUẨN SERIAL
+            /// FIX CHUẨN SERIAL
             item("Serial Number", device.serialNumber),
 
             item("Hãng Sản Xuất", warranty?.provider),

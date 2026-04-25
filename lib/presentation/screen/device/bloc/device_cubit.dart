@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/electric_type.dart';
@@ -12,7 +11,6 @@ import 'package:solar_energy/data/repositories/cbs/cbs_repository.dart';
 import 'package:solar_energy/data/repositories/device/device_repository.dart';
 import 'package:solar_energy/di.dart';
 import '../../../../application/utils/device_avatar_storage.dart';
-import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../../data/dto/cbs/request/cbs_meter_request.dart';
 import '../../../../data/dto/profile/profile_response.dart';

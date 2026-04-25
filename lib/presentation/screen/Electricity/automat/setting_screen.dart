@@ -197,7 +197,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     final total = data.fold(0.0, (a, b) => a + b.epi);
 
-    print("⚡ TOTAL ENERGY: $total kWh");
+    print("TOTAL ENERGY: $total kWh");
 
     if (total > energyThreshold) {
       print("🔥 VƯỢT NGƯỠNG");
@@ -210,7 +210,7 @@ class _SettingScreenState extends State<SettingScreen> {
         );
       }
 
-      /// 🔌 cắt thiết bị
+      ///  cắt thiết bị
       if (autoCut) {
         print("🔌 AUTO CUT DEVICE");
         await sendOffCommand();
