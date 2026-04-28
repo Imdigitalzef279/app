@@ -79,7 +79,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     ///  Quá dòng (100% → 63A)
       case "I":
-        return 63;
+        return 0;
 
     ///  Dòng rò
       case "PARAM_LG":
@@ -107,7 +107,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     ///  Quá dòng (120% × 63)
       case "I":
-        return 76; // 75.6 làm tròn
+        return 63;
 
     ///  Dòng rò
       case "PARAM_LG":
@@ -1163,13 +1163,24 @@ class _SettingScreenState extends State<SettingScreen> {
                   max,
                   onChanged,
                 ),
-                child: Text(
-                  "${value.toInt()} $unit",
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: valueColor,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.keyboard_alt_outlined,
+                      size: 14,
+                      color: valueColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "${value.toInt()} $unit",
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: valueColor,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
