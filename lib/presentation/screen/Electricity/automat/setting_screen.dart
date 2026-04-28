@@ -20,9 +20,9 @@ Map<String, double> deviceOverrideMap = {};
 Map<String, double> thresholdMap = {};
 final leakageLevels = [
   {"value": 0.0, "label": "An toàn"},
-  {"value": 20.0, "label": "Giật nhẹ"},
-  {"value": 50.0, "label": "Khó thở"},
+  {"value": 30.0, "label": "Dân dụng "},
   {"value": 100.0, "label": "Nguy hiểm"},
+  {"value": 300.0, "label": "Rất nguy hiểm"},
 ];
 Map<String, String> queryTypeMap = {};
 Map<String, String> conditionMap = {};
@@ -111,7 +111,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     ///  Dòng rò
       case "PARAM_LG":
-        return 100;
+        return 300;
 
     ///  Điện áp (140% × 220)
       case "PARAM_U":
@@ -129,6 +129,7 @@ class _SettingScreenState extends State<SettingScreen> {
         return 100;
     }
   }
+
   String getLeakageDescription(double value) {
     if (value < 10) return "An toàn";
     if (value < 20) return "Giật nhẹ";
@@ -1189,125 +1190,122 @@ class _SettingScreenState extends State<SettingScreen> {
           const SizedBox(height: 4),
 
           ///  SLIDER + WARNING GỘP 1 CHỖ
-          SizedBox(
-              height: 30,
-              child:Stack(
-            alignment: Alignment.centerLeft,
+          Column(
             children: [
 
-              /// nền xám
-              Container(
-                height: 10,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE5E5E5),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
+              /// ===== SLIDER =====
+              SizedBox(
+                height: 40,
+                child: Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [
 
-              /// gradient giữ nguyên
-              FractionallySizedBox(
-                widthFactor: percent,
-                child: Container(
-                  height: 10,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: isOverCurrent
-                        ? const LinearGradient(
-                      colors: [
-                        Color(0xFF1ABC9C),
-                        Color(0xFFF69C21),
-                      ],
-                    )
-                        : const LinearGradient(
-                      colors: [
-                        Color(0xFF1ABC9C),
-                        Color(0xFFFFB74D),
-                        Color(0xFFE53935),
-                      ],
+                    /// nền
+                    Container(
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFE5E5E5),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              // FractionallySizedBox(
-              //   widthFactor: percent,
-              //   child: Container(
-              //     height: 10,
-              //     decoration: BoxDecoration(
-              //       borderRadius: BorderRadius.circular(20),
-              //       color: _getDynamicColor(percent),
-              //     ),
-              //   ),
-              // )
-              /// slider
-              SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                  trackHeight: 20,
-                  activeTrackColor: Colors.transparent,
-                  inactiveTrackColor: Colors.transparent,
-                  thumbShape: _ModernThumbShape(),
-                  overlayShape: SliderComponentShape.noOverlay,
-                ),
-                child: Slider(
-                  value: safeValue,
-                  min: min,
-                  max: safeMax,
-                  onChanged: (v) => onChanged(v),
+
+                    /// gradient
+                    FractionallySizedBox(
+                      widthFactor: percent,
+                      child: Container(
+                        height: 10,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: isOverCurrent
+                              ? LinearGradient(
+                            colors: [
+                              Color(0xFF1ABC9C),
+                              Color(0xFFF69C21),
+                            ],
+                          )
+                              : LinearGradient(
+                            colors: [
+                              Color(0xFF1ABC9C),
+                              Color(0xFFFFB74D),
+                              Color(0xFFE53935),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    /// slider
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        trackHeight: 20,
+                        activeTrackColor: Colors.transparent,
+                        inactiveTrackColor: Colors.transparent,
+                        thumbShape: _ModernThumbShape(),
+                        overlayShape: SliderComponentShape.noOverlay,
+                      ),
+                      child: Slider(
+                        value: safeValue,
+                        min: min,
+                        max: safeMax,
+                        onChanged: (v) => onChanged(v),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              ///  warning overlay (KHÔNG TĂNG HEIGHT)
-              if (percent > 0.85)
-                Positioned(
-                  right: 0,
-                  child: const Text(
-                    "⚠",
-                    style: TextStyle(fontSize: 10, color: Colors.orange),
-                  ),
-                ),
+              /// ===== MARKER (CHỈ DÒNG RÒ) =====
               if (title == "Dòng rò")
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final width = constraints.maxWidth;
+                SizedBox(
+                  height: 28,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final width = constraints.maxWidth;
 
-                    /// ⚠ Slider có padding 16 mỗi bên
-                    const sliderPadding = 16.0;
-                    final usableWidth = width - (sliderPadding * 2);
-
-                    return Stack(
-                      children: [
-                        for (var e in leakageLevels.where((e) => e["value"] != 0))
-                          Positioned(
-                            top: 10,
-                            left: sliderPadding +
-                                (((e["value"] as double) / max) * usableWidth)
-                                    .clamp(0.0, usableWidth),
-                            child: Container(
-                              width: 3,
-                              height: 14,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(2),
-                                color: (e["value"] == 20)
-                                    ? Colors.amber
-                                    : (e["value"] == 50)
-                                    ? Colors.orange
-                                    : Colors.red,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 3,
-                                    offset: Offset(0, 1),
-                                  )
+                      return Stack(
+                        children: [
+                          for (var e in leakageLevels)
+                            Positioned(
+                              left: ((e["value"] as double) / max) * width - 4,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    "${(e["value"] as double).toInt()}",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
-                          ),
-                      ],
-                    );
-                  },
-                )
+                        ],
+                      );
+                    },
+                  ),
+                ),
+
+              /// ===== MIN MAX =====
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("${min.toInt()}",
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
+                  Text("${max.toInt()}",
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
+                ],
+              ),
             ],
-          ),
-          ),
+          )
         ],
       ),
     );
