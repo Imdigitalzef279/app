@@ -24,7 +24,7 @@ mixin _$AlarmConfigResponse {
   String get name => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
 
-  /// 🔥 QUAN TRỌNG
+  /// QUAN TRỌNG
   String get logParam => throw _privateConstructorUsedError;
   String get queryType => throw _privateConstructorUsedError;
   String get queryCondition => throw _privateConstructorUsedError;
