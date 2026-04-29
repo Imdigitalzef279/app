@@ -8,6 +8,7 @@ class EnergyRepository {
   final ApiClient api;
 
   EnergyRepository(this.api);
+
   Future<ElectricReport> getElectricReport({
     required int meterId,
     required DateTime from,

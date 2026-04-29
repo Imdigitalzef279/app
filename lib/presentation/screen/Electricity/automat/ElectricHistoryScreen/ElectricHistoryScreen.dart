@@ -12,7 +12,6 @@ import '../../../../../data/dto/electric_report/electric_report_response.dart';
 import '../../../../../data/dto/energy_report/energy_report_response.dart';
 import '../../../../../data/dto/power_station/response/power_station_response.dart';
 import '../../../../../data/repositories/EnergyRepository/EnergyRepository.dart';
-String pricingType = "time_of_use";
 class EnergyState {
   final List<EnergyReportResponse> chart;
   final ElectricReport report;
@@ -116,10 +115,6 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
           child: Column(
             children: [
 
-              _header(),
-              const SizedBox(height: 16),
-
-
               Expanded(
                 child: BlocBuilder<ElectricHistoryCubit, EnergyState?>(
                   builder: (context, state) {
@@ -130,6 +125,8 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
                     return ListView(
                       children: [
+                        _header(state.report),
+                        const SizedBox(height: 16),
                         _summary(state.report),
                         const SizedBox(height: 16),
                         _touTable(state.report),
@@ -155,7 +152,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
   Widget _touTable(ElectricReport report) {
 
-    if (pricingType == "tiered") {
+    if (report.tiers.isNotEmpty) {
       final tiers = report.tiers;
 
       return Container(
@@ -295,33 +292,12 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    loadPricingType();
     selectedRange = DateTimeRange(
       start: DateTime.now().subtract(const Duration(days: 7)),
       end: DateTime.now(),
     );
 
     _loadStations();
-  }
-  Future<void> loadPricingType() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final type = prefs.getString("pricing_type") ?? "time_of_use";
-
-    setState(() {
-      pricingType = type;
-    });
-
-    /// reload lại dữ liệu
-    if (selectedRange != null) {
-      context.read<ElectricHistoryCubit>().load(
-        stationId: widget.device.powerStationId ?? 0,
-        deviceId: widget.device.id,
-        meterId: widget.device.id,
-        from: selectedRange!.start,
-        to: selectedRange!.end,
-      );
-    }
   }
   Future<void> _loadStations() async {
     final res = await GetIt.instance<ApiClient>()
@@ -363,8 +339,9 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
     );
   }
 
-  Widget _header() {
+  Widget _header(ElectricReport report) {
     final r = selectedRange ?? range;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -408,7 +385,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
                 const SizedBox(height: 4),
 
                 Text(
-                  pricingType == "tiered"
+                  report.tiers.isNotEmpty
                       ? "Biểu giá: Hộ gia đình (Bậc thang)"
                       : "Biểu giá: Công nghiệp (Theo khung giờ)",
                   style: const TextStyle(
@@ -483,12 +460,11 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
                     rangeStartDay: start,
                     rangeEndDay: end,
-                    rangeSelectionMode: RangeSelectionMode.enforced,
-
+                    rangeSelectionMode: RangeSelectionMode.toggledOn,
                     onRangeSelected: (s, e, _) {
                       setStateModal(() {
                         start = s;
-                        end = e;
+                        end = e ?? s;
                       });
                     },
 
@@ -593,7 +569,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
   Widget _summary(ElectricReport report) {
 
 
-    if (pricingType == "tiered") {
+    if (report.tiers.isNotEmpty) {
       final tiers = report.tiers;
 
       final totalKwh = tiers.fold<double>(
@@ -642,7 +618,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
     }
 
     final tou = report.tou!;
-
+    final isTiered = report.tiers.isNotEmpty;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -677,19 +653,14 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
                 margin: const EdgeInsets.only(right: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: pricingType == "tiered"
+                  color: isTiered
                       ? Colors.orange.withOpacity(0.1)
                       : Colors.blue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  pricingType == "tiered" ? "Bậc thang" : "TOU",
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: pricingType == "tiered" ? Colors.orange : Colors.blue,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                  isTiered ? "Bậc thang" : "TOU",
+                )
               ),
               Expanded(
                 flex: 5,
