@@ -757,7 +757,19 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
 
+            _buildItemCard(
+              title: "Quá nhiệt",
+              child: _buildSliderTile(
+                title: "Quá nhiệt",
+                unit: "°C",
+                value: overTemperature,
+                min: getMin("PARAM_TEMP1"),
+                max: getMax("PARAM_TEMP1"),
+                description: "Ngắt khi nhiệt độ vượt ngưỡng",
+                onChanged: (v) => setState(() => overTemperature = v),
+              ),
 
+            ),
             _buildItemCard(
               title: "Quá điện năng",
               child: Column(
@@ -842,20 +854,6 @@ class _SettingScreenState extends State<SettingScreen> {
                 ],
               ),
             ),
-
-            _buildItemCard(
-              title: "Quá nhiệt",
-              child: _buildSliderTile(
-                title: "Quá nhiệt",
-                unit: "°C",
-                value: overTemperature,
-                min: getMin("PARAM_TEMP1"),
-                max: getMax("PARAM_TEMP1"),
-                description: "Ngắt khi nhiệt độ vượt ngưỡng",
-                onChanged: (v) => setState(() => overTemperature = v),
-              ),
-            ),
-
             const SizedBox(height: 10),
 
             _buildItemCard(
