@@ -7,6 +7,7 @@ import '../../../../application/enums/chart_range.dart';
 import '../../../../data/dto/device/response/device_response.dart';
 import '../../../../data/dto/energy_report/energy_report_response.dart';
 import '../../../../data/dto/notification_item/notification_item.dart';
+import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 import 'bloc/analytics_cubit.dart';
 import 'dart:math' as math;
 class AnalyticsDetailScreen extends StatefulWidget {
@@ -22,7 +23,8 @@ class AnalyticsDetailScreen extends StatefulWidget {
 class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   ChartRange selectedRange = ChartRange.day;
   int selectedChart = 0;
-
+  int selectedTab = 0; // 0: Energy, 1: MCB
+  bool isLineChart = false;
   @override
   void initState() {
     super.initState();
@@ -30,6 +32,9 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       powerStationId: widget.device.powerStationId,
       deviceId: widget.device.id,
       type: "DAY",
+    );
+    context.read<AnalyticsCubit>().loadBreakerChart(
+        breakerSn: widget.device.code
     );
   }
 
@@ -108,6 +113,236 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           ),
         );
       }),
+    );
+  }
+  Widget buildMainTabs() {
+    return Row(
+      children: [
+        _mainTab("Energy", 0),
+        _mainTab("MCB", 1),
+      ],
+    );
+  }
+
+  Widget _mainTab(String title, int index) {
+    final active = selectedTab == index;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => selectedTab = index),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 4),
+          padding: EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: active ? Colors.blue : Colors.grey[200],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                color: active ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  Widget buildChartTypeToggle() {
+    return Row(
+      children: [
+        TextButton(
+          onPressed: () => setState(() => isLineChart = false),
+          child: Text("Bar"),
+        ),
+        TextButton(
+          onPressed: () => setState(() => isLineChart = true),
+          child: Text("Line"),
+        ),
+      ],
+    );
+  }
+  Widget buildMCBCharts(List<BreakerChartResponse> data) {
+    final current = data.map<double>((e) => (e.ia ?? 0).toDouble()).toList();
+    final voltage = data.map<double>((e) => (e.ua ?? 0).toDouble()).toList();
+    final leakage = data.map<double>((e) => (e.lg ?? 0).toDouble()).toList();
+    final power = data.map<double>((e) => (e.p ?? 0).toDouble()).toList();
+    return Column(
+      children: [
+        _chartBlock("Current (A)", current),
+        _chartBlock("Voltage (V)", voltage),
+        _chartBlock("Leakage (mA)", leakage),
+        _chartBlock("Power (kW)", power),
+      ],
+    );
+  }
+  Widget _chartBlock(String title, List<double> values) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
+          SizedBox(
+            height: 200,
+            child: isLineChart
+
+                ? LineChart(
+              LineChartData(
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: values.isNotEmpty
+                      ? (values.reduce((a, b) => a > b ? a : b) / 4)
+                      : 1,
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                      color: Colors.grey.withOpacity(0.15),
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
+
+                titlesData: FlTitlesData(
+                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: (values.length / 4).ceilToDouble(),
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: TextStyle(fontSize: 10, color: Colors.grey),
+                        );
+                      },
+                    ),
+                  ),
+
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: TextStyle(fontSize: 10, color: Colors.grey),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                borderData: FlBorderData(show: false),
+
+                lineTouchData: LineTouchData(
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipColor: (_) => Colors.black87,
+                    getTooltipItems: (spots) {
+                      return spots.map((spot) {
+                        return LineTooltipItem(
+                          spot.y.toStringAsFixed(2),
+                          TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
+
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: values.asMap().entries.map((e) {
+                      return FlSpot(e.key.toDouble(), e.value);
+                    }).toList(),
+
+                    isCurved: true,
+                    curveSmoothness: 0.4,
+                    isStrokeCapRound: true,
+
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFF3B82F6),
+                        Color(0xFF06B6D4),
+                      ],
+                    ),
+
+                    barWidth: 3,
+
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, bar, index) {
+                        return FlDotCirclePainter(
+                          radius: 2,
+                          strokeWidth: 1.5,
+                          color: Colors.white,
+                          strokeColor: Color(0xFF3B82F6),
+                        );
+                      },
+                    ),
+
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF3B82F6).withOpacity(0.3),
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+                : BarChart(
+              BarChartData(
+                barGroups: values.asMap().entries.map((e) {
+                  return BarChartGroupData(
+                    x: e.key,
+                    barRods: [
+                      BarChartRodData(
+                        toY: e.value,
+                        width: 6,
+
+                        borderRadius: BorderRadius.circular(4),
+
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFF22C55E),
+                            Color(0xFF4ADE80),
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                      )
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
   // ================= KPI =================
@@ -339,12 +574,12 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 },
               ),
             ),
-            alignment: BarChartAlignment.spaceBetween,
+            alignment: BarChartAlignment.spaceAround,
             maxY: safeMax * 1.2,
             gridData: FlGridData(
               show: true,
               drawVerticalLine: false,
-              horizontalInterval: safeMax / 3,
+              horizontalInterval: safeMax / 4,
               getDrawingHorizontalLine: (value) {
                 return FlLine(
                   color: Colors.grey.withOpacity(0.15),
@@ -417,7 +652,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 barRods: [
                   BarChartRodData(
                     toY: value,
-                    width: 10,
+                    width: 6,
                     borderRadius: BorderRadius.circular(2),
                     color: index == maxIndex
                         ? Color(0xFF1E3A5F)
@@ -624,47 +859,88 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           children: [
             ListView(
               padding: EdgeInsets.all(12),
-              children: [
-                buildFilterBar(),
-                SizedBox(height: 12),
+              // children: [
+              //   buildFilterBar(),
+              //   SizedBox(height: 12),
+              //
+              //   buildTabs(),
+              //   SizedBox(height: 12),
+              //   buildHeader(data),
+              //   SizedBox(height: 12),
+              //   Container(
+              //     padding: EdgeInsets.all(16),
+              //     decoration: BoxDecoration(
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.circular(16),
+              //       boxShadow: [
+              //         BoxShadow(
+              //           color: Colors.black.withOpacity(0.05),
+              //           blurRadius: 10,
+              //           offset: Offset(0, 4),
+              //         ),
+              //       ],
+              //     ),
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text(
+              //           selectedChart == 0 ? "Power (kW)" : "Energy (kWh)",
+              //           style: TextStyle(
+              //             fontSize: 14,
+              //             fontWeight: FontWeight.w600,
+              //             color: Colors.grey[800],
+              //           ),
+              //         ),
+              //         SizedBox(height: 12),
+              //         buildChart(data),
+              //       ],
+              //     ),
+              //   ),
+              //   SizedBox(height: 12),
+              //   buildPremiumBlock(data),
+              //   SizedBox(height: 20),
+              // ],
+                children: [
+                  buildMainTabs(),
+                  SizedBox(height: 12),
 
-                buildTabs(),
-                SizedBox(height: 12),
-                buildHeader(data),
-                SizedBox(height: 12),
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
+                  if (selectedTab == 0) ...[
+                    buildFilterBar(),
+                    SizedBox(height: 12),
+
+                    buildTabs(),
+                    SizedBox(height: 12),
+
+                    buildHeader(data),
+                    SizedBox(height: 12),
+
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        selectedChart == 0 ? "Power (kW)" : "Energy (kWh)",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[800],
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            selectedChart == 0 ? "Power (kW)" : "Energy (kWh)",
+                          ),
+                          SizedBox(height: 12),
+                          buildChart(data),
+                        ],
                       ),
-                      SizedBox(height: 12),
-                      buildChart(data),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 12),
-                buildPremiumBlock(data),
-                SizedBox(height: 20),
-              ],
+                    ),
+
+                    SizedBox(height: 12),
+                    buildPremiumBlock(data),
+                  ] else ...[
+                    buildChartTypeToggle(),
+                    SizedBox(height: 12),
+
+                    buildMCBCharts(state.breakerData ?? []),
+                  ],
+                ]
             ),
 
             if (state.isLoading)
@@ -676,6 +952,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 ),
               ),
           ],
+
         ),
       ),
     );

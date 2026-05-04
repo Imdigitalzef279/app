@@ -2,24 +2,28 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../data/data_sources/api/api_client.dart';
+import '../../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../../../../data/dto/energy_report/energy_report_response.dart';
 
 
 class AnalyticsState {
   final List<EnergyReportResponse> data;
+  final List<BreakerChartResponse>? breakerData;
   final bool isLoading;
 
   AnalyticsState({
     this.data = const [],
+    this.breakerData,
     this.isLoading = false,
   });
-
   AnalyticsState copyWith({
     List<EnergyReportResponse>? data,
+    List<BreakerChartResponse>? breakerData,
     bool? isLoading,
   }) {
     return AnalyticsState(
       data: data ?? this.data,
+      breakerData: breakerData ?? this.breakerData,
       isLoading: isLoading ?? this.isLoading,
     );
   }
@@ -29,7 +33,20 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
   final ApiClient api;
 
   AnalyticsCubit(this.api) : super(AnalyticsState());
+  Future<void> loadBreakerChart({required String breakerSn}) async {
+    try {
+      emit(state.copyWith(isLoading: true));
 
+      final res = await api.getBreakerChartData(breakerSn);
+
+      emit(state.copyWith(
+        breakerData: res,
+        isLoading: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
   Future<void> loadEnergy({
     required int powerStationId,
     required int deviceId,
