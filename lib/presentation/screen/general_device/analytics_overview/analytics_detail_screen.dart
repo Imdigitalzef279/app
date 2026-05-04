@@ -116,33 +116,51 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     );
   }
   Widget buildMainTabs() {
-    return Row(
-      children: [
-        _mainTab("Energy", 0),
-        _mainTab("MCB", 1),
-      ],
+    return Container(
+      padding: EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          _mainTab("Energy", 0),
+          _mainTab("MCB", 1),
+        ],
+      ),
     );
   }
-
   Widget _mainTab(String title, int index) {
     final active = selectedTab == index;
 
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => selectedTab = index),
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 4),
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
           padding: EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: active ? Colors.blue : Colors.grey[200],
-            borderRadius: BorderRadius.circular(10),
+            color: active ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+
+            boxShadow: active
+                ? [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              )
+            ]
+                : [],
           ),
           child: Center(
             child: Text(
               title,
               style: TextStyle(
-                color: active ? Colors.white : Colors.black87,
                 fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: active ? Colors.black : Colors.grey[600],
               ),
             ),
           ),
@@ -169,6 +187,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     final voltage = data.map<double>((e) => (e.ua ?? 0).toDouble()).toList();
     final leakage = data.map<double>((e) => (e.lg ?? 0).toDouble()).toList();
     final power = data.map<double>((e) => (e.p ?? 0).toDouble()).toList();
+
     return Column(
       children: [
         _chartBlock("Current (A)", current),
@@ -179,7 +198,14 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     );
   }
   Widget _chartBlock(String title, List<double> values) {
+    final sampledValues = values.length > 20
+        ? values.asMap().entries
+        .where((e) => e.key % 2 == 0)
+        .map((e) => e.value)
+        .toList()
+        : values;
     return Container(
+
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
@@ -208,7 +234,9 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                   show: true,
                   drawVerticalLine: false,
                   horizontalInterval: values.isNotEmpty
-                      ? (values.reduce((a, b) => a > b ? a : b) / 4)
+                      ? ((values.reduce((a, b) => a > b ? a : b) / 4) == 0
+                      ? 1
+                      : (values.reduce((a, b) => a > b ? a : b) / 4))
                       : 1,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
@@ -225,8 +253,10 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      interval: (values.length / 4).ceilToDouble(),
+                      interval: math.max(1, (values.length / 5).ceil()).toDouble(),
                       getTitlesWidget: (value, meta) {
+                        if (value.toInt() % 2 != 0) return SizedBox();
+
                         return Text(
                           value.toInt().toString(),
                           style: TextStyle(fontSize: 10, color: Colors.grey),
@@ -315,30 +345,72 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               ),
             )
                 : BarChart(
-              BarChartData(
-                barGroups: values.asMap().entries.map((e) {
-                  return BarChartGroupData(
-                    x: e.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: e.value,
-                        width: 6,
 
-                        borderRadius: BorderRadius.circular(4),
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
 
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xFF22C55E),
-                            Color(0xFF4ADE80),
-                          ],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
-                      )
-                    ],
-                  );
-                }).toList(),
-              ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: values.isEmpty
+                        ? 1
+                        : math.max(1, (values.reduce((a, b) => a > b ? a : b) / 4)),
+                    getDrawingHorizontalLine: (value) => FlLine(
+                      color: Colors.grey.withOpacity(0.15),
+                      strokeWidth: 0.8,
+                    ),
+                  ),
+
+                  titlesData: FlTitlesData(
+                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: math.max(1, (sampledValues.length / 5).ceil()).toDouble(),
+                        getTitlesWidget: (value, meta) {
+                          if (value.toInt() % 2 != 0) return SizedBox();
+                          return Text(
+                            value.toInt().toString(),
+                            style: TextStyle(fontSize: 10, color: Colors.grey),
+                          );
+                        },
+                      ),
+                    ),
+
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toStringAsFixed(1),
+                            style: TextStyle(fontSize: 10, color: Colors.grey),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  borderData: FlBorderData(show: false),
+
+                  barGroups: sampledValues.asMap().entries.map((e) {
+                    return BarChartGroupData(
+                      x: e.key,
+                      barRods: [
+                        BarChartRodData(
+                          toY: e.value,
+                          width: 6,
+                          borderRadius: BorderRadius.circular(4),
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF22C55E), Color(0xFF4ADE80)],
+                          ),
+                        )
+                      ],
+                    );
+                  }).toList(),
+                )
             ),
           ),
         ],
@@ -532,7 +604,12 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     final scaleFactor = maxRaw < 10 ? 1000 : 1;
 
     final values = rawValues.map((e) => e * scaleFactor).toList();
-
+    final sampledValues = values.length > 20
+        ? values.asMap().entries
+        .where((e) => e.key % 2 == 0)
+        .map((e) => e.value)
+        .toList()
+        : values;
     final max =
     values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b);
     final safeMax = max == 0 ? 1 : max;
@@ -541,7 +618,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SizedBox(
-        width: math.max(displayData.length * 40, MediaQuery.of(context).size.width),
+        width: math.max(displayData.length * 20, MediaQuery.of(context).size.width),
         height: 260,
         child: BarChart(
           BarChartData(
@@ -579,7 +656,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
             gridData: FlGridData(
               show: true,
               drawVerticalLine: false,
-              horizontalInterval: safeMax / 4,
+              horizontalInterval: safeMax <= 0 ? 1 : (safeMax / 4),
               getDrawingHorizontalLine: (value) {
                 return FlLine(
                   color: Colors.grey.withOpacity(0.15),
@@ -601,27 +678,21 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                   getTitlesWidget: (value, _) {
                     final index = value.toInt();
                     if (index >= displayData.length) return SizedBox();
+                    final step = math.max(1, (displayData.length / 5).ceil());
+                    if (index % step != 0) return SizedBox();
 
                     final time = displayData[index].time;
 
-                    if (selectedRange == ChartRange.day) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Text(
-                          "${time.hour}h",
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[600],
-                          ),
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        "${time.hour}h",
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey[600],
                         ),
-                      );
-                    } else if (selectedRange == ChartRange.month) {
-                      return Text("${time.day}",
-                          style: TextStyle(fontSize: 10));
-                    } else {
-                      return Text("${time.month}",
-                          style: TextStyle(fontSize: 10));
-                    }
+                      ),
+                    );
                   },
                 ),
               ),
@@ -643,7 +714,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               ),
             ),
 
-            barGroups: values.asMap().entries.map((e) {
+            barGroups: sampledValues.asMap().entries.map((e) {
               final index = e.key;
               final value = e.value;
 
