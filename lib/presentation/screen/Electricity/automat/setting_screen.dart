@@ -1255,7 +1255,7 @@ class _SettingScreenState extends State<SettingScreen> {
               /// ===== MARKER (CHỈ DÒNG RÒ) =====
               if (title == "Dòng rò")
                 SizedBox(
-                  height: 28,
+                  height: 34,
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       final width = constraints.maxWidth;
@@ -1264,23 +1264,31 @@ class _SettingScreenState extends State<SettingScreen> {
                         children: [
                           for (var e in leakageLevels)
                             Positioned(
-                              left: ((e["value"] as double) / max) * width - 4,
+                              left: (((e["value"] as double) / max) * (width - 16))
+                                  .clamp(0, width - 16),
                               child: Column(
                                 children: [
                                   Container(
-                                    width: 8,
-                                    height: 8,
+                                    width: 7,
+                                    height: 7,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Colors.red,
+                                      color: (e["value"] as double) >= 100
+                                          ? Colors.red
+                                          : (e["value"] as double) >= 30
+                                          ? Colors.orange
+                                          : kPrimaryColor,
                                     ),
                                   ),
-                                  SizedBox(height: 2),
+
+                                  const SizedBox(height: 4),
+
                                   Text(
                                     "${(e["value"] as double).toInt()}",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black54,
                                     ),
                                   ),
                                 ],

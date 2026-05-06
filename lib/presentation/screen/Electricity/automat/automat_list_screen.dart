@@ -283,7 +283,9 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                     const SizedBox(width: 6),
 
                     Text(
-                      isGatewayOnline ? "Online" : "Offline",
+                      isGatewayOnline
+                          ? "Gateway Online"
+                          : "Gateway Offline",
                       style: TextStyle(
                         fontSize: 12,
                         color: isGatewayOnline
@@ -435,6 +437,8 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                     fontWeight: FontWeight.w600,
                     color: isSwitching || countdown > 0
                         ? Colors.orange
+                        : isOffline
+                        ? Colors.red
                         : isOn
                         ? Colors.green
                         : Colors.red,
