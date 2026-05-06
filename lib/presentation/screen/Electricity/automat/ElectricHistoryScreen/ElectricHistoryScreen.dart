@@ -66,7 +66,7 @@ class ElectricHistoryScreen extends StatefulWidget {
 }
 
 class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
-
+  String pricingType = "time_of_use";
   int selectedIndex = 1;
   DateTime focusedDay = DateTime.now();
   DateTime? startDate;
@@ -152,7 +152,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
 
   Widget _touTable(ElectricReport report) {
 
-    if (report.tiers.isNotEmpty) {
+    if (pricingType == "tiered") {
       final tiers = report.tiers;
 
       return Container(
@@ -292,12 +292,23 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
   @override
   void initState() {
     super.initState();
+
     selectedRange = DateTimeRange(
       start: DateTime.now().subtract(const Duration(days: 7)),
       end: DateTime.now(),
     );
 
+    loadPricingType();
+
     _loadStations();
+  }
+  Future<void> loadPricingType() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      pricingType =
+          prefs.getString("pricing_type") ?? "time_of_use";
+    });
   }
   Future<void> _loadStations() async {
     final res = await GetIt.instance<ApiClient>()
@@ -385,7 +396,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
                 const SizedBox(height: 4),
 
                 Text(
-                  report.tiers.isNotEmpty
+                  pricingType == "tiered"
                       ? "Biểu giá: Hộ gia đình (Bậc thang)"
                       : "Biểu giá: Công nghiệp (Theo khung giờ)",
                   style: const TextStyle(
@@ -618,7 +629,7 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
     }
 
     final tou = report.tou!;
-    final isTiered = report.tiers.isNotEmpty;
+    final isTiered = pricingType == "tiered";
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(

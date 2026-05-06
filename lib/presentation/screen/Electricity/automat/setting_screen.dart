@@ -42,7 +42,22 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   Timer? _timer;
-  String pricingType = "time_of_use";
+  String pricingType = "tiered";
+  bool showPricingDetail = false;
+  List<Map<String, dynamic>> tierPrices = [
+    {"from": 0, "to": 50, "price": 1806},
+    {"from": 51, "to": 100, "price": 1866},
+    {"from": 101, "to": 200, "price": 2167},
+    {"from": 201, "to": 300, "price": 2729},
+    {"from": 301, "to": 400, "price": 3050},
+    {"from": 401, "to": 999999, "price": 3151},
+  ];
+
+  Map<String, double> touPrices = {
+    "off_peak": 1200,
+    "normal": 2200,
+    "peak": 4000,
+  };
   final _repo = GetIt.instance<MeterConfigRepository>();
   String energyType = "DAY";
   double energyThreshold = 10;
@@ -889,82 +904,170 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
               _buildItemCard(
                 title: "Cài đặt biểu giá",
-                child: Row(
+
+                child: Column(
                   children: [
 
-                    /// HỘ GIA ĐÌNH (EVN)
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() => pricingType = "tiered");
-                        },
-                        child: Container(
-                          height: 35,
-                          decoration: BoxDecoration(
-                            color: pricingType == "tiered"
-                                ? kPrimaryColor.withOpacity(0.15)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: pricingType == "tiered"
-                                  ? kPrimaryColor
-                                  : Colors.grey.shade300,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Hộ gia đình",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                    Row(
+                      children: [
+
+                        /// HỘ GIA ĐÌNH
+                        Expanded(
+                          child: Opacity(
+                            opacity: pricingType == "tiered" ? 1 : 0.45,
+                            child: Container(
+                              height: 35,
+                              decoration: BoxDecoration(
                                 color: pricingType == "tiered"
-                                    ? kPrimaryColor
-                                    : Colors.black87,
+                                    ? kPrimaryColor.withOpacity(0.15)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: pricingType == "tiered"
+                                      ? kPrimaryColor
+                                      : Colors.grey.shade300,
+                                ),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+
+                                    Text(
+                                      "Hộ gia đình",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: pricingType == "tiered"
+                                            ? kPrimaryColor
+                                            : Colors.black54,
+                                      ),
+                                    ),
+
+                                    if (pricingType == "tiered") ...[
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.lock,
+                                        size: 13,
+                                        color: kPrimaryColor,
+                                      ),
+                                    ]
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
 
-                    const SizedBox(width: 8),
+                        const SizedBox(width: 8),
 
-                    /// CÔNG NGHIỆP (3 GIÁ)
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() => pricingType = "time_of_use");
-                        },
-                        child: Container(
-                          height: 35,
-                          decoration: BoxDecoration(
-                            color: pricingType == "time_of_use"
-                                ? kPrimaryColor.withOpacity(0.15)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: pricingType == "time_of_use"
-                                  ? kPrimaryColor
-                                  : Colors.grey.shade300,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Công nghiệp",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                        /// CÔNG NGHIỆP
+                        Expanded(
+                          child: Opacity(
+                            opacity: pricingType == "time_of_use" ? 1 : 0.45,
+                            child: Container(
+                              height: 35,
+                              decoration: BoxDecoration(
                                 color: pricingType == "time_of_use"
-                                    ? kPrimaryColor
-                                    : Colors.black87,
+                                    ? kPrimaryColor.withOpacity(0.15)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: pricingType == "time_of_use"
+                                      ? kPrimaryColor
+                                      : Colors.grey.shade300,
+                                ),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+
+                                    Text(
+                                      "Công nghiệp",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: pricingType == "time_of_use"
+                                            ? kPrimaryColor
+                                            : Colors.black54,
+                                      ),
+                                    ),
+
+                                    if (pricingType == "time_of_use") ...[
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.lock,
+                                        size: 13,
+                                        color: kPrimaryColor,
+                                      ),
+                                    ]
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          showPricingDetail = !showPricingDetail;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                showPricingDetail
+                                    ? "Ẩn cấu hình biểu giá"
+                                    : "Hiện cấu hình biểu giá",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+
+                            AnimatedRotation(
+                              turns: showPricingDetail ? 0.5 : 0,
+                              duration: const Duration(milliseconds: 200),
+                              child: const Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+
+                    if (showPricingDetail) ...[
+                      const SizedBox(height: 10),
+
+                      if (pricingType == "tiered")
+                        _buildTierPricing()
+                      else
+                        _buildTouPricing(),
+                    ],
                   ],
                 ),
+
               ),
               ]
             )
@@ -1366,37 +1469,129 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
     );
   }
-}
-Widget _buildItemCard({
-  required String title,
-  required Widget child,
-}) {
-  return Container(
-    padding: const EdgeInsets.all(6),
-    margin: const EdgeInsets.only(bottom: 4),
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Colors.white, Color(0xFFB2E6B4)],
-      ),
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
+  Widget _buildItemCard({
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      margin: const EdgeInsets.only(bottom: 4),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.white, Color(0xFFB2E6B4)],
         ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
 
-        const SizedBox(height: 6),
+          const SizedBox(height: 6),
 
-        child,
-      ],
-    ),
-  );
+          child,
+        ],
+      ),
+    );
+  }
+  Widget _buildTierPricing() {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      child: Column(
+        children: tierPrices.map((e) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "Bậc ${tierPrices.indexOf(e) + 1}"
+                        " (${e["from"]}-${e["to"]} kWh)",
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+
+                SizedBox(
+                  width: 100,
+                  child: TextFormField(
+                    initialValue: e["price"].toString(),
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      suffixText: "đ",
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (v) {
+                      e["price"] = double.tryParse(v) ?? 0;
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+  Widget _buildTouPricing() {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      child: Column(
+        children: [
+          _buildTouItem("Thấp điểm", "off_peak"),
+          _buildTouItem("Bình thường", "normal"),
+          _buildTouItem("Cao điểm", "peak"),
+        ],
+      ),
+    );
+  }
+  Widget _buildTouItem(String title, String key) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+
+          SizedBox(
+            width: 100,
+            child: TextFormField(
+              initialValue: touPrices[key]!.toStringAsFixed(0),
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                isDense: true,
+                suffixText: "đ",
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) {
+                touPrices[key] = double.tryParse(v) ?? 0;
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ModernThumbShape extends SliderComponentShape {
