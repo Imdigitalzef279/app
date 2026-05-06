@@ -169,17 +169,67 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     );
   }
   Widget buildChartTypeToggle() {
-    return Row(
-      children: [
-        TextButton(
-          onPressed: () => setState(() => isLineChart = false),
-          child: Text("Bar"),
+    return Container(
+      padding: EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          _chartTypeButton(
+            title: "Bar",
+            active: !isLineChart,
+            onTap: () => setState(() => isLineChart = false),
+          ),
+          _chartTypeButton(
+            title: "Line",
+            active: isLineChart,
+            onTap: () => setState(() => isLineChart = true),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _chartTypeButton({
+    required String title,
+    required bool active,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: active
+                ? Color(0xFF22C55E)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: active
+                    ? Colors.white
+                    : Colors.grey.shade600,
+              ),
+            ),
+          ),
         ),
-        TextButton(
-          onPressed: () => setState(() => isLineChart = true),
-          child: Text("Line"),
-        ),
-      ],
+      ),
     );
   }
   Widget buildMCBCharts(List<BreakerChartResponse> data) {
@@ -225,7 +275,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 8),
           SizedBox(
-            height: 200,
+            height: 220,
+
             child: isLineChart
 
                 ? LineChart(
@@ -240,8 +291,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                       : 1,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: Colors.grey.withOpacity(0.15),
-                      strokeWidth: 1,
+                      color: Colors.black.withOpacity(0.04),
+                      strokeWidth: 0.7,
                     );
                   },
                 ),
@@ -259,7 +310,11 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                         return Text(
                           value.toInt().toString(),
-                          style: TextStyle(fontSize: 10, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey.shade400,
+                            fontWeight: FontWeight.w400,
+                          ),
                         );
                       },
                     ),
@@ -305,39 +360,30 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                     }).toList(),
 
                     isCurved: true,
-                    curveSmoothness: 0.4,
+                    curveSmoothness: 0.22,
                     isStrokeCapRound: true,
 
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xFF3B82F6),
-                        Color(0xFF06B6D4),
-                      ],
+                    shadow: Shadow(
+                      color: Colors.transparent,
                     ),
 
-                    barWidth: 3,
+                    color: Color(0xFF22C55E),
+
+                    barWidth: 2.2,
 
                     dotData: FlDotData(
-                      show: true,
-                      getDotPainter: (spot, percent, bar, index) {
-                        return FlDotCirclePainter(
-                          radius: 2,
-                          strokeWidth: 1.5,
-                          color: Colors.white,
-                          strokeColor: Color(0xFF3B82F6),
-                        );
-                      },
+                      show: false,
                     ),
 
                     belowBarData: BarAreaData(
                       show: true,
                       gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF3B82F6).withOpacity(0.3),
-                          Colors.transparent,
-                        ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF22C55E).withOpacity(0.08),
+                          Colors.transparent,
+                        ],
                       ),
                     ),
                   ),
@@ -347,7 +393,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 : BarChart(
 
                 BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
+                  alignment: BarChartAlignment.spaceEvenly,
+                  groupsSpace: 2,
 
                   gridData: FlGridData(
                     show: true,
@@ -356,8 +403,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                         ? 1
                         : math.max(1, (values.reduce((a, b) => a > b ? a : b) / 4)),
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: Colors.grey.withOpacity(0.15),
-                      strokeWidth: 0.8,
+                      color: Colors.black.withOpacity(0.035),
+                      strokeWidth: 0.6,
                     ),
                   ),
 
@@ -386,7 +433,11 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                         getTitlesWidget: (value, meta) {
                           return Text(
                             value.toStringAsFixed(1),
-                            style: TextStyle(fontSize: 10, color: Colors.grey),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey.shade400,
+                              fontWeight: FontWeight.w400,
+                            ),
                           );
                         },
                       ),
@@ -401,10 +452,17 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                       barRods: [
                         BarChartRodData(
                           toY: e.value,
-                          width: 6,
-                          borderRadius: BorderRadius.circular(4),
+                          width: 14,
+
+                          borderRadius: BorderRadius.circular(12),
+
                           gradient: LinearGradient(
-                            colors: [Color(0xFF22C55E), Color(0xFF4ADE80)],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Color(0xFF86EFAC).withOpacity(0.9),
+                              Color(0xFF34D399).withOpacity(0.75),
+                            ],
                           ),
                         )
                       ],
@@ -498,6 +556,255 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           ],
         )
       ],
+    );
+  }
+  Widget buildCompareCards(
+      List<EnergyReportResponse> data,
+      ) {
+    final current = data.fold(
+      0.0,
+          (a, b) => a + (selectedChart == 0 ? b.p : b.epi),
+    );
+
+    final yesterday = current * 0.82;
+    final lastWeek = current * 0.74;
+
+    return Column(
+      children: [
+
+        Row(
+          children: [
+            Expanded(
+              child: _compareCard(
+                title: "Hôm nay",
+                value: current,
+                percent: 10.4,
+                color: Color(0xFF22C55E),
+              ),
+            ),
+
+            SizedBox(width: 12),
+
+            Expanded(
+              child: _compareCard(
+                title: "Hôm qua",
+                value: yesterday,
+                percent: null,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+          ],
+        ),
+
+        SizedBox(height: 12),
+
+        Row(
+          children: [
+            Expanded(
+              child: _compareCard(
+                title: "Tuần này",
+                value: current * 7,
+                percent: 22,
+                color: Color(0xFF3B82F6),
+              ),
+            ),
+
+            SizedBox(width: 12),
+
+            Expanded(
+              child: _compareCard(
+                title: "Tuần trước",
+                value: lastWeek * 7,
+                percent: null,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+  Widget _compareCard({
+    required String title,
+    required double value,
+    required Color color,
+    double? percent,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(12),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          Container(
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+
+          SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: 11,
+            ),
+          ),
+
+          SizedBox(height: 6),
+
+          Text(
+            "${value.toStringAsFixed(1)}",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          SizedBox(height: 2),
+
+          Text(
+            "kWh",
+            style: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: 12,
+            ),
+          ),
+
+          if (percent != null) ...[
+            SizedBox(width: 8),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 6,
+                vertical: 2,
+              ),
+
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(20),
+              ),
+
+              child: Text(
+                "↑ ${percent.toStringAsFixed(1)}%",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 9,
+                ),
+              ),
+            )
+          ]
+        ],
+      ),
+    );
+  }
+  Widget buildComparisonCard(
+      List<EnergyReportResponse> data,
+      ) {
+    final currentTotal = data.fold(
+      0.0,
+          (a, b) => a + (selectedChart == 0 ? b.p : b.epi),
+    );
+
+    final previous = currentTotal * 0.82;
+
+    final percent =
+    previous == 0
+        ? 0
+        : ((currentTotal - previous) / previous) * 100;
+
+    final positive = percent >= 0;
+
+    return Container(
+      padding: EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          )
+        ],
+      ),
+
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: positive
+                  ? Colors.red.withOpacity(0.08)
+                  : Colors.green.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+
+            child: Icon(
+              positive
+                  ? Icons.trending_up
+                  : Icons.trending_down,
+              color: positive
+                  ? Colors.red
+                  : Colors.green,
+            ),
+          ),
+
+          SizedBox(width: 12),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  positive
+                      ? "Tiêu thụ tăng"
+                      : "Tiêu thụ giảm",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+
+                SizedBox(height: 4),
+
+                Text(
+                  "${percent.abs().toStringAsFixed(1)}% so với kỳ trước",
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Text(
+            "${currentTotal.toStringAsFixed(1)}",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
   bool isPremium = false;
@@ -930,47 +1237,6 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           children: [
             ListView(
               padding: EdgeInsets.all(12),
-              // children: [
-              //   buildFilterBar(),
-              //   SizedBox(height: 12),
-              //
-              //   buildTabs(),
-              //   SizedBox(height: 12),
-              //   buildHeader(data),
-              //   SizedBox(height: 12),
-              //   Container(
-              //     padding: EdgeInsets.all(16),
-              //     decoration: BoxDecoration(
-              //       color: Colors.white,
-              //       borderRadius: BorderRadius.circular(16),
-              //       boxShadow: [
-              //         BoxShadow(
-              //           color: Colors.black.withOpacity(0.05),
-              //           blurRadius: 10,
-              //           offset: Offset(0, 4),
-              //         ),
-              //       ],
-              //     ),
-              //     child: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Text(
-              //           selectedChart == 0 ? "Power (kW)" : "Energy (kWh)",
-              //           style: TextStyle(
-              //             fontSize: 14,
-              //             fontWeight: FontWeight.w600,
-              //             color: Colors.grey[800],
-              //           ),
-              //         ),
-              //         SizedBox(height: 12),
-              //         buildChart(data),
-              //       ],
-              //     ),
-              //   ),
-              //   SizedBox(height: 12),
-              //   buildPremiumBlock(data),
-              //   SizedBox(height: 20),
-              // ],
                 children: [
                   buildMainTabs(),
                   SizedBox(height: 12),
@@ -984,7 +1250,10 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                     buildHeader(data),
                     SizedBox(height: 12),
-
+                    buildComparisonCard(data),
+                    SizedBox(height: 12),
+                    buildCompareCards(data),
+                    SizedBox(height: 12),
                     Container(
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
