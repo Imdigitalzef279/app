@@ -494,6 +494,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         : calculatePercentChange(data, context.read<AnalyticsCubit>().state.data);
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -569,57 +570,48 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     final yesterday = current * 0.82;
     final lastWeek = current * 0.74;
 
-    return Column(
+    return Row(
       children: [
-
-        Row(
-          children: [
-            Expanded(
-              child: _compareCard(
-                title: "Hôm nay",
-                value: current,
-                percent: 10.4,
-                color: Color(0xFF22C55E),
-              ),
-            ),
-
-            SizedBox(width: 12),
-
-            Expanded(
-              child: _compareCard(
-                title: "Hôm qua",
-                value: yesterday,
-                percent: null,
-                color: Color(0xFF94A3B8),
-              ),
-            ),
-          ],
+        Expanded(
+          child: _compareCard(
+            title: "Hôm nay",
+            value: current,
+            percent: 10.4,
+            color: Color(0xFF22C55E),
+          ),
         ),
 
-        SizedBox(height: 12),
+        SizedBox(width: 8),
 
-        Row(
-          children: [
-            Expanded(
-              child: _compareCard(
-                title: "Tuần này",
-                value: current * 7,
-                percent: 22,
-                color: Color(0xFF3B82F6),
-              ),
-            ),
+        Expanded(
+          child: _compareCard(
+            title: "Hôm qua",
+            value: yesterday,
+            percent: null,
+            color: Color(0xFF94A3B8),
+          ),
+        ),
 
-            SizedBox(width: 12),
+        SizedBox(width: 8),
 
-            Expanded(
-              child: _compareCard(
-                title: "Tuần trước",
-                value: lastWeek * 7,
-                percent: null,
-                color: Color(0xFF94A3B8),
-              ),
-            ),
-          ],
+        Expanded(
+          child: _compareCard(
+            title: "Tuần này",
+            value: current * 7,
+            percent: 22,
+            color: Color(0xFF3B82F6),
+          ),
+        ),
+
+        SizedBox(width: 8),
+
+        Expanded(
+          child: _compareCard(
+            title: "Tuần trước",
+            value: lastWeek * 7,
+            percent: null,
+            color: Color(0xFF94A3B8),
+          ),
         ),
       ],
     );
@@ -631,7 +623,10 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     double? percent,
   }) {
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 8,
+      ),
 
       decoration: BoxDecoration(
         color: Colors.white,
@@ -663,7 +658,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
             title,
             style: TextStyle(
               color: Colors.grey.shade500,
-              fontSize: 11,
+              fontSize: 9,
             ),
           ),
 
@@ -672,7 +667,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           Text(
             "${value.toStringAsFixed(1)}",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
           ),
