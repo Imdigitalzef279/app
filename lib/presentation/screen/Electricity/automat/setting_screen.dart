@@ -44,6 +44,8 @@ class _SettingScreenState extends State<SettingScreen> {
   Timer? _timer;
   String pricingType = "tiered";
   bool showPricingDetail = false;
+  String userRole = "user"; // admin / manager / user
+  bool pricingLocked = false;
   List<Map<String, dynamic>> tierPrices = [
     {"from": 0, "to": 50, "price": 1806},
     {"from": 51, "to": 100, "price": 1866},
@@ -81,6 +83,9 @@ class _SettingScreenState extends State<SettingScreen> {
   bool isOverPowerNow() {
     if (!enableOverPower) return false;
     return currentPower > overPower;
+  }
+  bool get canEditPricing {
+    return userRole == "admin" || !pricingLocked;
   }
   double getMax(String param) {
     return maxMap[param] ?? defaultMax(param);
@@ -524,6 +529,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
 
       await _repo.saveConfigs(configs);
+      pricingLocked = true;
       final ok = await sendProtectionSetting();
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("pricing_type", pricingType);
@@ -913,46 +919,43 @@ class _SettingScreenState extends State<SettingScreen> {
 
                         /// HỘ GIA ĐÌNH
                         Expanded(
-                          child: Opacity(
-                            opacity: pricingType == "tiered" ? 1 : 0.45,
-                            child: Container(
-                              height: 35,
-                              decoration: BoxDecoration(
-                                color: pricingType == "tiered"
-                                    ? kPrimaryColor.withOpacity(0.15)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
+                          child: GestureDetector(
+                            onTap: canEditPricing
+                                ? () {
+                              setState(() {
+                                pricingType = "tiered";
+                              });
+                            }
+                                : null,
+                            child: Opacity(
+                              opacity: pricingType == "tiered" ? 1 : 0.45,
+                              child: Container(
+                                height: 35,
+                                decoration: BoxDecoration(
                                   color: pricingType == "tiered"
-                                      ? kPrimaryColor
-                                      : Colors.grey.shade300,
+                                      ? kPrimaryColor.withOpacity(0.15)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: pricingType == "tiered"
+                                        ? kPrimaryColor
+                                        : Colors.grey.shade300,
+                                  ),
                                 ),
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-
-                                    Text(
-                                      "Hộ gia đình",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: pricingType == "tiered"
-                                            ? kPrimaryColor
-                                            : Colors.black54,
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Hộ gia đình",
                                       ),
-                                    ),
 
-                                    if (pricingType == "tiered") ...[
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.lock,
-                                        size: 13,
-                                        color: kPrimaryColor,
-                                      ),
-                                    ]
-                                  ],
+                                      if (pricingType == "tiered" && pricingLocked) ...[
+                                        SizedBox(width: 4),
+                                        Icon(Icons.lock, size: 13),
+                                      ]
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -963,46 +966,57 @@ class _SettingScreenState extends State<SettingScreen> {
 
                         /// CÔNG NGHIỆP
                         Expanded(
-                          child: Opacity(
-                            opacity: pricingType == "time_of_use" ? 1 : 0.45,
-                            child: Container(
-                              height: 35,
-                              decoration: BoxDecoration(
-                                color: pricingType == "time_of_use"
-                                    ? kPrimaryColor.withOpacity(0.15)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
+                          child: GestureDetector(
+                            onTap: canEditPricing
+                                ? () {
+                              setState(() {
+                                pricingType = "time_of_use";
+                              });
+                            }
+                                : null,
+                            child: Opacity(
+                              opacity: pricingType == "time_of_use" ? 1 : 0.45,
+                              child: Container(
+                                height: 35,
+                                decoration: BoxDecoration(
                                   color: pricingType == "time_of_use"
-                                      ? kPrimaryColor
-                                      : Colors.grey.shade300,
+                                      ? kPrimaryColor.withOpacity(0.15)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: pricingType == "time_of_use"
+                                        ? kPrimaryColor
+                                        : Colors.grey.shade300,
+                                  ),
                                 ),
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
 
-                                    Text(
-                                      "Công nghiệp",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: pricingType == "time_of_use"
-                                            ? kPrimaryColor
-                                            : Colors.black54,
+                                      Text(
+                                        "Công nghiệp",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: pricingType == "time_of_use"
+                                              ? kPrimaryColor
+                                              : Colors.black54,
+                                        ),
                                       ),
-                                    ),
 
-                                    if (pricingType == "time_of_use") ...[
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.lock,
-                                        size: 13,
-                                        color: kPrimaryColor,
-                                      ),
-                                    ]
-                                  ],
+                                      if (pricingType == "time_of_use" && pricingLocked) ...[
+                                        const SizedBox(width: 4),
+                                        Icon(
+                                          pricingLocked
+                                              ? Icons.lock
+                                              : Icons.lock_open,
+                                          size: 13,
+                                          color: kPrimaryColor,
+                                        ),
+                                      ]
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -1011,7 +1025,32 @@ class _SettingScreenState extends State<SettingScreen> {
                       ],
                     ),
                     const SizedBox(height: 10),
+                    if (userRole == "admin") ...[
+                      const SizedBox(height: 8),
 
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              pricingLocked = false;
+                            });
+                          },
+                          icon: Icon(
+                            Icons.lock_open,
+                            size: 16,
+                            color: Colors.orange,
+                          ),
+                          label: Text(
+                            "Reset biểu giá",
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                     GestureDetector(
                       onTap: () {
                         setState(() {

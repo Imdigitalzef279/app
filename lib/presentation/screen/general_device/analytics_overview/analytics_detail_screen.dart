@@ -235,14 +235,16 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   Widget buildMCBCharts(List<BreakerChartResponse> data) {
     final current = data.map<double>((e) => (e.ia ?? 0).toDouble()).toList();
     final voltage = data.map<double>((e) => (e.ua ?? 0).toDouble()).toList();
-    final leakage = data.map<double>((e) => (e.lg ?? 0).toDouble()).toList();
+    final temperature = data
+        .map<double>((e) => (e.temp1 ?? 0).toDouble())
+        .toList();
     final power = data.map<double>((e) => (e.p ?? 0).toDouble()).toList();
 
     return Column(
       children: [
         _chartBlock("Current (A)", current),
         _chartBlock("Voltage (V)", voltage),
-        _chartBlock("Leakage (mA)", leakage),
+        _chartBlock("Temperature (°C)", temperature),
         _chartBlock("Power (kW)", power),
       ],
     );
@@ -567,14 +569,52 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           (a, b) => a + (selectedChart == 0 ? b.p : b.epi),
     );
 
-    final yesterday = current * 0.82;
-    final lastWeek = current * 0.74;
+    final previous = current * 0.82;
+    final previous2 = current * 0.74;
+
+    String currentLabel1 = "";
+    String previousLabel1 = "";
+    String currentLabel2 = "";
+    String previousLabel2 = "";
+
+    switch (selectedRange) {
+      case ChartRange.day:
+        currentLabel1 = "Hôm nay";
+        previousLabel1 = "Hôm qua";
+        currentLabel2 = "Tuần này";
+        previousLabel2 = "Tuần trước";
+        break;
+
+      case ChartRange.month:
+        currentLabel1 = "Tháng này";
+        previousLabel1 = "Tháng trước";
+        currentLabel2 = "Quý này";
+        previousLabel2 = "Quý trước";
+        break;
+
+      case ChartRange.quarter:
+        currentLabel1 = "Quý này";
+        previousLabel1 = "Quý trước";
+        currentLabel2 = "Nửa năm";
+        previousLabel2 = "Nửa năm trước";
+        break;
+
+      case ChartRange.year:
+        currentLabel1 = "Năm nay";
+        previousLabel1 = "Năm trước";
+        currentLabel2 = "5 năm";
+        previousLabel2 = "5 năm trước";
+        break;
+      case ChartRange.week:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+    }
 
     return Row(
       children: [
         Expanded(
           child: _compareCard(
-            title: "Hôm nay",
+            title: currentLabel1,
             value: current,
             percent: 10.4,
             color: Color(0xFF22C55E),
@@ -585,8 +625,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
         Expanded(
           child: _compareCard(
-            title: "Hôm qua",
-            value: yesterday,
+            title: previousLabel1,
+            value: previous,
             percent: null,
             color: Color(0xFF94A3B8),
           ),
@@ -596,7 +636,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
         Expanded(
           child: _compareCard(
-            title: "Tuần này",
+            title: currentLabel2,
             value: current * 7,
             percent: 22,
             color: Color(0xFF3B82F6),
@@ -607,8 +647,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
         Expanded(
           child: _compareCard(
-            title: "Tuần trước",
-            value: lastWeek * 7,
+            title: previousLabel2,
+            value: previous2 * 7,
             percent: null,
             color: Color(0xFF94A3B8),
           ),
