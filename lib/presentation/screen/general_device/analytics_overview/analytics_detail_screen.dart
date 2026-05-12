@@ -1274,14 +1274,13 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         .map((e) => e.key)
         .toList()
       ..sort();
-
     final chartColors = [
-      Colors.red,
-      Colors.green,
-      Colors.blueGrey,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
+      Color(0xFFD32F2F),
+      Color(0xFF388E3C),
+      Color(0xFF1976D2),
+      Color(0xFFF57C00),
+      Color(0xFF7B1FA2),
+      Color(0xFF00796B),
     ];
 
     /// tìm max Y thật
@@ -1340,13 +1339,13 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
             child: SizedBox(
               width: math.max(
                 700,
-                years.length * 12 * 16,
+                  years.length * 12 * 28,
               ),
 
               child: BarChart(
                 BarChartData(
 
-                  alignment: BarChartAlignment.spaceAround,
+                  alignment: BarChartAlignment.spaceEvenly,
 
                   maxY: maxY * 1.2,
 
@@ -1425,8 +1424,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                     return BarChartGroupData(
                       x: monthIndex,
-                      barsSpace: 3,
-
+                      barsSpace: 5,
                       barRods: years.asMap().entries.map((yearEntry) {
 
                         final yearIndex = yearEntry.key;
@@ -1439,14 +1437,13 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                           toY: monthValues[monthIndex],
 
-                          width: 5,
-
+                          width: 8,
                           color: chartColors[
                           yearIndex % chartColors.length
                           ],
 
-                          borderRadius:
-                          BorderRadius.circular(2),
+
+                          borderRadius: BorderRadius.zero,
                         );
 
                       }).toList(),
@@ -1558,7 +1555,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                                 SizedBox(height: 16),
 
                                 SizedBox(
-                                  height: 320,
+                                  height: 380,
                                   child: buildCompareYearChart(state.data),
                                 ),
                               ],
