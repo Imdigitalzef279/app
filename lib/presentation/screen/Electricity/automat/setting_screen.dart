@@ -79,7 +79,15 @@ class _SettingScreenState extends State<SettingScreen> {
   bool isLoading = true;
   bool enableOverPower = false;
   double currentPower = 0;
-
+  bool hasUnsavedChanges = false;
+  bool hasSentOverEnergyAlert = false;
+  void markChanged() {
+    if (!hasUnsavedChanges) {
+      setState(() {
+        hasUnsavedChanges = true;
+      });
+    }
+  }
   bool isOverPowerNow() {
     if (!enableOverPower) return false;
     return currentPower > overPower;
@@ -221,25 +229,89 @@ class _SettingScreenState extends State<SettingScreen> {
     print("TOTAL ENERGY: $total kWh");
 
     if (total > energyThreshold) {
-      print("🔥 VƯỢT NGƯỠNG");
 
-      /// ⚠ cảnh báo
-      if (notifyApp) {
-        print("📢 SHOW ALERT");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("⚠ Vượt điện năng $energyType")),
+      /// tránh spam mỗi 10s
+      if (!hasSentOverEnergyAlert) {
+
+        hasSentOverEnergyAlert = true;
+
+        print("🔥 VƯỢT NGƯỠNG");
+
+        /// lưu notification local
+        await saveLocalNotification(
+          title: widget.device.name ?? "Thiết bị",
+          message:
+          "⚠ Điện năng vượt ngưỡng "
+              "$energyThreshold kWh ($energyType)",
         );
-      }
 
-      ///  cắt thiết bị
-      if (autoCut) {
-        print("🔌 AUTO CUT DEVICE");
-        await sendOffCommand();
+        /// snackbar app
+        if (notifyApp && mounted) {
+
+          print("📢 SHOW ALERT");
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "⚠ Điện năng vượt ngưỡng",
+              ),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+
+        /// auto cut
+        if (autoCut) {
+
+          print("🔌 AUTO CUT DEVICE");
+
+          await sendOffCommand();
+
+          /// log thêm
+          await saveLocalNotification(
+            title: widget.device.name ?? "Thiết bị",
+            message:
+            "🔌 Thiết bị đã tự động ngắt",
+          );
+        }
       }
 
     } else {
+
+      /// reset để lần sau báo lại
+      hasSentOverEnergyAlert = false;
+
       print("✅ OK - chưa vượt");
     }
+  }
+  Future<void> saveLocalNotification({
+    required String title,
+    required String message,
+    bool isAlert = true,
+  }) async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final oldData =
+    prefs.getString("local_notifications");
+
+    List list = [];
+
+    if (oldData != null) {
+      list = jsonDecode(oldData);
+    }
+
+    list.insert(0, {
+      "title": title,
+      "message": message,
+      "time": DateTime.now().toIso8601String(),
+      "isAlert": isAlert,
+    });
+
+    await prefs.setString(
+      "local_notifications",
+      jsonEncode(list),
+    );
   }
   Future<void> sendOffCommand() async {
     final api = GetIt.instance<ApiClient>();
@@ -529,6 +601,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
 
       await _repo.saveConfigs(configs);
+      hasUnsavedChanges = false;
       pricingLocked = true;
       final ok = await sendProtectionSetting();
       final prefs = await SharedPreferences.getInstance();
@@ -560,7 +633,68 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+        canPop: !hasUnsavedChanges,
+
+        onPopInvoked: (didPop) async {
+
+          if (didPop) return;
+
+          final action = await showDialog<String>(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                title: Text("Chưa lưu thay đổi"),
+                content: Text(
+                  "Bạn có muốn lưu thay đổi trước khi thoát không?",
+                ),
+                actions: [
+
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, "cancel");
+                    },
+                    child: Text("Huỷ"),
+                  ),
+
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, "discard");
+                    },
+                    child: Text("Thoát"),
+                  ),
+
+                  ElevatedButton(
+                    onPressed: () async {
+
+                      Navigator.pop(context, "save");
+
+                    },
+                    child: Text("Lưu"),
+                  ),
+                ],
+              );
+            },
+          );
+
+          if (action == "discard") {
+
+            if (mounted) {
+              Navigator.pop(context);
+            }
+          }
+
+          else if (action == "save") {
+
+            await saveConfig();
+
+            if (mounted) {
+              Navigator.pop(context);
+            }
+          }
+        },
+
+        child: Scaffold(
       backgroundColor: const Color(0xFFF2F4F5),
       appBar: AppBar(
         elevation: 0,
@@ -656,6 +790,7 @@ class _SettingScreenState extends State<SettingScreen> {
           ],
         ),
       ),
+        )
     );
   }
 
@@ -709,7 +844,10 @@ class _SettingScreenState extends State<SettingScreen> {
                     max: getMax("I"),
                     isOverCurrent: true,
                     description: "Ngưỡng cắt khi dòng vượt mức cho phép",
-                    onChanged: (v) => setState(() => overCurrent = v),
+                    onChanged: (v) {
+                      setState(() => overCurrent = v);
+                      markChanged();
+                    },
                   ),
                   // _buildRecommendBox(),
                 ],
@@ -725,7 +863,10 @@ class _SettingScreenState extends State<SettingScreen> {
                 min: getMin("PARAM_LG"),
                 max: getMax("PARAM_LG"),
                 description: getLeakageLevel(leakageCurrent),
-                onChanged: (v) => setState(() => leakageCurrent = v),
+                onChanged: (v) {
+                  setState(() => leakageCurrent = v);
+                  markChanged();
+                },
               ),
             ),
 
@@ -760,7 +901,10 @@ class _SettingScreenState extends State<SettingScreen> {
                     min: getMin("PARAM_U"),
                     max: getMax("PARAM_U"),
                     isVoltage: true,
-                    onChanged: (v) => setState(() => overVoltage = v),
+                    onChanged: (v) {
+                      setState(() => overVoltage = v);
+                      markChanged();
+                    },
                   ),
 
                   const SizedBox(height: 6),
@@ -772,7 +916,10 @@ class _SettingScreenState extends State<SettingScreen> {
                     min: getMin("PARAM_U"),
                     max: getMax("PARAM_U"),
                     isVoltage: true,
-                    onChanged: (v) => setState(() => underVoltage = v),
+                    onChanged: (v) {
+                      setState(() => underVoltage = v);
+                      markChanged();
+                    },
                   ),
                 ],
               ),
@@ -787,7 +934,10 @@ class _SettingScreenState extends State<SettingScreen> {
                 min: getMin("PARAM_TEMP1"),
                 max: getMax("PARAM_TEMP1"),
                 description: "Ngắt khi nhiệt độ vượt ngưỡng",
-                onChanged: (v) => setState(() => overTemperature = v),
+                onChanged: (v) {
+                  setState(() => overTemperature = v);
+                  markChanged();
+                },
               ),
 
             ),
@@ -828,6 +978,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         return Expanded(
                           child: GestureDetector(
                             onTap: () => setState(() => energyType = e),
+
                             child: Container(
                               margin: EdgeInsets.symmetric(horizontal: 2),
                               padding: EdgeInsets.symmetric(vertical: 6),
@@ -860,7 +1011,10 @@ class _SettingScreenState extends State<SettingScreen> {
                       min: 0,
                       max: 100,
                       description: "Nhập tổng điện năng tối đa ($energyType)",
-                      onChanged: (v) => setState(() => energyThreshold = v),
+                      onChanged: (v) {
+                        setState(() => energyThreshold = v);
+                        markChanged();
+                      },
                     ),
 
                     /// auto cut
@@ -888,23 +1042,60 @@ class _SettingScreenState extends State<SettingScreen> {
                 childAspectRatio: isTablet(context) ? 5.5 : 3.2,
 
                 children: [
-                  _buildSwitchItem("Mất pha", phaseLoss,
-                          (v) => setState(() => phaseLoss = v)),
 
-                  _buildSwitchItem("Set ngưỡng riêng", customThreshold,
-                          (v) => setState(() => customThreshold = v)),
+                  _buildSwitchItem(
+                    "Mất pha",
+                    phaseLoss,
+                        (v) {
+                      setState(() => phaseLoss = v);
+                      markChanged();
+                    },
+                  ),
 
-                  _buildSwitchItem("Cảnh báo qua App", notifyApp,
-                          (v) => setState(() => notifyApp = v)),
+                  _buildSwitchItem(
+                    "Set ngưỡng riêng",
+                    customThreshold,
+                        (v) {
+                      setState(() => customThreshold = v);
+                      markChanged();
+                    },
+                  ),
 
-                  _buildSwitchItem("Cảnh báo Email", notifyEmail,
-                          (v) => setState(() => notifyEmail = v)),
+                  _buildSwitchItem(
+                    "Cảnh báo qua App",
+                    notifyApp,
+                        (v) {
+                      setState(() => notifyApp = v);
+                      markChanged();
+                    },
+                  ),
 
-                  _buildSwitchItem("Lưu log cảnh báo", saveLog,
-                          (v) => setState(() => saveLog = v)),
+                  _buildSwitchItem(
+                    "Cảnh báo Email",
+                    notifyEmail,
+                        (v) {
+                      setState(() => notifyEmail = v);
+                      markChanged();
+                    },
+                  ),
 
-                  _buildSwitchItem("Xuất báo cáo", exportReport,
-                          (v) => setState(() => exportReport = v)),
+                  _buildSwitchItem(
+                    "Lưu log cảnh báo",
+                    saveLog,
+                        (v) {
+                      setState(() => saveLog = v);
+                      markChanged();
+                    },
+                  ),
+
+                  _buildSwitchItem(
+                    "Xuất báo cáo",
+                    exportReport,
+                        (v) {
+                      setState(() => exportReport = v);
+                      markChanged();
+                    },
+                  ),
                 ],
               ),
             ),

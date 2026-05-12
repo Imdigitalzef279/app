@@ -395,21 +395,36 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                       )
                           : Switch(
                         value: isOn,
-                      onChanged: (!isFake &&
-                          !isSwitching &&
-                          countdown == 0 &&
-                          !isOffline)
-                          ? (value) async {
-                        final password =
-                        await showPasswordDialog(context);
-                        if (password == null) return;
 
-                        await context
-                            .read<DeviceCubit>()
-                            .togglePower(device, password: password);
-                      }
-                          : null,
-                    ),
+                        activeColor: Colors.white,
+
+                        activeTrackColor: const Color(0xFF50CD5A),
+
+                        inactiveThumbColor: Colors.white,
+
+                        inactiveTrackColor: Colors.grey.shade300,
+
+                        onChanged: (!isFake &&
+                            !isSwitching &&
+                            countdown == 0 &&
+                            !isOffline)
+                            ? (value) async {
+
+                          final password =
+                          await showPasswordDialog(context);
+
+                          if (password == null) return;
+
+                          await context
+                              .read<DeviceCubit>()
+                              .togglePower(
+                            device,
+                            password: password,
+                          );
+
+                        }
+                            : null,
+                      ),
                   ),
                   ),
                 ),

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solar_energy/presentation/screen/detail_device_water/widget/list_warning_device.dart';
 import 'package:solar_energy/presentation/screen/device_index/device_index_screen.dart';
-
 import '../../../application/constants/app_color.dart';
 import '../../../application/constants/app_text_style.dart';
 import '../manager_water/bloc/manager_water_cubit.dart';

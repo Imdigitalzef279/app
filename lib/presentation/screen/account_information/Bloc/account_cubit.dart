@@ -8,12 +8,9 @@ import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/data/dto/profile/profile_response.dart';
 import 'package:solar_energy/data/repositories/auth/auth_repository.dart';
 import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
-
 import '../../../../data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 import '../../../../data/dto/result/result.dart';
-
 part 'account_cubit.freezed.dart';
-
 part 'account_state.dart';
 
 class AccountCubit extends Cubit<AccountState> {
@@ -28,13 +25,13 @@ class AccountCubit extends Cubit<AccountState> {
 
   Future<void> getProfile() async {
     try {
-      if (isClosed) return; // ✅ thêm dòng này
+      if (isClosed) return; // thêm dòng này
 
       emit(state.copyWith(request: Result(status: LoadStatus.loading)));
 
       final response = await authRepository.getProfile();
 
-      if (isClosed) return; // ✅ thêm dòng này (QUAN TRỌNG NHẤT)
+      if (isClosed) return; //  thêm dòng này (QUAN TRỌNG NHẤT)
 
       if (response.isSuccess) {
         emit(state.copyWith(

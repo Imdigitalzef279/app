@@ -20,11 +20,9 @@ import 'package:solar_energy/data/dto/water/request/meter_water_request.dart';
 import 'package:solar_energy/data/dto/water/response/meter_water_response.dart';
 import 'package:solar_energy/data/dto/meter_config/request/meter_config_request.dart';
 import 'package:solar_energy/data/dto/meter_config/response/meter_config_response.dart';
-
 import '../../dto/AlarmConfigMeter/alarm_config_meter_response.dart';
 import '../../dto/Price/price_config_response.dart';
 import '../../dto/alarm/response/alarm_response.dart';
-
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../dto/electric_report/electric_report_response.dart';
 import '../../dto/energy_report/energy_report_response.dart';

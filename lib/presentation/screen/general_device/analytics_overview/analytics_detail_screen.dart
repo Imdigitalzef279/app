@@ -1240,7 +1240,226 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     filtered.sort((a, b) => a.time.compareTo(b.time));
     return filtered;
   }
+  Widget buildCompareYearChart(
+      List<EnergyReportResponse> rawData,
+      ) {
 
+    /// GROUP DATA THEO NĂM
+    Map<int, List<double>> yearlyData = {};
+
+    for (final item in rawData) {
+
+      final year = item.time.year;
+      final monthIndex = item.time.month - 1;
+
+      final value =
+      selectedChart == 0
+          ? item.p
+          : item.epi;
+
+      yearlyData.putIfAbsent(
+        year,
+            () => List.filled(12, 0),
+      );
+
+      yearlyData[year]![monthIndex] += value;
+    }
+
+    final years = yearlyData.entries
+        .where((e) {
+
+      return e.value.any((v) => v > 0);
+
+    })
+        .map((e) => e.key)
+        .toList()
+      ..sort();
+
+    final chartColors = [
+      Colors.red,
+      Colors.green,
+      Colors.blueGrey,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+    ];
+
+    /// tìm max Y thật
+    double maxY = 0;
+
+    for (final y in years) {
+      final max = yearlyData[y]!
+          .reduce((a, b) => a > b ? a : b);
+
+      if (max > maxY) {
+        maxY = max;
+      }
+    }
+
+    return Column(
+      children: [
+
+        /// LEGEND
+        Wrap(
+          spacing: 14,
+          runSpacing: 8,
+          children: years.asMap().entries.map((e) {
+
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: chartColors[
+                    e.key % chartColors.length
+                    ],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                SizedBox(width: 6),
+
+                Text(
+                  e.value.toString(),
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
+            );
+
+          }).toList(),
+        ),
+
+        SizedBox(height: 20),
+
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: math.max(
+                700,
+                years.length * 12 * 16,
+              ),
+
+              child: BarChart(
+                BarChartData(
+
+                  alignment: BarChartAlignment.spaceAround,
+
+                  maxY: maxY * 1.2,
+
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: maxY <= 0
+                        ? 1
+                        : maxY / 5,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: Colors.grey.withOpacity(0.12),
+                        strokeWidth: 1,
+                      );
+                    },
+                  ),
+
+                  borderData: FlBorderData(
+                    show: false,
+                  ),
+
+                  titlesData: FlTitlesData(
+
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: false,
+                      ),
+                    ),
+
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: false,
+                      ),
+                    ),
+
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 42,
+                        getTitlesWidget: (value, meta) {
+
+                          return Text(
+                            value.toInt().toString(),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+
+                          const months = [
+                            '1','2','3','4','5','6',
+                            '7','8','9','10','11','12'
+                          ];
+
+                          return Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text(
+                              months[value.toInt()],
+                              style: TextStyle(fontSize: 11),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  barGroups: List.generate(12, (monthIndex) {
+
+                    return BarChartGroupData(
+                      x: monthIndex,
+                      barsSpace: 3,
+
+                      barRods: years.asMap().entries.map((yearEntry) {
+
+                        final yearIndex = yearEntry.key;
+                        final year = yearEntry.value;
+
+                        final monthValues =
+                        yearlyData[year]!;
+
+                        return BarChartRodData(
+
+                          toY: monthValues[monthIndex],
+
+                          width: 5,
+
+                          color: chartColors[
+                          yearIndex % chartColors.length
+                          ],
+
+                          borderRadius:
+                          BorderRadius.circular(2),
+                        );
+
+                      }).toList(),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
   // ================= UI =================
   @override
   Widget build(BuildContext context) {
@@ -1303,6 +1522,49 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                           ),
                           SizedBox(height: 12),
                           buildChart(data),
+
+                          SizedBox(height: 12),
+
+                          Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Builder(
+                                  builder: (_) {
+
+                                    final years = state.data
+                                        .map((e) => e.time.year)
+                                        .toSet();
+
+                                    final title = years.length <= 1
+                                        ? "Sản lượng theo tháng"
+                                        : "So sánh sản lượng theo năm";
+
+                                    return Text(
+                                      title,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    );
+                                  },
+                                ),
+
+                                SizedBox(height: 16),
+
+                                SizedBox(
+                                  height: 320,
+                                  child: buildCompareYearChart(state.data),
+                                ),
+                              ],
+
+                            ),
+                          ),
                         ],
                       ),
                     ),
