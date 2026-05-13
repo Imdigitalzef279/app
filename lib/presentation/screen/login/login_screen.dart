@@ -14,7 +14,7 @@ import 'package:solar_energy/presentation/common_widgets/app_toast.dart';
 import 'package:solar_energy/presentation/screen/Home/home.dart';
 import 'package:solar_energy/presentation/screen/login/bloc/login_cubit.dart';
 import 'package:solar_energy/presentation/screen/login/terms/terms_screen.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../register/Bloc/register_cubit.dart';
 import '../register/register_widget.dart';
 
@@ -261,6 +261,13 @@ class _LoginScreenState extends State<LoginScreen> {
             }
 
             await cubit.login();
+
+            final prefs = await SharedPreferences.getInstance();
+
+            await prefs.setString(
+              "username",
+              state.userName,
+            );
           },
               title: LocalizationsUtils.localizations.login,
               color: AppColors.blue,

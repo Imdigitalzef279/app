@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/data/dto/Warranty/response/warranty_response.dart';
 import '../../../../../data/repositories/warranty/warranty_repository.dart';
-
+import 'dart:async';
 class DeviceInfoScreen extends StatefulWidget {
   final DeviceResponse device;
 
@@ -15,7 +15,7 @@ class DeviceInfoScreen extends StatefulWidget {
 
 class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   final WarrantyRepository warrantyRepo = WarrantyRepository();
-
+  Timer? _timer;
   bool activating = false;
   WarrantyResponse? warranty;
 
@@ -24,9 +24,23 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
   @override
   void initState() {
     super.initState();
-    loadWarranty();
-  }
 
+    loadWarranty();
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+          (_) {
+        if (mounted) {
+          setState(() {});
+        }
+      },
+    );
+  }
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
   Future<void> loadWarranty() async {
     final data = await warrantyRepo.getWarranty(widget.device.id);
 
@@ -74,16 +88,23 @@ class _DeviceInfoScreenState extends State<DeviceInfoScreen> {
 
       final diff = end.difference(now);
 
-      if (diff.isNegative) return "Hết hạn";
-
-      final days = diff.inDays;
-
-      if (days > 30) {
-        final months = (days / 30).floor();
-        return "$months tháng";
+      if (diff.isNegative) {
+        return "Hết hạn";
       }
 
-      return "$days ngày";
+      final days = diff.inDays;
+      final hours = diff.inHours % 24;
+      final minutes = diff.inMinutes % 60;
+      final seconds = diff.inSeconds % 60;
+
+      final months = days ~/ 30;
+      final remainDays = days % 30;
+
+      return "$months tháng "
+          "$remainDays ngày "
+          "$hours giờ "
+          "$minutes phút "
+          "$seconds giây";
     } catch (e) {
       debugPrint("❌ DATE ERROR: $e");
       return "--";

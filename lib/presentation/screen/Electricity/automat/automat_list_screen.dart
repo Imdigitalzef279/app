@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/bloc/atomat_detail_cubit.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/setting_screen.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/switch_log_screen.dart';
@@ -29,10 +30,11 @@ class AutomatListScreen extends StatefulWidget {
 
 class _AutomatListScreenState extends State<AutomatListScreen> {
   Map<String, bool> expandedCabinets = {};
+  String username = "";
   @override
   void initState() {
     super.initState();
-
+    loadUsername();
     final cubit = context.read<DeviceCubit>();
 
     cubit.getAllDevices(
@@ -58,6 +60,18 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
         }
       }
 
+    });
+  }
+  Future<void> loadUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final savedUsername =
+        prefs.getString("username") ?? "";
+
+    print("USERNAME DEBUG: $savedUsername");
+
+    setState(() {
+      username = savedUsername;
     });
   }
   Future<void> showRenameDialog(BuildContext context, device) async {
@@ -555,7 +569,13 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
             cabinetMap.putIfAbsent(cabinet, () => []);
             /// ================= FAKE CABINET =================
-            if (devices.isNotEmpty) {
+            // final prefs = await SharedPreferences.getInstance();
+            // final username = prefs.getString("username") ?? "";
+            // final username =
+            //     context.read<AuthCubit>().state.user?.username ?? "";
+
+            if (devices.isNotEmpty && username == "minhvc") {
+
               final sample = devices.first;
 
               cabinetMap["Tủ điều khiển ánh sáng 2"] = List.generate(3, (i) {
