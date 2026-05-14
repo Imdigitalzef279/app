@@ -18,6 +18,7 @@ import '../../device/bloc/device_cubit.dart';
 import 'ElectricHistoryScreen/ElectricHistoryScreen.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'full_chart/full_chart_screen.dart';
+
 enum ChartType {
   power,
   energy,
