@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'Bloc/account_cubit.dart';
 
 class AccountDetailScreen extends StatefulWidget {
@@ -14,8 +13,6 @@ class AccountDetailScreen extends StatefulWidget {
 
 class _AccountDetailScreenState extends State<AccountDetailScreen> {
   String? avatarUrl;
-  String gender = "";
-  String birthday = "";
   String phone = "";
 
   @override
@@ -29,8 +26,6 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
 
     setState(() {
       avatarUrl = res.data["avatar"];
-      gender = res.data["gender"] ?? "Nam";
-      birthday = res.data["birthday"] ?? "";
       phone = res.data["phone"] ?? "";
     });
   }
@@ -115,14 +110,21 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
               ),
               child: Column(
                 children: [
-                  _item(Icons.phone, "Điện thoại", phone, onTap: _editPhone),
+                  _item(
+                    Icons.email,
+                    "Mail",
+                    "example@gmail.com",
+                  ),
                   _divider(),
 
-                  _item(Icons.person, "Giới tính", gender, onTap: _chooseGender),
+                  _item(
+                    Icons.phone,
+                    "Điện thoại",
+                    phone,
+                    onTap: _editPhone,
+                  ),
                   _divider(),
 
-                  _item(Icons.cake, "Ngày sinh", birthday, onTap: _pickDate),
-                  _divider(),
                   _item(Icons.history, "Lịch sử đăng nhập", ""),
                   _divider(),
 
@@ -216,55 +218,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
 
     context.read<AccountCubit>().getProfile();
   }
-  void _chooseGender() async {
-    final result = await showModalBottomSheet<String>(
-      context: context,
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            title: Text("Nam"),
-            onTap: () => Navigator.pop(context, "Nam"),
-          ),
-          ListTile(
-            title: Text("Nữ"),
-            onTap: () => Navigator.pop(context, "Nữ"),
-          ),
-        ],
-      ),
-    );
 
-    if (result != null) {
-      setState(() => gender = result);
-
-      await Dio().post("/update-profile", data: {
-        "gender": result,
-      });
-
-      context.read<AccountCubit>().getProfile();
-    }
-  }
-  void _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(2000),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-
-    if (picked != null) {
-      final formatted =
-          "${picked.day}/${picked.month}/${picked.year}";
-
-      setState(() => birthday = formatted);
-
-      await Dio().post("/update-profile", data: {
-        "birthday": picked.toIso8601String(),
-      });
-
-      context.read<AccountCubit>().getProfile();
-    }
-  }
   /// ===== ITEM =====
 
   Widget _item(

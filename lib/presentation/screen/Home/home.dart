@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_energy/application/constants/app_color.dart';
-import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
 import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.dart';
-import 'package:solar_energy/presentation/screen/service_solar/bottom_contact_info.dart';
 import '../../../application/enums/load_status.dart';
-import '../Electricity/automat/automat_list_screen.dart';
 import '../account_information/account_screen.dart';
 import '../device/bloc/device_cubit.dart';
 import '../general_device/general_device_screen.dart';

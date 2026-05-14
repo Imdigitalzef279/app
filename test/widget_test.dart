@@ -8,7 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:solar_energy/main.dart';
 import 'package:solar_energy/presentation/screen/app.dart';
 
 void main() {

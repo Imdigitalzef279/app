@@ -210,55 +210,7 @@ class SwitchLogScreen extends StatelessWidget {
       ),
     );
   }
-  Widget _buildFilterBar() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
 
-          _chip("Tất cả", true),
-          const SizedBox(width: 8),
-          _chip("Thao tác", false),
-          const SizedBox(width: 8),
-          _chip("Cảnh báo", false),
-          const SizedBox(width: 8),
-          _chip("Hệ thống", false),
-
-          const Spacer(),
-
-          const Icon(Icons.tune, size: 20)
-        ],
-      ),
-    );
-  }
-  Widget _chip(String text, bool selected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 6,
-      ),
-      decoration: BoxDecoration(
-        color: selected ? const Color(0xFF4DB6AC) : Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: selected ? const Color(0xFF4DB6AC) : Colors.grey.shade300,
-        ),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 13,
-          color: selected ? Colors.white : Colors.grey[700],
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
   Widget _buildLogItem(BreakerCommandModel log) {
 
     final isClose = log.isClose;
@@ -398,29 +350,6 @@ class SwitchLogScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-  String _mapStatus(String status) {
-    switch (status) {
-      case "SENT":
-      case "SUCCESS":
-        return "Thành công";
-      case "FAILED":
-        return "Thất bại";
-      default:
-        return "Đang xử lý";
-    }
-  }
-
-  Color _mapStatusColor(String status) {
-    switch (status) {
-      case "SENT":
-      case "SUCCESS":
-        return Colors.green;
-      case "FAILED":
-        return Colors.red;
-      default:
-        return Colors.orange;
-    }
   }
 }
 Map<String, List<BreakerCommandModel>> _groupLogsByDate(List<BreakerCommandModel> logs) {

@@ -105,16 +105,6 @@ class _ManagerWaterScreenState extends State<ManagerWaterScreen> {
     );
   }
 
-  Widget _buildBody({required int stationId, required int deviceIdFirst}) {
-    switch (indexPage) {
-      case 0:
-        return OverviewWater(deviceWater: deviceIdFirst, stationId: stationId);
-      case 1:
-        return DeviceWaterScreen(stationId: stationId);
-      default:
-        return const SizedBox();
-    }
-  }
 
   Widget _noDeviceWidget() {
     return Center(

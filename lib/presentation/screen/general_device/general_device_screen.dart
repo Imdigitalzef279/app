@@ -24,6 +24,7 @@ import 'analytics_overview/analytics_overview_screen.dart';
 import 'background/bloc/background_cubit.dart';
 import 'device_grid/device_grid_item.dart';
 import 'notification/notification_screen.dart';
+
 bool isTablet(BuildContext context) =>
     MediaQuery.of(context).size.width >= 600;
 Color getAdaptiveTextColor(String? bg) {

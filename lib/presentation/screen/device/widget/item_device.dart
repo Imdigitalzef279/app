@@ -7,11 +7,9 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/cbs_status.dart';
 import 'package:solar_energy/application/extensions/extensions.dart';
-import 'package:solar_energy/application/utils/navigation_utils.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/presentation/routes/route_name.dart';
 import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
-import 'package:solar_energy/presentation/screen/device/widget/content_dialog.dart';
 
 class ItemDevice extends StatefulWidget {
   const ItemDevice({super.key, required this.device});
@@ -40,15 +38,6 @@ class _ItemDeviceState extends State<ItemDevice> {
       default:
         return DeviceStatus.unknown;
     }
-  }
-
-  Future<void> _showMyDialog() async {
-    return showDialog<void>(
-      context: NavigatorUtils.currentContext,
-      builder: (context) => ContentDialog(
-        device: widget.device,
-      ),
-    );
   }
   Future<String?> _showPasswordDialog(BuildContext context) async {
     String password = "";

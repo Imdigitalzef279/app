@@ -1649,15 +1649,7 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
     );
   }
-  Color _getDynamicColor(double percent) {
-    if (percent < 0.5) {
-      return const Color(0xFF1ABC9C); // xanh
-    } else if (percent < 0.8) {
-      return const Color(0xFFFF9800); // cam
-    } else {
-      return const Color(0xFFE53935); // đỏ
-    }
-  }
+
   void _showInputDialog(BuildContext context,
       double current,
       String unit,

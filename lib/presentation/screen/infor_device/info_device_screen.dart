@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,12 +11,10 @@ import 'package:solar_energy/application/extensions/extensions.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/presentation/screen/device/bloc/device_cubit.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-
 import '../../widgets/password_dialog.dart';
-import '../statistical/bloc/statistical_cubit.dart';
 import '../statistical/estatictical/bloc/estatistical_cubit.dart';
 import '../statistical/estatictical/estatistical_screen.dart';
-import '../statistical/widget/detail_widget.dart';
+
 
 class InfoDeviceScreen extends StatefulWidget {
   const InfoDeviceScreen({super.key, required this.deviceResponse});

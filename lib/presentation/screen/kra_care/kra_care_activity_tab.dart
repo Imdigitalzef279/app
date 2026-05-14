@@ -11,7 +11,7 @@ class KraCareActivityTab extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
 
-          /// 🔥 DATE BAR
+          /// DATE BAR
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
@@ -22,7 +22,7 @@ class KraCareActivityTab extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// 🔥 TIMELINE
+          ///  TIMELINE
           Container(
             height: 80,
             decoration: BoxDecoration(
@@ -37,7 +37,7 @@ class KraCareActivityTab extends StatelessWidget {
           activityGrid(),
 
           SizedBox(height: 16),
-          /// 🔥 FALL ITEM
+          ///  FALL ITEM
           fallItem("assets/images/fall_demo.png", "4:14 PM"),
           fallItem("assets/images/fall_demo.png", "11:12 AM"),
         ],

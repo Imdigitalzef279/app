@@ -27,7 +27,7 @@ class _KraCareScreenState extends State<KraCareScreen> {
       body: Column(
         children: [
 
-          /// 🔥 HEADER CAMERA
+          ///  HEADER CAMERA
           Stack(
             children: [
 

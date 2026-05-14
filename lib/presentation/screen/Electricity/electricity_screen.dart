@@ -14,7 +14,6 @@ import '../../../application/constants/app_text_style.dart';
 import '../../../application/cubit/app_cubit.dart';
 
 
-
 class ElectricityScreen extends StatefulWidget {
   const ElectricityScreen({super.key, required this.project});
 
