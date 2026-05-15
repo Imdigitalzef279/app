@@ -564,14 +564,83 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   Widget buildCompareCards(
       List<EnergyReportResponse> data,
       ) {
-    final current = data.fold(
-      0.0,
-          (a, b) => a + (selectedChart == 0 ? b.p : b.epi),
-    );
+    final now = DateTime.now();
 
-    final previous = current * 0.82;
-    final previous2 = current * 0.74;
+    double today = 0;
+    double yesterday = 0;
+    double thisWeek = 0;
+    double lastWeek = 0;
+    double thisMonth = 0;
+    double lastMonth = 0;
+    double thisYear = 0;
+    double lastYear = 0;
 
+    final allData = context.read<AnalyticsCubit>().state.data;
+
+    for (final e in allData) {
+      final d = e.time;
+      final value = selectedChart == 0 ? e.p : e.epi;
+
+      // TODAY
+      if (d.year == now.year &&
+          d.month == now.month &&
+          d.day == now.day) {
+        today += value;
+      }
+
+      // YESTERDAY
+      final ytd = now.subtract(Duration(days: 1));
+
+      if (d.year == ytd.year &&
+          d.month == ytd.month &&
+          d.day == ytd.day) {
+        yesterday += value;
+      }
+
+      // THIS WEEK
+      final startThisWeek =
+      DateTime(now.year, now.month, now.day)
+          .subtract(Duration(days: now.weekday - 1));
+
+      if (d.isAfter(startThisWeek.subtract(Duration(seconds: 1)))) {
+        thisWeek += value;
+      }
+
+      // LAST WEEK
+      final startLastWeek =
+      startThisWeek.subtract(Duration(days: 7));
+
+      if (d.isAfter(startLastWeek.subtract(Duration(seconds: 1))) &&
+          d.isBefore(startThisWeek)) {
+        lastWeek += value;
+      }
+
+      // THIS MONTH
+      if (d.year == now.year &&
+          d.month == now.month) {
+        thisMonth += value;
+      }
+
+      // LAST MONTH
+      final prevMonth = now.month == 1 ? 12 : now.month - 1;
+      final prevMonthYear =
+      now.month == 1 ? now.year - 1 : now.year;
+
+      if (d.year == prevMonthYear &&
+          d.month == prevMonth) {
+        lastMonth += value;
+      }
+
+      // THIS YEAR
+      if (d.year == now.year) {
+        thisYear += value;
+      }
+
+      // LAST YEAR
+      if (d.year == now.year - 1) {
+        lastYear += value;
+      }
+    }
     String currentLabel1 = "";
     String previousLabel1 = "";
     String currentLabel2 = "";
@@ -615,8 +684,14 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         Expanded(
           child: _compareCard(
             title: currentLabel1,
-            value: current,
-            percent: 10.4,
+            value: selectedRange == ChartRange.day
+                ? today
+                : selectedRange == ChartRange.month
+                ? thisMonth
+                : thisYear,
+            percent: yesterday == 0
+                ? 0
+                : ((today - yesterday) / yesterday) * 100,
             color: Color(0xFF22C55E),
           ),
         ),
@@ -626,7 +701,11 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         Expanded(
           child: _compareCard(
             title: previousLabel1,
-            value: previous,
+            value: selectedRange == ChartRange.day
+                ? yesterday
+                : selectedRange == ChartRange.month
+                ? lastMonth
+                : lastYear,
             percent: null,
             color: Color(0xFF94A3B8),
           ),
@@ -637,8 +716,10 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         Expanded(
           child: _compareCard(
             title: currentLabel2,
-            value: current * 7,
-            percent: 22,
+            value: thisWeek,
+            percent: lastWeek == 0
+                ? 0
+                : ((thisWeek - lastWeek) / lastWeek) * 100,
             color: Color(0xFF3B82F6),
           ),
         ),
@@ -648,7 +729,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         Expanded(
           child: _compareCard(
             title: previousLabel2,
-            value: previous2 * 7,
+            value: lastWeek,
             percent: null,
             color: Color(0xFF94A3B8),
           ),
@@ -757,7 +838,46 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           (a, b) => a + (selectedChart == 0 ? b.p : b.epi),
     );
 
-    final previous = currentTotal * 0.82;
+    double previous = 0;
+
+    final now = DateTime.now();
+
+    for (final e in context.read<AnalyticsCubit>().state.data) {
+      final d = e.time;
+
+      final value =
+      selectedChart == 0 ? e.p : e.epi;
+
+      if (selectedRange == ChartRange.day) {
+        final yesterday =
+        now.subtract(Duration(days: 1));
+
+        if (d.year == yesterday.year &&
+            d.month == yesterday.month &&
+            d.day == yesterday.day) {
+          previous += value;
+        }
+      }
+
+      else if (selectedRange == ChartRange.month) {
+        final prevMonth =
+        now.month == 1 ? 12 : now.month - 1;
+
+        final prevYear =
+        now.month == 1 ? now.year - 1 : now.year;
+
+        if (d.year == prevYear &&
+            d.month == prevMonth) {
+          previous += value;
+        }
+      }
+
+      else {
+        if (d.year == now.year - 1) {
+          previous += value;
+        }
+      }
+    }
 
     final percent =
     previous == 0
@@ -927,15 +1047,20 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
   // ================= CHART =================
   Widget buildChart(List<EnergyReportResponse> data) {
-    final displayData = data.isEmpty
-        ? List.generate(24, (i) => EnergyReportResponse(
-      time: DateTime.now().copyWith(hour: i),
-      p: 0,
-      epi: 0,
-      ct: 0,
-      source: "system",
-    ))
-        : data;
+    if (data.isEmpty) {
+      return Container(
+        height: 240,
+        alignment: Alignment.center,
+        child: Text(
+          "Không có dữ liệu",
+          style: TextStyle(
+            color: Colors.grey,
+          ),
+        ),
+      );
+    }
+
+    final displayData = data;
     final rawValues = displayData.map<double>((e) {
       return selectedChart == 0 ? e.p : e.epi;
     }).toList();
@@ -1215,94 +1340,182 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       List<EnergyReportResponse> data,
       ChartRange range,
       ) {
+
     final now = DateTime.now();
 
     final filtered = data.where((e) {
+
       final d = e.time;
 
       switch (range) {
+
         case ChartRange.day:
-          return d.day == now.day &&
-              d.month == now.month &&
-              d.year == now.year;
+
+          final diff =
+              now.difference(
+                DateTime(d.year, d.month, d.day),
+              ).inDays;
+
+          return diff <= 2;
 
         case ChartRange.month:
-          return d.month == now.month && d.year == now.year;
+
+          final diffMonth =
+              (now.year - d.year) * 12 +
+                  (now.month - d.month);
+
+          return diffMonth <= 2;
 
         case ChartRange.year:
-          return d.year == now.year;
+
+          final diffYear =
+              now.year - d.year;
+
+          return diffYear <= 2;
 
         default:
           return true;
       }
+
     }).toList();
 
-    filtered.sort((a, b) => a.time.compareTo(b.time));
+    filtered.sort(
+          (a, b) => a.time.compareTo(b.time),
+    );
+
     return filtered;
   }
   Widget buildCompareYearChart(
       List<EnergyReportResponse> rawData,
       ) {
 
-    /// GROUP DATA THEO NĂM
-    Map<int, List<double>> yearlyData = {};
+    final now = DateTime.now();
 
-    for (final item in rawData) {
+    final Map<String, List<double>> groupedData = {};
 
-      final year = item.time.year;
-      final monthIndex = item.time.month - 1;
-
-      final value =
-      selectedChart == 0
-          ? item.p
-          : item.epi;
-
-      yearlyData.putIfAbsent(
-        year,
-            () => List.filled(12, 0),
-      );
-
-      yearlyData[year]![monthIndex] += value;
-    }
-
-    final years = yearlyData.entries
-        .where((e) {
-
-      return e.value.any((v) => v > 0);
-
-    })
-        .map((e) => e.key)
-        .toList()
-      ..sort();
-    final chartColors = [
+    List<String> legends = [];
+    List<Color> colors = [
       Color(0xFFD32F2F),
       Color(0xFF388E3C),
       Color(0xFF1976D2),
-      Color(0xFFF57C00),
-      Color(0xFF7B1FA2),
-      Color(0xFF00796B),
     ];
 
-    /// tìm max Y thật
+    int maxX = 0;
+
+    if (selectedRange == ChartRange.day) {
+
+      legends = ["Hôm nay", "Hôm qua", "2 ngày trước"];
+      maxX = 24;
+
+      groupedData["Hôm nay"] = List.filled(24, 0);
+      groupedData["Hôm qua"] = List.filled(24, 0);
+      groupedData["2 ngày trước"] = List.filled(24, 0);
+
+      for (final item in rawData) {
+
+        final value =
+        selectedChart == 0 ? item.p : item.epi;
+
+        final d = item.time;
+
+        final diff =
+            now.difference(DateTime(d.year, d.month, d.day)).inDays;
+
+        if (diff == 0) {
+          groupedData["Hôm nay"]![d.hour] += value;
+        }
+
+        else if (diff == 1) {
+          groupedData["Hôm qua"]![d.hour] += value;
+        }
+
+        else if (diff == 2) {
+          groupedData["2 ngày trước"]![d.hour] += value;
+        }
+      }
+    }
+
+    else if (selectedRange == ChartRange.month) {
+
+      legends = ["Tháng này", "Tháng trước", "2 tháng trước"];
+      maxX = 31;
+
+      groupedData["Tháng này"] = List.filled(31, 0);
+      groupedData["Tháng trước"] = List.filled(31, 0);
+      groupedData["2 tháng trước"] = List.filled(31, 0);
+
+      for (final item in rawData) {
+
+        final value =
+        selectedChart == 0 ? item.p : item.epi;
+
+        final d = item.time;
+
+        final diffMonth =
+            (now.year - d.year) * 12 + now.month - d.month;
+
+        if (diffMonth == 0) {
+          groupedData["Tháng này"]![d.day - 1] += value;
+        }
+
+        else if (diffMonth == 1) {
+          groupedData["Tháng trước"]![d.day - 1] += value;
+        }
+
+        else if (diffMonth == 2) {
+          groupedData["2 tháng trước"]![d.day - 1] += value;
+        }
+      }
+    }
+
+    else {
+
+      legends = ["Năm nay", "Năm trước", "2 năm trước"];
+      maxX = 12;
+
+      groupedData["Năm nay"] = List.filled(12, 0);
+      groupedData["Năm trước"] = List.filled(12, 0);
+      groupedData["2 năm trước"] = List.filled(12, 0);
+
+      for (final item in rawData) {
+
+        final value =
+        selectedChart == 0 ? item.p : item.epi;
+
+        final d = item.time;
+
+        final diffYear = now.year - d.year;
+
+        if (diffYear == 0) {
+          groupedData["Năm nay"]![d.month - 1] += value;
+        }
+
+        else if (diffYear == 1) {
+          groupedData["Năm trước"]![d.month - 1] += value;
+        }
+
+        else if (diffYear == 2) {
+          groupedData["2 năm trước"]![d.month - 1] += value;
+        }
+      }
+    }
+
     double maxY = 0;
 
-    for (final y in years) {
-      final max = yearlyData[y]!
-          .reduce((a, b) => a > b ? a : b);
-
-      if (max > maxY) {
-        maxY = max;
+    for (final list in groupedData.values) {
+      for (final v in list) {
+        if (v > maxY) {
+          maxY = v;
+        }
       }
     }
 
     return Column(
       children: [
 
-        /// LEGEND
         Wrap(
-          spacing: 14,
-          runSpacing: 8,
-          children: years.asMap().entries.map((e) {
+          spacing: 16,
+          children: legends.asMap().entries.map((e) {
 
             return Row(
               mainAxisSize: MainAxisSize.min,
@@ -1311,23 +1524,17 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 Container(
                   width: 10,
                   height: 10,
-                  decoration: BoxDecoration(
-                    color: chartColors[
-                    e.key % chartColors.length
-                    ],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+                  color: colors[e.key],
                 ),
 
                 SizedBox(width: 6),
 
                 Text(
-                  e.value.toString(),
+                  e.value,
                   style: TextStyle(fontSize: 12),
                 ),
               ],
             );
-
           }).toList(),
         ),
 
@@ -1337,64 +1544,35 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SizedBox(
-              width: math.max(
-                700,
-                  years.length * 12 * 28,
-              ),
-
+              width: maxX * 38,
               child: BarChart(
                 BarChartData(
 
-                  alignment: BarChartAlignment.spaceEvenly,
-
                   maxY: maxY * 1.2,
+
+                  alignment: BarChartAlignment.spaceAround,
 
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: maxY <= 0
-                        ? 1
-                        : maxY / 5,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: Colors.grey.withOpacity(0.12),
-                        strokeWidth: 1,
-                      );
-                    },
                   ),
 
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
+                  borderData: FlBorderData(show: false),
 
                   titlesData: FlTitlesData(
 
                     topTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: false,
-                      ),
+                      sideTitles: SideTitles(showTitles: false),
                     ),
 
                     rightTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: false,
-                      ),
+                      sideTitles: SideTitles(showTitles: false),
                     ),
 
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 42,
-                        getTitlesWidget: (value, meta) {
-
-                          return Text(
-                            value.toInt().toString(),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
+                        reservedSize: 40,
                       ),
                     ),
 
@@ -1403,46 +1581,35 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
 
-                          const months = [
-                            '1','2','3','4','5','6',
-                            '7','8','9','10','11','12'
-                          ];
+                          if (selectedRange == ChartRange.day) {
+                            return Text("${value.toInt()}h");
+                          }
 
-                          return Padding(
-                            padding: EdgeInsets.only(top: 8),
-                            child: Text(
-                              months[value.toInt()],
-                              style: TextStyle(fontSize: 11),
-                            ),
-                          );
+                          if (selectedRange == ChartRange.month) {
+                            return Text("${value.toInt() + 1}");
+                          }
+
+                          return Text("${value.toInt() + 1}");
                         },
                       ),
                     ),
                   ),
 
-                  barGroups: List.generate(12, (monthIndex) {
+                  barGroups: List.generate(maxX, (index) {
 
                     return BarChartGroupData(
-                      x: monthIndex,
-                      barsSpace: 5,
-                      barRods: years.asMap().entries.map((yearEntry) {
+                      x: index,
+                      barsSpace: 4,
 
-                        final yearIndex = yearEntry.key;
-                        final year = yearEntry.value;
+                      barRods: legends.asMap().entries.map((e) {
 
-                        final monthValues =
-                        yearlyData[year]!;
+                        final values =
+                        groupedData[e.value]!;
 
                         return BarChartRodData(
-
-                          toY: monthValues[monthIndex],
-
+                          toY: values[index],
                           width: 8,
-                          color: chartColors[
-                          yearIndex % chartColors.length
-                          ],
-
-
+                          color: colors[e.key],
                           borderRadius: BorderRadius.zero,
                         );
 
@@ -1556,7 +1723,9 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                                 SizedBox(
                                   height: 380,
-                                  child: buildCompareYearChart(state.data),
+                                  child: buildCompareYearChart(
+                                    context.read<AnalyticsCubit>().state.data,
+                                  ),
                                 ),
                               ],
 
