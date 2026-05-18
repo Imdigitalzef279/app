@@ -208,58 +208,58 @@ class $AssetsIconsGen {
 
   /// List of all assets
   List<SvgGenImage> get values => [
-        air,
-        allIconBold,
-        allIconLine,
-        apps,
-        arrowDownStrenght,
-        autoReply,
-        bacteria,
-        bacterium,
-        bell,
-        bellLine,
-        building,
-        chartArea,
-        chartAreaLine,
-        chatbotSpeechBubble,
-        checkCircleBold,
-        checkCircleLine,
-        clouds,
-        commentAlt,
-        computerSpeaker,
-        computerSpeakerLine,
-        dashboardPanel,
-        dashboardPanelLine,
-        exclamationBold,
-        exclamationLine,
-        faucet,
-        flaskGear,
-        flask,
-        guideAlt,
-        info,
-        infoLine,
-        messagesQuestion,
-        module,
-        nonDeviceDisconnected,
-        overview,
-        overviewLine,
-        phoneCall,
-        physics,
-        revenue,
-        savingElectric,
-        screenPlay,
-        search,
-        settings,
-        signOutAlt,
-        solarPanelSun,
-        square,
-        thunderstormSun6854078,
-        usdCircle,
-        usersAlt,
-        water,
-        wifiXmark,
-        wind
-      ];
+    air,
+    allIconBold,
+    allIconLine,
+    apps,
+    arrowDownStrenght,
+    autoReply,
+    bacteria,
+    bacterium,
+    bell,
+    bellLine,
+    building,
+    chartArea,
+    chartAreaLine,
+    chatbotSpeechBubble,
+    checkCircleBold,
+    checkCircleLine,
+    clouds,
+    commentAlt,
+    computerSpeaker,
+    computerSpeakerLine,
+    dashboardPanel,
+    dashboardPanelLine,
+    exclamationBold,
+    exclamationLine,
+    faucet,
+    flaskGear,
+    flask,
+    guideAlt,
+    info,
+    infoLine,
+    messagesQuestion,
+    module,
+    nonDeviceDisconnected,
+    overview,
+    overviewLine,
+    phoneCall,
+    physics,
+    revenue,
+    savingElectric,
+    screenPlay,
+    search,
+    settings,
+    signOutAlt,
+    solarPanelSun,
+    square,
+    thunderstormSun6854078,
+    usdCircle,
+    usersAlt,
+    water,
+    wifiXmark,
+    wind,
+  ];
 }
 
 class $AssetsImagesGen {
@@ -338,24 +338,24 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<dynamic> get values => [
-        animationLogin,
-        animation,
-        electricPole,
-        exclamationMark,
-        exclamation,
-        factory,
-        fallDemo,
-        logo,
-        mccb3p,
-        mm50h1p,
-        mm50h2p,
-        mm50h3p,
-        mm50h4p,
-        noise,
-        rcbo2p4p,
-        solarEnergy,
-        waterLottie
-      ];
+    animationLogin,
+    animation,
+    electricPole,
+    exclamationMark,
+    exclamation,
+    factory,
+    fallDemo,
+    logo,
+    mccb3p,
+    mm50h1p,
+    mm50h2p,
+    mm50h3p,
+    mm50h4p,
+    noise,
+    rcbo2p4p,
+    solarEnergy,
+    waterLottie,
+  ];
 }
 
 class $AssetsIconsIconsNewGen {
@@ -411,45 +411,48 @@ class $AssetsIconsIconsNewGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
-        iconCircuitBreaker,
-        iconDeviceManagement,
-        iconEnergyAnalytics,
-        iconEnergyManagement,
-        iconEnergyMeter,
-        iconEnergySaving,
-        iconEnvironment,
-        iconGateway,
-        iconHeatPump,
-        iconKraSmartSafety,
-        iconSmartBreaker,
-        iconWaterProtection
-      ];
+    iconCircuitBreaker,
+    iconDeviceManagement,
+    iconEnergyAnalytics,
+    iconEnergyManagement,
+    iconEnergyMeter,
+    iconEnergySaving,
+    iconEnvironment,
+    iconGateway,
+    iconHeatPump,
+    iconKraSmartSafety,
+    iconSmartBreaker,
+    iconWaterProtection,
+  ];
 }
 
 class $AssetsImagesAcrelGen {
   const $AssetsImagesAcrelGen();
 
   /// File path: assets/images/acrel/1446074178112364544_08557473-8d6a-46ec-96a2-a1c7ca71168e.webp
-  AssetGenImage get a1446074178112364544085574738d6a46ec96a2A1c7ca71168e =>
-      const AssetGenImage(
-          'assets/images/acrel/1446074178112364544_08557473-8d6a-46ec-96a2-a1c7ca71168e.webp');
+  AssetGenImage
+  get a1446074178112364544085574738d6a46ec96a2A1c7ca71168e => const AssetGenImage(
+    'assets/images/acrel/1446074178112364544_08557473-8d6a-46ec-96a2-a1c7ca71168e.webp',
+  );
 
   /// File path: assets/images/acrel/1446074178112364544_ab28e10d-d177-4106-b705-3bb6dd6644bb.webp
-  AssetGenImage get a1446074178112364544Ab28e10dD1774106B7053bb6dd6644bb =>
-      const AssetGenImage(
-          'assets/images/acrel/1446074178112364544_ab28e10d-d177-4106-b705-3bb6dd6644bb.webp');
+  AssetGenImage
+  get a1446074178112364544Ab28e10dD1774106B7053bb6dd6644bb => const AssetGenImage(
+    'assets/images/acrel/1446074178112364544_ab28e10d-d177-4106-b705-3bb6dd6644bb.webp',
+  );
 
   /// File path: assets/images/acrel/1446074178112364544_acfcfb40-6a2a-4da4-8739-567915c07d1d.webp
-  AssetGenImage get a1446074178112364544Acfcfb406a2a4da48739567915c07d1d =>
-      const AssetGenImage(
-          'assets/images/acrel/1446074178112364544_acfcfb40-6a2a-4da4-8739-567915c07d1d.webp');
+  AssetGenImage
+  get a1446074178112364544Acfcfb406a2a4da48739567915c07d1d => const AssetGenImage(
+    'assets/images/acrel/1446074178112364544_acfcfb40-6a2a-4da4-8739-567915c07d1d.webp',
+  );
 
   /// List of all assets
   List<AssetGenImage> get values => [
-        a1446074178112364544085574738d6a46ec96a2A1c7ca71168e,
-        a1446074178112364544Ab28e10dD1774106B7053bb6dd6644bb,
-        a1446074178112364544Acfcfb406a2a4da48739567915c07d1d
-      ];
+    a1446074178112364544085574738d6a46ec96a2A1c7ca71168e,
+    a1446074178112364544Ab28e10dD1774106B7053bb6dd6644bb,
+    a1446074178112364544Acfcfb406a2a4da48739567915c07d1d,
+  ];
 }
 
 class $AssetsImagesBackgroundsGen {
@@ -461,28 +464,32 @@ class $AssetsImagesBackgroundsGen {
 
   /// File path: assets/images/backgrounds/8machine-_-gCkv8mnmxm8-unsplash.jpg
   AssetGenImage get a8machineGCkv8mnmxm8Unsplash => const AssetGenImage(
-      'assets/images/backgrounds/8machine-_-gCkv8mnmxm8-unsplash.jpg');
+    'assets/images/backgrounds/8machine-_-gCkv8mnmxm8-unsplash.jpg',
+  );
 
   /// File path: assets/images/backgrounds/brendan-sapp-voobNbqCQHY-unsplash.jpg
   AssetGenImage get brendanSappVoobNbqCQHYUnsplash => const AssetGenImage(
-      'assets/images/backgrounds/brendan-sapp-voobNbqCQHY-unsplash.jpg');
+    'assets/images/backgrounds/brendan-sapp-voobNbqCQHY-unsplash.jpg',
+  );
 
   /// File path: assets/images/backgrounds/diego-ph-wyeapf7Gy-U-unsplash.jpg
   AssetGenImage get diegoPhWyeapf7GyUUnsplash => const AssetGenImage(
-      'assets/images/backgrounds/diego-ph-wyeapf7Gy-U-unsplash.jpg');
+    'assets/images/backgrounds/diego-ph-wyeapf7Gy-U-unsplash.jpg',
+  );
 
   /// File path: assets/images/backgrounds/itsiken-hs8bzEFVffc-unsplash.jpg
   AssetGenImage get itsikenHs8bzEFVffcUnsplash => const AssetGenImage(
-      'assets/images/backgrounds/itsiken-hs8bzEFVffc-unsplash.jpg');
+    'assets/images/backgrounds/itsiken-hs8bzEFVffc-unsplash.jpg',
+  );
 
   /// List of all assets
   List<AssetGenImage> get values => [
-        a36804,
-        a8machineGCkv8mnmxm8Unsplash,
-        brendanSappVoobNbqCQHYUnsplash,
-        diegoPhWyeapf7GyUUnsplash,
-        itsikenHs8bzEFVffcUnsplash
-      ];
+    a36804,
+    a8machineGCkv8mnmxm8Unsplash,
+    brendanSappVoobNbqCQHYUnsplash,
+    diegoPhWyeapf7GyUUnsplash,
+    itsikenHs8bzEFVffcUnsplash,
+  ];
 }
 
 class $AssetsImagesMatisGen {
@@ -513,7 +520,7 @@ class $AssetsImagesMatisGen {
 }
 
 class Assets {
-  Assets._();
+  const Assets._();
 
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
@@ -521,11 +528,7 @@ class Assets {
 }
 
 class AssetGenImage {
-  const AssetGenImage(
-    this._assetName, {
-    this.size,
-    this.flavors = const {},
-  });
+  const AssetGenImage(this._assetName, {this.size, this.flavors = const {}});
 
   final String _assetName;
 
@@ -553,7 +556,7 @@ class AssetGenImage {
     bool gaplessPlayback = true,
     bool isAntiAlias = false,
     String? package,
-    FilterQuality filterQuality = FilterQuality.low,
+    FilterQuality filterQuality = FilterQuality.medium,
     int? cacheWidth,
     int? cacheHeight,
   }) {
@@ -585,15 +588,8 @@ class AssetGenImage {
     );
   }
 
-  ImageProvider provider({
-    AssetBundle? bundle,
-    String? package,
-  }) {
-    return AssetImage(
-      _assetName,
-      bundle: bundle,
-      package: package,
-    );
+  ImageProvider provider({AssetBundle? bundle, String? package}) {
+    return AssetImage(_assetName, bundle: bundle, package: package);
   }
 
   String get path => _assetName;
@@ -602,17 +598,11 @@ class AssetGenImage {
 }
 
 class SvgGenImage {
-  const SvgGenImage(
-    this._assetName, {
-    this.size,
-    this.flavors = const {},
-  }) : _isVecFormat = false;
+  const SvgGenImage(this._assetName, {this.size, this.flavors = const {}})
+    : _isVecFormat = false;
 
-  const SvgGenImage.vec(
-    this._assetName, {
-    this.size,
-    this.flavors = const {},
-  }) : _isVecFormat = true;
+  const SvgGenImage.vec(this._assetName, {this.size, this.flavors = const {}})
+    : _isVecFormat = true;
 
   final String _assetName;
   final Size? size;
@@ -666,7 +656,8 @@ class SvgGenImage {
       placeholderBuilder: placeholderBuilder,
       semanticsLabel: semanticsLabel,
       excludeFromSemantics: excludeFromSemantics,
-      colorFilter: colorFilter ??
+      colorFilter:
+          colorFilter ??
           (color == null ? null : ColorFilter.mode(color, colorBlendMode)),
       clipBehavior: clipBehavior,
       cacheColorFilter: cacheColorFilter,

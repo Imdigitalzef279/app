@@ -24,7 +24,7 @@ mixin _$AlarmConfigResponse {
   String get name => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
 
-  /// QUAN TRỌNG
+  ///  QUAN TRỌNG
   String get logParam => throw _privateConstructorUsedError;
   String get queryType => throw _privateConstructorUsedError;
   String get queryCondition => throw _privateConstructorUsedError;
@@ -195,7 +195,7 @@ class _$AlarmConfigResponseImpl implements _AlarmConfigResponse {
   @JsonKey()
   final String description;
 
-  /// 🔥 QUAN TRỌNG
+  ///  QUAN TRỌNG
   @override
   @JsonKey()
   final String logParam;
@@ -269,7 +269,7 @@ abstract class _AlarmConfigResponse implements AlarmConfigResponse {
   @override
   String get description;
 
-  /// 🔥 QUAN TRỌNG
+  ///  QUAN TRỌNG
   @override
   String get logParam;
   @override
