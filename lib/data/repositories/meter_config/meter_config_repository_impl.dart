@@ -8,8 +8,19 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
   final _api = GetIt.instance<ApiClient>();
 
   @override
-  Future<List<MeterConfigResponse>> getConfigs(int meterId) {
-    return _api.getMeterConfigByMeterId(meterId);
+  Future<List<MeterConfigResponse>> getConfigs(
+      int meterId,
+      ) async {
+    final res =
+        await _api.getMeterConfigByMeterId(meterId);
+
+    final items = res["items"] as List? ?? [];
+
+    return items
+        .map(
+          (e) => MeterConfigResponse.fromJson(e),
+    )
+        .toList();
   }
 
   @override
@@ -34,20 +45,71 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
     }
   }
   @override
-  Future<void> saveConfigs(List<MeterConfigRequest> configs) async {
-    print("====== POST LIST CONFIG ======");
+  @override
+  Future<void> saveConfigs(
+      List<MeterConfigRequest> configs,
+      ) async {
+
+    print("====== SAVE CONFIGS ======");
 
     try {
+
+      /// load config hiện tại
+      final currentConfigs =
+      await getConfigs(configs.first.meterId);
+
       for (final config in configs) {
+
         print("BODY: ${config.toJson()}");
-        await _api.createMeterConfig(config);
+        print("CURRENT CONFIGS:");
+
+        for (final c in currentConfigs) {
+          print("${c.id} - ${c.configKey}");
+        }
+        /// tìm config đã tồn tại
+        final exist = currentConfigs.where(
+              (e) =>
+
+          e.configKey
+              .trim()
+              .toLowerCase()
+
+              ==
+
+              config.configKey
+                  .trim()
+                  .toLowerCase(),
+        );
+
+        /// UPDATE
+        if (exist.isNotEmpty) {
+
+          final old = exist.first;
+
+          await _api.updateMeterConfig(
+            old.id,
+            config,
+          );
+
+          print("UPDATED: ${config.configKey}");
+        }
+
+        /// CREATE
+        else {
+
+          await _api.createMeterConfig(config);
+
+          print("CREATED: ${config.configKey}");
+        }
       }
 
-      print("====== RESPONSE SUCCESS ======");
+      print("====== SAVE DONE ======");
 
     } catch (e) {
-      print("====== RESPONSE ERROR ======");
+
+      print("====== SAVE ERROR ======");
       print(e);
+
       rethrow;
     }
   }

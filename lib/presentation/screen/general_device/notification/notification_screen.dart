@@ -25,44 +25,33 @@ class NotificationScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Thông báo"),
         ),
-        body: FutureBuilder<List<NotificationItem>>(
-          future: loadLocalNotifications(),
-          builder: (context, snapshot) {
-            final local = snapshot.data ?? [];
+        body: BlocBuilder<AlarmCubit, List<AlarmResponse>>(
+          builder: (context, alarms) {
 
-            return BlocBuilder<AlarmCubit, List<AlarmResponse>>(
-              builder: (context, alarms) {
-                // convert API → NotificationItem
-                final apiList = alarms.map((e) =>
-                    NotificationItem(
-                      title: e.deviceName,
-                      message: e.message,
-                      time: DateTime.now(),
-                      isAlert: e.status == 1,
-                    )).toList();
+            final apiList = alarms.map(
+                  (e) => NotificationItem(
+                    title: e.deviceName,
+                    message: e.reason.isNotEmpty
+                        ? e.reason
+                        : e.message,
 
-                // merge
-                var all = [
-                  ...apiList,
-                  ...local,
-                ];
+                    time: e.time,
+                isAlert: e.status == 1,
+              ),
+            ).toList();
 
+            apiList.sort((a, b) => b.time.compareTo(a.time));
 
-                all.sort((a, b) => b.time.compareTo(a.time));
-                all = all.toSet().toList();
-                final display = all.take(20).toList();
-                if (display.isEmpty) {
-                  return const Center(
-                    child: Text("Không có thông báo"),
-                  );
-                }
+            if (apiList.isEmpty) {
+              return const Center(
+                child: Text("Không có thông báo"),
+              );
+            }
 
-                return ListView.builder(
-                  itemCount: display.length,
-                  itemBuilder: (context, index) {
-                    return _itemNew(display[index]);
-                  },
-                );
+            return ListView.builder(
+              itemCount: apiList.length,
+              itemBuilder: (context, index) {
+                return _itemNew(apiList[index]);
               },
             );
           },
@@ -71,22 +60,22 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  Future<List<NotificationItem>> loadLocalNotifications() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final data = prefs.getString("local_notifications");
-    if (data == null) return [];
-
-    final list = jsonDecode(data) as List;
-
-    return list.map((e) =>
-        NotificationItem(
-          title: e["title"],
-          message: e["message"],
-          time: DateTime.parse(e["time"]),
-          isAlert: e["isAlert"],
-        )).toList();
-  }
+  // Future<List<NotificationItem>> loadLocalNotifications() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //
+  //   final data = prefs.getString("local_notifications");
+  //   if (data == null) return [];
+  //
+  //   final list = jsonDecode(data) as List;
+  //
+  //   return list.map((e) =>
+  //       NotificationItem(
+  //         title: e["title"],
+  //         message: e["message"],
+  //         time: DateTime.parse(e["time"]),
+  //         isAlert: e["isAlert"],
+  //       )).toList();
+  // }
 
   /// ITEM UI
   Widget _itemNew(NotificationItem item) {

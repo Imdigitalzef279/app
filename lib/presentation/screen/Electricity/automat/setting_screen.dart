@@ -41,7 +41,7 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  Timer? _timer;
+  // Timer? _timer;
   String pricingType = "tiered";
   bool showPricingDetail = false;
   String userRole = "user"; // admin / manager / user
@@ -165,34 +165,20 @@ class _SettingScreenState extends State<SettingScreen> {
     if (value < 100) return "Nguy hiểm";
     return "Nguy cơ ngừng tim";
   }
-  void checkPowerAlert() {
-    print("👉 checkOverEnergy CALLED");
-
-    if (!enableOverPower) {
-      print("❌ OverPower OFF");
-      return;
-    }
-    checkOverEnergy();
-  }
+  // void checkPowerAlert() {
+  //   print("👉 checkOverEnergy CALLED");
+  //
+  //   if (!enableOverPower) {
+  //     print("❌ OverPower OFF");
+  //     return;
+  //   }
+  //   checkOverEnergy();
+  // }
   @override
   void initState() {
     super.initState();
 
-    print("🔥 INIT STATE");
-
     loadAll();
-
-    // chạy ngay
-    Future.delayed(Duration(seconds: 1), () {
-      print("🚀 FIRST RUN");
-      checkOverEnergy();
-    });
-
-    // timer
-    _timer = Timer.periodic(Duration(seconds: 10), (t) {
-      print("⏱ TIMER RUN");
-      checkOverEnergy();
-    });
   }
   Future<List<EnergyReportResponse>> loadEnergyData() async {
     final cubit = context.read<AnalyticsCubit>();
@@ -205,114 +191,114 @@ class _SettingScreenState extends State<SettingScreen> {
 
     return cubit.state.data;
   }
-  Future<void> checkOverEnergy() async {
-    if (!enableOverPower) {
-      print("❌ OverPower OFF");
-      return;
-    }
-
-    print("🚀 CHECK OVER ENERGY");
-    print("👉 Type: $energyType");
-    print("👉 Threshold: $energyThreshold kWh");
-
-    final data = await loadEnergyData();
-
-    print("📊 Data length: ${data.length}");
-
-    if (data.isEmpty) {
-      print("❌ No data");
-      return;
-    }
-
-    final total = data.fold(0.0, (a, b) => a + b.epi);
-
-    print("TOTAL ENERGY: $total kWh");
-
-    if (total > energyThreshold) {
-
-      /// tránh spam mỗi 10s
-      if (!hasSentOverEnergyAlert) {
-
-        hasSentOverEnergyAlert = true;
-
-        print("🔥 VƯỢT NGƯỠNG");
-
-        /// lưu notification local
-        await saveLocalNotification(
-          title: widget.device.name ?? "Thiết bị",
-          message:
-          "⚠ Điện năng vượt ngưỡng "
-              "$energyThreshold kWh ($energyType)",
-        );
-
-        /// snackbar app
-        if (notifyApp && mounted) {
-
-          print("📢 SHOW ALERT");
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                "⚠ Điện năng vượt ngưỡng",
-              ),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
-
-        /// auto cut
-        if (autoCut) {
-
-          print("🔌 AUTO CUT DEVICE");
-
-          await sendOffCommand();
-
-          /// log thêm
-          await saveLocalNotification(
-            title: widget.device.name ?? "Thiết bị",
-            message:
-            "🔌 Thiết bị đã tự động ngắt",
-          );
-        }
-      }
-
-    } else {
-
-      /// reset để lần sau báo lại
-      hasSentOverEnergyAlert = false;
-
-      print("✅ OK - chưa vượt");
-    }
-  }
-  Future<void> saveLocalNotification({
-    required String title,
-    required String message,
-    bool isAlert = true,
-  }) async {
-
-    final prefs = await SharedPreferences.getInstance();
-
-    final oldData =
-    prefs.getString("local_notifications");
-
-    List list = [];
-
-    if (oldData != null) {
-      list = jsonDecode(oldData);
-    }
-
-    list.insert(0, {
-      "title": title,
-      "message": message,
-      "time": DateTime.now().toIso8601String(),
-      "isAlert": isAlert,
-    });
-
-    await prefs.setString(
-      "local_notifications",
-      jsonEncode(list),
-    );
-  }
+  // Future<void> checkOverEnergy() async {
+  //   if (!enableOverPower) {
+  //     print("❌ OverPower OFF");
+  //     return;
+  //   }
+  //
+  //   print("🚀 CHECK OVER ENERGY");
+  //   print("👉 Type: $energyType");
+  //   print("👉 Threshold: $energyThreshold kWh");
+  //
+  //   final data = await loadEnergyData();
+  //
+  //   print("📊 Data length: ${data.length}");
+  //
+  //   if (data.isEmpty) {
+  //     print("❌ No data");
+  //     return;
+  //   }
+  //
+  //   final total = data.fold(0.0, (a, b) => a + b.epi);
+  //
+  //   print("TOTAL ENERGY: $total kWh");
+  //
+  //   if (total > energyThreshold) {
+  //
+  //     /// tránh spam mỗi 10s
+  //     if (!hasSentOverEnergyAlert) {
+  //
+  //       hasSentOverEnergyAlert = true;
+  //
+  //       print("🔥 VƯỢT NGƯỠNG");
+  //
+  //       /// lưu notification local
+  //       await saveLocalNotification(
+  //         title: widget.device.name ?? "Thiết bị",
+  //         message:
+  //         "⚠ Điện năng vượt ngưỡng "
+  //             "$energyThreshold kWh ($energyType)",
+  //       );
+  //
+  //       /// snackbar app
+  //       if (notifyApp && mounted) {
+  //
+  //         print("📢 SHOW ALERT");
+  //
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(
+  //             content: Text(
+  //               "⚠ Điện năng vượt ngưỡng",
+  //             ),
+  //             backgroundColor: Colors.orange,
+  //           ),
+  //         );
+  //       }
+  //
+  //       /// auto cut
+  //       if (autoCut) {
+  //
+  //         print("🔌 AUTO CUT DEVICE");
+  //
+  //         await sendOffCommand();
+  //
+  //         /// log thêm
+  //         await saveLocalNotification(
+  //           title: widget.device.name ?? "Thiết bị",
+  //           message:
+  //           "🔌 Thiết bị đã tự động ngắt",
+  //         );
+  //       }
+  //     }
+  //
+  //   } else {
+  //
+  //     /// reset để lần sau báo lại
+  //     hasSentOverEnergyAlert = false;
+  //
+  //     print("✅ OK - chưa vượt");
+  //   }
+  // }
+  // Future<void> saveLocalNotification({
+  //   required String title,
+  //   required String message,
+  //   bool isAlert = true,
+  // }) async {
+  //
+  //   final prefs = await SharedPreferences.getInstance();
+  //
+  //   final oldData =
+  //   prefs.getString("local_notifications");
+  //
+  //   List list = [];
+  //
+  //   if (oldData != null) {
+  //     list = jsonDecode(oldData);
+  //   }
+  //
+  //   list.insert(0, {
+  //     "title": title,
+  //     "message": message,
+  //     "time": DateTime.now().toIso8601String(),
+  //     "isAlert": isAlert,
+  //   });
+  //
+  //   await prefs.setString(
+  //     "local_notifications",
+  //     jsonEncode(list),
+  //   );
+  // }
   Future<void> sendOffCommand() async {
     final api = GetIt.instance<ApiClient>();
 
@@ -337,7 +323,6 @@ class _SettingScreenState extends State<SettingScreen> {
   }
   @override
   void dispose() {
-    _timer?.cancel();
     super.dispose();
   }
   Future<void> loadThreshold() async {
@@ -521,10 +506,48 @@ class _SettingScreenState extends State<SettingScreen> {
       isLoading = false;
     });
   }
+  String? validateConfig() {
 
+    if (underVoltage >= overVoltage) {
+      return "Thấp áp phải nhỏ hơn quá áp";
+    }
+
+    if (overCurrent <= 0) {
+      return "Quá dòng không hợp lệ";
+    }
+
+    if (leakageCurrent < 0) {
+      return "Dòng rò không hợp lệ";
+    }
+
+    if (overTemperature < 45) {
+      return "Nhiệt độ quá thấp";
+    }
+
+    if (enableOverPower && overPower <= 0) {
+      return "Ngưỡng điện năng không hợp lệ";
+    }
+
+    return null;
+  }
   // ================= SAVE CONFIG =================
 
   Future<void> saveConfig() async {
+
+    final error = validateConfig();
+
+    if (error != null) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.orange,
+        ),
+      );
+
+      return;
+    }
+
     try {
       final configs = <MeterConfigRequest>[
         MeterConfigRequest(
@@ -606,23 +629,45 @@ class _SettingScreenState extends State<SettingScreen> {
       final ok = await sendProtectionSetting();
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("pricing_type", pricingType);
-      if (mounted) {
+      if (!mounted) return;
+
+      if (ok) {
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(ok ? "Lưu thành công" : "Thiết bị không phản hồi"),
-            backgroundColor: ok ? Colors.green : Colors.red,
+          const SnackBar(
+            content: Text("Lưu cài đặt thành công"),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+      } else {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Thiết bị không phản hồi.\n"
+                  "Kiểm tra gateway hoặc kết nối điện.",
+            ),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
           ),
         );
       }
 
-    } catch (e) {
-      debugPrint("Save error: $e");
+    } catch (e, s) {
+
+      debugPrint("SAVE ERROR: $e");
+      debugPrint("$s");
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Lưu thất bại"),
+          SnackBar(
+            content: const Text(
+              "Không thể lưu cài đặt.\n"
+                  "Vui lòng thử lại.",
+            ),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -959,9 +1004,9 @@ class _SettingScreenState extends State<SettingScreen> {
                         }
                       });
 
-                      if (v) {
-                        checkOverEnergy();
-                      }
+                      // if (v) {
+                      //   checkOverEnergy();
+                      // }
                     },
                   ),
 
@@ -1744,19 +1789,23 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                 ),
 
-                SizedBox(
-                  width: 100,
-                  child: TextFormField(
-                    initialValue: e["price"].toString(),
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      suffixText: "đ",
-                      border: OutlineInputBorder(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey.shade300,
                     ),
-                    onChanged: (v) {
-                      e["price"] = double.tryParse(v) ?? 0;
-                    },
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey.shade100,
+                  ),
+                  child: Text(
+                    "${e["price"]} đ",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -1779,6 +1828,11 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
   Widget _buildTouItem(String title, String key) {
+
+    final canEdit =
+        pricingType == "time_of_use" &&
+            userRole == "admin";
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(10),
@@ -1788,6 +1842,7 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
       child: Row(
         children: [
+
           Expanded(
             child: Text(
               title,
@@ -1796,18 +1851,49 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
 
           SizedBox(
-            width: 100,
-            child: TextFormField(
-              initialValue: touPrices[key]!.toStringAsFixed(0),
+            width: 110,
+
+            child: canEdit
+
+                ? TextFormField(
+              initialValue:
+              touPrices[key]!.toStringAsFixed(0),
+
               keyboardType: TextInputType.number,
+
               decoration: const InputDecoration(
                 isDense: true,
                 suffixText: "đ",
                 border: OutlineInputBorder(),
               ),
+
               onChanged: (v) {
-                touPrices[key] = double.tryParse(v) ?? 0;
+
+                touPrices[key] =
+                    double.tryParse(v) ?? 0;
+
+                markChanged();
               },
+            )
+
+                : Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey.shade300,
+                ),
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey.shade100,
+              ),
+              child: Text(
+                "${touPrices[key]!.toStringAsFixed(0)} đ",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ],

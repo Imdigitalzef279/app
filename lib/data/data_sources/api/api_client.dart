@@ -142,8 +142,12 @@ abstract class ApiClient {
       );
   // ================= METER CONFIG =================
 
-  @GET('api/app/meter-config/by-meter-id/{meterId}')
-  Future<List<MeterConfigResponse>> getMeterConfigByMeterId(
+  // @GET('api/app/meter-config/by-meter-id/{meterId}')
+  // Future<List<MeterConfigResponse>> getMeterConfigByMeterId(
+  //     @Path('meterId') int meterId,
+  //     );
+  @GET('/api/app/meter-config/by-meter-id/{meterId}')
+  Future<Map<String, dynamic>> getMeterConfigByMeterId(
       @Path('meterId') int meterId,
       );
   // ================= ELECTRIC REPORT =================
@@ -178,6 +182,12 @@ abstract class ApiClient {
   Future<MeterConfigResponse> createMeterConfig(
       @Body() MeterConfigRequest request,
       );
+  @PUT('api/app/meter-config/{id}')
+  Future<MeterConfigResponse> updateMeterConfig(
+      @Path('id') int id,
+      @Body() MeterConfigRequest request,
+      );
+
   // ================= Phân tích nang luong =================
 
   @GET('api/app/alarm-config')
