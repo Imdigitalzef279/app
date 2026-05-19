@@ -11,16 +11,9 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
   Future<List<MeterConfigResponse>> getConfigs(
       int meterId,
       ) async {
-    final res =
-        await _api.getMeterConfigByMeterId(meterId);
+    final res = await _api.getMeterConfigByMeterId(meterId);
 
-    final items = res["items"] as List? ?? [];
-
-    return items
-        .map(
-          (e) => MeterConfigResponse.fromJson(e),
-    )
-        .toList();
+    return res;
   }
 
   @override

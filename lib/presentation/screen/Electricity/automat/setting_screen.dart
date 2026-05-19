@@ -41,7 +41,8 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  // Timer? _timer;
+  Timer? _timer;
+  bool isTripped = false;
   String pricingType = "tiered";
   bool showPricingDetail = false;
   String userRole = "user"; // admin / manager / user
@@ -179,6 +180,8 @@ class _SettingScreenState extends State<SettingScreen> {
     super.initState();
 
     loadAll();
+
+    startProtectionMonitor();
   }
   Future<List<EnergyReportResponse>> loadEnergyData() async {
     final cubit = context.read<AnalyticsCubit>();
@@ -323,6 +326,9 @@ class _SettingScreenState extends State<SettingScreen> {
   }
   @override
   void dispose() {
+
+    _timer?.cancel();
+
     super.dispose();
   }
   Future<void> loadThreshold() async {
@@ -334,7 +340,7 @@ class _SettingScreenState extends State<SettingScreen> {
       minMap.clear();
       maxMap.clear();
 
-      for (var e in res['items']) {
+      for (var e in res.data['items'])  {
         final param = mapParam(e['logParam']);
         final type = e['queryType'];
         final condition = e['queryCondition'];
@@ -440,6 +446,128 @@ class _SettingScreenState extends State<SettingScreen> {
       loadConfig(),
       loadThreshold(),
     ]);
+  }
+  void startProtectionMonitor() {
+
+    _timer?.cancel();
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 5),
+          (_) async {
+
+        await checkProtection();
+      },
+    );
+  }
+  Future<void> checkProtection() async {
+
+    try {
+
+      final api = GetIt.instance<ApiClient>();
+
+      /// API realtime của device
+      final data = await api.getTopLogMeter(
+        widget.device.id,
+      );
+
+      final current =
+          double.tryParse(data.paramIa) ?? 0;
+
+      final voltage =
+          double.tryParse(data.paramUa) ?? 0;
+
+      /// hiện chưa có leakage thật
+      final leakage = 0.0;
+
+      /// hiện chưa có nhiệt độ thật
+      final temperature = 0.0;
+
+      /// ===== QUÁ DÒNG =====
+      if (current > overCurrent) {
+
+        await triggerProtection(
+          "Quá dòng: ${current.toStringAsFixed(1)}A",
+        );
+
+        return;
+      }
+
+      /// ===== QUÁ ÁP =====
+      if (voltage > overVoltage) {
+
+        await triggerProtection(
+          "Quá áp: ${voltage.toStringAsFixed(0)}V",
+        );
+
+        return;
+      }
+
+      /// ===== THẤP ÁP =====
+      if (voltage < underVoltage) {
+
+        await triggerProtection(
+          "Thấp áp: ${voltage.toStringAsFixed(0)}V",
+        );
+
+        return;
+      }
+
+      /// ===== DÒNG RÒ =====
+      if (leakage > leakageCurrent) {
+
+        await triggerProtection(
+          "Dòng rò: ${leakage.toStringAsFixed(0)}mA",
+        );
+
+        return;
+      }
+
+      /// ===== QUÁ NHIỆT =====
+      if (temperature > overTemperature) {
+
+        await triggerProtection(
+          "Quá nhiệt: ${temperature.toStringAsFixed(0)}°C",
+        );
+
+        return;
+      }
+
+      /// reset nếu đã ổn
+      isTripped = false;
+
+    } catch (e) {
+
+      debugPrint("CHECK PROTECTION ERROR: $e");
+    }
+  }
+  Future<void> triggerProtection(
+      String reason,
+      ) async {
+
+    /// tránh spam
+    if (isTripped) return;
+
+    isTripped = true;
+
+    /// auto off
+    await sendOffCommand();
+
+    /// snackbar
+    if (mounted) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "⚠ $reason\nThiết bị đã tự động ngắt",
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+
+    /// log
+    debugPrint("TRIPPED: $reason");
   }
 
   Future<void> loadConfig() async {
