@@ -323,8 +323,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
     final request = CbsMeterRequest(
       gatewaySn: widget.device.gatewayNumber ?? '',
-      breakerSn: widget.device.breakerSn,
-        addr: addr,
+      breakerSn: widget.device.code,
+      addr: addr,
       createdBy: "app",
       commandValue: jsonEncode(command),
       isForce: true,
@@ -1682,7 +1682,9 @@ class _SettingScreenState extends State<SettingScreen> {
       final api = GetIt.instance<ApiClient>();
 
       final addr =
-          widget.device.realtimeLog?.addr ?? "";
+          widget.device.realtimeLog?.addr ??
+              widget.device.serialNumber ??
+              "";
 
       final command = {
         "method": "operate",
@@ -1694,9 +1696,9 @@ class _SettingScreenState extends State<SettingScreen> {
 
 
       final request = CbsMeterRequest(
-        gatewaySn: widget.device.gatewaySn,
-        breakerSn: widget.device.breakerSn,
-          addr: addr,
+        gatewaySn: widget.device.gatewayNumber ?? '',
+        breakerSn: widget.device.code,
+        addr: addr,
         createdBy: "app",
         commandValue: jsonEncode(command),
         isForce: true,
