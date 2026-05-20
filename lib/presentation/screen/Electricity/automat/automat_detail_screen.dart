@@ -137,21 +137,24 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
   List getDisplayData(List chartData) {
     switch (_selectedRange) {
+
+    /// 1D -> 24 giờ
       case ChartRange.day:
         return chartData.length > 24
             ? chartData.sublist(chartData.length - 24)
             : chartData;
 
+    /// 7D -> 7 ngày
       case ChartRange.week:
         return chartData.length > 7
             ? chartData.sublist(chartData.length - 7)
             : chartData;
 
+    /// 1M -> tất cả ngày trong tháng
       case ChartRange.month:
-        return chartData.length > 30
-            ? chartData.sublist(chartData.length - 30)
-            : chartData;
+        return chartData;
 
+    /// 1Y -> 12 tháng
       case ChartRange.year:
         return chartData.length > 12
             ? chartData.sublist(chartData.length - 12)
@@ -963,18 +966,25 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   String timeLabel;
 
                   switch (_selectedRange) {
+
                     case ChartRange.day:
                       timeLabel = DateFormat("HH:mm").format(time);
-                      break;
+
+                  /// 7D
                     case ChartRange.week:
-                      timeLabel = DateFormat("EEE dd/MM", "vi").format(time);
+                      timeLabel  = DateFormat("EEE", "vi").format(time);
                       break;
+
+                  /// 1M
                     case ChartRange.month:
-                      timeLabel = DateFormat("dd/MM").format(time);
+                      timeLabel = DateFormat("dd").format(time);
                       break;
+
+                  /// 1Y
                     case ChartRange.year:
-                      timeLabel = DateFormat("MM/yyyy").format(time);
+                      timeLabel = DateFormat("MM").format(time);
                       break;
+
                     default:
                       timeLabel = "";
                   }
@@ -1128,7 +1138,7 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   Widget _buildLineChart(List chartData, double maxValue) {
 
     final data = getDisplayData(chartData);
-
+    String timeLabel;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: BouncingScrollPhysics(),
@@ -1157,18 +1167,25 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     String timeLabel;
 
                     switch (_selectedRange) {
+
                       case ChartRange.day:
                         timeLabel = DateFormat("HH:mm").format(time);
-                        break;
+
+                    /// 7D
                       case ChartRange.week:
-                        timeLabel = DateFormat("EEE dd/MM", "vi").format(time);
+                        timeLabel = DateFormat("EEE", "vi").format(time);
                         break;
+
+                    /// 1M
                       case ChartRange.month:
-                        timeLabel = DateFormat("dd/MM").format(time);
+                        timeLabel = DateFormat("dd").format(time);
                         break;
+
+                    /// 1Y
                       case ChartRange.year:
-                        timeLabel = DateFormat("MM/yyyy").format(time);
+                        timeLabel = DateFormat("MM").format(time);
                         break;
+
                       default:
                         timeLabel = "";
                     }
