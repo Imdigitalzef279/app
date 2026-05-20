@@ -14,6 +14,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 bool isTablet(BuildContext context) =>
     MediaQuery.of(context).size.width >= 600;
+bool autoCutOverCurrent = false;
+bool autoCutOverVoltage = false;
+bool autoCutUnderVoltage = false;
+bool autoCutLeakage = false;
+bool autoCutTemperature = false;
 Map<String, double> minMap = {};
 Map<String, double> maxMap = {};
 Map<String, double> deviceOverrideMap = {};
@@ -314,7 +319,7 @@ class _SettingScreenState extends State<SettingScreen> {
     };
 
     final request = CbsMeterRequest(
-      gatewaySn: widget.device.gatewaySn,
+      gatewaySn: widget.device.gatewayNumber ?? '',
       breakerSn: widget.device.breakerSn,
       addr: "1_1",
       createdBy: "app",
@@ -471,11 +476,14 @@ class _SettingScreenState extends State<SettingScreen> {
       );
 
       final current =
-          double.tryParse(data.paramIa) ?? 0;
+          double.tryParse(
+            data.paramIa.toString(),
+          ) ?? 0;
 
       final voltage =
-          double.tryParse(data.paramUa) ?? 0;
-
+          double.tryParse(
+            data.paramUa.toString(),
+          ) ?? 0;
       /// hiện chưa có leakage thật
       final leakage = 0.0;
 
@@ -485,28 +493,45 @@ class _SettingScreenState extends State<SettingScreen> {
       /// ===== QUÁ DÒNG =====
       if (current > overCurrent) {
 
+        if (autoCutOverCurrent) {
+          await sendOffCommand();
+        }
+
         await triggerProtection(
           "Quá dòng: ${current.toStringAsFixed(1)}A",
+          didCut: autoCutOverCurrent,
         );
 
         return;
       }
 
       /// ===== QUÁ ÁP =====
-      if (voltage > overVoltage) {
+      if (voltage > 0 &&
+          voltage > overVoltage) {
+
+        if (autoCutOverVoltage) {
+          await sendOffCommand();
+        }
 
         await triggerProtection(
           "Quá áp: ${voltage.toStringAsFixed(0)}V",
+          didCut: autoCutOverVoltage,
         );
 
         return;
       }
 
       /// ===== THẤP ÁP =====
-      if (voltage < underVoltage) {
+      if (voltage > 0 &&
+          voltage < underVoltage) {
+
+        if (autoCutUnderVoltage) {
+          await sendOffCommand();
+        }
 
         await triggerProtection(
           "Thấp áp: ${voltage.toStringAsFixed(0)}V",
+          didCut: autoCutUnderVoltage,
         );
 
         return;
@@ -515,8 +540,13 @@ class _SettingScreenState extends State<SettingScreen> {
       /// ===== DÒNG RÒ =====
       if (leakage > leakageCurrent) {
 
+        if (autoCutLeakage) {
+          await sendOffCommand();
+        }
+
         await triggerProtection(
           "Dòng rò: ${leakage.toStringAsFixed(0)}mA",
+          didCut: autoCutLeakage,
         );
 
         return;
@@ -525,8 +555,13 @@ class _SettingScreenState extends State<SettingScreen> {
       /// ===== QUÁ NHIỆT =====
       if (temperature > overTemperature) {
 
+        if (autoCutTemperature) {
+          await sendOffCommand();
+        }
+
         await triggerProtection(
           "Quá nhiệt: ${temperature.toStringAsFixed(0)}°C",
+          didCut: autoCutTemperature,
         );
 
         return;
@@ -541,16 +576,17 @@ class _SettingScreenState extends State<SettingScreen> {
     }
   }
   Future<void> triggerProtection(
-      String reason,
-      ) async {
+      String reason, {
+        bool didCut = false,
+      }) async {
 
     /// tránh spam
     if (isTripped) return;
 
     isTripped = true;
 
-    /// auto off
-    await sendOffCommand();
+    // /// auto off
+    // await sendOffCommand();
 
     /// snackbar
     if (mounted) {
@@ -558,7 +594,9 @@ class _SettingScreenState extends State<SettingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            "⚠ $reason\nThiết bị đã tự động ngắt",
+              didCut
+                  ? "⚠ $reason\nThiết bị đã tự động ngắt"
+                  : "⚠ $reason"
           ),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 4),
@@ -623,6 +661,30 @@ class _SettingScreenState extends State<SettingScreen> {
             break;
           case 'enable_over_power':
             enableOverPower = e.configValue == 'true';
+            break;
+          case 'auto_cut_over_current':
+            autoCutOverCurrent =
+                e.configValue == 'true';
+            break;
+
+          case 'auto_cut_over_voltage':
+            autoCutOverVoltage =
+                e.configValue == 'true';
+            break;
+
+          case 'auto_cut_under_voltage':
+            autoCutUnderVoltage =
+                e.configValue == 'true';
+            break;
+
+          case 'auto_cut_leakage':
+            autoCutLeakage =
+                e.configValue == 'true';
+            break;
+
+          case 'auto_cut_temperature':
+            autoCutTemperature =
+                e.configValue == 'true';
             break;
         }
       }
@@ -748,6 +810,35 @@ class _SettingScreenState extends State<SettingScreen> {
           configKey: "enable_over_power",
           configValue: enableOverPower.toString(),
         ),
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "auto_cut_over_current",
+          configValue: autoCutOverCurrent.toString(),
+        ),
+
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "auto_cut_over_voltage",
+          configValue: autoCutOverVoltage.toString(),
+        ),
+
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "auto_cut_under_voltage",
+          configValue: autoCutUnderVoltage.toString(),
+        ),
+
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "auto_cut_leakage",
+          configValue: autoCutLeakage.toString(),
+        ),
+
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "auto_cut_temperature",
+          configValue: autoCutTemperature.toString(),
+        ),
       ];
 
 
@@ -783,7 +874,8 @@ class _SettingScreenState extends State<SettingScreen> {
       }
 
     } catch (e, s) {
-
+      print(e);
+      print(s);
       debugPrint("SAVE ERROR: $e");
       debugPrint("$s");
 
@@ -1016,9 +1108,17 @@ class _SettingScreenState extends State<SettingScreen> {
                     min: getMin("I"),
                     max: getMax("I"),
                     isOverCurrent: true,
-                    description: "Ngưỡng cắt khi dòng vượt mức cho phép",
+                    description: "Thiết bị sẽ ngắt nếu dòng vượt giá trị này",
                     onChanged: (v) {
                       setState(() => overCurrent = v);
+                      markChanged();
+                    },
+                  ),
+                  _buildSwitchItem(
+                    "Tự động ngắt khi vượt ngưỡng",
+                    autoCutOverCurrent,
+                        (v) {
+                      setState(() => autoCutOverCurrent = v);
                       markChanged();
                     },
                   ),
@@ -1041,7 +1141,17 @@ class _SettingScreenState extends State<SettingScreen> {
                   markChanged();
                 },
               ),
+
             ),
+            _buildSwitchItem(
+              "Tự động ngắt khi vượt ngưỡng",
+              autoCutLeakage,
+                  (v) {
+                setState(() => autoCutLeakage = v);
+                markChanged();
+              },
+            ),
+
 
             Row(
               children: [
@@ -1079,6 +1189,14 @@ class _SettingScreenState extends State<SettingScreen> {
                       markChanged();
                     },
                   ),
+                  _buildSwitchItem(
+                    "Tự động cắt quá áp",
+                    autoCutOverVoltage,
+                        (v) {
+                      setState(() => autoCutOverVoltage = v);
+                      markChanged();
+                    },
+                  ),
 
                   const SizedBox(height: 6),
 
@@ -1091,6 +1209,14 @@ class _SettingScreenState extends State<SettingScreen> {
                     isVoltage: true,
                     onChanged: (v) {
                       setState(() => underVoltage = v);
+                      markChanged();
+                    },
+                  ),
+                  _buildSwitchItem(
+                    "Tự động cắt thấp áp",
+                    autoCutUnderVoltage,
+                        (v) {
+                      setState(() => autoCutUnderVoltage = v);
                       markChanged();
                     },
                   ),
@@ -1113,6 +1239,14 @@ class _SettingScreenState extends State<SettingScreen> {
                 },
               ),
 
+            ),
+            _buildSwitchItem(
+              "Tự động ngắt khi vượt ngưỡng",
+              autoCutTemperature,
+                  (v) {
+                setState(() => autoCutTemperature = v);
+                markChanged();
+              },
             ),
             _buildItemCard(
               title: "Quá điện năng",

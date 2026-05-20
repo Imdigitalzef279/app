@@ -83,17 +83,30 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
             old.id,
             config,
           );
-
+          print("UPDATE ID: ${old.id}");
           print("UPDATED: ${config.configKey}");
+          print("FOUND CONFIG: ${old.configKey}");
         }
 
         /// CREATE
-        else {
+        // else {
+        //
+        //
+        //   final res =
+        //   await _api.createMeterConfig(config);
+        //
+        //   print(res.toJson());
+        //   print("CREATED: ${config.configKey}");
+        // }
+    /// CREATE
+    else {
 
-          await _api.createMeterConfig(config);
+    print(
+    "CONFIG NOT FOUND: ${config.configKey}",
+    );
 
-          print("CREATED: ${config.configKey}");
-        }
+    continue;
+    }
       }
 
       print("====== SAVE DONE ======");
