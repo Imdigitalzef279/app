@@ -310,10 +310,13 @@ class _SettingScreenState extends State<SettingScreen> {
   Future<void> sendOffCommand() async {
     final api = GetIt.instance<ApiClient>();
 
+    final addr =
+        widget.device.realtimeLog?.addr ?? "";
+
     final command = {
       "method": "operate",
       "payload": {
-        "addr": "1_1",
+        "addr": addr,
         "status": "OFF"
       }
     };
@@ -321,7 +324,7 @@ class _SettingScreenState extends State<SettingScreen> {
     final request = CbsMeterRequest(
       gatewaySn: widget.device.gatewayNumber ?? '',
       breakerSn: widget.device.breakerSn,
-      addr: "1_1",
+        addr: addr,
       createdBy: "app",
       commandValue: jsonEncode(command),
       isForce: true,
@@ -1678,25 +1681,22 @@ class _SettingScreenState extends State<SettingScreen> {
     try {
       final api = GetIt.instance<ApiClient>();
 
+      final addr =
+          widget.device.realtimeLog?.addr ?? "";
+
       final command = {
         "method": "operate",
         "payload": {
-          "addr": "1_1",
-          "IHighVal01": overCurrent.toInt().toString(),
-          "LgHighVal01": leakageCurrent.toInt().toString(),
-          "UHighVal01": overVoltage.toInt().toString(),
-          "ULowVal01": underVoltage.toInt().toString(),
-          "PHighVal01": enableOverPower
-              ? overPower.toInt().toString()
-              : "0",
-          "T1HighVal01": overTemperature.toInt().toString(),
+          "addr": addr,
+          "status": "OFF"
         }
       };
+
 
       final request = CbsMeterRequest(
         gatewaySn: widget.device.gatewaySn,
         breakerSn: widget.device.breakerSn,
-        addr: "1_1",
+          addr: addr,
         createdBy: "app",
         commandValue: jsonEncode(command),
         isForce: true,
