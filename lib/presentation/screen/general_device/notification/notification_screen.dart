@@ -21,41 +21,78 @@ class NotificationScreen extends StatelessWidget {
           AlarmRepository(getIt<ApiClient>())
       )
         ..loadAlarms(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Thông báo"),
-        ),
-        body: FutureBuilder<List<NotificationItem>>(
-          future: loadAllNotifications(context),
-            builder: (context, snapshot) {
+        child: Builder(
+            builder: (context) {
 
-              if (!snapshot.hasData) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+              WidgetsBinding.instance
+                  .addPostFrameCallback((_) {
 
-              final list = snapshot.data!;
+                clearNotificationBadge();
+              });
 
-              if (list.isEmpty) {
-                return const Center(
-                  child: Text("Không có thông báo"),
-                );
-              }
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text("Thông báo"),
+                ),
 
-              return ListView.builder(
-                itemCount: list.length,
-                itemBuilder: (context, index) {
-                  return _itemNew(list[index]);
-                },
+                body: BlocBuilder<AlarmCubit, List<AlarmResponse>>(
+
+                  builder: (context, alarms) {
+                    return FutureBuilder<List<NotificationItem>>(
+
+                      future: loadAllNotifications(alarms),
+
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              "ERROR: ${snapshot.error}",
+                            ),
+                          );
+                        }
+
+                        final list = snapshot.data ?? [];
+
+                        if (list.isEmpty) {
+                          return const Center(
+                            child: Text("Không có thông báo"),
+                          );
+                        }
+
+                        return ListView.builder(
+                          itemCount: list.length,
+                          itemBuilder: (context, index) {
+                            return _itemNew(list[index]);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
               );
-            },
-        ),
-      ),
+            }
+        )
+    );
+  }
+  Future<void> clearNotificationBadge() async {
+
+    final prefs =
+    await SharedPreferences.getInstance();
+
+    await prefs.setString(
+      "local_notifications",
+      jsonEncode([]),
     );
   }
 Future<List<NotificationItem>>
-loadAllNotifications(BuildContext context) async {
+loadAllNotifications(List<AlarmResponse> alarms) async {
 
   final prefs =
   await SharedPreferences.getInstance();
@@ -79,8 +116,8 @@ loadAllNotifications(BuildContext context) async {
     ).toList();
   }
 
-  final alarms =
-      context.read<AlarmCubit>().state;
+  // final alarms =
+  //     context.read<AlarmCubit>().state;
 
   final apiList = alarms.map(
         (e) => NotificationItem(

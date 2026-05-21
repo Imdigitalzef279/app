@@ -24,6 +24,8 @@ import 'analytics_overview/analytics_overview_screen.dart';
 import 'background/bloc/background_cubit.dart';
 import 'device_grid/device_grid_item.dart';
 import 'notification/notification_screen.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 bool isTablet(BuildContext context) =>
     MediaQuery.of(context).size.width >= 600;
@@ -57,7 +59,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   late final PageController bannerController;
   late final Timer bannerTimer;
   int bannerIndex = 0;
-
+  int notificationCount = 0;
   final bannerData = [
     {
       "img": "assets/images/matis/1.png",
@@ -85,6 +87,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   @override
   void initState() {
     super.initState();
+    loadNotificationCount();
     _controller = AnimationController(vsync: this);
     signalR = SignalRService();
     bannerController = PageController();
@@ -147,6 +150,33 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
       });
 
     });
+  }
+  Future<void> loadNotificationCount() async {
+
+    final prefs =
+    await SharedPreferences.getInstance();
+
+    final data =
+    prefs.getString("local_notifications");
+
+    if (data == null) {
+
+      if (mounted) {
+        setState(() {
+          notificationCount = 0;
+        });
+      }
+
+      return;
+    }
+
+    final list = jsonDecode(data) as List;
+
+    if (mounted) {
+      setState(() {
+        notificationCount = list.length;
+      });
+    }
   }
   @override
   void dispose() {
@@ -229,16 +259,61 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
                 SizedBox(width: 8),
 
-                _buildAppBarIcon(
-                  icon: Icons.notifications_rounded,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => NotificationScreen(),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+
+                    _buildAppBarIcon(
+                      icon: Icons.notifications_rounded,
+
+                      onTap: () async {
+
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => NotificationScreen(),
+                          ),
+                        );
+
+                        loadNotificationCount();
+                      },
+                    ),
+
+                    if (notificationCount > 0)
+
+                      Positioned(
+                        right: -2,
+                        top: -2,
+
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+
+                          child: Text(
+                            notificationCount > 99
+                                ? "99+"
+                                : "$notificationCount",
+
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
-                    );
-                  },
+                  ],
                 ),
 
                 SizedBox(width: 8),
