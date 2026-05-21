@@ -38,7 +38,6 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
     }
   }
   @override
-  @override
   Future<void> saveConfigs(
       List<MeterConfigRequest> configs,
       ) async {
@@ -79,34 +78,40 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
 
           final old = exist.first;
 
-          await _api.updateMeterConfig(
-            old.id,
-            config,
-          );
+          try {
+
+            final res = await _api.updateMeterConfig(
+              old.id,
+              config,
+            );
+
+            print("====== UPDATE SUCCESS ======");
+            print("UPDATE ID: ${old.id}");
+            print("STATUS OK");
+            print(res);
+
+          } catch (e) {
+
+            print("====== UPDATE ERROR ======");
+            print("UPDATE ID: ${old.id}");
+            print("CONFIG: ${config.toJson()}");
+            print(e);
+
+            rethrow;
+          }
           print("UPDATE ID: ${old.id}");
           print("UPDATED: ${config.configKey}");
           print("FOUND CONFIG: ${old.configKey}");
         }
 
-        /// CREATE
-        // else {
-        //
-        //
-        //   final res =
-        //   await _api.createMeterConfig(config);
-        //
-        //   print(res.toJson());
-        //   print("CREATED: ${config.configKey}");
-        // }
-    /// CREATE
-    else {
+        else {
 
-    print(
-    "CONFIG NOT FOUND: ${config.configKey}",
-    );
+          print(
+            "CONFIG NOT FOUND -> SKIP: ${config.configKey}",
+          );
 
-    continue;
-    }
+          continue;
+        }
       }
 
       print("====== SAVE DONE ======");

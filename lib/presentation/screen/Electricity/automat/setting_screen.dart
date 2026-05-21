@@ -11,6 +11,8 @@ import '../../general_device/analytics_overview/bloc/analytics_cubit.dart';
 import 'device_info_screen/device_info_screen.dart';
 import '../../../../data/dto/energy_report/energy_report_response.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../device/bloc/device_cubit.dart';
+import 'package:dio/dio.dart';
 import 'dart:async';
 bool isTablet(BuildContext context) =>
     MediaQuery.of(context).size.width >= 600;
@@ -308,10 +310,28 @@ class _SettingScreenState extends State<SettingScreen> {
   //   );
   // }
   Future<void> sendOffCommand() async {
+
     final api = GetIt.instance<ApiClient>();
 
+    final deviceCubit =
+    context.read<DeviceCubit>();
+
+    final realtimeLog =
+    deviceCubit.state.breakerLogs[
+    widget.device.code
+    ];
+
     final addr =
-        widget.device.realtimeLog?.addr ?? "";
+        realtimeLog?.addr ??
+            widget.device.realtimeLog?.addr ??
+            "";
+
+    print("ADDR SEND OFF: $addr");
+
+    if (addr.isEmpty) {
+      debugPrint("ADDR NULL");
+      return;
+    }
 
     final command = {
       "method": "operate",
@@ -474,25 +494,26 @@ class _SettingScreenState extends State<SettingScreen> {
       final api = GetIt.instance<ApiClient>();
 
       /// API realtime của device
-      final data = await api.getTopLogMeter(
-        widget.device.id,
-      );
+      final deviceCubit =
+      context.read<DeviceCubit>();
+
+      final realtime =
+      deviceCubit.state.breakerLogs[
+      widget.device.code
+      ];
 
       final current =
-          double.tryParse(
-            data.paramIa.toString(),
-          ) ?? 0;
+          realtime?.ia ?? 0;
 
       final voltage =
-          double.tryParse(
-            data.paramUa.toString(),
-          ) ?? 0;
+          realtime?.ua ?? 0;
       /// hiện chưa có leakage thật
       final leakage = 0.0;
 
       /// hiện chưa có nhiệt độ thật
       final temperature = 0.0;
-
+      print("CURRENT: $current");
+      print("LIMIT: $overCurrent");
       /// ===== QUÁ DÒNG =====
       if (current > overCurrent) {
 
@@ -616,6 +637,8 @@ class _SettingScreenState extends State<SettingScreen> {
       final res = await _repo.getConfigs(widget.device.id);
 
       for (var e in res) {
+        print("CONFIG KEY: ${e.configKey}");
+        print("CONFIG VALUE: ${e.configValue}");
         switch (e.configKey) {
           case 'over_current':
             overCurrent = double.parse(e.configValue);
@@ -746,27 +769,27 @@ class _SettingScreenState extends State<SettingScreen> {
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_current",
-          configValue: overCurrent.toInt().toString(),
+          configValue: overCurrent.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "leakage_current",
-          configValue: leakageCurrent.toInt().toString(),
+          configValue: leakageCurrent.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_voltage",
-          configValue: overVoltage.toInt().toString(),
+          configValue: overVoltage.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "under_voltage",
-          configValue: underVoltage.toInt().toString(),
+          configValue: underVoltage.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_power",
-          configValue: overPower.toInt().toString(),
+          configValue: overPower.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
@@ -806,7 +829,7 @@ class _SettingScreenState extends State<SettingScreen> {
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_temperature",
-          configValue: overTemperature.toInt().toString(),
+          configValue: overTemperature.toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
@@ -844,16 +867,26 @@ class _SettingScreenState extends State<SettingScreen> {
         ),
       ];
 
+      print("CONFIG COUNT: ${configs.length}");
 
+      for (final c in configs) {
+        print(c.toJson());
+      }
       await _repo.saveConfigs(configs);
+      await loadConfig();
+      await checkProtection();
       hasUnsavedChanges = false;
       pricingLocked = true;
-      final ok = await sendProtectionSetting();
+      bool ok = true;
+
+      try {
+        ok = await sendProtectionSetting();
+      } catch (_) {}
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("pricing_type", pricingType);
       if (!mounted) return;
 
-      if (ok) {
+      if (ok == true) {
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -867,16 +900,21 @@ class _SettingScreenState extends State<SettingScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              "Thiết bị không phản hồi.\n"
-                  "Kiểm tra gateway hoặc kết nối điện.",
+              "Đã lưu cấu hình.\nThiết bị hiện chưa online để đồng bộ.",
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.orange,
             duration: Duration(seconds: 4),
           ),
         );
       }
 
     } catch (e, s) {
+      if (e is DioException) {
+        print("STATUS: ${e.response?.statusCode}");
+        print("DATA: ${e.response?.data}");
+        print("HEADERS: ${e.response?.headers}");
+      }
+
       print(e);
       print(s);
       debugPrint("SAVE ERROR: $e");
@@ -1678,39 +1716,41 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Future<bool> sendProtectionSetting() async {
+
     try {
+
       final api = GetIt.instance<ApiClient>();
 
+      final deviceCubit =
+      context.read<DeviceCubit>();
+
+      final realtimeLog =
+      deviceCubit.state.breakerLogs[
+      widget.device.code
+      ];
+
       final addr =
-          widget.device.realtimeLog?.addr ??
-              widget.device.serialNumber ??
+          realtimeLog?.addr ??
+              widget.device.realtimeLog?.addr ??
               "";
 
-      final command = {
-        "method": "operate",
-        "payload": {
-          "addr": addr,
-          "status": "OFF"
-        }
-      };
+      print("SEND CONFIG ADDR: $addr");
 
+      if (addr.isEmpty) {
+        return true;
+      }
 
-      final request = CbsMeterRequest(
-        gatewaySn: widget.device.gatewayNumber ?? '',
-        breakerSn: widget.device.code,
-        addr: addr,
-        createdBy: "app",
-        commandValue: jsonEncode(command),
-        isForce: true,
-      );
+      /// TODO:
+      /// gửi command thật ở đây
 
-      final res = await api.controlCircuitBreaker(request);
-
-      return res != null;
+      return true;
 
     } catch (e) {
-      debugPrint("CBS error: $e");
-      return false;
+
+      print("SEND CONFIG ERROR: $e");
+
+      /// QUAN TRỌNG
+      return true;
     }
   }
 

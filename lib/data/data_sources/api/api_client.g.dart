@@ -583,7 +583,7 @@ class _ApiClient implements ApiClient {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/app/meter-config/by-meter-id/${meterId}',
+            'api/app/meter-config/by-meter-id/${meterId}',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -940,7 +940,7 @@ class _ApiClient implements ApiClient {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/app/alarm-config/meters-by-config/${configId}',
+            'api/app/alarm-config/meters-by-config/${configId}',
             queryParameters: queryParameters,
             data: _data,
           )

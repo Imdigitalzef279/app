@@ -142,7 +142,7 @@ abstract class ApiClient {
       );
   // ================= METER CONFIG =================
 
-  @GET('/api/app/meter-config/by-meter-id/{meterId}')
+  @GET('api/app/meter-config/by-meter-id/{meterId}')
   Future<List<MeterConfigResponse>> getMeterConfigByMeterId(
       @Path('meterId') int meterId,
       );
@@ -203,7 +203,7 @@ abstract class ApiClient {
   Future<void> createAlarmConfig(
       @Body() Map<String, dynamic> body,
       );
-  @GET('/api/app/alarm-config/meters-by-config/{configId}')
+  @GET('api/app/alarm-config/meters-by-config/{configId}')
   Future<List<AlarmConfigMeterResponse>> getThresholdByConfig(
       @Path('configId') int configId,
       );
