@@ -54,6 +54,7 @@ class _SettingScreenState extends State<SettingScreen> {
   bool showPricingDetail = false;
   String userRole = "user"; // admin / manager / user
   bool pricingLocked = false;
+  DateTime? lastProtectionTrip;
   List<Map<String, dynamic>> tierPrices = [
     {"from": 0, "to": 50, "price": 1806},
     {"from": 51, "to": 100, "price": 1866},
@@ -280,35 +281,35 @@ class _SettingScreenState extends State<SettingScreen> {
   //     print("✅ OK - chưa vượt");
   //   }
   // }
-  // Future<void> saveLocalNotification({
-  //   required String title,
-  //   required String message,
-  //   bool isAlert = true,
-  // }) async {
-  //
-  //   final prefs = await SharedPreferences.getInstance();
-  //
-  //   final oldData =
-  //   prefs.getString("local_notifications");
-  //
-  //   List list = [];
-  //
-  //   if (oldData != null) {
-  //     list = jsonDecode(oldData);
-  //   }
-  //
-  //   list.insert(0, {
-  //     "title": title,
-  //     "message": message,
-  //     "time": DateTime.now().toIso8601String(),
-  //     "isAlert": isAlert,
-  //   });
-  //
-  //   await prefs.setString(
-  //     "local_notifications",
-  //     jsonEncode(list),
-  //   );
-  // }
+  Future<void> saveLocalNotification({
+    required String title,
+    required String message,
+    bool isAlert = true,
+  }) async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final oldData =
+    prefs.getString("local_notifications");
+
+    List list = [];
+
+    if (oldData != null) {
+      list = jsonDecode(oldData);
+    }
+
+    list.insert(0, {
+      "title": title,
+      "message": message,
+      "time": DateTime.now().toIso8601String(),
+      "isAlert": isAlert,
+    });
+
+    await prefs.setString(
+      "local_notifications",
+      jsonEncode(list),
+    );
+  }
   Future<void> sendOffCommand() async {
 
     final api = GetIt.instance<ApiClient>();
@@ -321,22 +322,25 @@ class _SettingScreenState extends State<SettingScreen> {
     widget.device.code
     ];
 
-    final addr =
+    final rawAddr =
         realtimeLog?.addr ??
             widget.device.realtimeLog?.addr ??
             "";
 
-    print("ADDR SEND OFF: $addr");
+    print("RAW ADDR: $rawAddr");
 
-    if (addr.isEmpty) {
+    if (rawAddr.isEmpty) {
       debugPrint("ADDR NULL");
       return;
     }
 
+    final addr = rawAddr.trim();
+
+    print("FINAL ADDR: $addr");
+
     final command = {
       "method": "operate",
       "payload": {
-        "addr": addr,
         "status": "OFF"
       }
     };
@@ -346,11 +350,12 @@ class _SettingScreenState extends State<SettingScreen> {
       breakerSn: widget.device.code,
       addr: addr,
       createdBy: "app",
-      commandValue: jsonEncode(command),
+      commandValue: "0",
       isForce: true,
     );
 
     await api.controlCircuitBreaker(request);
+    lastProtectionTrip = DateTime.now();
   }
   @override
   void dispose() {
@@ -488,7 +493,18 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
   Future<void> checkProtection() async {
+    if (lastProtectionTrip != null) {
 
+      final diff =
+      DateTime.now().difference(lastProtectionTrip!);
+
+      if (diff.inSeconds < 10) {
+
+        print("SKIP PROTECTION");
+
+        return;
+      }
+    }
     try {
 
       final api = GetIt.instance<ApiClient>();
@@ -508,10 +524,15 @@ class _SettingScreenState extends State<SettingScreen> {
       final voltage =
           realtime?.ua ?? 0;
       /// hiện chưa có leakage thật
-      final leakage = 0.0;
-
+      final leakage =
+      (realtime?.lg ?? 0).toDouble();
       /// hiện chưa có nhiệt độ thật
-      final temperature = 0.0;
+      final temperature = [
+        realtime?.temp1 ?? 0,
+        realtime?.temp2 ?? 0,
+        realtime?.temp3 ?? 0,
+        realtime?.temp4 ?? 0,
+      ].reduce((a, b) => a > b ? a : b);
       print("CURRENT: $current");
       print("LIMIT: $overCurrent");
       /// ===== QUÁ DÒNG =====
@@ -591,8 +612,19 @@ class _SettingScreenState extends State<SettingScreen> {
         return;
       }
 
-      /// reset nếu đã ổn
-      isTripped = false;
+      /// reset nếu tất cả đã ổn
+      final allNormal =
+          current <= overCurrent &&
+              (voltage == 0 || (
+                  voltage <= overVoltage &&
+                      voltage >= underVoltage
+              )) &&
+              leakage <= leakageCurrent &&
+              temperature <= overTemperature;
+
+      if (allNormal) {
+        isTripped = false;
+      }
 
     } catch (e) {
 
@@ -611,7 +643,13 @@ class _SettingScreenState extends State<SettingScreen> {
 
     // /// auto off
     // await sendOffCommand();
-
+    await saveLocalNotification(
+      title: widget.device.name ?? "Thiết bị",
+      message: didCut
+          ? "$reason - Thiết bị đã tự động ngắt"
+          : reason,
+      isAlert: true,
+    );
     /// snackbar
     if (mounted) {
 
@@ -641,7 +679,11 @@ class _SettingScreenState extends State<SettingScreen> {
         print("CONFIG VALUE: ${e.configValue}");
         switch (e.configKey) {
           case 'over_current':
+
+            print("LOAD OVER CURRENT: ${e.configValue}");
+
             overCurrent = double.parse(e.configValue);
+
             break;
           case 'leakage_current':
             leakageCurrent = double.parse(e.configValue);
@@ -731,7 +773,19 @@ class _SettingScreenState extends State<SettingScreen> {
     if (overCurrent <= 0) {
       return "Quá dòng không hợp lệ";
     }
+    final deviceCubit = context.read<DeviceCubit>();
 
+    final realtime =
+    deviceCubit.state.breakerLogs[
+    widget.device.code
+    ];
+
+    final currentRealtime =
+        realtime?.ia ?? 0;
+
+    if (overCurrent <= currentRealtime) {
+      return "Quá dòng phải lớn hơn dòng hiện tại (${currentRealtime.toStringAsFixed(1)}A)";
+    }
     if (leakageCurrent < 0) {
       return "Dòng rò không hợp lệ";
     }
@@ -769,22 +823,26 @@ class _SettingScreenState extends State<SettingScreen> {
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_current",
-          configValue: overCurrent.toString(),
+          configValue:
+          overCurrent.round().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "leakage_current",
-          configValue: leakageCurrent.toString(),
+          configValue:
+          leakageCurrent.round().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_voltage",
-          configValue: overVoltage.toString(),
+          configValue:
+          overVoltage.round().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "under_voltage",
-          configValue: underVoltage.toString(),
+          configValue:
+          underVoltage.round().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
@@ -829,7 +887,8 @@ class _SettingScreenState extends State<SettingScreen> {
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "over_temperature",
-          configValue: overTemperature.toString(),
+          configValue:
+          overTemperature.round().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
@@ -873,7 +932,11 @@ class _SettingScreenState extends State<SettingScreen> {
         print(c.toJson());
       }
       await _repo.saveConfigs(configs);
+      print("SAVE OVER CURRENT: $overCurrent");
       await loadConfig();
+      if (mounted) {
+        setState(() {});
+      }
       await checkProtection();
       hasUnsavedChanges = false;
       pricingLocked = true;

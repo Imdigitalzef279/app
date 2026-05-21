@@ -88,13 +88,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
 
   final formatted = DateFormat("yyyy-MM-dd'T'00:00:00");
   Timer? _timer;
-
+  Timer? _realtimeTimer;
   @override
   void initState() {
     super.initState();
 
     cubit = context.read<AtomatDetailCubit>();
-
+    startRealtimeRefresh();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final device = widget.device;
 
@@ -111,7 +111,26 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   void dispose() {
     _signalSub?.cancel();
     maintenanceTimer?.cancel();
+    _realtimeTimer?.cancel();
     super.dispose();
+  }
+  void startRealtimeRefresh() {
+
+    _realtimeTimer?.cancel();
+
+    _realtimeTimer = Timer.periodic(
+      const Duration(seconds: 3),
+          (_) async {
+
+            await context.read<DeviceCubit>().loadBreakerLog(
+              widget.device.gatewayNumber ?? '',
+            );
+
+        if (mounted) {
+          setState(() {});
+        }
+      },
+    );
   }
   void startMaintenanceCountdown() {
 

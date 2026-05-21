@@ -25,41 +25,84 @@ class NotificationScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Thông báo"),
         ),
-        body: BlocBuilder<AlarmCubit, List<AlarmResponse>>(
-          builder: (context, alarms) {
+        body: FutureBuilder<List<NotificationItem>>(
+          future: loadAllNotifications(context),
+            builder: (context, snapshot) {
 
-            final apiList = alarms.map(
-                  (e) => NotificationItem(
-                    title: e.deviceName,
-                    message: e.reason.isNotEmpty
-                        ? e.reason
-                        : e.message,
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-                    time: e.time,
-                isAlert: e.status == 1,
-              ),
-            ).toList();
+              final list = snapshot.data!;
 
-            apiList.sort((a, b) => b.time.compareTo(a.time));
+              if (list.isEmpty) {
+                return const Center(
+                  child: Text("Không có thông báo"),
+                );
+              }
 
-            if (apiList.isEmpty) {
-              return const Center(
-                child: Text("Không có thông báo"),
+              return ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  return _itemNew(list[index]);
+                },
               );
-            }
-
-            return ListView.builder(
-              itemCount: apiList.length,
-              itemBuilder: (context, index) {
-                return _itemNew(apiList[index]);
-              },
-            );
-          },
+            },
         ),
       ),
     );
   }
+Future<List<NotificationItem>>
+loadAllNotifications(BuildContext context) async {
 
+  final prefs =
+  await SharedPreferences.getInstance();
+
+  final data =
+  prefs.getString("local_notifications");
+
+  List<NotificationItem> localList = [];
+
+  if (data != null) {
+
+    final decoded = jsonDecode(data) as List;
+
+    localList = decoded.map(
+          (e) => NotificationItem(
+        title: e["title"],
+        message: e["message"],
+        time: DateTime.parse(e["time"]),
+        isAlert: e["isAlert"] ?? true,
+      ),
+    ).toList();
+  }
+
+  final alarms =
+      context.read<AlarmCubit>().state;
+
+  final apiList = alarms.map(
+        (e) => NotificationItem(
+      title: e.deviceName,
+      message: e.reason.isNotEmpty
+          ? e.reason
+          : e.message,
+      time: e.time,
+      isAlert: e.status == 1,
+    ),
+  ).toList();
+
+  final all = [
+    ...localList,
+    ...apiList,
+  ];
+
+  all.sort((a, b) =>
+      b.time.compareTo(a.time));
+
+  return all;
+}
   // Future<List<NotificationItem>> loadLocalNotifications() async {
   //   final prefs = await SharedPreferences.getInstance();
   //

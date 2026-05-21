@@ -106,11 +106,23 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
 
         else {
 
-          print(
-            "CONFIG NOT FOUND -> SKIP: ${config.configKey}",
-          );
+          try {
 
-          continue;
+            final res =
+            await _api.createMeterConfig(config);
+
+            print("====== CREATE SUCCESS ======");
+            print("CREATED: ${config.configKey}");
+            print(res.toJson());
+
+          } catch (e) {
+
+            print("====== CREATE ERROR ======");
+            print("CONFIG: ${config.toJson()}");
+            print(e);
+
+            rethrow;
+          }
         }
       }
 
