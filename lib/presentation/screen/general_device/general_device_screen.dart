@@ -156,25 +156,12 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
     final prefs =
     await SharedPreferences.getInstance();
 
-    final data =
-    prefs.getString("local_notifications");
 
-    if (data == null) {
-
-      if (mounted) {
-        setState(() {
-          notificationCount = 0;
-        });
-      }
-
-      return;
-    }
-
-    final list = jsonDecode(data) as List;
-
+    final count =
+        prefs.getInt("notification_badge_count") ?? 0;
     if (mounted) {
       setState(() {
-        notificationCount = list.length;
+        notificationCount = count;
       });
     }
   }

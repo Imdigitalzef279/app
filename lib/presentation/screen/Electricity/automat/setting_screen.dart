@@ -295,7 +295,11 @@ class _SettingScreenState extends State<SettingScreen> {
     List list = [];
 
     if (oldData != null) {
-      list = jsonDecode(oldData);
+      try {
+        list = jsonDecode(oldData);
+      } catch (e) {
+        list = [];
+      }
     }
 
     list.insert(0, {
@@ -304,10 +308,19 @@ class _SettingScreenState extends State<SettingScreen> {
       "time": DateTime.now().toIso8601String(),
       "isAlert": isAlert,
     });
-
+    if (list.length > 200) {
+      list = list.take(200).toList();
+    }
     await prefs.setString(
       "local_notifications",
       jsonEncode(list),
+    );
+    final oldCount =
+        prefs.getInt("notification_badge_count") ?? 0;
+
+    await prefs.setInt(
+      "notification_badge_count",
+      oldCount + 1,
     );
   }
   Future<void> sendOffCommand() async {
@@ -650,6 +663,7 @@ class _SettingScreenState extends State<SettingScreen> {
           : reason,
       isAlert: true,
     );
+
     /// snackbar
     if (mounted) {
 
@@ -783,7 +797,7 @@ class _SettingScreenState extends State<SettingScreen> {
     final currentRealtime =
         realtime?.ia ?? 0;
 
-    if (overCurrent <= currentRealtime) {
+    if (overCurrent <= currentRealtime + 1) {
       return "Quá dòng phải lớn hơn dòng hiện tại (${currentRealtime.toStringAsFixed(1)}A)";
     }
     if (leakageCurrent < 0) {

@@ -86,9 +86,9 @@ class NotificationScreen extends StatelessWidget {
     final prefs =
     await SharedPreferences.getInstance();
 
-    await prefs.setString(
-      "local_notifications",
-      jsonEncode([]),
+    await prefs.setInt(
+      "notification_badge_count",
+      0,
     );
   }
 Future<List<NotificationItem>>
