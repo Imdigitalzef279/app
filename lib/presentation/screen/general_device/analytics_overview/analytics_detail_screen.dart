@@ -448,7 +448,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                   borderData: FlBorderData(show: false),
 
-                  barGroups: sampledValues.asMap().entries.map((e) {
+                  barGroups: values.asMap().entries.map((e) {
                     return BarChartGroupData(
                       x: e.key,
                       barRods: [
@@ -1085,7 +1085,10 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SizedBox(
-        width: math.max(displayData.length * 20, MediaQuery.of(context).size.width),
+        width: math.max(
+          displayData.length * 32,
+          MediaQuery.of(context).size.width,
+        ),
         height: 260,
         child: BarChart(
           BarChartData(
@@ -1142,21 +1145,44 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
+                  reservedSize: 30,
                   getTitlesWidget: (value, _) {
                     final index = value.toInt();
-                    if (index >= displayData.length) return SizedBox();
-                    final step = math.max(1, (displayData.length / 5).ceil());
-                    if (index % step != 0) return SizedBox();
+
+                    if (index >= displayData.length) {
+                      return SizedBox();
+                    }
 
                     final time = displayData[index].time;
 
+                    String label = "";
+
+                    switch (selectedRange) {
+                      case ChartRange.day:
+                        if (index % 2 != 0) return SizedBox();
+                        label = "${time.hour}h";
+                        break;
+
+                      case ChartRange.month:
+                        label = "${index + 1}";
+                        break;
+
+                      case ChartRange.year:
+                        label = "T${index + 1}";
+                        break;
+
+                      default:
+                        label = "${time.hour}h";
+                    }
+
                     return Padding(
-                      padding: const EdgeInsets.only(top: 6),
+                      padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        "${time.hour}h",
+                        label,
                         style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[600],
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
                       ),
                     );
@@ -1167,13 +1193,17 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 45,
+                  reservedSize: 50,
                   getTitlesWidget: (value, meta) {
-                    return Text(
-                      (value / scaleFactor).toStringAsFixed(1),
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[600],
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Text(
+                        (value / scaleFactor).toStringAsFixed(1),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
                       ),
                     );
                   },
@@ -1544,13 +1574,15 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SizedBox(
-              width: maxX * 38,
+              width: maxX * 44,
               child: BarChart(
                 BarChartData(
 
-                  maxY: maxY * 1.2,
+                  alignment: BarChartAlignment.center,
 
-                  alignment: BarChartAlignment.spaceAround,
+                  groupsSpace: 12,
+
+                  maxY: maxY * 1.2,
 
                   gridData: FlGridData(
                     show: true,
@@ -1572,24 +1604,28 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 40,
+                        reservedSize: 46,
                       ),
                     ),
 
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
+                        reservedSize: 28,
                         getTitlesWidget: (value, meta) {
 
+                          Widget child;
+
                           if (selectedRange == ChartRange.day) {
-                            return Text("${value.toInt()}h");
+                            child = Text("${value.toInt()}h");
+                          } else {
+                            child = Text("${value.toInt() + 1}");
                           }
 
-                          if (selectedRange == ChartRange.month) {
-                            return Text("${value.toInt() + 1}");
-                          }
-
-                          return Text("${value.toInt() + 1}");
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: child,
+                          );
                         },
                       ),
                     ),
@@ -1599,18 +1635,18 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                     return BarChartGroupData(
                       x: index,
-                      barsSpace: 4,
+
+                      barsSpace: 3,
 
                       barRods: legends.asMap().entries.map((e) {
 
-                        final values =
-                        groupedData[e.value]!;
+                        final values = groupedData[e.value]!;
 
                         return BarChartRodData(
                           toY: values[index],
-                          width: 8,
+                          width: 10,
                           color: colors[e.key],
-                          borderRadius: BorderRadius.zero,
+                          borderRadius: BorderRadius.circular(2),
                         );
 
                       }).toList(),

@@ -443,14 +443,20 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     : "${latest.epi?.toStringAsFixed(0)}")
                     : "--",
                 style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(width: 6),
               Text(
                 chartType == ChartType.power ? "kW" : "kWh",
-                style: const TextStyle(color: Colors.grey),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -466,9 +472,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                   child: Text(
                     yAxisLabel,
                     style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -490,8 +496,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 Text(
                   xAxisLabel,
                   style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey,
+                    fontSize: 12,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -1259,8 +1266,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     return Text(
                       value.toStringAsFixed(0),
                       style: const TextStyle(
-                        fontSize: 9,
-                        color: Colors.grey,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
                       ),
                     );
                   },
@@ -1302,8 +1310,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                       child: Text(
                         label,
                         style: const TextStyle(
-                          fontSize: 9,
-                          color: Colors.grey,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
                       ),
                     );
