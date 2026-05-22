@@ -17,10 +17,6 @@ import 'dart:async';
 bool isTablet(BuildContext context) =>
     MediaQuery.of(context).size.width >= 600;
 bool autoCutOverCurrent = false;
-bool autoCutOverVoltage = false;
-bool autoCutUnderVoltage = false;
-bool autoCutLeakage = false;
-bool autoCutTemperature = false;
 Map<String, double> minMap = {};
 Map<String, double> maxMap = {};
 Map<String, double> deviceOverrideMap = {};
@@ -48,6 +44,10 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  bool autoCutOverVoltage = false;
+  bool autoCutUnderVoltage = false;
+  bool autoCutLeakage = false;
+  bool autoCutTemperature = false;
   Timer? _timer;
   bool isTripped = false;
   String pricingType = "tiered";
