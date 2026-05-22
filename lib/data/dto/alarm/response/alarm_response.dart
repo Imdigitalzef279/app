@@ -20,7 +20,7 @@ class AlarmResponse {
   });
 
   factory AlarmResponse.fromJson(Map<String, dynamic> json) {
-
+    print("ALARM JSON: $json");
     final creation =
         json['creationTime'] ??
             json['creation_time'] ??
@@ -40,6 +40,9 @@ class AlarmResponse {
 
       deviceName:
       json['meterDto']?['name'] ??
+          json['name'] ??
+          json['meterName'] ??
+          json['breakerName'] ??
           json['deviceName'] ??
           '',
 

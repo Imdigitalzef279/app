@@ -22,6 +22,8 @@ AtomatLogResponse _$AtomatLogResponseFromJson(Map<String, dynamic> json) {
 mixin _$AtomatLogResponse {
   String? get gatewaySn => throw _privateConstructorUsedError;
   String? get breakerSn => throw _privateConstructorUsedError;
+  @JsonKey(name: 'name')
+  String? get deviceName => throw _privateConstructorUsedError;
   String? get addr => throw _privateConstructorUsedError;
   String? get state => throw _privateConstructorUsedError;
   int? get rlySta => throw _privateConstructorUsedError;
@@ -98,6 +100,7 @@ abstract class $AtomatLogResponseCopyWith<$Res> {
   $Res call(
       {String? gatewaySn,
       String? breakerSn,
+      @JsonKey(name: 'name') String? deviceName,
       String? addr,
       String? state,
       int? rlySta,
@@ -173,6 +176,7 @@ class _$AtomatLogResponseCopyWithImpl<$Res, $Val extends AtomatLogResponse>
   $Res call({
     Object? gatewaySn = freezed,
     Object? breakerSn = freezed,
+    Object? deviceName = freezed,
     Object? addr = freezed,
     Object? state = freezed,
     Object? rlySta = freezed,
@@ -238,6 +242,10 @@ class _$AtomatLogResponseCopyWithImpl<$Res, $Val extends AtomatLogResponse>
       breakerSn: freezed == breakerSn
           ? _value.breakerSn
           : breakerSn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      deviceName: freezed == deviceName
+          ? _value.deviceName
+          : deviceName // ignore: cast_nullable_to_non_nullable
               as String?,
       addr: freezed == addr
           ? _value.addr
@@ -478,6 +486,7 @@ abstract class _$$AtomatLogResponseImplCopyWith<$Res>
   $Res call(
       {String? gatewaySn,
       String? breakerSn,
+      @JsonKey(name: 'name') String? deviceName,
       String? addr,
       String? state,
       int? rlySta,
@@ -551,6 +560,7 @@ class __$$AtomatLogResponseImplCopyWithImpl<$Res>
   $Res call({
     Object? gatewaySn = freezed,
     Object? breakerSn = freezed,
+    Object? deviceName = freezed,
     Object? addr = freezed,
     Object? state = freezed,
     Object? rlySta = freezed,
@@ -616,6 +626,10 @@ class __$$AtomatLogResponseImplCopyWithImpl<$Res>
       breakerSn: freezed == breakerSn
           ? _value.breakerSn
           : breakerSn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      deviceName: freezed == deviceName
+          ? _value.deviceName
+          : deviceName // ignore: cast_nullable_to_non_nullable
               as String?,
       addr: freezed == addr
           ? _value.addr
@@ -851,6 +865,7 @@ class _$AtomatLogResponseImpl implements _AtomatLogResponse {
   const _$AtomatLogResponseImpl(
       {this.gatewaySn,
       this.breakerSn,
+      @JsonKey(name: 'name') this.deviceName,
       this.addr,
       this.state,
       this.rlySta,
@@ -915,6 +930,9 @@ class _$AtomatLogResponseImpl implements _AtomatLogResponse {
   final String? gatewaySn;
   @override
   final String? breakerSn;
+  @override
+  @JsonKey(name: 'name')
+  final String? deviceName;
   @override
   final String? addr;
   @override
@@ -1030,7 +1048,7 @@ class _$AtomatLogResponseImpl implements _AtomatLogResponse {
 
   @override
   String toString() {
-    return 'AtomatLogResponse(gatewaySn: $gatewaySn, breakerSn: $breakerSn, addr: $addr, state: $state, rlySta: $rlySta, lockSta: $lockSta, rlyRepSta: $rlyRepSta, lgFauSta: $lgFauSta, t1FauSta: $t1FauSta, t2FauSta: $t2FauSta, t3FauSta: $t3FauSta, t4FauSta: $t4FauSta, rlyFauSta: $rlyFauSta, alrRcrCnt: $alrRcrCnt, lg: $lg, temp1: $temp1, temp2: $temp2, temp3: $temp3, temp4: $temp4, ua: $ua, ub: $ub, uc: $uc, uab: $uab, ubc: $ubc, uca: $uca, u0: $u0, uub: $uub, ia: $ia, ib: $ib, ic: $ic, i0: $i0, iub: $iub, pa: $pa, pb: $pb, pc: $pc, p: $p, qa: $qa, qb: $qb, qc: $qc, q: $q, sa: $sa, sb: $sb, sc: $sc, s: $s, pfa: $pfa, pfb: $pfb, pfc: $pfc, pf: $pf, fr: $fr, epi: $epi, epe: $epe, eql: $eql, eqc: $eqc, es: $es, closeCnt: $closeCnt, openCnt: $openCnt, useRate: $useRate, updatedAt: $updatedAt)';
+    return 'AtomatLogResponse(gatewaySn: $gatewaySn, breakerSn: $breakerSn, deviceName: $deviceName, addr: $addr, state: $state, rlySta: $rlySta, lockSta: $lockSta, rlyRepSta: $rlyRepSta, lgFauSta: $lgFauSta, t1FauSta: $t1FauSta, t2FauSta: $t2FauSta, t3FauSta: $t3FauSta, t4FauSta: $t4FauSta, rlyFauSta: $rlyFauSta, alrRcrCnt: $alrRcrCnt, lg: $lg, temp1: $temp1, temp2: $temp2, temp3: $temp3, temp4: $temp4, ua: $ua, ub: $ub, uc: $uc, uab: $uab, ubc: $ubc, uca: $uca, u0: $u0, uub: $uub, ia: $ia, ib: $ib, ic: $ic, i0: $i0, iub: $iub, pa: $pa, pb: $pb, pc: $pc, p: $p, qa: $qa, qb: $qb, qc: $qc, q: $q, sa: $sa, sb: $sb, sc: $sc, s: $s, pfa: $pfa, pfb: $pfb, pfc: $pfc, pf: $pf, fr: $fr, epi: $epi, epe: $epe, eql: $eql, eqc: $eqc, es: $es, closeCnt: $closeCnt, openCnt: $openCnt, useRate: $useRate, updatedAt: $updatedAt)';
   }
 
   @override
@@ -1042,6 +1060,8 @@ class _$AtomatLogResponseImpl implements _AtomatLogResponse {
                 other.gatewaySn == gatewaySn) &&
             (identical(other.breakerSn, breakerSn) ||
                 other.breakerSn == breakerSn) &&
+            (identical(other.deviceName, deviceName) ||
+                other.deviceName == deviceName) &&
             (identical(other.addr, addr) || other.addr == addr) &&
             (identical(other.state, state) || other.state == state) &&
             (identical(other.rlySta, rlySta) || other.rlySta == rlySta) &&
@@ -1116,6 +1136,7 @@ class _$AtomatLogResponseImpl implements _AtomatLogResponse {
         runtimeType,
         gatewaySn,
         breakerSn,
+        deviceName,
         addr,
         state,
         rlySta,
@@ -1195,6 +1216,7 @@ abstract class _AtomatLogResponse implements AtomatLogResponse {
   const factory _AtomatLogResponse(
       {final String? gatewaySn,
       final String? breakerSn,
+      @JsonKey(name: 'name') final String? deviceName,
       final String? addr,
       final String? state,
       final int? rlySta,
@@ -1259,6 +1281,9 @@ abstract class _AtomatLogResponse implements AtomatLogResponse {
   String? get gatewaySn;
   @override
   String? get breakerSn;
+  @override
+  @JsonKey(name: 'name')
+  String? get deviceName;
   @override
   String? get addr;
   @override

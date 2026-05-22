@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,7 +31,16 @@ class NotificationScreen extends StatelessWidget {
 
               return Scaffold(
                 appBar: AppBar(
-                  title: const Text("Thông báo"),
+                  elevation: 0,
+                  backgroundColor: Colors.white,
+                  centerTitle: true,
+                  title: const Text(
+                    "Thông báo",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
 
                 body: BlocBuilder<AlarmCubit, List<AlarmResponse>>(
@@ -121,10 +129,13 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
 
   final apiList = alarms.map(
         (e) => NotificationItem(
-      title: e.deviceName,
-      message: e.reason.isNotEmpty
-          ? e.reason
-          : e.message,
+          title: e.status == 1
+              ? "Cảnh báo"
+              : "Phân tích",
+          message:
+          e.reason.isNotEmpty
+              ? e.reason
+              : e.message,
       time: e.time,
       isAlert: e.status == 1,
     ),
@@ -162,58 +173,150 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
     final isAlert = item.isAlert;
 
     IconData icon;
-    Color color;
-    Color bg;
+    Color mainColor;
+    Color lightColor;
 
     if (isAlert) {
-      icon = Icons.warning_amber_rounded;
-      color = Colors.red;
-      bg = Colors.red.shade50;
+      icon = Icons.warning_rounded;
+      mainColor = const Color(0xFFE53935);
+      lightColor = const Color(0xFFFFEBEE);
     } else {
-      icon = Icons.lightbulb_outline;
-      color = Colors.blue;
-      bg = Colors.blue.shade50;
+      icon = Icons.tips_and_updates_rounded;
+      mainColor = const Color(0xFF1E88E5);
+      lightColor = const Color(0xFFE3F2FD);
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(12),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
       ),
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          const SizedBox(width: 10),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Text(item.message),
-              ],
-            ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-
-          const SizedBox(width: 8),
-
-          /// DOT
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-          )
         ],
+        border: Border(
+          left: BorderSide(
+            color: mainColor,
+            width: 5,
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            /// ICON
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: lightColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: mainColor,
+                size: 26,
+              ),
+            ),
+
+            const SizedBox(width: 14),
+
+            /// CONTENT
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+
+                  /// TITLE + TIME
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF222222),
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          _formatTime(item.time),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  /// MESSAGE
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      // Text(
+                      //   "Thiết bị: ${item.title}",
+                      //   style: TextStyle(
+                      //     fontSize: 13,
+                      //     fontWeight: FontWeight.w700,
+                      //     color: isAlert
+                      //         ? Colors.red.shade700
+                      //         : Colors.blue.shade700,
+                      //   ),
+                      // ),
+
+                      // const SizedBox(height: 4),
+
+                      Text(
+                        item.message,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.4,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+  String _formatTime(DateTime time) {
+    return "${time.day.toString().padLeft(2, '0')}/"
+        "${time.month.toString().padLeft(2, '0')}/"
+        "${time.year} "
+        "${time.hour.toString().padLeft(2, '0')}:"
+        "${time.minute.toString().padLeft(2, '0')}";
   }
 }

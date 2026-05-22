@@ -7,6 +7,8 @@ class AtomatLogResponse with _$AtomatLogResponse {
   const factory AtomatLogResponse({
     String? gatewaySn,
     String? breakerSn,
+    @JsonKey(name: 'name')
+    String? deviceName,
     String? addr,
     String? state,
 

@@ -11,6 +11,7 @@ _$AtomatLogResponseImpl _$$AtomatLogResponseImplFromJson(
     _$AtomatLogResponseImpl(
       gatewaySn: json['gatewaySn'] as String?,
       breakerSn: json['breakerSn'] as String?,
+      deviceName: json['name'] as String?,
       addr: json['addr'] as String?,
       state: json['state'] as String?,
       rlySta: (json['rlySta'] as num?)?.toInt(),
@@ -74,6 +75,7 @@ Map<String, dynamic> _$$AtomatLogResponseImplToJson(
     <String, dynamic>{
       'gatewaySn': instance.gatewaySn,
       'breakerSn': instance.breakerSn,
+      'name': instance.deviceName,
       'addr': instance.addr,
       'state': instance.state,
       'rlySta': instance.rlySta,
