@@ -996,17 +996,23 @@ class _SettingScreenState extends State<SettingScreen> {
         final authHeader =
         e.response?.headers.value("www-authenticate");
 
-        final isNoPermission =
-            statusCode == 302 ||
-                statusCode == 403 ||
-                (authHeader?.contains("insufficient_access") ?? false);
+        if (statusCode == 401) {
 
-        if (isNoPermission) {
+          message =
+          "Phiên đăng nhập đã hết hạn.\nVui lòng đăng nhập lại.";
+
+        }
+        else if (
+        statusCode == 302 ||
+            statusCode == 403 ||
+            (authHeader?.contains("insufficient_access") ?? false)
+        ) {
 
           message =
           "Tài khoản không có quyền lưu cấu hình.";
 
-        } else {
+        }
+        else {
 
           message =
           "Lưu cấu hình thất bại.\nVui lòng thử lại.";

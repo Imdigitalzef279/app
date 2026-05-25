@@ -77,7 +77,10 @@ class NotificationScreen extends StatelessWidget {
                         return ListView.builder(
                           itemCount: list.length,
                           itemBuilder: (context, index) {
-                            return _itemNew(list[index]);
+                            return _itemNew(
+                              context,
+                              list[index],
+                            );
                           },
                         );
                       },
@@ -146,10 +149,45 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
     ...apiList,
   ];
 
-  all.sort((a, b) =>
-      b.time.compareTo(a.time));
+  /// chỉ giữ thông báo trong 24h
+  final now = DateTime.now();
 
-  return all;
+  all.removeWhere(
+        (e) => now.difference(e.time).inHours >= 24,
+  );
+
+  final Map<String, List<NotificationItem>> grouped = {};
+
+  for (final item in all) {
+
+    /// key để nhận diện trùng
+    final key =
+        "${item.title}_${item.message}";
+
+    grouped.putIfAbsent(key, () => []);
+
+    grouped[key]!.add(item);
+  }
+
+  final merged = grouped.entries.map((e) {
+
+    final first = e.value.first;
+
+    return NotificationItem(
+      title: first.title,
+      message: first.message,
+      time: first.time,
+      isAlert: first.isAlert,
+      count: e.value.length,
+      children: e.value,
+    );
+  }).toList();
+
+  merged.sort(
+        (a, b) => b.time.compareTo(a.time),
+  );
+
+  return merged;
 }
   // Future<List<NotificationItem>> loadLocalNotifications() async {
   //   final prefs = await SharedPreferences.getInstance();
@@ -169,7 +207,10 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
   // }
 
   /// ITEM UI
-  Widget _itemNew(NotificationItem item) {
+  Widget _itemNew(
+      BuildContext context,
+      NotificationItem item,
+      ) {
     final isAlert = item.isAlert;
 
     IconData icon;
@@ -186,11 +227,46 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
       lightColor = const Color(0xFFE3F2FD);
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
+    return GestureDetector(
+
+        onTap: () {
+
+          if ((item.children ?? []).length <= 1) {
+            return;
+          }
+
+          showModalBottomSheet(
+            context: context,
+            builder: (_) {
+
+              return ListView.builder(
+                itemCount: item.children!.length,
+                itemBuilder: (_, i) {
+
+                  final child = item.children![i];
+
+                  return ListTile(
+                    leading: Icon(
+                      child.isAlert
+                          ? Icons.warning
+                          : Icons.info,
+                    ),
+                    title: Text(child.message),
+                    subtitle: Text(
+                      _formatTime(child.time),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+
+        child: Container(
+          margin: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -241,16 +317,47 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
                   /// TITLE + TIME
                   Row(
                     children: [
+
                       Expanded(
-                        child: Text(
-                          item.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF222222),
-                          ),
+                        child: Row(
+                          children: [
+
+                            Expanded(
+                              child: Text(
+                                item.title,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF222222),
+                                ),
+                              ),
+                            ),
+
+                            if (item.count > 1)
+                              Container(
+                                margin: const EdgeInsets.only(left: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade50,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  "x${item.count}",
+                                  style: TextStyle(
+                                    color: Colors.red.shade700,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
+
+                      const SizedBox(width: 8),
 
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -310,6 +417,7 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
           ],
         ),
       ),
+        )
     );
   }
   String _formatTime(DateTime time) {
