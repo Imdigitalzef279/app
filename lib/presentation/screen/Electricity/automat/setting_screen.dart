@@ -581,7 +581,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
       /// ===== THẤP ÁP =====
       if (voltage > 0 &&
-          voltage < underVoltage) {
+          voltage < (underVoltage - 2)) {
 
         if (autoCutUnderVoltage) {
           await sendOffCommand();
@@ -685,98 +685,133 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Future<void> loadConfig() async {
+
     try {
+
+      /// RESET DEFAULT
+      overCurrent = 63;
+      leakageCurrent = 30;
+      overVoltage = 240;
+      underVoltage = 220;
+      overTemperature = 70;
+
       final res = await _repo.getConfigs(widget.device.id);
+      print("LOAD CONFIG DEVICE ID: ${widget.device.id}");
+      print("LOAD CONFIG DEVICE CODE: ${widget.device.code}");
+      print("LOAD CONFIG GATEWAY: ${widget.device.gatewayNumber}");
+      /// REMOVE DUPLICATE
+      final map = <String, dynamic>{};
 
-      for (var e in res) {
-        print("CONFIG KEY: ${e.configKey}");
+      for (final e in res) {
+
+        final key = e.configKey
+            .trim()
+            .toLowerCase();
+
+        map[key] = e;
+      }
+
+      for (final e in map.values) {
+
+        final key = e.configKey
+            .trim()
+            .toLowerCase();
+
+        print("CONFIG KEY: $key");
         print("CONFIG VALUE: ${e.configValue}");
-        switch (e.configKey) {
+
+        switch (key) {
+
           case 'over_current':
-
-            print("LOAD OVER CURRENT: ${e.configValue}");
-
-            overCurrent = double.parse(e.configValue);
-
+            overCurrent =
+                double.tryParse(e.configValue) ?? 63;
             break;
+
           case 'leakage_current':
-            leakageCurrent = double.parse(e.configValue);
+            leakageCurrent =
+                double.tryParse(e.configValue) ?? 30;
             break;
+
           case 'over_voltage':
-            overVoltage = double.parse(e.configValue);
+            overVoltage =
+                double.tryParse(e.configValue) ?? 240;
             break;
+
           case 'under_voltage':
-            underVoltage = double.parse(e.configValue);
-            break;
-          case 'over_power':
-            overPower = double.parse(e.configValue);
-            break;
-          case 'phase_loss':
-            phaseLoss = e.configValue == 'true';
+            underVoltage =
+                double.tryParse(e.configValue) ?? 220;
             break;
 
-          case 'custom_threshold':
-            customThreshold = e.configValue == 'true';
-            break;
-
-          case 'notify_app':
-            notifyApp = e.configValue == 'true';
-            break;
-
-          case 'notify_email':
-            notifyEmail = e.configValue == 'true';
-            break;
-
-          case 'save_log':
-            saveLog = e.configValue == 'true';
-            break;
-          case 'pricing_type':
-            pricingType = e.configValue.toString() == '1'
-                ? "tiered"
-                : "time_of_use";
-            break;
-          case 'export_report':
-            exportReport = e.configValue == 'true';
-            break;
           case 'over_temperature':
-            overTemperature = double.parse(e.configValue);
+            overTemperature =
+                double.tryParse(e.configValue) ?? 70;
             break;
-          case 'enable_over_power':
-            enableOverPower = e.configValue == 'true';
-            break;
+
           case 'auto_cut_over_current':
             autoCutOverCurrent =
-                e.configValue == 'true';
+                e.configValue == "true";
             break;
 
           case 'auto_cut_over_voltage':
             autoCutOverVoltage =
-                e.configValue == 'true';
+                e.configValue == "true";
             break;
 
           case 'auto_cut_under_voltage':
             autoCutUnderVoltage =
-                e.configValue == 'true';
+                e.configValue == "true";
             break;
 
           case 'auto_cut_leakage':
             autoCutLeakage =
-                e.configValue == 'true';
+                e.configValue == "true";
             break;
 
           case 'auto_cut_temperature':
             autoCutTemperature =
-                e.configValue == 'true';
+                e.configValue == "true";
+            break;
+
+          case 'notify_app':
+            notifyApp =
+                e.configValue == "true";
+            break;
+
+          case 'notify_email':
+            notifyEmail =
+                e.configValue == "true";
+            break;
+
+          case 'save_log':
+            saveLog =
+                e.configValue == "true";
+            break;
+
+          case 'export_report':
+            exportReport =
+                e.configValue == "true";
             break;
         }
       }
+
     } catch (e) {
+
       debugPrint("Load config error: $e");
+
     }
 
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+
+        /// force rebuild
+        overCurrent = overCurrent;
+        leakageCurrent = leakageCurrent;
+        overVoltage = overVoltage;
+        underVoltage = underVoltage;
+        overTemperature = overTemperature;
+      });
+    }
   }
   String? validateConfig() {
 
@@ -838,7 +873,7 @@ class _SettingScreenState extends State<SettingScreen> {
           meterId: widget.device.id,
           configKey: "over_current",
           configValue:
-          overCurrent.round().toString(),
+          overCurrent.toStringAsFixed(1),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
@@ -946,6 +981,14 @@ class _SettingScreenState extends State<SettingScreen> {
         print(c.toJson());
       }
       await _repo.saveConfigs(configs);
+      final reload =
+      await _repo.getConfigs(widget.device.id);
+
+      print("====== RELOAD AFTER SAVE ======");
+
+      for (final e in reload) {
+        print("${e.configKey} = ${e.configValue}");
+      }
       print("SAVE OVER CURRENT: $overCurrent");
       await loadConfig();
       if (mounted) {

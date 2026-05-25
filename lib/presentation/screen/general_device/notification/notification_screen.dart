@@ -161,15 +161,12 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
   for (final item in all) {
 
     /// key để nhận diện trùng
-    String normalizedMessage =
-    item.message
-        .replaceAll(
-      RegExp(r'lúc \d+h'),
-      '',
-    );
+    String normalizedMessage = item.message
+        .replaceAll(RegExp(r'\d+V'), '') // xoá 219V, 220V...
+        .replaceAll(RegExp(r'lúc \d+h'), '')
+        .trim();
 
-    final key =
-        "${item.title}_$normalizedMessage";
+    final key = "${item.title}_$normalizedMessage";
 
     grouped.putIfAbsent(key, () => []);
 

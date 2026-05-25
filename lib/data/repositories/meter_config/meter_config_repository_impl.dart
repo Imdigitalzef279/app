@@ -11,9 +11,36 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
   Future<List<MeterConfigResponse>> getConfigs(
       int meterId,
       ) async {
-    final res = await _api.getMeterConfigByMeterId(meterId);
 
-    return res;
+    final res =
+    await _api.getMeterConfigByMeterId(meterId);
+
+    print("====== RAW GET CONFIG ======");
+    print(res);
+
+    /// api trả object có items
+    if (res is Map<String, dynamic>) {
+
+      final items = res['items'] ?? [];
+
+      return (items as List)
+          .map(
+            (e) => MeterConfigResponse.fromJson(e),
+      )
+          .toList();
+    }
+
+    /// api trả list trực tiếp
+    if (res is List) {
+
+      return res
+          .map(
+            (e) => MeterConfigResponse.fromJson(e),
+      )
+          .toList();
+    }
+
+    return [];
   }
 
   @override
@@ -27,7 +54,7 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
       final res = await _api.createMeterConfig(request);
 
       print("====== RESPONSE SUCCESS ======");
-      print(res.toJson());
+
 
       return res;
 
@@ -46,37 +73,33 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
 
     try {
 
-      /// load config hiện tại
-      final currentConfigs =
-      await getConfigs(configs.first.meterId);
-
+      // /// load config hiện tại
+      // final currentConfigs =
+      // await getConfigs(configs.first.meterId);
+      print("TYPE:");
+      // print(currentConfigs.runtimeType);
+      //
+      // for (final e in currentConfigs) {
+      //
+      //   print(e);
+      //   print(e.runtimeType);
+      // }
       for (final config in configs) {
-
+        /// reload mỗi lần save
+        final currentConfigs =
+        await getConfigs(config.meterId);
         print("BODY: ${config.toJson()}");
         print("CURRENT CONFIGS:");
 
         for (final c in currentConfigs) {
           print("${c.id} - ${c.configKey}");
         }
-        /// tìm config đã tồn tại
-        final exist = currentConfigs.where(
-              (e) =>
-
-          e.configKey
-              .trim()
-              .toLowerCase()
-
-              ==
-
-              config.configKey
-                  .trim()
-                  .toLowerCase(),
+        final old = currentConfigs.firstWhere(
+              (e) => e.configKey == config.configKey,
+          orElse: () => const MeterConfigResponse(),
         );
-
         /// UPDATE
-        if (exist.isNotEmpty) {
-
-          final old = exist.first;
+        if (old.id != 0) {
 
           try {
 
@@ -113,7 +136,6 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
 
             print("====== CREATE SUCCESS ======");
             print("CREATED: ${config.configKey}");
-            print(res.toJson());
 
           } catch (e) {
 

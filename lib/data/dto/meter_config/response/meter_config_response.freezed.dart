@@ -14,19 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-MeterConfigResponse _$MeterConfigResponseFromJson(Map<String, dynamic> json) {
-  return _MeterConfigResponse.fromJson(json);
-}
-
 /// @nodoc
 mixin _$MeterConfigResponse {
   int get id => throw _privateConstructorUsedError;
   int get meterId => throw _privateConstructorUsedError;
   String get configKey => throw _privateConstructorUsedError;
   String get configValue => throw _privateConstructorUsedError;
-
-  /// Serializes this MeterConfigResponse to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of MeterConfigResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -136,16 +129,13 @@ class __$$MeterConfigResponseImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$MeterConfigResponseImpl implements _MeterConfigResponse {
   const _$MeterConfigResponseImpl(
       {this.id = 0,
       this.meterId = 0,
       this.configKey = '',
       this.configValue = ''});
-
-  factory _$MeterConfigResponseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$MeterConfigResponseImplFromJson(json);
 
   @override
   @JsonKey()
@@ -178,7 +168,6 @@ class _$MeterConfigResponseImpl implements _MeterConfigResponse {
                 other.configValue == configValue));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, id, meterId, configKey, configValue);
@@ -191,13 +180,6 @@ class _$MeterConfigResponseImpl implements _MeterConfigResponse {
   _$$MeterConfigResponseImplCopyWith<_$MeterConfigResponseImpl> get copyWith =>
       __$$MeterConfigResponseImplCopyWithImpl<_$MeterConfigResponseImpl>(
           this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$MeterConfigResponseImplToJson(
-      this,
-    );
-  }
 }
 
 abstract class _MeterConfigResponse implements MeterConfigResponse {
@@ -206,9 +188,6 @@ abstract class _MeterConfigResponse implements MeterConfigResponse {
       final int meterId,
       final String configKey,
       final String configValue}) = _$MeterConfigResponseImpl;
-
-  factory _MeterConfigResponse.fromJson(Map<String, dynamic> json) =
-      _$MeterConfigResponseImpl.fromJson;
 
   @override
   int get id;

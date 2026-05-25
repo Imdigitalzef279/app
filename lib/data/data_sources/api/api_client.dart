@@ -143,7 +143,8 @@ abstract class ApiClient {
   // ================= METER CONFIG =================
 
   @GET('api/app/meter-config/by-meter-id/{meterId}')
-  Future<List<MeterConfigResponse>> getMeterConfigByMeterId(
+  Future<dynamic>
+  getMeterConfigByMeterId(
       @Path('meterId') int meterId,
       );
   // ================= ELECTRIC REPORT =================

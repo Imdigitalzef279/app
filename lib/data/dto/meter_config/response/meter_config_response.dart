@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'meter_config_response.freezed.dart';
-part 'meter_config_response.g.dart';
 
 @freezed
 class MeterConfigResponse with _$MeterConfigResponse {
@@ -10,9 +9,19 @@ class MeterConfigResponse with _$MeterConfigResponse {
     @Default(0) int meterId,
     @Default('') String configKey,
     @Default('') String configValue,
-
   }) = _MeterConfigResponse;
 
-  factory MeterConfigResponse.fromJson(Map<String, dynamic> json) =>
-      _$MeterConfigResponseFromJson(json);
+  factory MeterConfigResponse.fromJson(
+      Map<String, dynamic> json,
+      ) {
+    print("====== RAW CONFIG JSON ======");
+    print(json);
+
+    return MeterConfigResponse(
+      id: json['id'] ?? 0,
+      meterId: json['meterId'] ?? 0,
+      configKey: json['configKey'] ?? '',
+      configValue: json['configValue'] ?? '',
+    );
+  }
 }
