@@ -5,7 +5,7 @@ import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/application/enums/load_status.dart';
 import 'package:solar_energy/data/dto/auth/request/auth_request.dart';
 import 'package:solar_energy/data/repositories/auth/auth_repository.dart';
-
+import 'package:dio/dio.dart';
 import '../../../../data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 import '../../../../data/dto/result/result.dart';
 
@@ -92,10 +92,67 @@ class LoginCubit extends Cubit<LoginState> {
             request: Result(status: LoadStatus.failure),
             error: response.error));
         return;
+      } on DioException catch (e) {
+
+        String errorMessage =
+            "Đăng nhập thất bại";
+
+        final statusCode =
+            e.response?.statusCode;
+
+        final data =
+            e.response?.data;
+
+        if (statusCode == 400 ||
+            statusCode == 401) {
+
+          errorMessage =
+          "Sai tài khoản hoặc mật khẩu";
+
+        } else if (data != null &&
+            data["error_description"] != null) {
+
+          errorMessage =
+              data["error_description"].toString();
+
+        } else if (data != null &&
+            data["message"] != null) {
+
+          errorMessage =
+              data["message"].toString();
+
+        } else if (data != null &&
+            data["error"] != null) {
+
+          errorMessage =
+              data["error"].toString();
+        }
+
+        print("LOGIN ERROR: $data");
+
+        emit(
+          state.copyWith(
+            request: Result(
+              status: LoadStatus.failure,
+            ),
+            error: errorMessage,
+          ),
+        );
+
+        return;
+
       } catch (e) {
-        emit(state.copyWith(
-            request: Result(status: LoadStatus.failure),
-            error: LocalizationsUtils.localizations.an_error_occurred));
+
+        emit(
+          state.copyWith(
+            request: Result(
+              status: LoadStatus.failure,
+            ),
+            error:
+            "Không thể kết nối máy chủ",
+          ),
+        );
+
         return;
       }
     }

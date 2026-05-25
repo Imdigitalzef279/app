@@ -1145,7 +1145,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 30,
+                  reservedSize: 32,
+                  interval: 1,
                   getTitlesWidget: (value, _) {
                     final index = value.toInt();
 
@@ -1158,21 +1159,30 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                     String label = "";
 
                     switch (selectedRange) {
+
                       case ChartRange.day:
-                        if (index % 2 != 0) return SizedBox();
                         label = "${time.hour}h";
+
+                        if (time.minute != 0) {
+                          label =
+                          "${time.hour}:${time.minute.toString().padLeft(2, '0')}";
+                        }
+                        break;
+
+                      case ChartRange.week:
+                        label = "${time.day}/${time.month}";
                         break;
 
                       case ChartRange.month:
-                        label = "${index + 1}";
+                        label = "${time.day}";
                         break;
 
                       case ChartRange.year:
-                        label = "T${index + 1}";
+                        label = "T${time.month}";
                         break;
 
                       default:
-                        label = "${time.hour}h";
+                        label = "${index + 1}";
                     }
 
                     return Padding(
@@ -1180,7 +1190,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                       child: Text(
                         label,
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: Colors.black87,
                         ),

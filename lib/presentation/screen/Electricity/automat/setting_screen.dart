@@ -16,7 +16,6 @@ import 'package:dio/dio.dart';
 import 'dart:async';
 bool isTablet(BuildContext context) =>
     MediaQuery.of(context).size.width >= 600;
-bool autoCutOverCurrent = false;
 Map<String, double> minMap = {};
 Map<String, double> maxMap = {};
 Map<String, double> deviceOverrideMap = {};
@@ -44,6 +43,7 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  bool autoCutOverCurrent = false;
   bool autoCutOverVoltage = false;
   bool autoCutUnderVoltage = false;
   bool autoCutLeakage = false;
@@ -986,26 +986,45 @@ class _SettingScreenState extends State<SettingScreen> {
       }
 
     } catch (e, s) {
+
+      String message = "Không thể lưu cài đặt.";
+
       if (e is DioException) {
-        print("STATUS: ${e.response?.statusCode}");
-        print("DATA: ${e.response?.data}");
-        print("HEADERS: ${e.response?.headers}");
+
+        final statusCode = e.response?.statusCode;
+
+        final authHeader =
+        e.response?.headers.value("www-authenticate");
+
+        final isNoPermission =
+            statusCode == 302 ||
+                statusCode == 403 ||
+                (authHeader?.contains("insufficient_access") ?? false);
+
+        if (isNoPermission) {
+
+          message =
+          "Tài khoản không có quyền lưu cấu hình.";
+
+        } else {
+
+          message =
+          "Lưu cấu hình thất bại.\nVui lòng thử lại.";
+        }
+
+        print("STATUS CODE: $statusCode");
+        print("AUTH HEADER: $authHeader");
       }
 
-      print(e);
+      print("SAVE ERROR: $e");
       print(s);
-      debugPrint("SAVE ERROR: $e");
-      debugPrint("$s");
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-              "Không thể lưu cài đặt.\n"
-                  "Vui lòng thử lại.",
-            ),
+            content: Text(message),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
+            duration: const Duration(seconds: 4),
           ),
         );
       }
