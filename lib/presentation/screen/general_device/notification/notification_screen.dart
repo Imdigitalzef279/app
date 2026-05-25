@@ -161,8 +161,15 @@ loadAllNotifications(List<AlarmResponse> alarms) async {
   for (final item in all) {
 
     /// key để nhận diện trùng
+    String normalizedMessage =
+    item.message
+        .replaceAll(
+      RegExp(r'lúc \d+h'),
+      '',
+    );
+
     final key =
-        "${item.title}_${item.message}";
+        "${item.title}_$normalizedMessage";
 
     grouped.putIfAbsent(key, () => []);
 
