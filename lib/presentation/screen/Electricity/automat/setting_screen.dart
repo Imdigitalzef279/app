@@ -683,19 +683,50 @@ class _SettingScreenState extends State<SettingScreen> {
     /// log
     debugPrint("TRIPPED: $reason");
   }
-
+  bool parseBool(dynamic v) {
+    return v.toString().trim().toLowerCase() == "true";
+  }
   Future<void> loadConfig() async {
 
     try {
 
       /// RESET DEFAULT
-      overCurrent = 63;
-      leakageCurrent = 30;
-      overVoltage = 240;
-      underVoltage = 220;
-      overTemperature = 70;
+      // overCurrent = 63;
+      // leakageCurrent = 30;
+      // overVoltage = 240;
+      // underVoltage = 220;
+      // overTemperature = 70;
 
-      final res = await _repo.getConfigs(widget.device.id);
+      autoCutOverCurrent = false;
+      autoCutOverVoltage = false;
+      autoCutUnderVoltage = false;
+      autoCutLeakage = false;
+      autoCutTemperature = false;
+
+      notifyApp = false;
+      notifyEmail = false;
+      saveLog = false;
+      exportReport = false;
+
+      final res = await _repo.getConfigs(
+        widget.device.id,
+        [
+          "over_current",
+          "leakage_current",
+          "over_voltage",
+          "under_voltage",
+          "over_temperature",
+          "auto_cut_over_current",
+          "auto_cut_over_voltage",
+          "auto_cut_under_voltage",
+          "auto_cut_leakage",
+          "auto_cut_temperature",
+          "notify_app",
+          "notify_email",
+          "save_log",
+          "export_report",
+        ],
+      );
       print("LOAD CONFIG DEVICE ID: ${widget.device.id}");
       print("LOAD CONFIG DEVICE CODE: ${widget.device.code}");
       print("LOAD CONFIG GATEWAY: ${widget.device.gatewayNumber}");
@@ -708,7 +739,12 @@ class _SettingScreenState extends State<SettingScreen> {
             .trim()
             .toLowerCase();
 
-        map[key] = e;
+        if (
+        !map.containsKey(key) ||
+            e.id > map[key]!.id
+        ) {
+          map[key] = e;
+        }
       }
 
       for (final e in map.values) {
@@ -719,7 +755,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
         print("CONFIG KEY: $key");
         print("CONFIG VALUE: ${e.configValue}");
-
         switch (key) {
 
           case 'over_current':
@@ -749,47 +784,57 @@ class _SettingScreenState extends State<SettingScreen> {
 
           case 'auto_cut_over_current':
             autoCutOverCurrent =
-                e.configValue == "true";
+                parseBool(e.configValue);
             break;
 
           case 'auto_cut_over_voltage':
             autoCutOverVoltage =
-                e.configValue == "true";
+                parseBool(e.configValue);
             break;
 
           case 'auto_cut_under_voltage':
             autoCutUnderVoltage =
-                e.configValue == "true";
+                parseBool(e.configValue);
             break;
 
           case 'auto_cut_leakage':
             autoCutLeakage =
-                e.configValue == "true";
+                parseBool(e.configValue);
             break;
 
           case 'auto_cut_temperature':
             autoCutTemperature =
-                e.configValue == "true";
+                parseBool(e.configValue);
             break;
 
           case 'notify_app':
             notifyApp =
-                e.configValue == "true";
+                parseBool(e.configValue);
             break;
 
           case 'notify_email':
             notifyEmail =
-                e.configValue == "true";
+                parseBool(e.configValue);
             break;
 
           case 'save_log':
             saveLog =
-                e.configValue == "true";
+                parseBool(e.configValue);
             break;
 
           case 'export_report':
             exportReport =
-                e.configValue == "true";
+                parseBool(e.configValue);
+            break;
+          case 'pricing_type':
+
+            pricingType =
+            e.configValue == "1"
+                ? "tiered"
+                : "time_of_use";
+
+            pricingLocked = true;
+
             break;
         }
       }
@@ -873,7 +918,7 @@ class _SettingScreenState extends State<SettingScreen> {
           meterId: widget.device.id,
           configKey: "over_current",
           configValue:
-          overCurrent.toStringAsFixed(1),
+          overCurrent.round().toString(),
         ),
         MeterConfigRequest(
           meterId: widget.device.id,
@@ -982,7 +1027,10 @@ class _SettingScreenState extends State<SettingScreen> {
       }
       await _repo.saveConfigs(configs);
       final reload =
-      await _repo.getConfigs(widget.device.id);
+      await _repo.getConfigs(
+        widget.device.id,
+        null,
+      );
 
       print("====== RELOAD AFTER SAVE ======");
 
@@ -1602,17 +1650,21 @@ class _SettingScreenState extends State<SettingScreen> {
                       children: [
 
                         /// HỘ GIA ĐÌNH
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: canEditPricing
-                                ? () {
+                Expanded(
+                child: IgnorePointer(
+                  ignoring: pricingLocked,
+                  child: GestureDetector(
+                            onTap: pricingLocked
+                                ? null
+                                : () {
                               setState(() {
                                 pricingType = "tiered";
                               });
-                            }
-                                : null,
+                            },
                             child: Opacity(
-                              opacity: pricingType == "tiered" ? 1 : 0.45,
+                              opacity: pricingLocked && userRole != "admin"
+                                  ? 0.45
+                                  : (pricingType == "tiered" ? 1 : 0.75),
                               child: Container(
                                 height: 35,
                                 decoration: BoxDecoration(
@@ -1643,23 +1695,29 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                               ),
                             ),
-                          ),
-                        ),
+    ),
+    ),
+    ),
+
 
                         const SizedBox(width: 8),
 
                         /// CÔNG NGHIỆP
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: canEditPricing
-                                ? () {
+                  Expanded(
+                    child: IgnorePointer(
+                      ignoring: pricingLocked,
+                      child: GestureDetector(
+                            onTap: pricingLocked
+                                ? null
+                                : () {
                               setState(() {
                                 pricingType = "time_of_use";
                               });
-                            }
-                                : null,
+                            },
                             child: Opacity(
-                              opacity: pricingType == "time_of_use" ? 1 : 0.45,
+                              opacity: pricingLocked && userRole != "admin"
+                                  ? 0.45
+                                  : (pricingType == "time_of_use" ? 1 : 0.75),
                               child: Container(
                                 height: 35,
                                 decoration: BoxDecoration(
@@ -1706,6 +1764,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             ),
                           ),
                         ),
+                  )
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -1999,7 +2058,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      "${value.toInt()} $unit",
+                      "${value.round()} $unit",
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -2151,7 +2210,9 @@ class _SettingScreenState extends State<SettingScreen> {
       double max,
       Function(double) onChanged,) {
     final controller =
-    TextEditingController(text: current.toInt().toString());
+    TextEditingController(
+      text: current.toStringAsFixed(1),
+    );
 
     showDialog(
       context: context,

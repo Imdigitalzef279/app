@@ -124,8 +124,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       ),
       child: Row(
         children: [
-          _mainTab("Energy", 0),
-          _mainTab("MCB", 1),
+          _mainTab("Điện Năng", 0),
+          _mainTab("Giám Sát", 1),
         ],
       ),
     );

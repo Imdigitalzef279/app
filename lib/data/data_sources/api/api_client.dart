@@ -135,17 +135,21 @@ abstract class ApiClient {
   @GET('api/app/alarm-meter/active-alarm')
   Future<PaginationResponse<AlarmResponse>> getActiveAlarms();
   // ================= REGISTER =================
-
   @POST('api/identity/users')
   Future<ProfileResponse> registerUser(
       @Body() UserRequest request,
       );
   // ================= METER CONFIG =================
 
+  // @GET('api/app/meter-config/by-meter-id/{meterId}')
+  // Future<dynamic>
+  // getMeterConfigByMeterId(
+  //     @Path('meterId') int meterId,
+  //     );
   @GET('api/app/meter-config/by-meter-id/{meterId}')
-  Future<dynamic>
-  getMeterConfigByMeterId(
+  Future<dynamic> getMeterConfigByMeterId(
       @Path('meterId') int meterId,
+      @Query('configKeys') List<String>? configKeys,
       );
   // ================= ELECTRIC REPORT =================
   @GET('api/app/electric-report')

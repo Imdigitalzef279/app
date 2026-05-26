@@ -10,10 +10,30 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
   @override
   Future<List<MeterConfigResponse>> getConfigs(
       int meterId,
+      List<String>? configKeys,
       ) async {
 
-    final res =
-    await _api.getMeterConfigByMeterId(meterId);
+    // final keys = [
+    //   "over_current",
+    //   "leakage_current",
+    //   "over_voltage",
+    //   "under_voltage",
+    //   "over_temperature",
+    //   "auto_cut_over_current",
+    //   "auto_cut_over_voltage",
+    //   "auto_cut_under_voltage",
+    //   "auto_cut_leakage",
+    //   "auto_cut_temperature",
+    //   "notify_app",
+    //   "notify_email",
+    //   "save_log",
+    //   "export_report",
+    // ].join(",");
+
+    final res = await _api.getMeterConfigByMeterId(
+      meterId,
+      configKeys,
+    );
 
     print("====== RAW GET CONFIG ======");
     print(res);
@@ -86,18 +106,43 @@ class MeterConfigRepositoryImpl implements MeterConfigRepository {
       // }
       for (final config in configs) {
         /// reload mỗi lần save
-        final currentConfigs =
-        await getConfigs(config.meterId);
-        print("BODY: ${config.toJson()}");
-        print("CURRENT CONFIGS:");
+        await Future.delayed(
+          const Duration(milliseconds: 300),
+        );
+
+        final currentConfigs = await getConfigs(
+          config.meterId,
+          [config.configKey],
+        );
+
+        print("====== RELOAD CONFIG ======");
+        print("KEY: ${config.configKey}");
+        print("COUNT: ${currentConfigs.length}");
 
         for (final c in currentConfigs) {
-          print("${c.id} - ${c.configKey}");
+          print(
+            "ID: ${c.id} | KEY: ${c.configKey} | VALUE: ${c.configValue}",
+          );
         }
-        final old = currentConfigs.firstWhere(
-              (e) => e.configKey == config.configKey,
-          orElse: () => const MeterConfigResponse(),
-        );
+
+        MeterConfigResponse old = const MeterConfigResponse();
+
+        final matched = currentConfigs.where(
+              (e) =>
+          e.configKey.trim().toLowerCase() ==
+              config.configKey.trim().toLowerCase(),
+        ).toList();
+
+        if (matched.isNotEmpty) {
+
+          matched.sort(
+                (a, b) => b.id.compareTo(a.id),
+          );
+
+          old = matched.first;
+        }
+
+        print("FOUND ID: ${old.id}");
         /// UPDATE
         if (old.id != 0) {
 

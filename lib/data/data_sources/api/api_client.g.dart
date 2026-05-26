@@ -574,9 +574,13 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<dynamic> getMeterConfigByMeterId(int meterId) async {
+  Future<dynamic> getMeterConfigByMeterId(
+    int meterId,
+    List<String>? configKeys,
+  ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'configKeys': configKeys};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<dynamic>(
