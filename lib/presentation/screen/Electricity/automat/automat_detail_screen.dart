@@ -1609,199 +1609,235 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 ),
               ),
 
-              child: Center(
-                child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
+                child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isTablet = constraints.maxWidth >= 700;
 
-              child: ListView(
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  MediaQuery.of(context).padding.top + 60,
-                  16,
-                  18,
-                ),
-
-                children: [
-
-
-                  _buildTopDeviceCard(device, log),
-
-                  const SizedBox(height: 16),
-
-
-                  _buildBigStatusCard(device, log),
-
-                  const SizedBox(height: 16),
-
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-
-                      /// ===== ĐÓNG / CẮT =====
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            backgroundColor: isOn
-                                ? BreakerColors.off
-                                : BreakerColors.on,
-                            foregroundColor: Colors.white,
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: isTablet ? 900 : 420,
                           ),
-                          onPressed: (isMaintenance || isSwitching)
-                              ? null
-                              : () async {
-                            final password = await _showPasswordDialog(context);
-                            if (password == null) return;
 
-                            await context.read<DeviceCubit>().togglePower(
-                              device,
-                              password: password,
-                            );
-                          },
-                          child: (isSwitching || countdown > 0)
-                              ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: ListView(
+                            padding: EdgeInsets.fromLTRB(
+                              16,
+                              MediaQuery
+                                  .of(context)
+                                  .padding
+                                  .top + 60,
+                              16,
+                              18,
+                            ),
+
                             children: [
-                              SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+
+
+                              _buildTopDeviceCard(device, log),
+
+                              const SizedBox(height: 16),
+
+
+                              _buildBigStatusCard(device, log),
+
+                              const SizedBox(height: 16),
+
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceEvenly,
+                                children: [
+
+                                  /// ===== ĐÓNG / CẮT =====
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              30),
+                                        ),
+                                        backgroundColor: isOn
+                                            ? BreakerColors.off
+                                            : BreakerColors.on,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      onPressed: (isMaintenance || isSwitching)
+                                          ? null
+                                          : () async {
+                                        final password = await _showPasswordDialog(
+                                            context);
+                                        if (password == null) return;
+
+                                        await context
+                                            .read<DeviceCubit>()
+                                            .togglePower(
+                                          device,
+                                          password: password,
+                                        );
+                                      },
+                                      child: (isSwitching || countdown > 0)
+                                          ? Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .center,
+                                        children: [
+                                          SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                                strokeWidth: 2),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            countdown > 0
+                                                ? "${countdown}s"
+                                                : (isOn
+                                                ? "Đang cắt..."
+                                                : "Đang đóng..."),
+                                          ),
+                                        ],
+                                      )
+                                          : Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .center,
+                                        children: [
+                                          Icon(isOn ? Icons.power_off : Icons
+                                              .flash_on),
+                                          SizedBox(width: 6),
+                                          Text(isOn ? "Cắt" : "Đóng"),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  /// ===== FORCE =====
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              30),
+                                        ),
+                                        backgroundColor: BreakerColors.off,
+                                        // Force ĐÓNG (xanh dương nhạt)
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      onPressed: (isMaintenance ||
+                                          isSwitching || countdown > 0)
+                                          ? null
+                                          : () async {
+                                        final password = await _showPasswordDialog(
+                                            context);
+                                        if (password == null) return;
+
+                                        await context
+                                            .read<DeviceCubit>()
+                                            .forcePower(
+                                          device,
+                                          password: password,
+                                        );
+                                      },
+                                      child: countdown > 0
+                                          ? Text(
+                                        "$countdown s",
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                          : const Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .center,
+                                        children: [
+                                          Icon(Icons.flash_on, size: 18),
+                                          SizedBox(width: 6),
+                                          Text("Force"),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  /// ===== BẢO TRÌ =====
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 14),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              30),
+                                        ),
+                                        backgroundColor: isMaintenance
+                                            ? BreakerColors.exitMaintenance
+                                            : BreakerColors.maintenance,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      onPressed:
+                                      state.isForceLoading ||
+                                          maintenanceCountdown > 0 ||
+                                          realStatus == -1 || // offline
+                                          realStatus ==
+                                              1 // đang ON thì không cho bảo trì
+                                          ? null
+                                          : () async {
+                                        final password = await _showPasswordDialog(
+                                            context);
+                                        if (password == null) return;
+
+                                        final wasMaintenance = realStatus == 2;
+
+                                        await context
+                                            .read<DeviceCubit>()
+                                            .toggleMaintenance(
+                                          device,
+                                          password: password,
+                                        );
+
+                                        if (wasMaintenance) {
+                                          startMaintenanceCountdown();
+                                        }
+                                      },
+                                      child: state.isForceLoading
+                                          ? const SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2),
+                                      )
+                                          : Text(
+                                        maintenanceCountdown > 0
+                                            ? "Chờ ${maintenanceCountdown}s"
+                                            : isMaintenance
+                                            ? "Thoát bảo trì"
+                                            : "Bảo trì",
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(width: 8),
-                              Text(
-                                countdown > 0
-                                    ? "${countdown}s"
-                                    : (isOn ? "Đang cắt..." : "Đang đóng..."),
-                              ),
-                            ],
-                          )
-                              : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(isOn ? Icons.power_off : Icons.flash_on),
-                              SizedBox(width: 6),
-                              Text(isOn ? "Cắt" : "Đóng"),
+
+                              const SizedBox(height: 10),
+
+                              /// GRID OVERVIEW
+                              _buildOverviewSection(context, device),
+
                             ],
                           ),
                         ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      /// ===== FORCE =====
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            backgroundColor: BreakerColors.off, // Force ĐÓNG (xanh dương nhạt)
-                            foregroundColor: Colors.white,
-                          ),
-                          onPressed: (isMaintenance || isSwitching || countdown > 0)
-                              ? null
-                              : () async {
-
-                            final password = await _showPasswordDialog(context);
-                            if (password == null) return;
-
-                            await context.read<DeviceCubit>().forcePower(
-                              device,
-                              password: password,
-                            );
-                          },
-                          child: countdown > 0
-                              ? Text(
-                            "$countdown s",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                              : const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.flash_on, size: 18),
-                              SizedBox(width: 6),
-                              Text("Force"),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      /// ===== BẢO TRÌ =====
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            backgroundColor: isMaintenance
-                                ? BreakerColors.exitMaintenance
-                                : BreakerColors.maintenance,
-                            foregroundColor: Colors.white,
-                          ),
-                          onPressed:
-                          state.isForceLoading ||
-                              maintenanceCountdown > 0 ||
-                              realStatus == -1 ||   // offline
-                              realStatus == 1       // đang ON thì không cho bảo trì
-                              ? null
-                              : () async {
-                            final password = await _showPasswordDialog(context);
-                            if (password == null) return;
-
-                            final wasMaintenance = realStatus == 2;
-
-                            await context.read<DeviceCubit>().toggleMaintenance(
-                              device,
-                              password: password,
-                            );
-
-                            if (wasMaintenance) {
-                              startMaintenanceCountdown();
-                            }
-                          },
-                          child: state.isForceLoading
-                              ? const SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                              : Text(
-                            maintenanceCountdown > 0
-                                ? "Chờ ${maintenanceCountdown}s"
-                                : isMaintenance
-                                ? "Thoát bảo trì"
-                                : "Bảo trì",
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  /// GRID OVERVIEW
-                  _buildOverviewSection(context, device),
-
-                ],
-              ),
-                ),
-              ),
+                      );
+                    }
             ),
-        );
+        ));
 
   }
 

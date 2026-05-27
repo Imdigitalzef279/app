@@ -300,38 +300,50 @@ class _ProjectSettingScreenState
 
           const SizedBox(height: 18),
 
-          GridView.count(
-            shrinkWrap: true,
-            physics:
-            const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 1.5,
-            children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
 
-              _roleCard(
-                "Admin",
-                "Toàn quyền hệ thống".tr(),
-                AccountType.admin,
-              ),
-              _roleCard(
-                "Kỹ thuật",
-                "Cài đặt + bảo trì".tr(),
-                AccountType.technician,
-              ),
-              _roleCard(
-                "Người dùng",
-                "Chỉ xem dữ liệu".tr(),
-                AccountType.user,
-              ),
-              _roleCard(
-                "Web Pro",
-                "Trả phí - báo cáo nâng cao".tr(),
-                AccountType.webPaid,
-              ),
-            ],
-          ),
+              final isTablet = constraints.maxWidth >= 600;
+
+              return GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+
+                /// tablet 2 cột rộng đẹp hơn
+                crossAxisCount: isTablet ? 2 : 2,
+
+                /// spacing
+                mainAxisSpacing: isTablet ? 16 : 10,
+                crossAxisSpacing: isTablet ? 16 : 10,
+
+                /// tablet card thấp hơn để không dư trắng
+                childAspectRatio: isTablet ? 2.2 : 1.5,
+
+                children: [
+                  _roleCard(
+                    "Admin",
+                    "Toàn quyền hệ thống".tr(),
+                    AccountType.admin,
+                  ),
+                  _roleCard(
+                    "Kỹ thuật",
+                    "Cài đặt + bảo trì".tr(),
+                    AccountType.technician,
+                  ),
+                  _roleCard(
+                    "Người dùng",
+                    "Chỉ xem dữ liệu".tr(),
+                    AccountType.user,
+                  ),
+                  _roleCard(
+                    "Web Pro",
+                    "Trả phí - báo cáo nâng cao".tr(),
+                    AccountType.webPaid,
+                  ),
+                ],
+              );
+            },
+          )
         ],
       ),
     );
@@ -379,7 +391,9 @@ class _ProjectSettingScreenState
       onTap: () => _handleAccountTypeChange(type),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(
+          MediaQuery.of(context).size.width >= 600 ? 20 : 16,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? selectedBg : Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -414,7 +428,9 @@ class _ProjectSettingScreenState
               ),
             ),
 
-            const SizedBox(height: 14),
+            SizedBox(
+              height: MediaQuery.of(context).size.width >= 600 ? 10 : 14,
+            ),
 
             /// Subtitle + optional icon
             Row(
