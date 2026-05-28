@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../data/mock/product_data.dart';
 import '../product_detail/product_detail_screen.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -11,65 +12,19 @@ class CategoryScreen extends StatelessWidget {
     required this.type,
   });
 
-  ///  DATA THEO TYPE
-  List<Map<String, String>> getProducts() {
-    if (type == 1) {
-      ///  ACREL
-      return [
-        {
-          "name": "Acrel Device 1",
-          "price": "3.000.000đ",
-          "image":
-          "assets/images/acrel/1446074178112364544_08557473-8d6a-46ec-96a2-a1c7ca71168e.webp"
-        },
-        {
-          "name": "Acrel Device 2",
-          "price": "4.500.000đ",
-          "image":
-          "assets/images/acrel/1446074178112364544_ab28e10d-d177-4106-b705-3bb6dd6644bb.webp"
-        },
-        {
-          "name": "Acrel Device 3",
-          "price": "5.200.000đ",
-          "image":
-          "assets/images/acrel/1446074178112364544_acfcbf40-6a2a-4da4-8739-567915c07d1d.webp"
-        },
-      ];
-    } else {
-      ///  MATIS
-      return [
-        {
-          "name": "Matis Device 1",
-          "price": "2.000.000đ",
-          "image": "assets/images/matis/1.png"
-        },
-        {
-          "name": "Matis Device 2",
-          "price": "2.500.000đ",
-          "image": "assets/images/matis/2.png"
-        },
-        {
-          "name": "Matis Device 3",
-          "price": "3.200.000đ",
-          "image": "assets/images/matis/4.png"
-        },
-        {
-          "name": "Matis Device 4",
-          "price": "4.000.000đ",
-          "image": "assets/images/matis/5.png"
-        },
-        {
-          "name": "Matis System",
-          "price": "6.000.000đ",
-          "image": "assets/images/matis/Enertrek System.png"
-        },
-        {
-          "name": "Matis Banner",
-          "price": "1.500.000đ",
-          "image": "assets/images/matis/ảnh bìa.png"
-        },
-      ];
-    }
+  List<ProductItem> getProducts() {
+    final categoryMap = [
+      'Đồng hồ & đo lường',
+      'Cầu dao thông minh',
+      'Bộ đóng ngắt',
+      'Cổng thông minh',
+      'Thiết bị môi trường',
+      'KRA Smart Safety',
+    ];
+
+    return allProducts
+        .where((e) => e.category == categoryMap[type])
+        .toList();
   }
 
   @override
@@ -123,9 +78,9 @@ class CategoryScreen extends StatelessWidget {
                 final item = products[index];
 
                 return _ProductItem(
-                  name: item["name"]!,
-                  price: item["price"]!,
-                  image: item["image"]!,
+                  name: item.name,
+                  price: item.price,
+                  image: item.image,
                 );
               },
             ),
