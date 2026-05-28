@@ -1034,8 +1034,8 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 },
               ),
             ),
-            alignment: BarChartAlignment.spaceAround,
-            groupsSpace: 6,
+            alignment: BarChartAlignment.center,
+            groupsSpace: 14,
             maxY: maxValue == 0 ? 5 : getMaxY(maxValue),
             borderData: FlBorderData(show: false),
 

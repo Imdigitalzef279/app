@@ -1061,6 +1061,36 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     }
 
     final displayData = data;
+    final now = DateTime.now();
+
+    final yesterday = now.subtract(Duration(days: 1));
+
+    final yesterdayData = applyRange(
+      context.read<AnalyticsCubit>().state.data,
+      ChartRange.day,
+    ).where((e) {
+
+      final d = e.time;
+
+      return d.year == yesterday.year &&
+          d.month == yesterday.month &&
+          d.day == yesterday.day;
+
+    }).toList();
+
+    final yesterdayMap = <int, double>{};
+    print("Yesterday count: ${yesterdayData.length}");
+    for (final item in yesterdayData) {
+
+      final key = selectedRange == ChartRange.day
+          ? item.time.hour
+          : item.time.day;
+
+      yesterdayMap[key] =
+      selectedChart == 0
+          ? item.p
+          : item.epi;
+    }
     final rawValues = displayData.map<double>((e) {
       return selectedChart == 0 ? e.p : e.epi;
     }).toList();
@@ -1071,12 +1101,15 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     final scaleFactor = maxRaw < 10 ? 1000 : 1;
 
     final values = rawValues.map((e) => e * scaleFactor).toList();
-    final sampledValues = values.length > 20
-        ? values.asMap().entries
-        .where((e) => e.key % 2 == 0)
-        .map((e) => e.value)
-        .toList()
-        : values;
+    final sampledEntries = displayData.asMap().entries.where((e) {
+
+      if (displayData.length <= 20) {
+        return true;
+      }
+
+      return e.key % 2 == 0;
+
+    }).toList();
     final max =
     values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b);
     final safeMax = max == 0 ? 1 : max;
@@ -1086,11 +1119,150 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       scrollDirection: Axis.horizontal,
       child: SizedBox(
         width: math.max(
-          displayData.length * 32,
+          sampledEntries.length * 40,
           MediaQuery.of(context).size.width,
         ),
         height: 260,
-        child: BarChart(
+        child: isLineChart
+            ? LineChart(
+          LineChartData(
+            gridData: FlGridData(
+              show: true,
+              drawVerticalLine: false,
+              horizontalInterval:
+              safeMax <= 0 ? 1 : (safeMax / 4),
+              getDrawingHorizontalLine: (value) {
+                return FlLine(
+                  color: Colors.grey.withOpacity(0.15),
+                  strokeWidth: 0.8,
+                );
+              },
+            ),
+
+            borderData: FlBorderData(show: false),
+
+            titlesData: FlTitlesData(
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 32,
+                  interval: 1,
+                  getTitlesWidget: (value, _) {
+
+                    final index = value.toInt();
+
+                    if (index >= displayData.length) {
+                      return SizedBox();
+                    }
+
+                    if (displayData.length > 20 &&
+                        index % 2 != 0) {
+                      return SizedBox();
+                    }
+
+                    final time = displayData[index].time;
+
+                    String label = "";
+
+                    switch (selectedRange) {
+
+                      case ChartRange.day:
+                        label = "${time.hour}h";
+                        break;
+
+                      case ChartRange.week:
+                        label = "${time.day}/${time.month}";
+                        break;
+
+                      case ChartRange.month:
+                        label = "${time.day}";
+                        break;
+
+                      case ChartRange.year:
+                        label = "T${time.month}";
+                        break;
+
+                      default:
+                        label = "${index + 1}";
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 50,
+                  getTitlesWidget: (value, meta) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Text(
+                        (value / scaleFactor)
+                            .toStringAsFixed(1),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            lineBarsData: [
+              LineChartBarData(
+                spots: sampledEntries.map((e) {
+
+                  final value = (
+                      selectedChart == 0
+                          ? e.value.p
+                          : e.value.epi
+                  ) * scaleFactor;
+
+                  return FlSpot(
+                    e.key.toDouble(),
+                    value,
+                  );
+
+                }).toList(),
+
+                isCurved: true,
+                curveSmoothness: 0.3,
+                color: Color(0xFF2C5C85),
+                barWidth: 3,
+
+                dotData: FlDotData(
+                  show: true,
+                ),
+
+                belowBarData: BarAreaData(
+                  show: true,
+                  color: Color(0xFF2C5C85)
+                      .withOpacity(0.08),
+                ),
+              ),
+            ],
+          )
+        )
+              : BarChart(
           BarChartData(
             barTouchData: BarTouchData(
               enabled: true,
@@ -1121,7 +1293,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 },
               ),
             ),
-            alignment: BarChartAlignment.spaceAround,
+            alignment: BarChartAlignment.spaceEvenly,
             maxY: safeMax * 1.2,
             gridData: FlGridData(
               show: true,
@@ -1148,9 +1320,15 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                   reservedSize: 32,
                   interval: 1,
                   getTitlesWidget: (value, _) {
+
                     final index = value.toInt();
 
                     if (index >= displayData.length) {
+                      return SizedBox();
+                    }
+
+                    // chỉ hiện số lẻ để đồng bộ với sampledEntries
+                    if (displayData.length > 20 && index % 2 != 0) {
                       return SizedBox();
                     }
 
@@ -1221,18 +1399,45 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               ),
             ),
 
-            barGroups: sampledValues.asMap().entries.map((e) {
-              final index = e.key;
-              final value = e.value;
+            barGroups: sampledEntries.map((e) {
+
+              final originalIndex = e.key;
+              final value = (
+                  selectedChart == 0
+                      ? e.value.p
+                      : e.value.epi
+              ) * scaleFactor;
+
+              final item = e.value;
+              final compareKey = selectedRange == ChartRange.day
+                  ? item.time.hour
+                  : item.time.day;
+
+              final yesterdayValue =
+                  (yesterdayMap[compareKey] ?? 0) * scaleFactor;
 
               return BarChartGroupData(
-                x: index,
+                x: originalIndex,
+                barsSpace: 4,
+
                 barRods: [
+
+
+                  // hôm qua
+                  BarChartRodData(
+                    toY: yesterdayValue,
+                    width: 8,
+                    borderRadius: BorderRadius.circular(2),
+                      color: Color(0xFF60A5FA),
+                  ),
+
+
+                  // hôm nay
                   BarChartRodData(
                     toY: value,
-                    width: 6,
+                    width: 8,
                     borderRadius: BorderRadius.circular(2),
-                    color: index == maxIndex
+                    color: originalIndex == maxIndex
                         ? Color(0xFF1E3A5F)
                         : Color(0xFF2C5C85),
                   ),
@@ -1727,8 +1932,22 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            selectedChart == 0 ? "Power (kW)" : "Energy (kWh)",
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: [
+
+                              Text(
+                                selectedChart == 0
+                                    ? "Power (kW)"
+                                    : "Energy (kWh)",
+                              ),
+
+                              SizedBox(
+                                width: 120,
+                                child: buildChartTypeToggle(),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 12),
                           buildChart(data),
