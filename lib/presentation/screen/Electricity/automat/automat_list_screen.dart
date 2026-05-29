@@ -37,30 +37,53 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
     loadUsername();
     final cubit = context.read<DeviceCubit>();
 
-    cubit.getAllDevices(
-      powerStationId: widget.powerStationId,
-    ).then((_) {
+    if (widget.powerStationId == 261) {
 
-      final devices = cubit.state.resultDevices.data ?? [];
-      if (devices.isNotEmpty) {
-        final d = devices.first;
+      cubit.getAllDevicesByStations([
+        261,
+        262,
+      ]).then((_) {
 
-        print("========= DEVICE DEBUG =========");
-        print("id: ${d.id}");
-        print("code: ${d.code}");
-        print("powerStationId: ${d.powerStationId}");
-        print("gatewayNumber: ${d.gatewayNumber}");
-        print("meterTypeId: ${d.meterTypeId}");
-        print("name: ${d.name}");
-        print("full json: ${d.toJson()}");
-      }
-      for (var d in devices) {
-        if (d.code != null) {
-          cubit.loadBreakerLog(d.code!);
+        final devices =
+            cubit.state.resultDevices.data ?? [];
+
+        print("========= ALL DEVICES =========");
+
+        for (var d in devices) {
+          print(
+              "ID=${d.id}"
+                  " | NAME=${d.name}"
+                  " | CODE=${d.code}"
+                  " | PARENT=${d.parentId}"
+                  " | LEVEL=${d.level}"
+                  " | METER_TYPE_ID=${d.meterTypeId}"
+                  " | POWER_STATION=${d.powerStation.name}"
+          );
         }
-      }
 
-    });
+        for (var d in devices) {
+          if (d.code.isNotEmpty) {
+            cubit.loadBreakerLog(d.code);
+          }
+        }
+      });
+
+    } else {
+
+      cubit.getAllDevices(
+        powerStationId: widget.powerStationId,
+      ).then((_) {
+
+        final devices =
+            cubit.state.resultDevices.data ?? [];
+
+        for (var d in devices) {
+          if (d.code.isNotEmpty) {
+            cubit.loadBreakerLog(d.code);
+          }
+        }
+      });
+    }
   }
   Future<void> loadUsername() async {
     final prefs = await SharedPreferences.getInstance();

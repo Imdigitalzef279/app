@@ -1715,32 +1715,27 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
     else {
 
-      legends = ["Năm nay", "Năm trước", "2 năm trước"];
-      maxX = 12;
+      legends = ["Tháng này", "Tháng trước", "2 tháng trước"];
+      maxX = 31;
 
-      groupedData["Năm nay"] = List.filled(12, 0);
-      groupedData["Năm trước"] = List.filled(12, 0);
-      groupedData["2 năm trước"] = List.filled(12, 0);
+      groupedData["Tháng này"] = List.filled(31, 0);
+      groupedData["Tháng trước"] = List.filled(31, 0);
+      groupedData["2 tháng trước"] = List.filled(31, 0);
 
       for (final item in rawData) {
-
-        final value =
-        selectedChart == 0 ? item.p : item.epi;
-
+        final value = selectedChart == 0 ? item.p : item.epi;
         final d = item.time;
 
-        final diffYear = now.year - d.year;
+        final diffMonth =
+            (now.year - d.year) * 12 +
+                (now.month - d.month);
 
-        if (diffYear == 0) {
-          groupedData["Năm nay"]![d.month - 1] += value;
-        }
-
-        else if (diffYear == 1) {
-          groupedData["Năm trước"]![d.month - 1] += value;
-        }
-
-        else if (diffYear == 2) {
-          groupedData["2 năm trước"]![d.month - 1] += value;
+        if (diffMonth == 0) {
+          groupedData["Tháng này"]![d.day - 1] += value;
+        } else if (diffMonth == 1) {
+          groupedData["Tháng trước"]![d.day - 1] += value;
+        } else if (diffMonth == 2) {
+          groupedData["2 tháng trước"]![d.day - 1] += value;
         }
       }
     }

@@ -180,6 +180,42 @@ class DeviceCubit extends Cubit<DeviceState> {
 
     }
   }
+  Future<void> getAllDevicesByStations(
+      List<int> stationIds,
+      ) async {
+
+    try {
+
+      List<DeviceResponse> allDevices = [];
+
+      for (final stationId in stationIds) {
+
+        final response =
+        await _repo.getSolarElectric(stationId);
+
+        if (response.data != null) {
+          allDevices.addAll(response.data!);
+        }
+      }
+
+      emit(state.copyWith(
+        resultDevices: Result(
+          status: LoadStatus.success,
+          data: allDevices,
+        ),
+      ));
+
+    } catch (e) {
+
+      emit(state.copyWith(
+        resultDevices: Result(
+          status: LoadStatus.failure,
+          error: e.toString(),
+        ),
+      ));
+
+    }
+  }
   Future<void> importDevices(List<DeviceResponse> newDevices) async {
 
     final prefs = await SharedPreferences.getInstance();

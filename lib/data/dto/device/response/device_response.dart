@@ -16,6 +16,7 @@ class DeviceResponse with _$DeviceResponse {
     @Default(0) int id,
     @Default(0) int projectId,
     @Default(0) int powerStationId,
+
     @Default(0) int status,
     @Default('') String name,
     @Default('') String code,

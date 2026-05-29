@@ -78,7 +78,16 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
         type.toUpperCase(),
         time,
       );
+      print("========== ENERGY DATA ==========");
+      print("COUNT = ${data.length}");
 
+      for (final e in data) {
+        print(
+            "time=${e.time} "
+                "p=${e.p} "
+                "epi=${e.epi}"
+        );
+      }
       emit(state.copyWith(
         data: data,
         isLoading: false,

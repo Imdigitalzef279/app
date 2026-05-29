@@ -631,6 +631,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
             iconPath: "assets/icons/icons_new/icon_energy_meter.png",
             title: 'Năng Lượng'.tr(),
             onTap: () {
+              print("PROJECT ID = ${widget.project.id}");
+              print("PROJECT NAME = ${widget.project.name}");
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -736,6 +738,8 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
             iconPath: "assets/icons/icons_new/icon_energy_meter.png",
             title: 'Năng Lượng'.tr(),
             onTap: () {
+              print("PROJECT ID = ${widget.project.id}");
+              print("PROJECT NAME = ${widget.project.name}");
               Navigator.push(
                 context,
                 MaterialPageRoute(

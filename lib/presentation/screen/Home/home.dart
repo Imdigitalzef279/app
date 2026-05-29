@@ -61,7 +61,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                   state.resultProjects.data!.isNotEmpty) {
 
                 final projects = state.resultProjects.data!;
+                print("===== PROJECTS =====");
 
+                for (var p in projects) {
+                  print("${p.id} - ${p.name}");
+                }
                 final project = projects.firstWhere(
                       (e) => e.id == 181,
                   orElse: () => projects.first,

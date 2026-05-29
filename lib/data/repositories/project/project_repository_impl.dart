@@ -19,7 +19,20 @@ class ProjectRepositoryImpl extends BaseRepository
   Future<Result<List<PowerStationResponse>>> getPowerStation(int projectID) async {
     final result = Result<List<PowerStationResponse>>();
     try{
-      final List<PowerStationResponse> data = await _api.getPowerStation(projectID);
+      final List<PowerStationResponse> data =
+      await _api.getPowerStation(projectID);
+
+      print("===== POWER STATION API =====");
+
+      for (var p in data) {
+        print(
+            "ID=${p.id}"
+                " | PROJECT=${p.projectId}"
+                " | NAME=${p.name}"
+        );
+      }
+
+      print("=============================");
       return result.copyWith(data: data, status: LoadStatus.success);
     }catch (e) {
 
