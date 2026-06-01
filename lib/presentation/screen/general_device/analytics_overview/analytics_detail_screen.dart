@@ -1635,7 +1635,13 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       ) {
 
     final now = DateTime.now();
+    print("=========== ENERGY REPORT ===========");
 
+    for (final item in rawData) {
+      print(
+          "${item.time} | p=${item.p} | epi=${item.epi}"
+      );
+    }
     final Map<String, List<double>> groupedData = {};
 
     List<String> legends = [];
