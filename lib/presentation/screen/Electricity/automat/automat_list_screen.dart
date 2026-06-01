@@ -14,6 +14,8 @@ import '../../device/bloc/device_cubit.dart';
 import '../../device/device_card/device_card_widget.dart';
 import 'automat_chart/bloc/automat_chart_cubit.dart';
 import 'automat_detail_screen.dart';
+import 'meter_detail/bloc/meter_chart_cubit.dart';
+import 'meter_detail/meter_detail_screen.dart';
 
 
 class AutomatListScreen extends StatefulWidget {
@@ -140,6 +142,13 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
   /// ================= DEVICE CARD =================
   Widget buildDeviceCard(BuildContext context, device) {
     final isFake = (device.id ?? 0) < 0;
+    final isMeter =
+        device.meterTypeId == 2;
+    print(
+        "DEVICE=${device.name}"
+            " | meterTypeId=${device.meterTypeId}"
+            " | isMeter=$isMeter"
+    );
     final state = context.watch<DeviceCubit>().state;
     final log = state.breakerLogs[device.code];
     final isGatewayOnline = log != null &&
@@ -179,8 +188,14 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                     create: (_) => AutomatChartCubit(),
                   ),
 
+                  BlocProvider(
+                    create: (_) => MeterChartCubit(),
+                  ),
+
                 ],
-                child: AutomatDetailScreen(device: device),
+                child: isMeter
+                    ? MeterDetailScreen(device: device)
+                    : AutomatDetailScreen(device: device),
               ),
             ),
           );
@@ -371,7 +386,30 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
 
           SizedBox(
             width: 80,
-            child: Column(
+            child: isMeter
+                ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+
+                const Icon(
+                  Icons.electric_meter,
+                  size: 28,
+                  color: Color(0xFF1ABC9C),
+                ),
+
+                const SizedBox(height: 6),
+
+                const Text(
+                  "Meter",
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF1ABC9C),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            )
+                : Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
