@@ -725,6 +725,7 @@ class _SettingScreenState extends State<SettingScreen> {
           "notify_email",
           "save_log",
           "export_report",
+          "pricing_locked",
         ],
       );
       print("LOAD CONFIG DEVICE ID: ${widget.device.id}");
@@ -827,14 +828,14 @@ class _SettingScreenState extends State<SettingScreen> {
                 parseBool(e.configValue);
             break;
           case 'pricing_type':
-
             pricingType =
             e.configValue == "1"
                 ? "tiered"
                 : "time_of_use";
+            break;
 
-            pricingLocked = true;
-
+          case 'pricing_locked':
+            pricingLocked = parseBool(e.configValue);
             break;
         }
       }
@@ -977,6 +978,11 @@ class _SettingScreenState extends State<SettingScreen> {
           meterId: widget.device.id,
           configKey: "pricing_type",
           configValue: (pricingType == "tiered" ? 1 : 0).toString(),
+        ),
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "pricing_locked",
+          configValue: "true",
         ),
         MeterConfigRequest(
           meterId: widget.device.id,

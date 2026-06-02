@@ -286,6 +286,7 @@ class _MeterSettingScreenState
           "pricing_type",
           "enable_over_power",
           "over_power",
+          "pricing_locked",
         ],
       );
       print("LOAD CONFIG DEVICE ID: ${widget.device.id}");
@@ -347,14 +348,14 @@ class _MeterSettingScreenState
                 double.tryParse(e.configValue) ?? 5;
             break;
           case 'pricing_type':
-
             pricingType =
             e.configValue == "1"
                 ? "tiered"
                 : "time_of_use";
+            break;
 
-            pricingLocked = true;
-
+          case 'pricing_locked':
+            pricingLocked = parseBool(e.configValue);
             break;
         }
       }
@@ -437,7 +438,11 @@ class _MeterSettingScreenState
           configKey: "pricing_type",
           configValue: (pricingType == "tiered" ? 1 : 0).toString(),
         ),
-
+        MeterConfigRequest(
+          meterId: widget.device.id,
+          configKey: "pricing_locked",
+          configValue: "true",
+        ),
         MeterConfigRequest(
           meterId: widget.device.id,
           configKey: "enable_over_power",
