@@ -26,6 +26,7 @@ import '../../dto/alarm/response/alarm_response.dart';
 import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../dto/electric_report/electric_report_response.dart';
 import '../../dto/energy_report/energy_report_response.dart';
+import '../../dto/register_account/request/register_account_request.dart';
 
 part 'api_client.g.dart';
 
@@ -188,7 +189,10 @@ abstract class ApiClient {
       @Path('id') int id,
       @Body() MeterConfigRequest request,
       );
-
+  @POST('api/account/register')
+  Future<dynamic> registerAccount(
+      @Body() RegisterAccountRequest request,
+      );
   // ================= Phân tích nang luong =================
 
   @GET('api/app/alarm-config')

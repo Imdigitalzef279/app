@@ -44,8 +44,6 @@ class RegisterCubit extends Cubit<RegisterState> {
         state.copyWith(loadStatus: LoadStatus.loading),
       );
 
-      final token = await auth.signIn(authRequest);
-      await sharedPreferences.setAccessToken(token.data?.accessToken ?? "");
 
       final response = await registerRepo.register(UserRequest(
           userName: state.accountName,

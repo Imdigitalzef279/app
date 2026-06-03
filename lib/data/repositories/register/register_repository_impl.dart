@@ -9,6 +9,7 @@ import 'package:solar_energy/data/repositories/register/register_repository.dart
 
 import '../../data_sources/api/api_client.dart';
 import '../../dto/api_response/api_response.dart';
+import '../../dto/register_account/request/register_account_request.dart';
 
 class RegisterRepositoryImpl extends BaseRepository
     implements RegisterRepository {
@@ -18,21 +19,32 @@ class RegisterRepositoryImpl extends BaseRepository
   Future<Result<ProfileResponse>> register(UserRequest request) async {
     final result = Result<ProfileResponse>();
     try {
-      final profileResponse = await _api.registerUser(request);
-      if(profileResponse.surname.isNotEmpty){
-      return result.copyWith(status: LoadStatus.success);}
+      await _api.registerAccount(
+        RegisterAccountRequest(
+          userName: request.userName,
+          emailAddress: request.email,
+          password: request.password,
+          appName: "KraPower",
+        ),
+      );
+
       return result.copyWith(
-          status: LoadStatus.failure,
-          error: "Có lỗi xảy ra, vui lòng thao tác lại!!!");
+        status: LoadStatus.success,
+      );
+
     } catch (e) {
-      if (e is DioException && e.error is ErrorResponse) {
-        final error = e.error as ErrorResponse;
-        return result.copyWith(
-            status: LoadStatus.failure, error: error.message);
+      print("============== REGISTER ERROR ==============");
+      print(e);
+
+      if (e is DioException) {
+        print("STATUS CODE: ${e.response?.statusCode}");
+        print("RESPONSE: ${e.response?.data}");
       }
+
       return result.copyWith(
-          status: LoadStatus.failure,
-          error: "Có lỗi xảy ra, vui lòng thao tác lại!!!");
+        status: LoadStatus.failure,
+        error: e.toString(),
+      );
     }
   }
 }
