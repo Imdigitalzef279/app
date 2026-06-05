@@ -22,6 +22,14 @@ class AnalyticsDetailScreen extends StatefulWidget {
 
 class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   ChartRange selectedRange = ChartRange.day;
+  DateTime selectedDay = DateTime.now();
+  int selectedDayOffset = 0;
+
+  DateTime selectedMonth = DateTime.now();
+  int selectedMonthOffset = 0;
+
+  int selectedYear = DateTime.now().year;
+
   int selectedChart = 0;
   int selectedTab = 0; // 0: Energy, 1: MCB
   bool isLineChart = false;
@@ -1654,13 +1662,16 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     int maxX = 0;
 
     if (selectedRange == ChartRange.day) {
-
-      legends = ["Hôm nay", "Hôm qua", "2 ngày trước"];
+      legends = [
+        "${selectedDay.day}/${selectedDay.month}",
+        "${selectedDay.subtract(Duration(days: 1)).day}/${selectedDay.subtract(Duration(days: 1)).month}",
+        "${selectedDay.subtract(Duration(days: 2)).day}/${selectedDay.subtract(Duration(days: 2)).month}",
+      ];
       maxX = 24;
 
-      groupedData["Hôm nay"] = List.filled(24, 0);
-      groupedData["Hôm qua"] = List.filled(24, 0);
-      groupedData["2 ngày trước"] = List.filled(24, 0);
+      for (final legend in legends) {
+        groupedData[legend] = List.filled(24, 0);
+      }
 
       for (final item in rawData) {
 
@@ -1670,30 +1681,86 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         final d = item.time;
 
         final diff =
-            now.difference(DateTime(d.year, d.month, d.day)).inDays;
-
+            selectedDay
+                .difference(
+              DateTime(d.year, d.month, d.day),
+            )
+                .inDays;
         if (diff == 0) {
-          groupedData["Hôm nay"]![d.hour] += value;
+          groupedData[legends[0]]![d.hour] += value;
         }
 
         else if (diff == 1) {
-          groupedData["Hôm qua"]![d.hour] += value;
+          groupedData[legends[1]]![d.hour] += value;
         }
 
         else if (diff == 2) {
-          groupedData["2 ngày trước"]![d.hour] += value;
+          groupedData[legends[2]]![d.hour] += value;
         }
       }
     }
 
     else if (selectedRange == ChartRange.month) {
 
-      legends = ["Tháng này", "Tháng trước", "2 tháng trước"];
+      final current = selectedMonth;
+
+      final prev1 =
+      DateTime(current.year, current.month - 1);
+
+      final prev2 =
+      DateTime(current.year, current.month - 2);
+
+      legends = [
+        "${current.month}/${current.year}",
+        "${prev1.month}/${prev1.year}",
+        "${prev2.month}/${prev2.year}",
+      ];
+
       maxX = 31;
 
-      groupedData["Tháng này"] = List.filled(31, 0);
-      groupedData["Tháng trước"] = List.filled(31, 0);
-      groupedData["2 tháng trước"] = List.filled(31, 0);
+      for (final legend in legends) {
+        groupedData[legend] = List.filled(31, 0);
+      }
+      for (final item in rawData) {
+
+        final value =
+        selectedChart == 0 ? item.p : item.epi;
+
+        final d = item.time;
+
+        if (d.year == current.year &&
+            d.month == current.month) {
+
+          groupedData[legends[0]]![d.day - 1] += value;
+        }
+
+        else if (d.year == prev1.year &&
+            d.month == prev1.month) {
+
+          groupedData[legends[1]]![d.day - 1] += value;
+        }
+
+        else if (d.year == prev2.year &&
+            d.month == prev2.month) {
+
+          groupedData[legends[2]]![d.day - 1] += value;
+        }
+      }
+    }
+
+    else if (selectedRange == ChartRange.year) {
+
+      legends = [
+        "$selectedYear",
+        "${selectedYear - 1}",
+        "${selectedYear - 2}",
+      ];
+
+      maxX = 12;
+
+      groupedData[legends[0]] = List.filled(12, 0);
+      groupedData[legends[1]] = List.filled(12, 0);
+      groupedData[legends[2]] = List.filled(12, 0);
 
       for (final item in rawData) {
 
@@ -1702,46 +1769,19 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
         final d = item.time;
 
-        final diffMonth =
-            (now.year - d.year) * 12 + now.month - d.month;
+        if (d.year == selectedYear) {
 
-        if (diffMonth == 0) {
-          groupedData["Tháng này"]![d.day - 1] += value;
+          groupedData[legends[0]]![d.month - 1] += value;
         }
 
-        else if (diffMonth == 1) {
-          groupedData["Tháng trước"]![d.day - 1] += value;
+        else if (d.year == selectedYear - 1) {
+
+          groupedData[legends[1]]![d.month - 1] += value;
         }
 
-        else if (diffMonth == 2) {
-          groupedData["2 tháng trước"]![d.day - 1] += value;
-        }
-      }
-    }
+        else if (d.year == selectedYear - 2) {
 
-    else {
-
-      legends = ["Tháng này", "Tháng trước", "2 tháng trước"];
-      maxX = 31;
-
-      groupedData["Tháng này"] = List.filled(31, 0);
-      groupedData["Tháng trước"] = List.filled(31, 0);
-      groupedData["2 tháng trước"] = List.filled(31, 0);
-
-      for (final item in rawData) {
-        final value = selectedChart == 0 ? item.p : item.epi;
-        final d = item.time;
-
-        final diffMonth =
-            (now.year - d.year) * 12 +
-                (now.month - d.month);
-
-        if (diffMonth == 0) {
-          groupedData["Tháng này"]![d.day - 1] += value;
-        } else if (diffMonth == 1) {
-          groupedData["Tháng trước"]![d.day - 1] += value;
-        } else if (diffMonth == 2) {
-          groupedData["2 tháng trước"]![d.day - 1] += value;
+          groupedData[legends[2]]![d.month - 1] += value;
         }
       }
     }
@@ -1755,7 +1795,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         }
       }
     }
-
+    final safeMaxY = maxY <= 0 ? 1.0 : maxY;
     return Column(
       children: [
 
@@ -1798,8 +1838,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                   groupsSpace: 12,
 
-                  maxY: maxY * 1.2,
-
+                  maxY: safeMaxY * 1.2,
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
@@ -1820,7 +1859,18 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 46,
+                        reservedSize: 50,
+                        interval: safeMaxY / 4,
+                        getTitlesWidget: (value, meta) {
+                          if (value > safeMaxY) {
+                            return const SizedBox();
+                          }
+
+                          return Text(
+                            value.toInt().toString(),
+                            style: const TextStyle(fontSize: 10),
+                          );
+                        },
                       ),
                     ),
 
@@ -1833,9 +1883,16 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                           Widget child;
 
                           if (selectedRange == ChartRange.day) {
+
                             child = Text("${value.toInt()}h");
-                          } else {
+
+                          } else if (selectedRange == ChartRange.month) {
+
                             child = Text("${value.toInt() + 1}");
+
+                          } else {
+
+                            child = Text("T${value.toInt() + 1}");
                           }
 
                           return Padding(
@@ -1955,62 +2012,116 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                           SizedBox(height: 12),
 
-                          Container(
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Builder(
-                                  builder: (_) {
+    Container(
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(16),
+    ),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
 
-                                    final years = state.data
-                                        .map((e) => e.time.year)
-                                        .toSet();
+    Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
 
-                                    final title = years.length <= 1
-                                        ? "Sản lượng theo tháng"
-                                        : "So sánh sản lượng theo năm";
+    Text(
+    selectedRange == ChartRange.day
+    ? "Sản lượng theo ngày"
+        : selectedRange == ChartRange.month
+    ? "Sản lượng theo tháng"
+        : "Sản lượng theo năm",
+    style: TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 15,
+    ),
+    ),
 
-                                    return Text(
-                                      title,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
-                                    );
-                                  },
-                                ),
+      if (selectedRange == ChartRange.day)
+        DropdownButton<int>(
+          value: selectedDayOffset,
+          items: List.generate(7, (i) {
+            final day = DateTime.now().subtract(Duration(days: i));
 
-                                SizedBox(height: 16),
+            return DropdownMenuItem(
+              value: i,
+              child: Text(
+                "${day.day}/${day.month}",
+              ),
+            );
+          }),
+          onChanged: (value) {
+            if (value == null) return;
 
-                                SizedBox(
-                                  height: 380,
-                                  child: buildCompareYearChart(
-                                    context.read<AnalyticsCubit>().state.data,
-                                  ),
-                                ),
-                              ],
+            setState(() {
+              selectedDayOffset = value;
+              selectedDay =
+                  DateTime.now().subtract(Duration(days: value));
+            });
+          },
+        )
 
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+      else if (selectedRange == ChartRange.month)
+        DropdownButton<int>(
+          value: selectedMonthOffset,
+          items: List.generate(12, (i) {
+            final month = DateTime(
+              DateTime.now().year,
+              DateTime.now().month - i,
+            );
 
-                    SizedBox(height: 12),
-                    buildPremiumBlock(data),
-                  ] else ...[
-                    buildChartTypeToggle(),
-                    SizedBox(height: 12),
+            return DropdownMenuItem(
+              value: i,
+              child: Text("${month.month}/${month.year}"),
+            );
+          }),
+          onChanged: (value) {
+            if (value == null) return;
 
-                    buildMCBCharts(state.breakerData ?? []),
-                  ],
-                ]
-            ),
+            setState(() {
+              selectedMonthOffset = value;
+              selectedMonth = DateTime(
+                DateTime.now().year,
+                DateTime.now().month - value,
+              );
+            });
+          },
+        )
+
+      else if (selectedRange == ChartRange.year)
+          DropdownButton<int>(
+            value: selectedYear,
+            items: List.generate(5, (i) {
+              final year = DateTime.now().year - i;
+
+              return DropdownMenuItem(
+                value: year,
+                child: Text(year.toString()),
+              );
+            }),
+            onChanged: (value) {
+              if (value == null) return;
+
+              setState(() {
+                selectedYear = value;
+              });
+            },
+          )
+    ],
+    ),
+
+    SizedBox(height: 16),
+
+    SizedBox(
+    height: 380,
+    child: buildCompareYearChart(
+    context.read<AnalyticsCubit>().state.data,
+    ),
+    ),
+    ],
+    ),
+    ),
 
             if (state.isLoading)
               Center(
@@ -2024,6 +2135,12 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
         ),
       ),
+    ]
+          ]
+            )
+          ]
+      )
+      )
     );
   }
 }
