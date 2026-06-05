@@ -24,7 +24,6 @@ import 'analytics_overview/analytics_overview_screen.dart';
 import 'background/bloc/background_cubit.dart';
 import 'device_grid/device_grid_item.dart';
 import 'notification/notification_screen.dart';
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 bool isTablet(BuildContext context) =>
