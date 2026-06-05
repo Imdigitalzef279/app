@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:solar_energy/presentation/screen/market/product_search.dart';
-import '../general_device/notification/notification_screen.dart';
+import 'package:solar_energy/presentation/screen/market/notification_screen.dart';
 import 'cart_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'category_screen/category_screen.dart';

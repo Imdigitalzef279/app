@@ -339,6 +339,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final xAxisLabel = "Time";
     final limitedData = getDisplayData(chartData);
     final latest = limitedData.isNotEmpty ? limitedData.last : null;
+
+    final deviceState = context.watch<DeviceCubit>().state;
+    final realtimeLog = deviceState.breakerLogs[device.code];
     final double maxValue = limitedData.isEmpty
         ? 5.0
         : limitedData
@@ -563,7 +566,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Điện áp",
-                  "${latest?.ua?.toStringAsFixed(0) ?? '--'}",
+                  "${latest?.ua?.toStringAsFixed(0) ??
+                      realtimeLog?.ua?.toStringAsFixed(0) ??
+                      '--'}",
                   "V",
                 ),
               ),
@@ -571,7 +576,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Dòng điện",
-                  "${latest?.ia?.toStringAsFixed(0) ?? '--'}",
+                  "${latest?.ia?.toStringAsFixed(0) ??
+                      realtimeLog?.ia?.toStringAsFixed(0) ??
+                      '--'}",
                   "A",
                 ),
               ),
@@ -585,7 +592,10 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Công suất",
-                  "${latest?.p?.toStringAsFixed(1) ?? '--'}",
+
+                  "${latest?.p?.toStringAsFixed(1) ??
+                      realtimeLog?.p?.toStringAsFixed(1) ??
+                      '--'}",
                   "kW",
                 ),
               ),
@@ -593,7 +603,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               Expanded(
                 child: _metricCard(
                   "Điện năng",
-                  "${latest?.epi?.toStringAsFixed(0) ?? '--'}",
+                  "${latest?.epi?.toStringAsFixed(0) ??
+                      realtimeLog?.epi?.toStringAsFixed(0) ??
+                      '--'}",
                   "kWh",
                 ),
               ),

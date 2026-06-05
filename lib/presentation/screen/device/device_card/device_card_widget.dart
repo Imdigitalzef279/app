@@ -93,6 +93,10 @@ class DeviceCardWidget extends StatelessWidget {
 
     final countdown =
         state.switchCountdowns[device.id] ?? 0;
+    final voltage = log?.ua;
+    final current = log?.ia;
+    final power = log?.p;
+    final energy = log?.epi;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
