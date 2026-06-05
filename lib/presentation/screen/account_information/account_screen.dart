@@ -3,18 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:solar_energy/presentation/screen/account_information/Bloc/account_cubit.dart';
-
 import '../../../application/cubit/app_cubit.dart';
-
 import '../../../data/dto/power_station/response/power_station_response.dart';
 import '../Electricity/automat/automat_list_screen.dart';
-
 import '../Electricity/automat/import_device/import_device_screen.dart';
 import '../device/bloc/device_cubit.dart';
-
-
 import '../general_device/project_setting_screen.dart';
 import 'AccountDetailScreen.dart';
 
@@ -94,7 +88,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
-                                      "1 gia đình • 0 thiết bị",
+                                      "1  • 0 thiết bị",
                                       style: TextStyle(fontSize: 11),
                                     ),
                                   ),
@@ -157,14 +151,18 @@ class _AccountScreenState extends State<AccountScreen> {
                             children: [
                               _item(Icons.person, "Tài khoản", Colors.blue, 0),
                               _divider(),
-                              _item(Icons.devices, "Quản lý nhiều thiết bị", Colors.green, 1),
-                              _divider(),
+                              _item(
+                                Icons.devices,
+                                "KRA-DLM\nQuản lý Vòng Đời Thiết Bị",
+                                Colors.green,
+                                1,
+                              ),
                               _item(Icons.language, "Ngôn ngữ", Colors.orange, 2),
                               _divider(),
                               _item(Icons.settings, "Cài đặt chung", Colors.grey, 3),
                               _divider(),
-                              _item(Icons.settings, "Import thiết bị", Colors.grey, 4),
-                              _divider(),
+                              // _item(Icons.settings, "Import thiết bị", Colors.grey, 4),
+                              // _divider(),
                               SizedBox(height: 20),
                               _buildLogoutButton(),
                             ],
