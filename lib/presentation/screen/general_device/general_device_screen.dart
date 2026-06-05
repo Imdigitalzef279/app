@@ -567,12 +567,21 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                     child: AnimatedSwitcher(
                                       duration: Duration(milliseconds: 300),
                                       child: favoriteDevices.isEmpty
-                                          ? Text("device.empty".tr())
+                                          ? const Center(
+                                        child: Text(
+                                          "Chưa có thiết bị",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      )
                                           : _isGridView
-                                          ? _buildFixed6AndScroll(favoriteDevices) // grid
-                                          : _buildVerticalPage(favoriteDevices),   // list dọc
+                                          ? _buildFixed6AndScroll(favoriteDevices)
+                                          : _buildVerticalPage(favoriteDevices),
                                     ),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
