@@ -8,6 +8,8 @@ import '../../../../data/dto/device/response/device_response.dart';
 import '../../../../data/dto/energy_report/energy_report_response.dart';
 import '../../../../data/dto/notification_item/notification_item.dart';
 import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
+import '../../../../data/repositories/email/email_repository.dart';
+import '../../../../di.dart';
 import 'bloc/analytics_cubit.dart';
 import 'dart:math' as math;
 class AnalyticsDetailScreen extends StatefulWidget {
@@ -36,16 +38,42 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   @override
   void initState() {
     super.initState();
+
+    print("TEST EMAIL START");
+    _testEmail();
+
     context.read<AnalyticsCubit>().loadEnergy(
       powerStationId: widget.device.powerStationId,
       deviceId: widget.device.id,
       type: "DAY",
     );
+
     context.read<AnalyticsCubit>().loadBreakerChart(
-        breakerSn: widget.device.code
+      breakerSn: widget.device.code,
     );
   }
+  Future<void> _testEmail() async {
+    print("EMAIL FUNCTION CALLED");
 
+    try {
+      final repo = getIt<EmailRepository>();
+
+      print("EMAIL REPOSITORY OK");
+
+      await repo.sendEmail(
+        senderEmailAddress: "krapower.iot4@gmail.com",
+        targetEmailAddress: "krapower.iot4@gmail.com",
+        subject: "Test Email Flutter",
+        body: "Đây là email test từ ứng dụng KRA Power",
+      );
+
+      print("SEND EMAIL SUCCESS");
+    } catch (e, s) {
+      print("SEND EMAIL ERROR");
+      print(e);
+      print(s);
+    }
+  }
   // ================= FILTER =================
   Widget buildFilterBar() {
     return Row(

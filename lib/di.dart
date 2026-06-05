@@ -24,6 +24,7 @@ import 'data/data_sources/mcb/mcb_remote_datasource.dart';
 import 'data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 import 'data/repositories/breaker/breaker_repository.dart';
 import 'data/repositories/electric/electric_repository_impl.dart';
+import 'data/repositories/email/email_repository.dart';
 import 'data/repositories/mcb_repository_impl.dart';
 import 'data/repositories/meter_config/meter_config_repository.dart';
 import 'data/repositories/meter_config/meter_config_repository_impl.dart';
@@ -102,6 +103,9 @@ void configureDependencies() {
   getIt.registerLazySingleton<SolarElectricRepository>(
       () => SolarElectricRepositoryIml());
   getIt.registerLazySingleton<DeviceRepository>(() => DeviceRepositoryImpl());
+  getIt.registerLazySingleton<EmailRepository>(
+        () => EmailRepository(),
+  );
   getIt.registerLazySingleton<ProjectRepository>(() => ProjectRepositoryImpl());
   getIt.registerLazySingleton<ElectricRepository>(() => ElectricRepositoryImpl());
   getIt.registerLazySingleton<RegisterRepository>(() => RegisterRepositoryImpl());
