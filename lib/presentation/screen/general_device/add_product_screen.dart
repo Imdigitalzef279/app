@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,7 +9,6 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/data/dto/meter/request/meter_request.dart';
 
 import '../../../data/data_sources/api/api_client.dart';
-
 
 class AddProductScreen extends StatefulWidget {
   final int powerStationId;
@@ -56,7 +56,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
         gatewayNumber: _gatewayController.text.trim(),
         serialNumber: _serialController.text.trim(),
       );
-
+      debugPrint('''
+CREATE DEVICE:
+powerStationId=${widget.powerStationId}
+name=${_nameController.text}
+code=${_codeController.text}
+description=${_descriptionController.text}
+gateway=${_gatewayController.text}
+serial=${_serialController.text}
+''');
+      debugPrint('===== CREATE DEVICE =====');
+      print('===== CREATE DEVICE =====');
+      print(request.toJson());
+      print('=========================');
+      debugPrint('=========================');
       await GetIt.instance<ApiClient>().createMeter(request);
 
       if (!mounted) return;
@@ -68,12 +81,32 @@ class _AddProductScreenState extends State<AddProductScreen> {
       );
 
       Navigator.pop(context, true);
-    } catch (e) {
+    } on DioException catch (e) {
+      debugPrint('===== ERROR =====');
+      print('===== ERROR =====');
+      print('STATUS: ${e.response?.statusCode}');
+      print('DATA: ${e.response?.data}');
+      print('===============');
+      debugPrint('===============');
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Lỗi: $e'),
+          content: Text(
+            e.response?.data?['error']?['message'] ??
+                e.toString(),
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      debugPrint('ERROR: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
         ),
       );
     } finally {
@@ -86,17 +119,44 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Widget _buildTextField({
-    required String label,
+    required String hint,
     required TextEditingController controller,
+    required IconData icon,
+    int maxLines = 1,
   }) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 16.h),
+      padding: EdgeInsets.only(bottom: 14.h),
       child: TextField(
         controller: controller,
+        maxLines: maxLines,
         decoration: InputDecoration(
-          labelText: label.tr(),
+          hintText: hint.tr(),
+          prefixIcon: Icon(
+            icon,
+            color: Colors.grey.shade600,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.w,
+            vertical: 14.h,
+          ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(14.r),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14.r),
+            borderSide: BorderSide(
+              color: Colors.grey.shade300,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14.r),
+            borderSide: BorderSide(
+              color: AppColors.blueEA,
+              width: 1.5,
+            ),
           ),
         ),
       ),
@@ -118,12 +178,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
     return Scaffold(
       backgroundColor: AppColors.greyFB,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        centerTitle: true,
+        backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
           "Thêm thiết bị".tr(),
           style: AppTextStyle.textBase.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -131,59 +192,130 @@ class _AddProductScreenState extends State<AddProductScreen> {
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16.w),
+              margin: EdgeInsets.only(bottom: 20.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      color: AppColors.blueEA.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Icon(
+                      Icons.devices_other,
+                      color: AppColors.blueEA,
+                      size: 26.sp,
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Thiết bị mới",
+                          style: AppTextStyle.textBase.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          "Nhập thông tin thiết bị để thêm vào hệ thống",
+                          style: AppTextStyle.textSm.copyWith(
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             _buildTextField(
-              label: "Tên thiết bị",
+              hint: "Tên thiết bị",
               controller: _nameController,
+              icon: Icons.devices,
             ),
 
             _buildTextField(
-              label: "Mã thiết bị",
+              hint: "Mã thiết bị",
               controller: _codeController,
+              icon: Icons.qr_code,
             ),
 
             _buildTextField(
-              label: "Mô tả",
+              hint: "Mô tả",
               controller: _descriptionController,
+              icon: Icons.description_outlined,
+              maxLines: 2,
             ),
 
             _buildTextField(
-              label: "Gateway Number",
+              hint: "Gateway Number",
               controller: _gatewayController,
+              icon: Icons.router,
             ),
 
             _buildTextField(
-              label: "Serial Number",
+              hint: "Serial Number",
               controller: _serialController,
+              icon: Icons.confirmation_number_outlined,
             ),
 
-            SizedBox(height: 8.h),
+            SizedBox(height: 12.h),
 
             SizedBox(
               width: double.infinity,
+              height: 52.h,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _saveDevice,
                 style: ElevatedButton.styleFrom(
+                  elevation: 0,
                   backgroundColor: AppColors.blueEA,
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(14.r),
                   ),
                 ),
                 child: _isLoading
                     ? const SizedBox(
-                  width: 20,
-                  height: 20,
+                  width: 22,
+                  height: 22,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
                     color: Colors.white,
                   ),
                 )
-                    : Text(
-                  "Lưu thiết bị".tr(),
-                  style: AppTextStyle.textSm.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+                    : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.save_outlined,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      "Lưu thiết bị".tr(),
+                      style: AppTextStyle.textSm.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

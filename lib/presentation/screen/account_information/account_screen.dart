@@ -11,6 +11,8 @@ import '../Electricity/automat/import_device/import_device_screen.dart';
 import '../device/bloc/device_cubit.dart';
 import '../general_device/project_setting_screen.dart';
 import 'AccountDetailScreen.dart';
+import 'DeviceLifecycle/DeviceLifecycleScreen.dart';
+import 'DeviceLifecycle/bloc/DeviceLifecycleCubit.dart';
 
 
 class AccountScreen extends StatefulWidget {
@@ -239,10 +241,8 @@ class _AccountScreenState extends State<AccountScreen> {
           context,
           MaterialPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => DeviceCubit(), //
-              child: AutomatListScreen(
-                powerStationId: 1,
-              ),
+              create: (_) => DeviceLifecycleCubit(),
+              child: const DeviceLifecycleScreen(),
             ),
           ),
         );
