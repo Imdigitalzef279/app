@@ -68,8 +68,12 @@ class AppRouter {
         break;
     /// ================= Thêm sản phẩm =================
       case RouteName.addProduct:
+        final powerStationId = arguments as int;
+
         return MaterialPageRoute(
-          builder: (_) => const AddProductScreen(),
+          builder: (_) => AddProductScreen(
+            powerStationId: powerStationId,
+          ),
         );
       /// ================= APTOMAT DETAIL =================
       case RouteName.automatDetail:
