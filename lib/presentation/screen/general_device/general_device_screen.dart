@@ -20,6 +20,7 @@ import '../device/bloc/device_cubit.dart';
 import '../device/device_card/device_card_widget.dart';
 import '../device_water/device_water_screen.dart';
 import '../kra_care/kra_care_screen.dart';
+import 'add_product_screen.dart';
 import 'analytics_overview/analytics_overview_screen.dart';
 import 'background/bloc/background_cubit.dart';
 import 'device_grid/device_grid_item.dart';
@@ -237,7 +238,9 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const ScanQrScreen(),
+                        builder: (_) => AddProductScreen(
+                          powerStationId: widget.project.id ?? 0,
+                        ),
                       ),
                     );
                   },
@@ -432,73 +435,6 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                         ),
                                       ),
                                       Gap(10.h),
-
-                                      // SizedBox(
-                                      //   height: isTablet(context) ? 90 : 70.h,
-                                      //   child: ListView(
-                                      //     scrollDirection: Axis.horizontal,
-                                      //     children: [
-                                      //       featureItem(
-                                      //         iconPath: "assets/icons/icons_new/icon_energy_meter.png",
-                                      //         title: 'Năng Lượng'.tr(),
-                                      //         onTap: () {
-                                      //           Navigator.push(
-                                      //             context,
-                                      //             MaterialPageRoute(
-                                      //               builder: (_) => BlocProvider.value(
-                                      //                 value: context.read<DeviceCubit>(),
-                                      //                 child: AutomatListScreen(
-                                      //                   powerStationId: widget.project.id!,
-                                      //                 ),
-                                      //               ),
-                                      //             ),
-                                      //           );
-                                      //         },
-                                      //       ),
-                                      //       featureItem(
-                                      //         iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
-                                      //         title: "Phân tích".tr(),
-                                      //         onTap: () {
-                                      //           final devices =
-                                      //               context.read<DeviceCubit>().state.resultDevices.data ?? [];
-                                      //
-                                      //           Navigator.push(
-                                      //             context,
-                                      //             MaterialPageRoute(
-                                      //               builder: (_) => AnalyticsOverviewScreen(devices: devices),
-                                      //             ),
-                                      //           );
-                                      //         },
-                                      //       ),
-                                      //       featureItem(
-                                      //         iconPath: "assets/icons/icons_new/icon_environment.png",
-                                      //         title: "Môi Trường".tr(),
-                                      //         onTap: () {
-                                      //           Navigator.push(
-                                      //             context,
-                                      //             MaterialPageRoute(
-                                      //               builder: (_) => DeviceWaterScreen(
-                                      //                 stationId: widget.project.id!,
-                                      //               ),
-                                      //             ),
-                                      //           );
-                                      //         },
-                                      //       ),
-                                      //       featureItem(
-                                      //         iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
-                                      //         title: "KRA Care".tr(),
-                                      //         onTap: () {
-                                      //           Navigator.push(
-                                      //             context,
-                                      //             MaterialPageRoute(
-                                      //               builder: (_) => KraCareScreen(),
-                                      //             ),
-                                      //           );
-                                      //         },
-                                      //       ),
-                                      //     ],
-                                      //   ),
-                                      // )
                                       isTablet(context)
                                           ? _buildFeatureTablet()
                                           : _buildFeatureMobile(),

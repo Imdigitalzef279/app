@@ -629,11 +629,6 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                 device.powerStation?.name ?? "Chưa xác định";
 
             cabinetMap.putIfAbsent(cabinet, () => []);
-            /// ================= FAKE CABINET =================
-            // final prefs = await SharedPreferences.getInstance();
-            // final username = prefs.getString("username") ?? "";
-            // final username =
-            //     context.read<AuthCubit>().state.user?.username ?? "";
 
             if (devices.isNotEmpty && username == "minhvc") {
 

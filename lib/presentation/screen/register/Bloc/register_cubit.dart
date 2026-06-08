@@ -121,16 +121,14 @@ class RegisterCubit extends Cubit<RegisterState> {
     )
     );
   }
-    bool validate() {
-      final v1 = validateEmail();
-      final v2 = validateName();
-      final v3 = validateAccount();
-      final v4 = validatePass();
-      final v5 = validateConfirmPass();
-      final v6 = validateProjectName();
+  bool validate() {
+    final v1 = validateEmail();
+    final v2 = validateAccount();
+    final v3 = validatePass();
+    final v4 = validateConfirmPass();
 
-      return v1 && v2 && v3 && v4 && v5 && v6;
-    }
+    return v1 && v2 && v3 && v4;
+  }
 
   bool validateEmail() {
     if (state.gmail.isEmpty) {
@@ -146,14 +144,6 @@ class RegisterCubit extends Cubit<RegisterState> {
     return true;
   }
 
-  bool validateName() {
-    if (state.name.isEmpty) {
-      emit(state.copyWith(nameError: notNull));
-      return false;
-    }
-    emit(state.copyWith(nameError: ""));
-    return true;
-  }
 
   bool validateAccount() {
     if (state.accountName.isEmpty) {
@@ -196,12 +186,4 @@ class RegisterCubit extends Cubit<RegisterState> {
       return true;
     }
 
-  bool validateProjectName() {
-    if (state.surname.isEmpty) {
-      emit(state.copyWith(surnameError: notNull));
-      return false;
-    }
-    emit(state.copyWith(surnameError: ""));
-    return true;
-  }
 }

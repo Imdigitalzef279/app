@@ -135,6 +135,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         SizedBox(height: 16),
 
                         /// ===== MENU LIST =====
+                        /// ===== MENU CHUNG =====
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -143,7 +144,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.03),
                                 blurRadius: 10,
-                                offset: Offset(0, 4),
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
@@ -151,23 +152,42 @@ class _AccountScreenState extends State<AccountScreen> {
                             children: [
                               _item(Icons.person, "Tài khoản", Colors.blue, 0),
                               _divider(),
-                              _item(
-                                Icons.devices,
-                                "KRA-DLM\nQuản lý Vòng Đời Thiết Bị",
-                                Colors.green,
-                                1,
-                              ),
                               _item(Icons.language, "Ngôn ngữ", Colors.orange, 2),
                               _divider(),
                               _item(Icons.settings, "Cài đặt chung", Colors.grey, 3),
-                              _divider(),
-                              // _item(Icons.settings, "Import thiết bị", Colors.grey, 4),
-                              // _divider(),
-                              SizedBox(height: 20),
-                              _buildLogoutButton(),
                             ],
                           ),
                         ),
+
+                        SizedBox(height: 16),
+
+                        /// ===== KRA-DLM =====
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(18),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: _item(
+                            Icons.devices,
+                            "KRA-DLM\nQuản lý Vòng Đời Thiết Bị",
+                            Colors.green,
+                            1,
+                          ),
+                        ),
+
+                        SizedBox(height: 16),
+
+                        Spacer(),
+
+                        /// ===== ĐĂNG XUẤT =====
+                        _buildLogoutButton(),
                       ],
                     )
                 )

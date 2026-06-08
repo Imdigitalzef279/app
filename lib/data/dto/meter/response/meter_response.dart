@@ -16,6 +16,9 @@ class MeterResponse with _$MeterResponse {
     @Default('') String name,
     @Default('') String code,
     @Default('') String description,
+
+    @Default('') String gatewayNumber,
+    @Default('') String serialNumber,
   }) = _MeterResponse;
 
   factory MeterResponse.fromJson(Map<String, dynamic> json) =>

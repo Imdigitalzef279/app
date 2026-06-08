@@ -27,6 +27,8 @@ mixin _$MeterResponse {
   String get name => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
+  String get gatewayNumber => throw _privateConstructorUsedError;
+  String get serialNumber => throw _privateConstructorUsedError;
 
   /// Serializes this MeterResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,7 +53,9 @@ abstract class $MeterResponseCopyWith<$Res> {
       PowerStationResponse powerStation,
       String name,
       String code,
-      String description});
+      String description,
+      String gatewayNumber,
+      String serialNumber});
 
   $MeterTypeResponseCopyWith<$Res> get meterType;
   $PowerStationResponseCopyWith<$Res> get powerStation;
@@ -79,6 +83,8 @@ class _$MeterResponseCopyWithImpl<$Res, $Val extends MeterResponse>
     Object? name = null,
     Object? code = null,
     Object? description = null,
+    Object? gatewayNumber = null,
+    Object? serialNumber = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -108,6 +114,14 @@ class _$MeterResponseCopyWithImpl<$Res, $Val extends MeterResponse>
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      gatewayNumber: null == gatewayNumber
+          ? _value.gatewayNumber
+          : gatewayNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      serialNumber: null == serialNumber
+          ? _value.serialNumber
+          : serialNumber // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -148,7 +162,9 @@ abstract class _$$MeterResponseImplCopyWith<$Res>
       PowerStationResponse powerStation,
       String name,
       String code,
-      String description});
+      String description,
+      String gatewayNumber,
+      String serialNumber});
 
   @override
   $MeterTypeResponseCopyWith<$Res> get meterType;
@@ -176,6 +192,8 @@ class __$$MeterResponseImplCopyWithImpl<$Res>
     Object? name = null,
     Object? code = null,
     Object? description = null,
+    Object? gatewayNumber = null,
+    Object? serialNumber = null,
   }) {
     return _then(_$MeterResponseImpl(
       id: null == id
@@ -206,6 +224,14 @@ class __$$MeterResponseImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
+      gatewayNumber: null == gatewayNumber
+          ? _value.gatewayNumber
+          : gatewayNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      serialNumber: null == serialNumber
+          ? _value.serialNumber
+          : serialNumber // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -220,7 +246,9 @@ class _$MeterResponseImpl implements _MeterResponse {
       this.powerStation = const PowerStationResponse(),
       this.name = '',
       this.code = '',
-      this.description = ''});
+      this.description = '',
+      this.gatewayNumber = '',
+      this.serialNumber = ''});
 
   factory _$MeterResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$MeterResponseImplFromJson(json);
@@ -246,10 +274,16 @@ class _$MeterResponseImpl implements _MeterResponse {
   @override
   @JsonKey()
   final String description;
+  @override
+  @JsonKey()
+  final String gatewayNumber;
+  @override
+  @JsonKey()
+  final String serialNumber;
 
   @override
   String toString() {
-    return 'MeterResponse(id: $id, status: $status, meterType: $meterType, powerStation: $powerStation, name: $name, code: $code, description: $description)';
+    return 'MeterResponse(id: $id, status: $status, meterType: $meterType, powerStation: $powerStation, name: $name, code: $code, description: $description, gatewayNumber: $gatewayNumber, serialNumber: $serialNumber)';
   }
 
   @override
@@ -266,13 +300,17 @@ class _$MeterResponseImpl implements _MeterResponse {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            (identical(other.gatewayNumber, gatewayNumber) ||
+                other.gatewayNumber == gatewayNumber) &&
+            (identical(other.serialNumber, serialNumber) ||
+                other.serialNumber == serialNumber));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, status, meterType,
-      powerStation, name, code, description);
+      powerStation, name, code, description, gatewayNumber, serialNumber);
 
   /// Create a copy of MeterResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -298,7 +336,9 @@ abstract class _MeterResponse implements MeterResponse {
       final PowerStationResponse powerStation,
       final String name,
       final String code,
-      final String description}) = _$MeterResponseImpl;
+      final String description,
+      final String gatewayNumber,
+      final String serialNumber}) = _$MeterResponseImpl;
 
   factory _MeterResponse.fromJson(Map<String, dynamic> json) =
       _$MeterResponseImpl.fromJson;
@@ -317,6 +357,10 @@ abstract class _MeterResponse implements MeterResponse {
   String get code;
   @override
   String get description;
+  @override
+  String get gatewayNumber;
+  @override
+  String get serialNumber;
 
   /// Create a copy of MeterResponse
   /// with the given fields replaced by the non-null parameter values.

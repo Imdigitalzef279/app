@@ -21,6 +21,8 @@ _$MeterResponseImpl _$$MeterResponseImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String? ?? '',
       code: json['code'] as String? ?? '',
       description: json['description'] as String? ?? '',
+      gatewayNumber: json['gatewayNumber'] as String? ?? '',
+      serialNumber: json['serialNumber'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$MeterResponseImplToJson(_$MeterResponseImpl instance) =>
@@ -32,4 +34,6 @@ Map<String, dynamic> _$$MeterResponseImplToJson(_$MeterResponseImpl instance) =>
       'name': instance.name,
       'code': instance.code,
       'description': instance.description,
+      'gatewayNumber': instance.gatewayNumber,
+      'serialNumber': instance.serialNumber,
     };
