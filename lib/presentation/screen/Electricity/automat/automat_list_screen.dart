@@ -267,9 +267,12 @@ class _AutomatListScreenState extends State<AutomatListScreen> {
                 color: const Color(0xFFE7F2EF),
                 borderRadius: BorderRadius.circular(10),
 
-                image: device.avatar.isNotEmpty
+                image: device.avatar.isNotEmpty &&
+                    File(device.avatar).existsSync()
                     ? DecorationImage(
-                  image: FileImage(File(device.avatar)),
+                  image: FileImage(
+                    File(device.avatar),
+                  ),
                   fit: BoxFit.cover,
                 )
                     : null,

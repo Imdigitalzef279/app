@@ -6,6 +6,7 @@ import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.
 import '../../../application/enums/load_status.dart';
 import '../account_information/account_screen.dart';
 import '../device/bloc/device_cubit.dart';
+import '../general_device/create_project/create_project_screen.dart';
 import '../general_device/general_device_screen.dart';
 import '../market/bloc/market_cubit.dart';
 import '../market/market_screen.dart';
@@ -61,11 +62,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                   state.resultProjects.data!.isNotEmpty) {
 
                 final projects = state.resultProjects.data!;
-                print("===== PROJECTS =====");
 
-                for (var p in projects) {
-                  print("${p.id} - ${p.name}");
-                }
                 final project = projects.firstWhere(
                       (e) => e.id == 181,
                   orElse: () => projects.first,
@@ -82,9 +79,29 @@ class _HomeWidgetState extends State<HomeWidget> {
                 );
               }
 
-              return const Center(child: CircularProgressIndicator());
+              /// CHƯA CÓ DỰ ÁN
+              if (state.resultProjects.status == LoadStatus.empty) {
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CreateProjectScreen(
+                        projectId: 0,
+                      ),
+                    ),
+                  );
+                });
+
+                return const SizedBox.shrink();
+              }
+
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             },
-          ),
+        )
+
         )
             : const SizedBox(),
 

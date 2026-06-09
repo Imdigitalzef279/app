@@ -101,8 +101,10 @@ class _AccountScreenState extends State<AccountScreen> {
                             /// AVATAR TO
                             CircleAvatar(
                               radius: 28,
-                              backgroundImage: user?.avatar != null
-                                  ? NetworkImage(user!.avatar!)
+                              backgroundImage:
+                              user?.avatar != null &&
+                                  user!.avatar!.trim().isNotEmpty
+                                  ? NetworkImage(user.avatar!)
                                   : null,
                             ),
                           ],

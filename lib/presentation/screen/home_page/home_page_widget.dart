@@ -13,7 +13,8 @@ import 'package:solar_energy/presentation/screen/home_page/bloc/home_page_cubit.
 import 'package:solar_energy/presentation/screen/home_page/widget/item_factory_hoz.dart';
 import 'package:solar_energy/presentation/screen/home_page/widget/tab_widget.dart';
 import 'package:upgrader/upgrader.dart';
-
+import '../../../application/enums/load_status.dart';
+import '../general_device/create_project/create_project_screen.dart';
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({super.key});
 
@@ -224,23 +225,55 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     //_cubit.getProjectsMore();
                   },
                   child: BlocConsumer<HomePageCubit, HomePageState>(
-                    listener: (context, state) {
-                      state.resultProjects.when(
+                      listener: (context, state) {
+
+                        if (state.resultProjects.status == LoadStatus.empty) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CreateProjectScreen(
+                                projectId: 0,
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        state.resultProjects.when(
                           loading: () =>
                               BlocProvider.of<AppCubit>(context).showLoading(),
+
                           success: (data) =>
                               BlocProvider.of<AppCubit>(context).hideShowLoading(),
+
                           error: (error) {
                             BlocProvider.of<AppCubit>(context).hideShowLoading();
                             AppToast.showToastError(title: error);
-                          });
-                    },
+                          },
+                        );
+                      },
                     builder: (BuildContext context, HomePageState state) {
+
+                      if (state.resultProjects.status == LoadStatus.empty) {
+
+                        context.read<AppCubit>().hideShowLoading();
+
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CreateProjectScreen(
+                                projectId: 0,
+                              ),
+                            ),
+                          );
+                        });
+
+                        return const SizedBox.shrink();
+                      }
+
                       final items = state.resultProjects.data ?? [];
-                      // in ID
-                      // for (var e in items) {
-                      //   debugPrint("ID: ${e.id} - NAME: ${e.name}");
-                      // }
+
                       return Column(
                         children: [
                           for (int i = 0; i < items.length; i++) ...[

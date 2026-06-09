@@ -171,7 +171,8 @@ class DeviceCardWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFE7F2EF),
                   borderRadius: BorderRadius.circular(10),
-                  image: device.avatar.isNotEmpty
+                  image: device.avatar.isNotEmpty &&
+                      File(device.avatar).existsSync()
                       ? DecorationImage(
                     image: FileImage(File(device.avatar)),
                     fit: BoxFit.cover,

@@ -34,6 +34,8 @@ class HomePageCubit extends Cubit<HomePageState> {
 
       if (token.isNotEmpty) {
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+        print("TOKEN = $decodedToken");
+        print("PROJECT ID RAW = ${decodedToken['ProjectId']}");
         final projectId = decodedToken['ProjectId'];
 
         if (projectId != null && projectId is List) {
@@ -67,8 +69,7 @@ class HomePageCubit extends Cubit<HomePageState> {
 
         emit(state.copyWith(
           resultProjects: Result(
-            status: LoadStatus.failure,
-            error: "Project ko la list",
+            status: LoadStatus.empty,
           ),
         ));
         return;

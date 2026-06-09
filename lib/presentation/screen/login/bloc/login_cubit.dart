@@ -79,6 +79,9 @@ class LoginCubit extends Cubit<LoginState> {
             clientId: 'MonitorSystem_App',
             scope: 'MonitorSystem offline_access'));
         if (response.isSuccess) {
+          print("LOGIN RESPONSE SUCCESS: ${response.isSuccess}");
+          print("LOGIN RESPONSE ERROR: ${response.error}");
+          print("LOGIN RESPONSE DATA: ${response.data}");
           if (response.data?.accessToken != null) {
             sharedPreferences.setAccessToken(response.data!.accessToken);
 
@@ -94,8 +97,10 @@ class LoginCubit extends Cubit<LoginState> {
         return;
       } on DioException catch (e) {
 
-        String errorMessage =
-            "Đăng nhập thất bại";
+        print("STATUS CODE = ${e.response?.statusCode}");
+        print("RESPONSE DATA = ${e.response?.data}");
+
+        String errorMessage = "Đăng nhập thất bại";
 
         final statusCode =
             e.response?.statusCode;
@@ -107,7 +112,7 @@ class LoginCubit extends Cubit<LoginState> {
             statusCode == 401) {
 
           errorMessage =
-          "Sai tài khoản hoặc mật khẩu";
+          "Tên đăng nhập hoặc mật khẩu không chính xác.";
 
         } else if (data != null &&
             data["error_description"] != null) {

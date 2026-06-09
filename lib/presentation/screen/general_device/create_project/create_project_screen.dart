@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../../application/cubit/app_cubit.dart';
 import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/dto/power_station/request/power_station_request.dart';
-
+import '../../device/bloc/device_cubit.dart';
+import '../general_device_screen.dart';
+import 'package:dio/dio.dart';
 class CreateProjectScreen extends StatefulWidget {
   final int projectId;
 
@@ -19,6 +23,16 @@ class CreateProjectScreen extends StatefulWidget {
 
 class _CreateProjectScreenState
     extends State<CreateProjectScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AppCubit>().hideShowLoading();
+    });
+  }
+
   final nameController = TextEditingController();
   final codeController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -37,7 +51,10 @@ class _CreateProjectScreenState
 
     try {
       setState(() => loading = true);
-
+      print("PROJECT ID = ${widget.projectId}");
+      print("NAME = ${nameController.text}");
+      print("CODE = ${codeController.text}");
+      final project =
       await GetIt.I<ApiClient>().createPowerStation(
         PowerStationRequest(
           projectId: widget.projectId,
@@ -58,8 +75,34 @@ class _CreateProjectScreenState
         ),
       );
 
-      Navigator.pop(context, true);
+      print("CREATE SUCCESS");
+
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => DeviceCubit()
+              ..getAllDevices(
+                powerStationId: project.id!,
+              ),
+            child: GeneralDeviceScreen(
+              project: project,
+            ),
+          ),
+        ),
+            (route) => false,
+      );
     } catch (e) {
+      print("ERROR = $e");
+
+      if (e is DioException) {
+        print("STATUS CODE = ${e.response?.statusCode}");
+        print("RESPONSE DATA = ${e.response?.data}");
+        print("REQUEST DATA = ${e.requestOptions.data}");
+      }
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -67,7 +110,7 @@ class _CreateProjectScreenState
           content: Text(e.toString()),
         ),
       );
-    } finally {
+    }finally {
       if (mounted) {
         setState(() => loading = false);
       }
