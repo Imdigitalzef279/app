@@ -4,9 +4,11 @@ import 'package:get_it/get_it.dart';
 
 import '../../../../application/cubit/app_cubit.dart';
 import '../../../../data/data_sources/api/api_client.dart';
-import '../../../../data/dto/power_station/request/power_station_request.dart';
-import '../../device/bloc/device_cubit.dart';
-import '../general_device_screen.dart';
+
+import '../../../../data/dto/project/request/create_project_request.dart';
+
+import '../AddPowerStationScreen/AddPowerStationScreen.dart';
+
 import 'package:dio/dio.dart';
 class CreateProjectScreen extends StatefulWidget {
   final int projectId;
@@ -55,15 +57,10 @@ class _CreateProjectScreenState
       print("NAME = ${nameController.text}");
       print("CODE = ${codeController.text}");
       final project =
-      await GetIt.I<ApiClient>().createPowerStation(
-        PowerStationRequest(
-          projectId: widget.projectId,
+      await GetIt.I<ApiClient>().createProject(
+        CreateProjectRequest(
           name: nameController.text.trim(),
-          code: codeController.text.trim(),
-          description: descriptionController.text.trim(),
-          longitude: "",
-          latitude: "",
-          planViewPath: "",
+          info: descriptionController.text.trim(),
         ),
       );
 
@@ -79,20 +76,13 @@ class _CreateProjectScreenState
 
       if (!mounted) return;
 
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => DeviceCubit()
-              ..getAllDevices(
-                powerStationId: project.id!,
-              ),
-            child: GeneralDeviceScreen(
-              project: project,
-            ),
+          builder: (_) => AddPowerStationScreen(
+            projectId: project.id!,
           ),
         ),
-            (route) => false,
       );
     } catch (e) {
       print("ERROR = $e");
@@ -167,8 +157,11 @@ class _CreateProjectScreenState
           style: TextStyle(
             fontWeight: FontWeight.w600,
           ),
+
         ),
+
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

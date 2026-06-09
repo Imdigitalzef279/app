@@ -79,21 +79,10 @@ class _HomeWidgetState extends State<HomeWidget> {
                 );
               }
 
-              /// CHƯA CÓ DỰ ÁN
               if (state.resultProjects.status == LoadStatus.empty) {
-
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CreateProjectScreen(
-                        projectId: 0,
-                      ),
-                    ),
-                  );
-                });
-
-                return const SizedBox.shrink();
+                return const Center(
+                  child: Text("Chưa có dữ liệu"),
+                );
               }
 
               return const Center(

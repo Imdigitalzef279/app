@@ -9,13 +9,15 @@ import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/data/dto/meter/request/meter_request.dart';
 
 import '../../../data/data_sources/api/api_client.dart';
+import '../../../data/dto/power_station/response/power_station_response.dart';
+import 'general_device_screen.dart';
 
 class AddProductScreen extends StatefulWidget {
-  final int powerStationId;
+  final PowerStationResponse powerStation;
 
   const AddProductScreen({
     super.key,
-    required this.powerStationId,
+    required this.powerStation,
   });
 
   @override
@@ -49,7 +51,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
       final request = MeterRequest(
         meterTypeId: 2,
-        powerStationId: widget.powerStationId,
+        powerStationId: widget.powerStation.id!,
         name: _nameController.text.trim(),
         code: _codeController.text.trim(),
         description: _descriptionController.text.trim(),
@@ -58,7 +60,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       );
       debugPrint('''
 CREATE DEVICE:
-powerStationId=${widget.powerStationId}
+powerStationId=${widget.powerStation.id}
 name=${_nameController.text}
 code=${_codeController.text}
 description=${_descriptionController.text}
@@ -80,7 +82,15 @@ serial=${_serialController.text}
         ),
       );
 
-      Navigator.pop(context, true);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => GeneralDeviceScreen(
+            project: widget.powerStation,
+          ),
+        ),
+            (route) => false,
+      );
     } on DioException catch (e) {
       debugPrint('===== ERROR =====');
       print('===== ERROR =====');

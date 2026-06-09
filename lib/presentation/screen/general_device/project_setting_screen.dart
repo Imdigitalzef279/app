@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/dto/power_station/response/power_station_response.dart';
+import 'AddPowerStationScreen/AddPowerStationScreen.dart';
 import 'background/bloc/background_cubit.dart';
 import 'create_project/create_project_screen.dart';
 
@@ -293,6 +294,42 @@ class _ProjectSettingScreenState
                       Expanded(
                         child: Text(
                           "Tạo dự án mới",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.chevron_right),
+                    ],
+                  ),
+                ),
+              ),
+              const Divider(height: 20),
+
+              InkWell(
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddPowerStationScreen(
+                        projectId: widget.project.projectId,
+                      ),
+                    ),
+                  );
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.factory_outlined,
+                        color: Color(0xFF1ABC9C),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          "Tạo trạm mới",
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,

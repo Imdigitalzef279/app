@@ -237,7 +237,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get trial_login => 'Đăng nhập thử nghiệm';
 
   @override
-  String get an_error_occurred => 'Đã xảy ra lỗi, vui lòng thử lại.';
+  String get an_error_occurred =>
+      'Không thể đăng nhập. Vui lòng kiểm tra lại thông tin tài khoản.';
 
   @override
   String get user_not_found => 'Không tìm thấy user';
@@ -344,7 +345,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get usernameNotMatchOrNotExist =>
-      'Tên người dùng không khớp hoặc không tồn tại.';
+      'Tên đăng nhập hoặc mật khẩu không chính xác.';
 
   @override
   String get deleteAccountSuccess => 'Xóa tài khoản thành công!!';

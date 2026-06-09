@@ -174,15 +174,6 @@ class _SettingScreenState extends State<SettingScreen> {
     if (value < 100) return "Nguy hiểm";
     return "Nguy cơ ngừng tim";
   }
-  // void checkPowerAlert() {
-  //   print("👉 checkOverEnergy CALLED");
-  //
-  //   if (!enableOverPower) {
-  //     print("❌ OverPower OFF");
-  //     return;
-  //   }
-  //   checkOverEnergy();
-  // }
   @override
   void initState() {
     super.initState();
@@ -202,85 +193,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     return cubit.state.data;
   }
-  // Future<void> checkOverEnergy() async {
-  //   if (!enableOverPower) {
-  //     print("❌ OverPower OFF");
-  //     return;
-  //   }
-  //
-  //   print("🚀 CHECK OVER ENERGY");
-  //   print("👉 Type: $energyType");
-  //   print("👉 Threshold: $energyThreshold kWh");
-  //
-  //   final data = await loadEnergyData();
-  //
-  //   print("📊 Data length: ${data.length}");
-  //
-  //   if (data.isEmpty) {
-  //     print("❌ No data");
-  //     return;
-  //   }
-  //
-  //   final total = data.fold(0.0, (a, b) => a + b.epi);
-  //
-  //   print("TOTAL ENERGY: $total kWh");
-  //
-  //   if (total > energyThreshold) {
-  //
-  //     /// tránh spam mỗi 10s
-  //     if (!hasSentOverEnergyAlert) {
-  //
-  //       hasSentOverEnergyAlert = true;
-  //
-  //       print("🔥 VƯỢT NGƯỠNG");
-  //
-  //       /// lưu notification local
-  //       await saveLocalNotification(
-  //         title: widget.device.name ?? "Thiết bị",
-  //         message:
-  //         "⚠ Điện năng vượt ngưỡng "
-  //             "$energyThreshold kWh ($energyType)",
-  //       );
-  //
-  //       /// snackbar app
-  //       if (notifyApp && mounted) {
-  //
-  //         print("📢 SHOW ALERT");
-  //
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(
-  //             content: Text(
-  //               "⚠ Điện năng vượt ngưỡng",
-  //             ),
-  //             backgroundColor: Colors.orange,
-  //           ),
-  //         );
-  //       }
-  //
-  //       /// auto cut
-  //       if (autoCut) {
-  //
-  //         print("🔌 AUTO CUT DEVICE");
-  //
-  //         await sendOffCommand();
-  //
-  //         /// log thêm
-  //         await saveLocalNotification(
-  //           title: widget.device.name ?? "Thiết bị",
-  //           message:
-  //           "🔌 Thiết bị đã tự động ngắt",
-  //         );
-  //       }
-  //     }
-  //
-  //   } else {
-  //
-  //     /// reset để lần sau báo lại
-  //     hasSentOverEnergyAlert = false;
-  //
-  //     print("✅ OK - chưa vượt");
-  //   }
-  // }
+
   Future<void> saveLocalNotification({
     required String title,
     required String message,

@@ -10,6 +10,7 @@ import 'package:solar_energy/data/dto/result/result.dart';
 import 'package:solar_energy/data/repositories/project/project_repository.dart';
 import 'package:solar_energy/di.dart';
 
+import '../../../../data/data_sources/api/api_client.dart';
 import '../../../../data/data_sources/storage/shared_preferences/shared_preferences_helper.dart';
 
 part 'home_page_state.dart';
@@ -28,45 +29,13 @@ class HomePageCubit extends Cubit<HomePageState> {
         resultProjects: Result(status: LoadStatus.loading),
       ));
 
-      final token = await sharedPreferences.getAccessToken();
+      final response =
+      await GetIt.I<ApiClient>()
+          .getProjects(0, 100);
 
-      if (isClosed) return;
+      final items = response["items"] as List;
 
-      if (token.isNotEmpty) {
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-        print("TOKEN = $decodedToken");
-        print("PROJECT ID RAW = ${decodedToken['ProjectId']}");
-        final projectId = decodedToken['ProjectId'];
-
-        if (projectId != null && projectId is List) {
-          int id = int.tryParse(projectId[0]) ?? 0;
-
-          final response = await _repo.getPowerStation(id);
-
-          if (isClosed) return;
-
-          if (response.isSuccess) {
-            emit(state.copyWith(
-              projectID: id,
-              resultProjects: Result(
-                status: LoadStatus.success,
-                data: response.data,
-              ),
-              allStation: response.data?.length ?? 0,
-              active: response.data?.length ?? 0,
-            ));
-            return;
-          }
-
-          emit(state.copyWith(
-            resultProjects: Result(
-              status: LoadStatus.failure,
-              error: LocalizationsUtils.localizations.noSuccess,
-            ),
-          ));
-          return;
-        }
-
+      if (items.isEmpty) {
         emit(state.copyWith(
           resultProjects: Result(
             status: LoadStatus.empty,
@@ -74,6 +43,27 @@ class HomePageCubit extends Cubit<HomePageState> {
         ));
         return;
       }
+
+      final projectId = items.first["id"] as int;
+
+      final stations =
+      await _repo.getPowerStation(projectId);
+
+      if (stations.isSuccess) {
+        emit(state.copyWith(
+          projectID: projectId,
+          resultProjects: Result(
+            status: LoadStatus.success,
+            data: stations.data,
+          ),
+          allStation: stations.data?.length ?? 0,
+          active: stations.data?.length ?? 0,
+        ));
+      }
+
+      if (isClosed) return;
+
+
 
       emit(state.copyWith(
         resultProjects: Result(

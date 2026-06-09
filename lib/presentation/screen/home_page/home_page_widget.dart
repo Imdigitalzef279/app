@@ -44,31 +44,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       _isInit = true;
     }
   }
-/// In_app_update
-  // Future<void> checkForUpdate() async {
-  //   try {
-  //     final AppUpdateInfo info = await InAppUpdate.checkForUpdate();
-  //
-  //     if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-  //       if (info.immediateUpdateAllowed) {
-  //         await InAppUpdate.performImmediateUpdate();
-  //       } else if (info.flexibleUpdateAllowed) {
-  //         await _startFlexibleUpdate();
-  //       }
-  //     }
-  //   } catch (e) {
-  //     log('Update error: $e');
-  //   }
-  // }
-  //
-  // Future<void> _startFlexibleUpdate() async {
-  //   try {
-  //     await InAppUpdate.startFlexibleUpdate();
-  //     await InAppUpdate.completeFlexibleUpdate();
-  //   } catch (e) {
-  //     log('Flexible update failed: $e');
-  //   }
-  // }
 
   Widget _showUpgradeDialog(Widget child) {
     return UpgradeAlert(child: child);
@@ -227,17 +202,17 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                   child: BlocConsumer<HomePageCubit, HomePageState>(
                       listener: (context, state) {
 
-                        if (state.resultProjects.status == LoadStatus.empty) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CreateProjectScreen(
-                                projectId: 0,
-                              ),
-                            ),
-                          );
-                          return;
-                        }
+                        // if (state.resultProjects.status == LoadStatus.empty) {
+                        //   Navigator.pushReplacement(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (_) => CreateProjectScreen(
+                        //         projectId: 0,
+                        //       ),
+                        //     ),
+                        //   );
+                        //   return;
+                        // }
 
                         state.resultProjects.when(
                           loading: () =>
@@ -255,21 +230,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     builder: (BuildContext context, HomePageState state) {
 
                       if (state.resultProjects.status == LoadStatus.empty) {
-
-                        context.read<AppCubit>().hideShowLoading();
-
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CreateProjectScreen(
-                                projectId: 0,
-                              ),
-                            ),
-                          );
-                        });
-
-                        return const SizedBox.shrink();
+                        return const Center(
+                          child: Text("Chưa có dữ liệu"),
+                        );
                       }
 
                       final items = state.resultProjects.data ?? [];

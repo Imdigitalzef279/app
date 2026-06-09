@@ -9,7 +9,6 @@ import 'package:solar_energy/application/constants/app_color.dart';
 import 'package:solar_energy/application/constants/app_text_style.dart';
 import 'package:solar_energy/application/constants/localizations.dart';
 import 'package:solar_energy/presentation/screen/general_device/project_setting_screen.dart';
-import 'package:solar_energy/presentation/screen/general_device/scan_qr/scan_qr_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../data/dto/atomat/atomat_log_response.dart';
 import '../../../data/dto/device/response/device_response.dart';
@@ -239,7 +238,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                       context,
                       MaterialPageRoute(
                         builder: (_) => AddProductScreen(
-                          powerStationId: widget.project.id ?? 0,
+                          powerStation: widget.project,
                         ),
                       ),
                     );
@@ -461,14 +460,14 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                                           vertical: isTablet(context) ? 6 : 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.45),
+                                          color: Colors.white,
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: Text("Thiết bị hay dùng".tr(),
                                           style: TextStyle(
                                             fontSize: isTablet(context) ? 12 : 13.sp,
                                             fontWeight: FontWeight.w700,
-                                            color: Colors.white,
+                                            color: Colors.black87,
                                           ),
                                         ),
                                       ),
@@ -500,16 +499,44 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
                                   Expanded(
                                     child: AnimatedSwitcher(
-                                      duration: Duration(milliseconds: 300),
+                                      duration: const Duration(milliseconds: 300),
                                       child: favoriteDevices.isEmpty
-                                          ? const Center(
-                                        child: Text(
-                                          "Chưa có thiết bị",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.grey,
-                                          ),
+                                          ? Container(
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(20),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.05),
+                                              blurRadius: 10,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.devices_other,
+                                              size: 70,
+                                              color: Colors.grey.shade400,
+                                            ),
+                                            const SizedBox(height: 16),
+                                            const Text(
+                                              "Chưa có thiết bị",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              "Hãy nhấn dấu + để thêm thiết bị mới",
+                                              style: TextStyle(
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       )
                                           : _isGridView

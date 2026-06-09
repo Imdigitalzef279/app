@@ -86,8 +86,7 @@
   "invalidLogin": "Tên đăng nhập hoặc mật khẩu không chính xác.",
   "accountNotActivated": "Tài khoản chưa được kích hoạt.",
   "accountLocked": "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.",
-  "projectNotAssigned": "Tài khoản chưa được cấp quyền truy cập dự án nào."
-  "deactivate_account": "Ngừng kích hoạt tài khoản",
+ "projectNotAssigned": "Tài khoản chưa được cấp quyền truy cập dự án nào.",
   "confirm": "Xác nhận",
   "cancel": "Huỷ",
   "confirm_deactivate_account": "Xác nhận ngừng kích hoạt tài khoản này",
@@ -126,8 +125,8 @@
 
   "occurrenceTime": "Thời gian xảy ra",
   "allWarnings": "Tất cả các cảnh báo",
-  "usernameNotMatchOrNotExist": "Tên đăng nhập hoặc mật khẩu không chính xác."
-  "deleteAccountSuccess": "Xóa tài khoản thành công!!",
+"usernameNotMatchOrNotExist": "Tên đăng nhập hoặc mật khẩu không chính xác.",
+"deleteAccountSuccess": "Xóa tài khoản thành công!!",
   "loginExpired": "Phiên đăng nhập đã hết hạn",
     "badRequest": "Yêu cầu không hợp lệ.",
     "loginExpired": "Phiên đăng nhập đã hết hạn.",

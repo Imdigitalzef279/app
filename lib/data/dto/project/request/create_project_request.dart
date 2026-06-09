@@ -7,8 +7,8 @@ part 'create_project_request.g.dart';
 class CreateProjectRequest with _$CreateProjectRequest {
   const factory CreateProjectRequest({
     required String name,
-    String? code,
-    String? description,
+    required String info,
+    String? managerId,
   }) = _CreateProjectRequest;
 
   factory CreateProjectRequest.fromJson(
