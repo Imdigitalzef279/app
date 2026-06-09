@@ -90,22 +90,4 @@ class DeviceRepositoryImpl extends BaseRepository implements DeviceRepository {
       return result.copyWith(status: LoadStatus.failure, error: e.toString());
     }
   }
-  // @override
-  // Future<Result<DeviceResponse>> scanQr(String qr) async {
-  //   final result = Result<DeviceResponse>();
-  //
-  //   try {
-  //     final DeviceResponse data = await _api.scanQr(qr); // ✅ thêm lại
-  //
-  //     return result.copyWith(
-  //       data: data,
-  //       status: LoadStatus.success,
-  //     );
-  //   } catch (e) {
-  //     return result.copyWith(
-  //       status: LoadStatus.failure,
-  //       error: e.toString(),
-  //     );
-  //   }
-  // }
 }

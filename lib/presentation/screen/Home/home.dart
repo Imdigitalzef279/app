@@ -40,9 +40,6 @@ class _HomeWidgetState extends State<HomeWidget> {
     );
   }
 
-  // ================= FLOATING ADD DEVICE =================
-
-
   // ================= BODY =================
 
   Widget _buildBody() {
@@ -62,7 +59,13 @@ class _HomeWidgetState extends State<HomeWidget> {
                   state.resultProjects.data!.isNotEmpty) {
 
                 final projects = state.resultProjects.data!;
-
+                print("========== STATIONS ==========");
+                for (var s in projects) {
+                  print(
+                    "ID=${s.id} | PROJECT=${s.projectId} | NAME=${s.name}",
+                  );
+                }
+                print("==============================");
                 final project = projects.firstWhere(
                       (e) => e.id == 181,
                   orElse: () => projects.first,
@@ -70,6 +73,7 @@ class _HomeWidgetState extends State<HomeWidget> {
 
                 return BlocProvider(
                   create: (_) => DeviceCubit()
+
                     ..getAllDevices(
                       powerStationId: project.id!,
                     ),

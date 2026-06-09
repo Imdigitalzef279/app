@@ -35,20 +35,21 @@ class HomePageCubit extends Cubit<HomePageState> {
 
       final items = response["items"] as List;
 
-      if (items.isEmpty) {
-        emit(state.copyWith(
-          resultProjects: Result(
-            status: LoadStatus.empty,
-          ),
-        ));
-        return;
+      for (final p in items) {
+        print(
+          "PROJECT ID=${p["id"]} "
+              "NAME=${p["name"]}",
+        );
       }
 
       final projectId = items.first["id"] as int;
 
+      print("SELECT PROJECT = $projectId");
+
       final stations =
       await _repo.getPowerStation(projectId);
 
+      print("STATION COUNT = ${stations.data?.length}");
       if (stations.isSuccess) {
         emit(state.copyWith(
           projectID: projectId,
@@ -59,11 +60,11 @@ class HomePageCubit extends Cubit<HomePageState> {
           allStation: stations.data?.length ?? 0,
           active: stations.data?.length ?? 0,
         ));
+
+        return; // QUAN TRỌNG
       }
 
       if (isClosed) return;
-
-
 
       emit(state.copyWith(
         resultProjects: Result(

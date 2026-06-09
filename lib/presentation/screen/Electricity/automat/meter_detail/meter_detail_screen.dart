@@ -8,9 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:solar_energy/data/dto/device/response/device_response.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/bloc/atomat_detail_cubit.dart';
-import 'package:solar_energy/presentation/screen/Electricity/automat/setting_screen.dart';
 import 'package:solar_energy/presentation/screen/Electricity/automat/switch_log/switch_log_screen.dart';
-
 import '../../../../../application/enums/chart_range.dart';
 import '../../../../../data/data_sources/api/api_client.dart';
 import '../../../../../data/dto/atomat/atomat_log_response.dart';
@@ -18,7 +16,6 @@ import '../../../../../data/repositories/electric_report/electric_report_reposit
 import '../../../device/bloc/device_cubit.dart';
 import '../ElectricHistoryScreen/ElectricHistoryScreen.dart';
 import 'bloc/meter_chart_cubit.dart';
-import '../full_chart/full_chart_screen.dart';
 import 'meter_setting_screen.dart';
 
 
@@ -103,7 +100,8 @@ class _MeterDetailScreenState extends State<MeterDetailScreen> {
     startRealtimeRefresh();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final device = widget.device;
-
+      print("DETAIL DEVICE = ${device.id}");
+      print("DETAIL NAME = ${device.name}");
       await context.read<MeterChartCubit>().loadChart(
         device.id,
         _selectedRange,
@@ -411,33 +409,6 @@ class _MeterDetailScreenState extends State<MeterDetailScreen> {
                   ),
 
                   const Spacer(),
-                  ///  ICON FULL SCREEN
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (_) => FullChartScreen(
-                  //           chartData: chartData,
-                  //           selectedRange: _selectedRange,
-                  //           chartType: chartType,
-                  //         ),
-                  //       ),
-                  //     );
-                  //   },
-                  //   child: Container(
-                  //     padding: const EdgeInsets.all(6),
-                  //     decoration: BoxDecoration(
-                  //       color: const Color(0xFFE7F6F3),
-                  //       borderRadius: BorderRadius.circular(8),
-                  //     ),
-                  //     child: const Icon(
-                  //       Icons.fullscreen,
-                  //       size: 18,
-                  //       color: Color(0xFF1ABC9C),
-                  //     ),
-                  //   ),
-                  // ),
                   /// RANGE SELECTOR
                   Container(
                     padding: const EdgeInsets.all(4),
@@ -1567,13 +1538,10 @@ class _MeterDetailScreenState extends State<MeterDetailScreen> {
   Widget build(BuildContext context) {
     final state = context.watch<DeviceCubit>().state;
 
-
     final device = state.resultDevices.data
-        ?.firstWhere((d) => d.id == widget.device.id);
-
-    if (device == null) {
-      return const SizedBox();
-    }
+        ?.where((d) => d.id == widget.device.id)
+        .firstOrNull ??
+        widget.device;
     print("===== DETAIL BUILD =====");
     print("DEVICE ID: ${device?.id}");
     print("DEVICE.STATUS: ${device?.status}");
