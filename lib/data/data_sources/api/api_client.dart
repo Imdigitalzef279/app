@@ -27,10 +27,9 @@ import '../../dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../dto/electric_report/electric_report_response.dart';
 import '../../dto/energy_report/energy_report_response.dart';
 import '../../dto/project/request/create_project_request.dart';
-import '../../dto/project/request/project_request.dart';
 import '../../dto/project/response/project_response.dart';
 import '../../dto/register_account/request/register_account_request.dart';
-
+import '../../dto/EnergyConsumptionChart/EnergyConsumptionChartResponse.dart';
 part 'api_client.g.dart';
 
 @RestApi(baseUrl: '')
@@ -221,5 +220,13 @@ abstract class ApiClient {
   Future<dynamic> getProjects(
       @Query("SkipCount") int skipCount,
       @Query("MaxResultCount") int maxResultCount,
+      );
+  @GET('api/app/energy-consumption/chart-data')
+  Future<EnergyConsumptionChartResponse> getEnergyConsumptionChart(
+      @Query('MeterCode') String meterCode,
+      @Query('EnergyType') String energyType,
+      @Query('PeriodType') String periodType,
+      @Query('StartDate') String startDate,
+      @Query('EndDate') String endDate,
       );
 }

@@ -4,26 +4,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../data/data_sources/api/api_client.dart';
 import '../../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../../../../data/dto/energy_report/energy_report_response.dart';
-
+import '../../../../../data/dto/EnergyConsumptionChart/EnergyConsumptionChartResponse.dart';
 
 class AnalyticsState {
   final List<EnergyReportResponse> data;
   final List<BreakerChartResponse>? breakerData;
+  final EnergyConsumptionChartResponse? compareChart;
   final bool isLoading;
 
   AnalyticsState({
     this.data = const [],
     this.breakerData,
+    this.compareChart,
     this.isLoading = false,
   });
   AnalyticsState copyWith({
     List<EnergyReportResponse>? data,
     List<BreakerChartResponse>? breakerData,
+    EnergyConsumptionChartResponse? compareChart,
     bool? isLoading,
   }) {
     return AnalyticsState(
       data: data ?? this.data,
       breakerData: breakerData ?? this.breakerData,
+      compareChart: compareChart ?? this.compareChart,
       isLoading: isLoading ?? this.isLoading,
     );
   }
@@ -47,6 +51,7 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
       emit(state.copyWith(isLoading: false));
     }
   }
+
   Future<void> loadEnergy({
     required int powerStationId,
     required int deviceId,
@@ -105,6 +110,30 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
         data: [],
         isLoading: false,
       ));
+    }
+  }
+  Future<void> loadCompareChart({
+    required String meterCode,
+    required String periodType,
+  }) async {
+    try {
+      final result = await api.getEnergyConsumptionChart(
+        meterCode,
+        "Electricity",
+        periodType,
+        DateTime.now()
+            .subtract(const Duration(days: 30))
+            .toIso8601String(),
+        DateTime.now().toIso8601String(),
+      );
+
+      emit(
+        state.copyWith(
+          compareChart: result,
+        ),
+      );
+    } catch (e) {
+      print("COMPARE ERROR: $e");
     }
   }
 }

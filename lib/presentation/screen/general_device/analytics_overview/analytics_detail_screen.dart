@@ -11,6 +11,7 @@ import '../../../../data/dto/atomat/atomat_chart/breaker_chart_response.dart';
 import '../../../../data/repositories/email/email_repository.dart';
 import '../../../../di.dart';
 import 'bloc/analytics_cubit.dart';
+import '../../../../data/dto/EnergyConsumptionChart/EnergyConsumptionChartResponse.dart';
 import 'dart:math' as math;
 class AnalyticsDetailScreen extends StatefulWidget {
   final DeviceResponse device;
@@ -43,11 +44,19 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     _testEmail();
 
     context.read<AnalyticsCubit>().loadEnergy(
+
       powerStationId: widget.device.powerStationId,
       deviceId: widget.device.id,
       type: "DAY",
     );
-
+    context.read<AnalyticsCubit>().loadCompareChart(
+      meterCode: widget.device.code,
+      periodType: selectedRange == ChartRange.day
+          ? "Day"
+          : selectedRange == ChartRange.month
+          ? "Month"
+          : "Year",
+    );
     context.read<AnalyticsCubit>().loadBreakerChart(
       breakerSn: widget.device.code,
     );
@@ -1666,293 +1675,148 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
     return filtered;
   }
-  Widget buildCompareYearChart(
-      List<EnergyReportResponse> rawData,
+  Widget buildCompareEnergyChart(
+      EnergyConsumptionChartResponse? chart,
       ) {
-
-    final now = DateTime.now();
-    print("=========== ENERGY REPORT ===========");
-
-    for (final item in rawData) {
-      print(
-          "${item.time} | p=${item.p} | epi=${item.epi}"
+    if (chart == null || chart.labels.isEmpty) {
+      return const Center(
+        child: Text("Không có dữ liệu"),
       );
-    }
-    final Map<String, List<double>> groupedData = {};
-
-    List<String> legends = [];
-    List<Color> colors = [
-      Color(0xFFD32F2F),
-      Color(0xFF388E3C),
-      Color(0xFF1976D2),
-    ];
-
-    int maxX = 0;
-
-    if (selectedRange == ChartRange.day) {
-      legends = [
-        "${selectedDay.day}/${selectedDay.month}",
-        "${selectedDay.subtract(Duration(days: 1)).day}/${selectedDay.subtract(Duration(days: 1)).month}",
-        "${selectedDay.subtract(Duration(days: 2)).day}/${selectedDay.subtract(Duration(days: 2)).month}",
-      ];
-      maxX = 24;
-
-      for (final legend in legends) {
-        groupedData[legend] = List.filled(24, 0);
-      }
-
-      for (final item in rawData) {
-
-        final value =
-        selectedChart == 0 ? item.p : item.epi;
-
-        final d = item.time;
-
-        final diff =
-            selectedDay
-                .difference(
-              DateTime(d.year, d.month, d.day),
-            )
-                .inDays;
-        if (diff == 0) {
-          groupedData[legends[0]]![d.hour] += value;
-        }
-
-        else if (diff == 1) {
-          groupedData[legends[1]]![d.hour] += value;
-        }
-
-        else if (diff == 2) {
-          groupedData[legends[2]]![d.hour] += value;
-        }
-      }
-    }
-
-    else if (selectedRange == ChartRange.month) {
-
-      final current = selectedMonth;
-
-      final prev1 =
-      DateTime(current.year, current.month - 1);
-
-      final prev2 =
-      DateTime(current.year, current.month - 2);
-
-      legends = [
-        "${current.month}/${current.year}",
-        "${prev1.month}/${prev1.year}",
-        "${prev2.month}/${prev2.year}",
-      ];
-
-      maxX = 31;
-
-      for (final legend in legends) {
-        groupedData[legend] = List.filled(31, 0);
-      }
-      for (final item in rawData) {
-
-        final value =
-        selectedChart == 0 ? item.p : item.epi;
-
-        final d = item.time;
-
-        if (d.year == current.year &&
-            d.month == current.month) {
-
-          groupedData[legends[0]]![d.day - 1] += value;
-        }
-
-        else if (d.year == prev1.year &&
-            d.month == prev1.month) {
-
-          groupedData[legends[1]]![d.day - 1] += value;
-        }
-
-        else if (d.year == prev2.year &&
-            d.month == prev2.month) {
-
-          groupedData[legends[2]]![d.day - 1] += value;
-        }
-      }
-    }
-
-    else if (selectedRange == ChartRange.year) {
-
-      legends = [
-        "$selectedYear",
-        "${selectedYear - 1}",
-        "${selectedYear - 2}",
-      ];
-
-      maxX = 12;
-
-      groupedData[legends[0]] = List.filled(12, 0);
-      groupedData[legends[1]] = List.filled(12, 0);
-      groupedData[legends[2]] = List.filled(12, 0);
-
-      for (final item in rawData) {
-
-        final value =
-        selectedChart == 0 ? item.p : item.epi;
-
-        final d = item.time;
-
-        if (d.year == selectedYear) {
-
-          groupedData[legends[0]]![d.month - 1] += value;
-        }
-
-        else if (d.year == selectedYear - 1) {
-
-          groupedData[legends[1]]![d.month - 1] += value;
-        }
-
-        else if (d.year == selectedYear - 2) {
-
-          groupedData[legends[2]]![d.month - 1] += value;
-        }
-      }
     }
 
     double maxY = 0;
 
-    for (final list in groupedData.values) {
-      for (final v in list) {
-        if (v > maxY) {
-          maxY = v;
-        }
-      }
+    for (final v in chart.currentPeriodData) {
+      if (v > maxY) maxY = v;
     }
-    final safeMaxY = maxY <= 0 ? 1.0 : maxY;
+
+    for (final v in chart.previousPeriodData) {
+      if (v > maxY) maxY = v;
+    }
+
     return Column(
       children: [
 
-        Wrap(
-          spacing: 16,
-          children: legends.asMap().entries.map((e) {
+        Row(
+          children: [
+            Container(
+              width: 12,
+              height: 12,
+              color: Colors.red,
+            ),
+            SizedBox(width: 6),
+            Text("Kỳ này"),
 
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            SizedBox(width: 20),
 
-                Container(
-                  width: 10,
-                  height: 10,
-                  color: colors[e.key],
-                ),
-
-                SizedBox(width: 6),
-
-                Text(
-                  e.value,
-                  style: TextStyle(fontSize: 12),
-                ),
-              ],
-            );
-          }).toList(),
+            Container(
+              width: 12,
+              height: 12,
+              color: Colors.blue,
+            ),
+            SizedBox(width: 6),
+            Text("Cùng kỳ"),
+          ],
         ),
 
-        SizedBox(height: 20),
+        SizedBox(height: 16),
 
         Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SizedBox(
-              width: maxX * 44,
+              width: chart.labels.length * 45,
               child: BarChart(
                 BarChartData(
+                  maxY: maxY * 1.2,
 
                   alignment: BarChartAlignment.center,
 
                   groupsSpace: 12,
 
-                  maxY: safeMaxY * 1.2,
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
                   ),
 
-                  borderData: FlBorderData(show: false),
+                  borderData: FlBorderData(
+                    show: false,
+                  ),
 
                   titlesData: FlTitlesData(
-
                     topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+                      sideTitles: SideTitles(
+                        showTitles: false,
+                      ),
                     ),
 
                     rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+                      sideTitles: SideTitles(
+                        showTitles: false,
+                      ),
                     ),
 
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 50,
-                        interval: safeMaxY / 4,
-                        getTitlesWidget: (value, meta) {
-                          if (value > safeMaxY) {
-                            return const SizedBox();
-                          }
-
-                          return Text(
-                            value.toInt().toString(),
-                            style: const TextStyle(fontSize: 10),
-                          );
-                        },
+                        reservedSize: 40,
                       ),
                     ),
 
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 28,
+                        reservedSize: 30,
                         getTitlesWidget: (value, meta) {
 
-                          Widget child;
+                          final index = value.toInt();
 
-                          if (selectedRange == ChartRange.day) {
-
-                            child = Text("${value.toInt()}h");
-
-                          } else if (selectedRange == ChartRange.month) {
-
-                            child = Text("${value.toInt() + 1}");
-
-                          } else {
-
-                            child = Text("T${value.toInt() + 1}");
+                          if (index >= chart.labels.length) {
+                            return const SizedBox();
                           }
 
                           return Padding(
                             padding: const EdgeInsets.only(top: 6),
-                            child: child,
+                            child: Text(
+                              chart.labels[index],
+                              style: const TextStyle(
+                                fontSize: 10,
+                              ),
+                            ),
                           );
                         },
                       ),
                     ),
                   ),
 
-                  barGroups: List.generate(maxX, (index) {
+                  barGroups: List.generate(
+                    chart.labels.length,
+                        (index) {
+                      return BarChartGroupData(
+                        x: index,
+                        barsSpace: 4,
 
-                    return BarChartGroupData(
-                      x: index,
+                        barRods: [
 
-                      barsSpace: 3,
+                          BarChartRodData(
+                            toY: chart.previousPeriodData[index],
+                            width: 10,
+                            color: Colors.blue,
+                            borderRadius:
+                            BorderRadius.circular(2),
+                          ),
 
-                      barRods: legends.asMap().entries.map((e) {
-
-                        final values = groupedData[e.value]!;
-
-                        return BarChartRodData(
-                          toY: values[index],
-                          width: 10,
-                          color: colors[e.key],
-                          borderRadius: BorderRadius.circular(2),
-                        );
-
-                      }).toList(),
-                    );
-                  }),
+                          BarChartRodData(
+                            toY: chart.currentPeriodData[index],
+                            width: 10,
+                            color: Colors.red,
+                            borderRadius:
+                            BorderRadius.circular(2),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -2142,12 +2006,12 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
     SizedBox(height: 16),
 
-    SizedBox(
-    height: 380,
-    child: buildCompareYearChart(
-    context.read<AnalyticsCubit>().state.data,
-    ),
-    ),
+      SizedBox(
+        height: 380,
+        child: buildCompareEnergyChart(
+          context.watch<AnalyticsCubit>().state.compareChart,
+        ),
+      ),
     ],
     ),
     ),
