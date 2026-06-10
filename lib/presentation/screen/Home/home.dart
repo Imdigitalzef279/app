@@ -82,10 +82,16 @@ class _HomeWidgetState extends State<HomeWidget> {
                   ),
                 );
               }
-
+              if (state.resultProjects.status == LoadStatus.failure) {
+                return Center(
+                  child: Text(
+                    state.resultProjects.error,
+                  ),
+                );
+              }
               if (state.resultProjects.status == LoadStatus.empty) {
-                return const Center(
-                  child: Text("Chưa có dữ liệu"),
+                return const CreateProjectScreen(
+                  projectId: 0,
                 );
               }
 

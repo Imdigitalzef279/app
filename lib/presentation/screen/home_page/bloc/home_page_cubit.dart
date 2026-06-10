@@ -60,12 +60,13 @@ class HomePageCubit extends Cubit<HomePageState> {
           p["id"].toString(),
         );
       }).toList();
-
+      print("TOKEN PROJECT IDS = $projectIds");
+      print("ALL PROJECT COUNT = ${items.length}");
       if (userProjects.isEmpty) {
         emit(state.copyWith(
           resultProjects: Result(
-            status: LoadStatus.failure,
-            error: "Không tìm thấy dự án của user",
+            status: LoadStatus.empty,
+            data: [],
           ),
         ));
         return;
