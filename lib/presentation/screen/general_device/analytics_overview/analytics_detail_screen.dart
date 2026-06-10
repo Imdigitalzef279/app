@@ -2034,6 +2034,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                                 child: buildChartTypeToggle(),
                               ),
                             ],
+
                           ),
                           SizedBox(height: 12),
                           buildChart(data),
@@ -2150,7 +2151,9 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     ],
     ),
     ),
-
+                          if (selectedTab == 1) ...[
+                            buildMCBCharts(state.breakerData ?? []),
+                          ],
             if (state.isLoading)
               Center(
                 child: SizedBox(
@@ -2164,7 +2167,9 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         ),
       ),
     ]
+
           ]
+
             )
           ]
       )
