@@ -42,7 +42,37 @@ class HomePageCubit extends Cubit<HomePageState> {
         );
       }
 
-      final projectId = items.first["id"] as int;
+      final token =
+      await sharedPreferences.getAccessToken();
+
+      final jwt =
+      JwtDecoder.decode(token);
+
+      final projectIds =
+      List<String>.from(
+        jwt["ProjectId"] ?? [],
+      );
+
+      print("TOKEN PROJECT IDS = $projectIds");
+
+      final userProjects = items.where((p) {
+        return projectIds.contains(
+          p["id"].toString(),
+        );
+      }).toList();
+
+      if (userProjects.isEmpty) {
+        emit(state.copyWith(
+          resultProjects: Result(
+            status: LoadStatus.failure,
+            error: "Không tìm thấy dự án của user",
+          ),
+        ));
+        return;
+      }
+
+      final projectId =
+      userProjects.first["id"] as int;
 
       print("SELECT PROJECT = $projectId");
 

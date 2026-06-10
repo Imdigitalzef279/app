@@ -113,15 +113,26 @@ class DeviceCubit extends Cubit<DeviceState> {
       await _repo.getSolarElectric(powerStationId);
 
       if (response.status != LoadStatus.success ||
-          response.data == null ||
-          response.data!.isEmpty) {
+          response.data == null) {
 
         emit(state.copyWith(
           resultDevices: Result(
             status: LoadStatus.failure,
             error: response.error.isNotEmpty
                 ? response.error
-                : "Không có thiết bị",
+                : "Lỗi tải thiết bị",
+          ),
+        ));
+
+        return;
+      }
+
+      /// Không có thiết bị vẫn là SUCCESS
+      if (response.data!.isEmpty) {
+        emit(state.copyWith(
+          resultDevices: Result(
+            status: LoadStatus.success,
+            data: [],
           ),
         ));
 
