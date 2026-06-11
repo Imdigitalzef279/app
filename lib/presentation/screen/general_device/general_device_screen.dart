@@ -185,7 +185,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+    backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.85),
         elevation: 0,
