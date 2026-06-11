@@ -372,25 +372,54 @@ class _MeterDetailScreenState extends State<MeterDetailScreen> {
               Row(
                 children: [
 
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        chartType = chartType == ChartType.power
-                            ? ChartType.energy
-                            : ChartType.power;
-                      });
-                    },
-                    child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Icon(
-                        chartType == ChartType.power
-                            ? Icons.bolt
-                            : Icons.battery_charging_full,
-                        color: const Color(0xFF1ABC9C),
-                        size: 20,
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            chartType = ChartType.power;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: chartType == ChartType.power
+                                ? const Color(0xFFE7F6F3)
+                                : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.bolt,
+                            size: 18,
+                            color: Color(0xFF1ABC9C),
+                          ),
+                        ),
                       ),
-                    ),
+
+                      const SizedBox(width: 4),
+
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            chartType = ChartType.energy;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: chartType == ChartType.energy
+                                ? const Color(0xFFE7F6F3)
+                                : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.battery_charging_full,
+                            size: 18,
+                            color: Color(0xFF1ABC9C),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(width: 6),

@@ -45,8 +45,22 @@ class HomePageCubit extends Cubit<HomePageState> {
       final token =
       await sharedPreferences.getAccessToken();
 
+      final jwt =
+      JwtDecoder.decode(token);
 
-      final userProjects = items;
+      final projectIds =
+      List<String>.from(
+        jwt["ProjectId"] ?? [],
+      );
+
+      print("TOKEN PROJECT IDS = $projectIds");
+
+      final userProjects = items.where((p) {
+        return projectIds.contains(
+          p["id"].toString(),
+        );
+      }).toList();
+      print("TOKEN PROJECT IDS = $projectIds");
       print("ALL PROJECT COUNT = ${items.length}");
       if (userProjects.isEmpty) {
         emit(state.copyWith(

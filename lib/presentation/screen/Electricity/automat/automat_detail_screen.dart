@@ -370,25 +370,54 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
           Row(
             children: [
 
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    chartType = chartType == ChartType.power
-                        ? ChartType.energy
-                        : ChartType.power;
-                  });
-                },
-                child: SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: Icon(
-                    chartType == ChartType.power
-                        ? Icons.bolt
-                        : Icons.battery_charging_full,
-                    color: const Color(0xFF1ABC9C),
-                    size: 20,
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        chartType = ChartType.power;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: chartType == ChartType.power
+                            ? const Color(0xFFE7F6F3)
+                            : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.bolt,
+                        size: 18,
+                        color: Color(0xFF1ABC9C),
+                      ),
+                    ),
                   ),
-                ),
+
+                  const SizedBox(width: 4),
+
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        chartType = ChartType.energy;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: chartType == ChartType.energy
+                            ? const Color(0xFFE7F6F3)
+                            : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.battery_charging_full,
+                        size: 18,
+                        color: Color(0xFF1ABC9C),
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(width: 6),
@@ -398,13 +427,13 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                 children: [
                 ],
               ),
-              const Text(
-                "Dữ liệu năng lượng",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12,
-                ),
-              ),
+              // const Text(
+              //   "Dữ liệu năng lượng",
+              //   style: TextStyle(
+              //     fontWeight: FontWeight.w700,
+              //     fontSize: 12,
+              //   ),
+              // ),
 
               const Spacer(),
               ///  ICON FULL SCREEN
@@ -533,31 +562,48 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    chartDisplayType =
-                    chartDisplayType == ChartDisplayType.line
-                        ? ChartDisplayType.bar
-                        : ChartDisplayType.line;
+                    chartDisplayType = ChartDisplayType.line;
                   });
                 },
-
                 child: Container(
                   padding: const EdgeInsets.all(6),
-
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE7F6F3),
+                    color: chartDisplayType == ChartDisplayType.line
+                        ? const Color(0xFFE7F6F3)
+                        : Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(10),
                   ),
-
-                  child: Icon(
-                    chartDisplayType == ChartDisplayType.line
-                        ? Icons.show_chart
-                        : Icons.bar_chart,
+                  child: const Icon(
+                    Icons.show_chart,
                     size: 18,
-                    color: const Color(0xFF1ABC9C),
+                    color: Color(0xFF1ABC9C),
                   ),
                 ),
               ),
 
+              const SizedBox(width: 6),
+
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    chartDisplayType = ChartDisplayType.bar;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: chartDisplayType == ChartDisplayType.bar
+                        ? const Color(0xFFE7F6F3)
+                        : Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.bar_chart,
+                    size: 18,
+                    color: Color(0xFF1ABC9C),
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 10),
