@@ -8,7 +8,7 @@ import 'package:solar_energy/data/repositories/base_repository.dart';
 import 'package:solar_energy/data/repositories/register/register_repository.dart';
 
 import '../../data_sources/api/api_client.dart';
-import '../../dto/api_response/api_response.dart';
+
 import '../../dto/register_account/request/register_account_request.dart';
 
 class RegisterRepositoryImpl extends BaseRepository

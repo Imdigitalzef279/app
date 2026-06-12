@@ -333,7 +333,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       BuildContext context,
       DeviceResponse device,
       ) {
-    final now = DateTime.now();
     final chartData = context.watch<AutomatChartCubit>().state;
     final yAxisLabel = chartType == ChartType.power ? "Power (kW)" : "Energy (kWh)";
     final xAxisLabel = "Time";
@@ -1222,7 +1221,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
   Widget _buildLineChart(List chartData, double maxValue) {
 
     final data = getDisplayData(chartData);
-    String timeLabel;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: BouncingScrollPhysics(),

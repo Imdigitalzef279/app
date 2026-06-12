@@ -319,36 +319,6 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
     });
   }
 
-  String _f(DateTime d) => "${d.day}/${d.month}/${d.year}";
-  Widget _dropdown<T>({
-    required String hint,
-    required T? value,
-    required List<T> items,
-    required String Function(T) getLabel,
-    required Function(T?) onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<T>(
-          hint: Text(hint),
-          value: value,
-          isExpanded: true,
-          items: items.map((e) {
-            return DropdownMenuItem(
-              value: e,
-              child: Text(getLabel(e)),
-            );
-          }).toList(),
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
 
   Widget _header(ElectricReport report) {
     final r = selectedRange ?? range;
@@ -749,8 +719,6 @@ class _ElectricHistoryScreenState extends State<ElectricHistoryScreen> {
     }).toList();
     final minY = spots.map((e) => e.y).reduce((a, b) => a < b ? a : b);
     final maxY2 = spots.map((e) => e.y).reduce((a, b) => a > b ? a : b);
-    final maxY = (data.map((e) => e.epi).reduce((a, b) => a > b ? a : b) * 1.2)
-        .ceilToDouble();
 
     return Container(
       height: 280,

@@ -90,7 +90,6 @@ class _MeterDetailScreenState extends State<MeterDetailScreen> {
 
 
   final formatted = DateFormat("yyyy-MM-dd'T'00:00:00");
-  Timer? _timer;
   Timer? _realtimeTimer;
   @override
   void initState() {
