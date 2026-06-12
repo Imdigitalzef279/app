@@ -1108,34 +1108,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     final displayData = data;
     final now = DateTime.now();
 
-    final yesterday = now.subtract(Duration(days: 1));
 
-    final yesterdayData = applyRange(
-      context.read<AnalyticsCubit>().state.data,
-      ChartRange.day,
-    ).where((e) {
-
-      final d = e.time;
-
-      return d.year == yesterday.year &&
-          d.month == yesterday.month &&
-          d.day == yesterday.day;
-
-    }).toList();
-
-    final yesterdayMap = <int, double>{};
-    print("Yesterday count: ${yesterdayData.length}");
-    for (final item in yesterdayData) {
-
-      final key = selectedRange == ChartRange.day
-          ? item.time.hour
-          : item.time.day;
-
-      yesterdayMap[key] =
-      selectedChart == 0
-          ? item.p
-          : item.epi;
-    }
     final rawValues = displayData.map<double>((e) {
       return selectedChart == 0 ? e.p : e.epi;
     }).toList();
@@ -1251,6 +1224,16 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               ),
 
               leftTitles: AxisTitles(
+                axisNameWidget: Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    selectedChart == 0 ? "kW" : "kWh",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 50,
@@ -1453,34 +1436,13 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                       : e.value.epi
               ) * scaleFactor;
 
-              final item = e.value;
-              final compareKey = selectedRange == ChartRange.day
-                  ? item.time.hour
-                  : item.time.day;
-
-              final yesterdayValue =
-                  (yesterdayMap[compareKey] ?? 0) * scaleFactor;
 
               return BarChartGroupData(
                 x: originalIndex,
-                barsSpace: 4,
-
                 barRods: [
-
-
-                  // hôm qua
-                  BarChartRodData(
-                    toY: yesterdayValue,
-                    width: 8,
-                    borderRadius: BorderRadius.circular(2),
-                      color: Color(0xFF60A5FA),
-                  ),
-
-
-                  // hôm nay
                   BarChartRodData(
                     toY: value,
-                    width: 8,
+                    width: 12,
                     borderRadius: BorderRadius.circular(2),
                     color: originalIndex == maxIndex
                         ? Color(0xFF1E3A5F)
@@ -1720,7 +1682,21 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         ),
 
         SizedBox(height: 16),
-
+        Center(
+          child: Text(
+            selectedRange == ChartRange.day
+                ? "Ngày"
+                : selectedRange == ChartRange.month
+                ? "Tháng"
+                : "Năm",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
         Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -1757,6 +1733,16 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                     ),
 
                     leftTitles: AxisTitles(
+                      axisNameWidget: Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          "kWh",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 40,
@@ -1901,7 +1887,21 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
                           ),
                           SizedBox(height: 12),
-                          buildChart(data),
+                          Column(
+                            children: [
+                              Text(
+                                selectedChart == 0 ? "Trục X: Thời gian | Trục Y: kW"
+                                    : "Trục X: Thời gian | Trục Y: kWh",
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              buildChart(data),
+                            ],
+                          ),
 
                           SizedBox(height: 12),
 
@@ -2006,11 +2006,29 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
     SizedBox(height: 16),
 
-      SizedBox(
-        height: 380,
-        child: buildCompareEnergyChart(
-          context.watch<AnalyticsCubit>().state.compareChart,
-        ),
+      Column(
+        children: [
+          Text(
+            selectedRange == ChartRange.day
+                ? "Trục X: Ngày | Trục Y: kWh"
+                : selectedRange == ChartRange.month
+                ? "Trục X: Tháng | Trục Y: kWh"
+                : "Trục X: Năm | Trục Y: kWh",
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 8),
+
+          SizedBox(
+            height: 380,
+            child: buildCompareEnergyChart(
+              context.watch<AnalyticsCubit>().state.compareChart,
+            ),
+          ),
+        ],
       ),
     ],
     ),
