@@ -28,14 +28,20 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 
 
   Future<void> pickImage() async {
+
     final XFile? file =
     await picker.pickImage(
       source: ImageSource.gallery,
     );
 
     if (file == null) return;
-
+    print("PICK IMAGE");
+    print(file?.path);
     print("IMAGE = ${file.path}");
+    final result =
+    await controller.analyzeImage(file.path);
+
+    print("ANALYZE RESULT = $result");
   }
   ///  HANDLE SCAN
   Future<void> _onDetect(BarcodeCapture capture) async {
