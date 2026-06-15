@@ -229,4 +229,9 @@ abstract class ApiClient {
       @Query('StartDate') String startDate,
       @Query('EndDate') String endDate,
       );
+  // ================= kich hoat bao hanh theo tram, du an=================
+  @POST('api/app/warranty/activate-via-qr')
+  Future<dynamic> activateViaQr(
+      @Body() Map<String, dynamic> body,
+      );
 }

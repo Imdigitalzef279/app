@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
+import '../../../../../data/repositories/warranty/warranty_repository.dart';
 import 'package:solar_energy/data/repositories/device/device_repository.dart';
-import 'package:solar_energy/data/repositories/device/device_repository_impl.dart';
-import 'package:solar_energy/data/dto/device/response/device_response.dart';
-import '../../../../application/enums/load_status.dart';
-import '../../Electricity/automat/device_info_screen/device_info_screen.dart';
-
+import 'package:image_picker/image_picker.dart';
 class ScanQrScreen extends StatefulWidget {
   const ScanQrScreen({super.key});
 
@@ -19,61 +14,42 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   bool isScanned = false;
   bool isLoading = false;
   bool isTorchOn = false;
-
+  final ImagePicker picker = ImagePicker();
   late final DeviceRepository deviceRepo;
+  final WarrantyRepository warrantyRepo =
+  WarrantyRepository();
   final MobileScannerController controller = MobileScannerController();
 
-  List<DeviceResponse> deviceList = [];
 
   @override
   void initState() {
     super.initState();
-
-    try {
-      deviceRepo = GetIt.instance<DeviceRepository>();
-    } catch (_) {
-      deviceRepo = DeviceRepositoryImpl();
-    }
-
-    loadDevices();
   }
 
 
-  Future<void> loadDevices() async {
-    setState(() => isLoading = true);
+  Future<void> pickImage() async {
+    final XFile? file =
+    await picker.pickImage(
+      source: ImageSource.gallery,
+    );
 
-    final result = await deviceRepo.getSolarElectric(21);
+    if (file == null) return;
 
-    if (result.status == LoadStatus.success && result.data != null) {
-      deviceList = result.data!;
-
-      debugPrint("===== DEVICE LIST FULL =====");
-
-      for (var d in deviceList) {
-        debugPrint("""
-ID: ${d.id}
-SERIAL: ${d.serialNumber}
-CODE: ${d.code}
-GATEWAY: ${d.gatewayNumber}
-------------------------
-""");
-      }
-
-      debugPrint("============================");
-    }
-
-    setState(() => isLoading = false);
+    print("IMAGE = ${file.path}");
   }
-
   ///  HANDLE SCAN
   Future<void> _onDetect(BarcodeCapture capture) async {
+    print("🔥 ON DETECT");
     if (isScanned || isLoading) return;
 
     final raw = capture.barcodes.first.rawValue;
+    print("RAW = $raw");
     debugPrint("👉 QR RAW: $raw");
     if (raw == null || raw.isEmpty) return;
 
     final serial = raw.trim();
+    print("SERIAL = $serial");
+    print("SCAN VALUE = $serial");
     debugPrint("👉 SERIAL AFTER TRIM: $serial");
 
     setState(() {
@@ -82,30 +58,27 @@ GATEWAY: ${d.gatewayNumber}
     });
 
     try {
-      DeviceResponse? device;
+      final result = await warrantyRepo.activateViaQr(
 
-      try {
-        device = deviceList.firstWhere(
-              (e) =>
-          (e.serialNumber ?? "").trim().toLowerCase() ==
-              serial.toLowerCase(),
-        );
-      } catch (_) {
-        device = null;
-      }
+        qrCode: serial,
+        projectId: 21,
+        powerStationId: 181,
+      );
+      print("CALL API...");
+      print("API DONE");
+      print(result);
+      // final result =
+      // await warrantyRepo.activateViaQr(
+      //   qrCode: serial,
+      // );
 
 
-      if (device == null) {
-        showError("Không tìm thấy thiết bị");
-        return;
-      }
 
-      if (!mounted) return;
-
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => DeviceInfoScreen(device: device!),
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Kích hoạt thành công",
+          ),
         ),
       );
 
@@ -232,8 +205,8 @@ GATEWAY: ${d.gatewayNumber}
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _bottomIcon(Icons.image, "Thư viện", () {
-                  debugPrint("👉 open gallery");
+                _bottomIcon(Icons.image, "Thư viện", () async {
+                  await pickImage();
                 }),
                 _bottomIcon(
                   isTorchOn ? Icons.flash_off : Icons.flash_on,

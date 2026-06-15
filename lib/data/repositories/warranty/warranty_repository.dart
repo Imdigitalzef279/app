@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:solar_energy/data/dto/Warranty/response/warranty_response.dart';
 class WarrantyRepository {
@@ -49,6 +50,40 @@ class WarrantyRepository {
     } catch (e) {
       print("Activate warranty unknown error: $e");
       return false;
+    }
+  }
+  Future<dynamic> activateViaQr({
+    required String qrCode,
+    int? projectId,
+    int? powerStationId,
+  }) async {
+    try {
+
+      debugPrint("=== ACTIVATE VIA QR ===");
+      debugPrint("qrCode = $qrCode");
+      debugPrint("projectId = $projectId");
+      debugPrint("powerStationId = $powerStationId");
+
+      final response = await _dio.post(
+        "/api/app/warranty/activate-via-qr",
+        data: {
+          "qrCode": qrCode,
+          "projectId": projectId,
+          "powerStationId": powerStationId,
+        },
+      );
+
+      debugPrint("STATUS = ${response.statusCode}");
+      debugPrint("RESPONSE = ${response.data}");
+
+      return response.data;
+
+    } on DioException catch (e) {
+
+      debugPrint("STATUS ERROR = ${e.response?.statusCode}");
+      debugPrint("ERROR DATA = ${e.response?.data}");
+
+      rethrow;
     }
   }
 }
