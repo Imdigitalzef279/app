@@ -73,10 +73,6 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
       print("CALL API...");
       print("API DONE");
       print(result);
-      // final result =
-      // await warrantyRepo.activateViaQr(
-      //   qrCode: serial,
-      // );
 
 
 
