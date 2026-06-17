@@ -3,7 +3,7 @@ import '../../../../data/dto/cart/cart.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String name;
-  final String price;
+  final int price;
   final String image;
 
   const ProductDetailScreen({
@@ -20,8 +20,7 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int quantity = 1;
 
-  int get priceInt =>
-      int.parse(widget.price.replaceAll('.', '').replaceAll('đ', ''));
+  int get priceInt => widget.price;
 
   String formatPrice(int value) {
     return value

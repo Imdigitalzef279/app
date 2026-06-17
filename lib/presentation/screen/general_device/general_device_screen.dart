@@ -62,19 +62,19 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
   final bannerData = [
     {
       "img": "assets/images/matis/1.png",
-      "url": "https://krapower.com.vn/en/groups"
+      "url": "https://krapower.vn"
     },
     {
       "img": "assets/images/matis/Enertrek System.png",
-      "url": "https://krapower.com.vn/en/groups"
+      "url": "https://krapower.vn"
     },
     {
       "img": "assets/images/matis/4.png",
-      "url": "https://krapower.com.vn/en/groups"
+      "url": "https://krapower.vn"
     },
     {
       "img": "assets/images/matis/5.png",
-      "url": "https://krapower.com.vn/en/groups"
+      "url": "https://krapower.vn"
     },
   ];
 
@@ -185,7 +185,7 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
 
 
     return Scaffold(
-    backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.85),
         elevation: 0,
@@ -446,108 +446,108 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
                             ),
 
                             /// ===== DEVICES (LUÔN Ở ĐÁY) =====
-                      Expanded(
-                        child: Container(
-                          child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: isTablet(context) ? 30 : 10.w,
-                                          vertical: isTablet(context) ? 6 : 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        child: Text("Thiết bị hay dùng".tr(),
-                                          style: TextStyle(
-                                            fontSize: isTablet(context) ? 12 : 13.sp,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.black87,
+                            Expanded(
+                              child: Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: isTablet(context) ? 30 : 10.w,
+                                            vertical: isTablet(context) ? 6 : 4,
                                           ),
-                                        ),
-                                      ),
-
-                                      ///  NÚT CHUYỂN VIEW
-                                      Row(
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () => setState(() => _isGridView = !_isGridView),
-                                            child: Container(
-                                              padding: const EdgeInsets.all(6),
-                                              decoration: BoxDecoration(
-                                                color: Colors.black.withOpacity(0.4),
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              child: Icon(
-                                                _isGridView ? Icons.view_agenda : Icons.grid_view,
-                                                size: 18,
-                                                color: Colors.white,
-                                              ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Text("Thiết bị hay dùng".tr(),
+                                            style: TextStyle(
+                                              fontSize: isTablet(context) ? 12 : 13.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.black87,
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: isTablet(context) ? 12 : 20),
-                                  Gap(4.h),
-
-                                  Expanded(
-                                    child: AnimatedSwitcher(
-                                      duration: const Duration(milliseconds: 300),
-                                      child: favoriteDevices.isEmpty
-                                          ? Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.05),
-                                              blurRadius: 10,
-                                            ),
-                                          ],
                                         ),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+
+                                        ///  NÚT CHUYỂN VIEW
+                                        Row(
                                           children: [
-                                            Icon(
-                                              Icons.devices_other,
-                                              size: 70,
-                                              color: Colors.grey.shade400,
-                                            ),
-                                            const SizedBox(height: 16),
-                                            const Text(
-                                              "Chưa có thiết bị",
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              "Hãy nhấn dấu + để thêm thiết bị mới",
-                                              style: TextStyle(
-                                                color: Colors.grey.shade600,
+                                            GestureDetector(
+                                              onTap: () => setState(() => _isGridView = !_isGridView),
+                                              child: Container(
+                                                padding: const EdgeInsets.all(6),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black.withOpacity(0.4),
+                                                  borderRadius: BorderRadius.circular(8),
+                                                ),
+                                                child: Icon(
+                                                  _isGridView ? Icons.view_agenda : Icons.grid_view,
+                                                  size: 18,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ),
                                           ],
                                         ),
-                                      )
-                                          : _isGridView
-                                          ? _buildFixed6AndScroll(favoriteDevices)
-                                          : _buildVerticalPage(favoriteDevices),
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(height: isTablet(context) ? 12 : 20),
+                                    Gap(4.h),
+
+                                    Expanded(
+                                      child: AnimatedSwitcher(
+                                        duration: const Duration(milliseconds: 300),
+                                        child: favoriteDevices.isEmpty
+                                            ? Container(
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(20),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.05),
+                                                blurRadius: 10,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.devices_other,
+                                                size: 70,
+                                                color: Colors.grey.shade400,
+                                              ),
+                                              const SizedBox(height: 16),
+                                              const Text(
+                                                "Chưa có thiết bị",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                "Hãy nhấn dấu + để thêm thiết bị mới",
+                                                style: TextStyle(
+                                                  color: Colors.grey.shade600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                            : _isGridView
+                                            ? _buildFixed6AndScroll(favoriteDevices)
+                                            : _buildVerticalPage(favoriteDevices),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                      )
+                            )
                           ],
                         ),
                       ),
@@ -599,67 +599,67 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _featureTabletItem(
-            iconPath: "assets/icons/icons_new/icon_energy_meter.png",
-            title: 'Năng Lượng'.tr(),
-            onTap: () {
-              print("PROJECT ID = ${widget.project.id}");
-              print("PROJECT NAME = ${widget.project.name}");
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<DeviceCubit>(),
-                    child: AutomatListScreen(
-                      powerStationId: widget.project.id!,
+                iconPath: "assets/icons/icons_new/icon_energy_meter.png",
+                title: 'Năng Lượng'.tr(),
+                onTap: () {
+                  print("PROJECT ID = ${widget.project.id}");
+                  print("PROJECT NAME = ${widget.project.name}");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: context.read<DeviceCubit>(),
+                        child: AutomatListScreen(
+                          powerStationId: widget.project.id!,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
-            },
-          ),
+                  );
+                },
+              ),
               _featureTabletItem(
-            iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
-            title: "Phân tích".tr(),
-            onTap: () {
-              final devices =
-                  context.read<DeviceCubit>().state.resultDevices.data ?? [];
+                iconPath: "assets/icons/icons_new/icon_energy_analytics.png",
+                title: "Phân tích".tr(),
+                onTap: () {
+                  final devices =
+                      context.read<DeviceCubit>().state.resultDevices.data ?? [];
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AnalyticsOverviewScreen(devices: devices),
-                ),
-              );
-            },
-          ),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AnalyticsOverviewScreen(devices: devices),
+                    ),
+                  );
+                },
+              ),
               _featureTabletItem(
-            iconPath: "assets/icons/icons_new/icon_environment.png",
-            title: "Môi Trường".tr(),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => DeviceWaterScreen(
-                    stationId: widget.project.id!,
-                  ),
-                ),
-              );
-            },
-          ),
+                iconPath: "assets/icons/icons_new/icon_environment.png",
+                title: "Môi Trường".tr(),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DeviceWaterScreen(
+                        stationId: widget.project.id!,
+                      ),
+                    ),
+                  );
+                },
+              ),
               _featureTabletItem(
-            iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
-            title: "KRA Care".tr(),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => KraCareScreen(),
-                ),
-              );
-            },
+                iconPath: "assets/icons/icons_new/icon_kra_smart_safety.png",
+                title: "KRA Care".tr(),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => KraCareScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
         )
     );
   }
@@ -997,48 +997,48 @@ class _GeneralDeviceScreenState extends State<GeneralDeviceScreen>
               )
             ],
           ),
-      child: Row(
-        children: [
+          child: Row(
+            children: [
 
-          Container(
-            padding: EdgeInsets.all(10.w),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Icon(icon, color: color),
+              Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Icon(icon, color: color),
+              ),
+
+              SizedBox(width: 10.w),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    SizedBox(height: 4.h),
+
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
           ),
-
-          SizedBox(width: 10.w),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-
-                SizedBox(height: 4.h),
-
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
         )
     );
   }

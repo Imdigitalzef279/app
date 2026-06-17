@@ -1,131 +1,76 @@
-class ProductItem {
-  final String name;
-  final String price;
-  final String image;
-  final String category;
+import '../dto/product/product.dart';
 
-  ProductItem({
-    required this.name,
-    required this.price,
-    required this.image,
-    required this.category,
-  });
-}
+final List<Product> allProducts = [
 
-final List<ProductItem> allProducts = [
+  // 0. Đồng hồ & đo lường
+  Product(name: "Enertrek E10", price: 2500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "Enertrek E21", price: 3200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "Enertrek E31", price: 3500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "PEM3353-A", price: 4200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "SEM2250", price: 4500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "SEM3250", price: 4800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "MPM4410-A", price: 5000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "Enertrek M10", price: 2200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "Enertrek M20", price: 2600000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(name: "Enertrek M30", price: 2900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
 
-  /// =========================
-  /// ĐỒNG HỒ & ĐO LƯỜNG
-  /// =========================
+  // 1. Cầu dao thông minh
+  Product(name: "MT61GP-WFSC25", price: 4500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFSC32", price: 4700000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFSC40", price: 4900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFSC50", price: 5100000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFSC63", price: 5300000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFSC80", price: 5600000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFTC25", price: 4500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFTC32", price: 4700000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFTC40", price: 4900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+  Product(name: "MT61GP-WFTC50", price: 5100000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
 
-  ProductItem(
-    name: 'Enertrek E10',
-    price: '28 USD',
-    image: 'assets/icons/icons_new/icon_energy_meter.png',
-    category: 'Đồng hồ & đo lường',
-  ),
+  // 2. Bộ đóng ngắt
+  Product(name: "MT88M-LM125", price: 6500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MT88M-LM250", price: 7200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MT88M-LM400", price: 8500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MT88M-LM630", price: 9800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MT88M-LM800", price: 11500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MTM5M-125", price: 6200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MTM5M-250", price: 7000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MTM5M-400", price: 8200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MTM5M-630", price: 9400000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(name: "MTM5-EL125", price: 6800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
 
-  ProductItem(
-    name: 'Enertrek E21',
-    price: '44 USD',
-    image: 'assets/icons/icons_new/icon_energy_meter.png',
-    category: 'Đồng hồ & đo lường',
-  ),
+  // 3. Cổng thông minh
+  Product(name: "Enertrek G30", price: 3500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "Enertrek C20", price: 2800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "Enertrek C30", price: 3200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "Enertrek DIO4/2", price: 2600000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "RJ12-06", price: 300000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "RJ12-10", price: 400000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "RJ12-20", price: 500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "RJ12-50", price: 700000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "RJ12-100", price: 1000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+  Product(name: "RJ12-200", price: 1500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
 
-  ProductItem(
-    name: 'Enertrek E31',
-    price: '46.4 USD',
-    image: 'assets/icons/icons_new/icon_energy_meter.png',
-    category: 'Đồng hồ & đo lường',
-  ),
+  // 4. Thiết bị môi trường
+  Product(name: "Enertrek V10", price: 1800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "Enertrek M10", price: 2200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "Enertrek M20", price: 2600000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "Enertrek M30", price: 2900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "Enertrek M40", price: 3200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "CTO-100A", price: 800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "CTO-200A", price: 900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "CTO-400A", price: 1200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "CTO-600A", price: 1500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+  Product(name: "DIO4/2", price: 2500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
 
-  /// =========================
-  /// CẦU DAO THÔNG MINH
-  /// =========================
-
-  ProductItem(
-    name: 'Enertrek M10',
-    price: '17 USD',
-    image: 'assets/icons/icons_new/icon_smart_breaker.png',
-    category: 'Cầu dao thông minh',
-  ),
-
-  ProductItem(
-    name: 'Enertrek M20',
-    price: '20.5 USD',
-    image: 'assets/icons/icons_new/icon_smart_breaker.png',
-    category: 'Cầu dao thông minh',
-  ),
-
-  ProductItem(
-    name: 'Enertrek M30',
-    price: '30 USD',
-    image: 'assets/icons/icons_new/icon_smart_breaker.png',
-    category: 'Cầu dao thông minh',
-  ),
-
-  ProductItem(
-    name: 'Enertrek M40',
-    price: '32.5 USD',
-    image: 'assets/icons/icons_new/icon_smart_breaker.png',
-    category: 'Cầu dao thông minh',
-  ),
-
-  /// =========================
-  /// BỘ ĐÓNG NGẮT
-  /// =========================
-
-  ProductItem(
-    name: 'DIO4/2',
-    price: '34.4 USD',
-    image: 'assets/icons/icons_new/icon_circuit_breaker.png',
-    category: 'Bộ đóng ngắt',
-  ),
-
-  /// =========================
-  /// CỔNG THÔNG MINH
-  /// =========================
-
-  ProductItem(
-    name: 'Enertrek G30',
-    price: '132 USD',
-    image: 'assets/icons/icons_new/icon_gateway.png',
-    category: 'Cổng thông minh',
-  ),
-
-  ProductItem(
-    name: 'Enertrek C20',
-    price: '24 USD',
-    image: 'assets/icons/icons_new/icon_gateway.png',
-    category: 'Cổng thông minh',
-  ),
-
-  ProductItem(
-    name: 'Enertrek C30',
-    price: '34 USD',
-    image: 'assets/icons/icons_new/icon_gateway.png',
-    category: 'Cổng thông minh',
-  ),
-
-  /// =========================
-  /// THIẾT BỊ MÔI TRƯỜNG
-  /// =========================
-
-  ProductItem(
-    name: 'Voltage Unit V10',
-    price: '73.6 USD',
-    image: 'assets/icons/icons_new/icon_environment.png',
-    category: 'Thiết bị môi trường',
-  ),
-
-  /// =========================
-  /// KRA SMART SAFETY
-  /// =========================
-
-  ProductItem(
-    name: 'KRA Smart Safety',
-    price: 'Liên hệ',
-    image: 'assets/icons/icons_new/icon_kra_smart_safety.png',
-    category: 'KRA Smart Safety',
-  ),
+  // 5. KRA Smart Safety
+  Product(name: "AI Fall Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "PPE Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "Helmet Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "Safety Vest Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "Fire Detection", price: 18000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "Smoke Detection", price: 18000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "Restricted Area Detection", price: 20000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "Worker Counting", price: 12000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "Vehicle Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "Emergency Alert System", price: 25000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
 ];

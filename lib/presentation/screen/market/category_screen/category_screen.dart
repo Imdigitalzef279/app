@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../data/dto/product/product.dart';
 import '../../../../data/mock/product_data.dart';
 import '../product_detail/product_detail_screen.dart';
 
@@ -12,18 +13,9 @@ class CategoryScreen extends StatelessWidget {
     required this.type,
   });
 
-  List<ProductItem> getProducts() {
-    final categoryMap = [
-      'Đồng hồ & đo lường',
-      'Cầu dao thông minh',
-      'Bộ đóng ngắt',
-      'Cổng thông minh',
-      'Thiết bị môi trường',
-      'KRA Smart Safety',
-    ];
-
+  List<Product> getProducts() {
     return allProducts
-        .where((e) => e.category == categoryMap[type])
+        .where((e) => e.categoryId == type)
         .toList();
   }
 
@@ -31,6 +23,10 @@ class CategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final products = getProducts();
 
+
+    print("TITLE = $title");
+    print("TYPE = $type");
+    print("COUNT = ${products.length}");
     return Scaffold(
       backgroundColor: Colors.grey[100],
 
@@ -93,7 +89,7 @@ class CategoryScreen extends StatelessWidget {
 
 class _ProductItem extends StatelessWidget {
   final String name;
-  final String price;
+  final int price;
   final String image;
 
   const _ProductItem({
@@ -142,7 +138,7 @@ class _ProductItem extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              price,
+              "${price.toString()} đ",
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.red,

@@ -144,10 +144,34 @@ class _KraCareScreenState extends State<KraCareScreen> {
 
           /// 🔥 CONTENT
           Expanded(
-            child: tabs[currentIndex],
+            child: Stack(
+              children: [
+                IgnorePointer(
+                  ignoring: true,
+                  child: Opacity(
+                    opacity: 0.3,
+                    child: tabs[currentIndex],
+                  ),
+                ),
+
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      "KRA Care đang được phát triển\nVui lòng quay lại ở phiên bản tiếp theo.",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
-      ),
+              ),
     );
   }
 }
