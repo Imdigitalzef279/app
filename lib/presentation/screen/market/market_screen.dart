@@ -1,8 +1,9 @@
 import 'dart:async';
-
+import 'package:solar_energy/data/mock/product_data.dart';
 import 'package:flutter/material.dart';
 import 'package:solar_energy/presentation/screen/market/product_search.dart';
 import 'package:solar_energy/presentation/screen/market/notification_screen.dart';
+import '../../../data/dto/product/product.dart';
 import 'cart_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'category_screen/category_screen.dart';
@@ -206,14 +207,21 @@ class _ProductSliderState extends State<_ProductSlider> {
   late final Timer timer;
   int current = 0;
 
-  final products = [
-    "assets/icons/icons_new/icon_smart_breaker.png",
-    "assets/icons/icons_new/icon_circuit_breaker.png",
-    "assets/icons/icons_new/icon_energy_meter.png",
-    "assets/icons/icons_new/icon_gateway.png",
-    "assets/icons/icons_new/icon_kra_smart_safety.png",
-    "assets/icons/icons_new/icon_heat_pump.png",
-  ];
+  static const int pageSize = 6;
+
+  List<Product> get currentProducts {
+    final start = current * pageSize;
+
+    if (start >= allProducts.length) {
+      return allProducts.take(pageSize).toList();
+    }
+
+    final end = (start + pageSize > allProducts.length)
+        ? allProducts.length
+        : start + pageSize;
+
+    return allProducts.sublist(start, end);
+  }
 
   @override
   void initState() {
@@ -221,10 +229,14 @@ class _ProductSliderState extends State<_ProductSlider> {
 
     controller = PageController();
 
-    timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    timer = Timer.periodic(
+        const Duration(seconds: 15), (timer) {
       if (!mounted) return;
 
-      if (current < products.length - 1) {
+      final maxPage =
+      (allProducts.length / pageSize).ceil();
+
+      if (current < maxPage - 1) {
         current++;
       } else {
         current = 0;
@@ -255,18 +267,26 @@ class _ProductSliderState extends State<_ProductSlider> {
           /// SLIDER
           PageView.builder(
             controller: controller,
-            itemCount: products.length,
+            itemCount: (allProducts.length / pageSize).ceil(),
             onPageChanged: (index) {
               setState(() {
                 current = index;
               });
             },
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: _ProductCard(icons: products),
-              );
-            },
+              itemBuilder: (context, index) {
+                final start = index * pageSize;
+
+                final end = start + pageSize > allProducts.length
+                    ? allProducts.length
+                    : start + pageSize;
+
+                final pageProducts =
+                allProducts.sublist(start, end);
+
+                return _ProductCard(
+                  products: pageProducts,
+                );
+              }
           ),
 
           /// LEFT BUTTON
@@ -307,7 +327,7 @@ class _ProductSliderState extends State<_ProductSlider> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                products.length,
+                (allProducts.length / pageSize).ceil(),
                     (index) => GestureDetector(
                   onTap: () {
                     controller.animateToPage(
@@ -337,13 +357,14 @@ class _ProductSliderState extends State<_ProductSlider> {
   }
 }
 class _ProductCard extends StatelessWidget {
-  final List<String> icons;
+  final List<Product> products;
 
-  const _ProductCard({required this.icons});
+  const _ProductCard({
+    required this.products,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final images = icons;
 
     return Container(
       height: isTablet(context) ? 180 : 170,
@@ -429,7 +450,7 @@ class _ProductCard extends StatelessWidget {
             height: isTablet(context) ? 160 : 100,
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: images.length,
+              itemCount: products.length,
               gridDelegate:
               SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: isTablet(context) ? 3 : 3,
@@ -444,7 +465,7 @@ class _ProductCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Image.asset(
-                    images[index],
+                    products[index].image,
                     fit: BoxFit.contain,
                     width: isTablet(context) ? 26 : null,
                     height: isTablet(context) ? 26 : null,
