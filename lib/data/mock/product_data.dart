@@ -661,17 +661,159 @@ Cáp kết nối Enertrek BUS RJ12 dài 20m.
 """,
   ),
 
-  // 4. Thiết bị môi trường
-  Product(name: "Enertrek V10", price: 1800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "Enertrek M10", price: 2200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "Enertrek M20", price: 2600000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "Enertrek M30", price: 2900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "Enertrek M40", price: 3200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "CTO-100A", price: 800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "CTO-200A", price: 900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "CTO-400A", price: 1200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "CTO-600A", price: 1500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
-  Product(name: "DIO4/2", price: 2500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),
+// 4. Thiết bị môi trường
+
+  Product(
+    name: "Enertrek V10",
+    price: 1800000,
+    image: "assets/images/products/thietbimoitruong/V10.png",
+    categoryId: 4,
+    description: """
+Mô-đun điện áp Enertrek V10.
+
+• Thu thập và giám sát điện áp hệ thống.
+• Hỗ trợ hệ thống điện 1 pha và 3 pha.
+• Độ chính xác đo lường cao.
+• Kết nối với nền tảng Enertrek EMS.
+• Thiết kế DIN Rail nhỏ gọn.
+""",
+  ),
+
+  Product(
+    name: "Enertrek M10",
+    price: 2200000,
+    image: "assets/images/products/thietbimoitruong/M10.png",
+    categoryId: 4,
+    description: """
+Mô-đun đo lường Enertrek M10.
+
+• Tích hợp biến dòng đo điện.
+• Giám sát dòng điện và điện năng tiêu thụ.
+• Hỗ trợ ModBUS RTU.
+• Thiết kế nhỏ gọn, dễ lắp đặt.
+""",
+  ),
+
+  Product(
+    name: "Enertrek M20",
+    price: 2600000,
+    image: "assets/images/products/thietbimoitruong/M20.png",
+    categoryId: 4,
+    description: """
+Mô-đun đo lường Enertrek M20.
+
+• Đo lường dòng điện đa kênh.
+• Giám sát điện năng thời gian thực.
+• Kết nối Enertrek BUS.
+• Phù hợp cho hệ thống quản lý năng lượng.
+""",
+  ),
+
+  Product(
+    name: "Enertrek M30",
+    price: 2900000,
+    image: "assets/images/products/thietbimoitruong/M40.png",
+    categoryId: 4,
+    description: """
+Mô-đun đo lường Enertrek M30.
+
+• Thu thập dữ liệu điện năng nhiều điểm.
+• Hỗ trợ giao tiếp ModBUS.
+• Tích hợp với hệ thống EMS.
+• Hoạt động ổn định trong môi trường công nghiệp.
+""",
+  ),
+
+  Product(
+    name: "Enertrek M40",
+    price: 3200000,
+    image: "assets/images/products/thietbimoitruong/M40.png",
+    categoryId: 4,
+    description: """
+Mô-đun đo lường Enertrek M40.
+
+• Giám sát điện năng nâng cao.
+• Hỗ trợ hệ thống điện công nghiệp.
+• Độ chính xác cao.
+• Dễ dàng tích hợp và mở rộng.
+""",
+  ),
+
+  Product(
+    name: "CTO-100A",
+    price: 800000,
+    image: "assets/images/products/thietbimoitruong/CTO-上连线.png",
+    categoryId: 4,
+    description: """
+Biến dòng CTO-100A.
+
+• Dòng định mức 100A.
+• Đo dòng điện chính xác.
+• Kích thước nhỏ gọn.
+• Dễ dàng lắp đặt trong tủ điện.
+""",
+  ),
+
+  Product(
+    name: "CTO-200A",
+    price: 900000,
+    image: "assets/images/products/thietbimoitruong/CTO-高清图.png",
+    categoryId: 4,
+    description: """
+Biến dòng CTO-200A.
+
+• Dòng định mức 200A.
+• Độ chính xác cao.
+• Phục vụ giám sát và quản lý năng lượng.
+• Độ bền cơ khí tốt.
+""",
+  ),
+
+  Product(
+    name: "CTO-400A",
+    price: 1200000,
+    image: "assets/images/products/thietbimoitruong/CTOV-高清图.png",
+    categoryId: 4,
+    description: """
+Biến dòng CTO-400A.
+
+• Dòng định mức 400A.
+• Thiết kế cho hệ thống điện công nghiệp.
+• Độ ổn định và độ tin cậy cao.
+• Dễ dàng tích hợp với hệ thống Enertrek.
+""",
+  ),
+
+  Product(
+    name: "CTO-600A",
+    price: 1500000,
+    image: "assets/images/products/thietbimoitruong/CTO压缩图.png",
+    categoryId: 4,
+    description: """
+Biến dòng CTO-600A.
+
+• Dòng định mức 600A.
+• Giám sát tải lớn.
+• Độ chính xác cao.
+• Phù hợp cho nhà máy và tòa nhà thương mại.
+""",
+  ),
+
+  Product(
+    name: "DIO4/2",
+    price: 2500000,
+    image: "assets/images/products/thietbimoitruong/DIO.png",
+    categoryId: 4,
+    description: """
+Mô-đun Digital Input/Output DIO4/2.
+
+• 4 ngõ vào số (DI).
+• 2 ngõ ra số (DO).
+• Thu thập tín hiệu hiện trường.
+• Điều khiển thiết bị từ xa.
+• Kết nối hệ thống Enertrek BUS.
+""",
+  ),
 
   // 5. KRA Smart Safety
   Product(name: "AI Fall Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
