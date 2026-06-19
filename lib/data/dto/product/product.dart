@@ -3,6 +3,7 @@ class Product {
   final int price;
   final String image;
   final int categoryId;
+  final String description;
   int quantity;
 
   Product({
@@ -10,6 +11,7 @@ class Product {
     required this.price,
     required this.image,
     required this.categoryId,
+    required this.description,
     this.quantity = 1,
   });
 }

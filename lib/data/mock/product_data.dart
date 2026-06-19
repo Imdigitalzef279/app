@@ -3,16 +3,90 @@ import '../dto/product/product.dart';
 final List<Product> allProducts = [
 
   // 0. Đồng hồ & đo lường
-  Product(name: "Enertrek E10", price: 2500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "Enertrek E21", price: 3200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "Enertrek E31", price: 3500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "PEM3353-A", price: 4200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "SEM2250", price: 4500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "SEM3250", price: 4800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "MPM4410-A", price: 5000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "Enertrek M10", price: 2200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "Enertrek M20", price: 2600000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
-  Product(name: "Enertrek M30", price: 2900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 0),
+  Product(
+    name: "Enertrek E10",
+    price: 2500000,
+    image: "assets/images/products/donghodoluong/E10.png",
+    categoryId: 0,
+    description: """
+Tối ưu hóa hiệu suất bảng điều khiển với hệ thống giám sát điện năng đa mạch Enertrek từ Matismart. Hệ thống giám sát điện năng đa mạch tiên tiến của chúng tôi được thiết kế cho môi trường mật độ cao, nơi không gian rất hạn chế nhưng độ chính xác dữ liệu là điều không thể thiếu. Bằng cách hợp nhất nhiều điểm giám sát vào một mô-đun nhỏ gọn duy nhất, Matismart cho phép hiển thị chi tiết và điều khiển từ xa trên tất cả các tải điện của bạn, đơn giản hóa việc đấu dây phức tạp và giảm chi phí hệ thống tổng thể.
+
+• Hoạt động liền mạch không gián đoạn
+• Tính mô-đun cực kỳ linh hoạt
+• Cắm và chạy dễ dàng
+• Thiết kế nhỏ gọn tiết kiệm không gian
+• Đăng ký thiết bị tức thì
+• Tự động định địa chỉ không lỗi
+• Đảm bảo tính liên tục kinh doanh
+• Chi phí vòng đời tối ưu
+• Nâng cấp quản lý thông minh
+• Khả năng thích ứng kỹ thuật vượt trội
+• Bảo vệ đầu tư dài hạn
+""",
+  ),
+
+  Product(
+    name: "Enertrek E21",
+    price: 3200000,
+    image: "assets/images/products/donghodoluong/E21.png",
+    categoryId: 0,
+  ),
+
+  Product(
+    name: "Enertrek E31",
+    price: 3500000,
+    image: "assets/images/products/donghodoluong/E31.png",
+    categoryId: 0,
+  ),
+
+  Product(
+    name: "PEM3353-A",
+    price: 4200000,
+    image: "assets/images/products/donghodoluong/C32-1024x1024.jpg",
+    categoryId: 0,
+  ),
+
+  Product(
+    name: "SEM2250",
+    price: 4500000,
+    image: "assets/images/products/donghodoluong/C32-1024x1024.jpg",
+    categoryId: 0,
+  ),
+
+  Product(
+    name: "SEM3250",
+    price: 4800000,
+    image: "assets/images/products/donghodoluong/C32-1024x1024.jpg",
+    categoryId: 0,
+  ),
+
+  Product(
+    name: "MPM4410-A",
+    price: 5000000,
+    image: "assets/images/products/donghodoluong/C32-1024x1024.jpg",
+    categoryId: 0,
+  ),
+
+  Product(
+    name: "Enertrek M10",
+    price: 2200000,
+    image: "assets/images/products/donghodoluong/M10.png",
+    categoryId: 0,
+  ),
+
+  Product(
+    name: "Enertrek M20",
+    price: 2600000,
+    image: "assets/images/products/donghodoluong/M20.png",
+    categoryId: 0,
+  ),
+
+  Product(
+    name: "Enertrek M30",
+    price: 2900000,
+    image: "assets/images/products/donghodoluong/M40.png",
+    categoryId: 0,
+  ),
 
   // 1. Cầu dao thông minh
   Product(name: "MT61GP-WFSC25", price: 4500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
