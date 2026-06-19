@@ -140,6 +140,7 @@ flutter:
     - assets/icons/icons_new/
     - assets/images/products/donghodoluong/
     - assets/images/products/caudaothongminh/
+    - assets/images/products/bodongngat/
     - env/
   fonts:
     - family: BeVietNamPro

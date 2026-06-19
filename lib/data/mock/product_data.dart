@@ -356,17 +356,162 @@ Thiết bị điều khiển tải thông minh MT61GP-WFTC50.
 """,
   ),
 
-  // 2. Bộ đóng ngắt
-  Product(name: "MT88M-LM125", price: 6500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MT88M-LM250", price: 7200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MT88M-LM400", price: 8500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MT88M-LM630", price: 9800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MT88M-LM800", price: 11500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MTM5M-125", price: 6200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MTM5M-250", price: 7000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MTM5M-400", price: 8200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MTM5M-630", price: 9400000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
-  Product(name: "MTM5-EL125", price: 6800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
+  Product(
+    name: "MT88M-LM125",
+    price: 6500000,
+    image: "assets/images/products/bodongngat/MT88M_组合图.png",
+    categoryId: 2,
+    description: """
+Bộ ngắt mạch không khí thông minh MT88M-LM125.
+
+• Dòng định mức 125A.
+• Bảo vệ quá tải, ngắn mạch và sự cố điện.
+• Hỗ trợ giám sát trạng thái vận hành theo thời gian thực.
+• Tích hợp truyền thông cho hệ thống quản lý điện năng.
+• Thiết kế phù hợp cho tủ điện phân phối và điều khiển.
+""",
+  ),
+
+  Product(
+    name: "MT88M-LM250",
+    price: 7200000,
+    image: "assets/images/products/bodongngat/MT88M_250_下面.png",
+    categoryId: 2,
+    description: """
+Bộ ngắt mạch không khí thông minh MT88M-LM250.
+
+• Dòng định mức 250A.
+• Đóng cắt và bảo vệ hệ thống điện trung tâm.
+• Giám sát thông số vận hành liên tục.
+• Hỗ trợ tích hợp hệ thống quản lý năng lượng.
+• Độ tin cậy cao cho ứng dụng công nghiệp.
+""",
+  ),
+
+  Product(
+    name: "MT88M-LM400",
+    price: 8500000,
+    image: "assets/images/products/bodongngat/MT88M_400_下面.png",
+    categoryId: 2,
+    description: """
+Bộ ngắt mạch không khí thông minh MT88M-LM400.
+
+• Dòng định mức 400A.
+• Bảo vệ quá tải và ngắn mạch hiệu quả.
+• Hỗ trợ điều khiển và giám sát từ xa.
+• Tích hợp truyền thông công nghiệp.
+• Thích hợp cho nhà máy, tòa nhà và trung tâm dữ liệu.
+""",
+  ),
+
+  Product(
+    name: "MT88M-LM630",
+    price: 9800000,
+    image: "assets/images/products/bodongngat/MT88M_630_下面.png",
+    categoryId: 2,
+    description: """
+Bộ ngắt mạch không khí thông minh MT88M-LM630.
+
+• Dòng định mức 630A.
+• Quản lý và bảo vệ nguồn điện công suất lớn.
+• Theo dõi trạng thái vận hành thời gian thực.
+• Hỗ trợ kết nối hệ thống SCADA và EMS.
+• Độ bền cơ khí và điện cao.
+""",
+  ),
+
+  Product(
+    name: "MT88M-LM800",
+    price: 11500000,
+    image: "assets/images/products/bodongngat/MT88M_组合图.png",
+    categoryId: 2,
+    description: """
+Bộ ngắt mạch không khí thông minh MT88M-LM800.
+
+• Dòng định mức 800A.
+• Giải pháp bảo vệ cho hệ thống điện công nghiệp lớn.
+• Điều khiển và giám sát tập trung.
+• Hỗ trợ tích hợp nền tảng quản lý năng lượng.
+• Đảm bảo an toàn và tính liên tục của hệ thống điện.
+""",
+  ),
+
+  Product(
+    name: "MTM5M-125",
+    price: 6200000,
+    image: "assets/images/products/bodongngat/MTM5M.png",
+    categoryId: 2,
+    description: """
+Máy cắt khối MTM5M-125.
+
+• Dòng định mức 125A.
+• Bảo vệ quá tải và ngắn mạch.
+• Kích thước nhỏ gọn.
+• Dễ dàng lắp đặt trong tủ điện phân phối.
+• Độ tin cậy cao trong vận hành.
+""",
+  ),
+
+  Product(
+    name: "MTM5M-250",
+    price: 7000000,
+    image: "assets/images/products/bodongngat/MTM5M.png",
+    categoryId: 2,
+    description: """
+Máy cắt khối MTM5M-250.
+
+• Dòng định mức 250A.
+• Khả năng cắt dòng sự cố cao.
+• Bảo vệ hệ thống điện hiệu quả.
+• Thiết kế phù hợp cho ứng dụng công nghiệp và thương mại.
+""",
+  ),
+
+  Product(
+    name: "MTM5M-400",
+    price: 8200000,
+    image: "assets/images/products/bodongngat/MTM5M.png",
+    categoryId: 2,
+    description: """
+Máy cắt khối MTM5M-400.
+
+• Dòng định mức 400A.
+• Độ bền cơ khí cao.
+• Hỗ trợ bảo vệ quá tải và ngắn mạch.
+• Đảm bảo vận hành ổn định cho hệ thống điện.
+""",
+  ),
+
+  Product(
+    name: "MTM5M-630",
+    price: 9400000,
+    image: "assets/images/products/bodongngat/MTM5M.png",
+    categoryId: 2,
+    description: """
+Máy cắt khối MTM5M-630.
+
+• Dòng định mức 630A.
+• Khả năng chịu tải lớn.
+• Bảo vệ hệ thống điện công suất cao.
+• Phù hợp cho nhà máy và công trình công nghiệp.
+""",
+  ),
+
+  Product(
+    name: "MTM5-EL125",
+    price: 6800000,
+    image: "assets/images/products/bodongngat/MTM5EL.png",
+    categoryId: 2,
+    description: """
+Máy cắt khối chống rò điện MTM5-EL125.
+
+• Dòng định mức 125A.
+• Bảo vệ chống rò điện và giật điện.
+• Tăng cường an toàn cho người và thiết bị.
+• Phát hiện nhanh dòng rò bất thường.
+• Phù hợp cho hệ thống điện dân dụng và công nghiệp.
+""",
+  ),
 
   // 3. Cổng thông minh
   Product(name: "Enertrek G30", price: 3500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
