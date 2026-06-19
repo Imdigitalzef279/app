@@ -207,17 +207,154 @@ Chức năng chính:
 """,
   ),
 
-  // 1. Cầu dao thông minh
-  Product(name: "MT61GP-WFSC25", price: 4500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFSC32", price: 4700000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFSC40", price: 4900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFSC50", price: 5100000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFSC63", price: 5300000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFSC80", price: 5600000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFTC25", price: 4500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFTC32", price: 4700000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFTC40", price: 4900000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
-  Product(name: "MT61GP-WFTC50", price: 5100000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 1),
+// 1. Cầu dao thông minh
+
+  Product(
+    name: "MT61GP-WFSC25",
+    price: 4500000,
+    image: "assets/images/products/caudaothongminh/MT61GP-2P.png",
+    categoryId: 1,
+    description: """
+Cầu dao thông minh MT61GP-WFSC25.
+
+• Điều khiển đóng/cắt từ xa qua ứng dụng.
+• Giám sát điện áp, dòng điện, công suất và điện năng.
+• Hỗ trợ cảnh báo quá tải, quá áp, thấp áp.
+• Kết nối WiFi ổn định.
+• Thiết kế DIN Rail nhỏ gọn, dễ lắp đặt.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFSC32",
+    price: 4700000,
+    image: "assets/images/products/caudaothongminh/MT61GP-2P.png",
+    categoryId: 1,
+    description: """
+Cầu dao thông minh MT61GP-WFSC32.
+
+• Điều khiển từ xa và tự động hóa hệ thống điện.
+• Theo dõi điện năng tiêu thụ theo thời gian thực.
+• Cảnh báo sự cố điện tức thời.
+• Hỗ trợ kết nối nền tảng quản lý năng lượng.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFSC40",
+    price: 4900000,
+    image: "assets/images/products/caudaothongminh/MT61GP-2P.png",
+    categoryId: 1,
+    description: """
+Cầu dao thông minh MT61GP-WFSC40.
+
+• Đóng cắt thiết bị từ xa.
+• Bảo vệ quá tải và ngắn mạch.
+• Theo dõi trạng thái hoạt động liên tục.
+• Hỗ trợ giám sát năng lượng thông minh.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFSC50",
+    price: 5100000,
+    image: "assets/images/products/caudaothongminh/MT61GP-2P.png",
+    categoryId: 1,
+    description: """
+Cầu dao thông minh MT61GP-WFSC50.
+
+• Giám sát và điều khiển điện năng từ xa.
+• Hỗ trợ lập lịch vận hành thiết bị.
+• Tích hợp cảnh báo sự cố điện.
+• Phù hợp cho nhà ở và doanh nghiệp.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFSC63",
+    price: 5300000,
+    image: "assets/images/products/caudaothongminh/MT61GP-4P.png",
+    categoryId: 1,
+    description: """
+Cầu dao thông minh MT61GP-WFSC63.
+
+• Thiết kế 4P cho hệ thống điện 3 pha.
+• Điều khiển và giám sát từ xa.
+• Bảo vệ quá tải, quá áp và thấp áp.
+• Hỗ trợ quản lý năng lượng tập trung.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFSC80",
+    price: 5600000,
+    image: "assets/images/products/caudaothongminh/MT61GP-4P.png",
+    categoryId: 1,
+    description: """
+Cầu dao thông minh MT61GP-WFSC80.
+
+• Công suất lớn cho hệ thống công nghiệp.
+• Theo dõi điện năng thời gian thực.
+• Điều khiển đóng cắt từ xa.
+• Đảm bảo vận hành ổn định và an toàn.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFTC25",
+    price: 4500000,
+    image: "assets/images/products/caudaothongminh/MT61GP.png",
+    categoryId: 1,
+    description: """
+Thiết bị điều khiển tải thông minh MT61GP-WFTC25.
+
+• Điều khiển từ xa qua nền tảng quản lý.
+• Theo dõi trạng thái tải.
+• Hỗ trợ kết nối hệ thống năng lượng thông minh.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFTC32",
+    price: 4700000,
+    image: "assets/images/products/caudaothongminh/MT61GP.png",
+    categoryId: 1,
+    description: """
+Thiết bị điều khiển tải thông minh MT61GP-WFTC32.
+
+• Quản lý và điều khiển tải điện.
+• Giám sát trạng thái hoạt động.
+• Hỗ trợ cảnh báo sự cố.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFTC40",
+    price: 4900000,
+    image: "assets/images/products/caudaothongminh/MT61GP.png",
+    categoryId: 1,
+    description: """
+Thiết bị điều khiển tải thông minh MT61GP-WFTC40.
+
+• Điều khiển tải từ xa.
+• Kết nối hệ thống quản lý năng lượng.
+• Hỗ trợ vận hành ổn định và an toàn.
+""",
+  ),
+
+  Product(
+    name: "MT61GP-WFTC50",
+    price: 5100000,
+    image: "assets/images/products/caudaothongminh/MT61GP.png",
+    categoryId: 1,
+    description: """
+Thiết bị điều khiển tải thông minh MT61GP-WFTC50.
+
+• Điều khiển thiết bị điện từ xa.
+• Theo dõi trạng thái vận hành.
+• Hỗ trợ quản lý điện năng hiệu quả.
+""",
+  ),
 
   // 2. Bộ đóng ngắt
   Product(name: "MT88M-LM125", price: 6500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 2),
