@@ -5,7 +5,7 @@ final List<Product> allProducts = [
   // 0. Đồng hồ & đo lường
   Product(
     name: "Enertrek E10",
-    price: 2500000,
+    price: 2642312,
     image: "assets/images/products/donghodoluong/E10.png",
     categoryId: 0,
     description: """
@@ -27,7 +27,7 @@ Tối ưu hóa hiệu suất bảng điều khiển với hệ thống giám sá
 
   Product(
     name: "Enertrek E21",
-    price: 3200000,
+    price: 4152204,
     image: "assets/images/products/donghodoluong/E21.png",
     categoryId: 0,
     description: """
@@ -49,7 +49,7 @@ Tối ưu hóa hiệu suất bảng điều khiển với hệ thống giám sá
 
   Product(
     name: "Enertrek E31",
-    price: 3500000,
+    price: 4378688,
     image: "assets/images/products/donghodoluong/E31.png",
     categoryId: 0,
     description: """
@@ -517,7 +517,7 @@ Máy cắt khối chống rò điện MTM5-EL125.
 
   Product(
     name: "Enertrek G30",
-    price: 3500000,
+    price: 12456613,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -579,7 +579,7 @@ Mô-đun Digital Input/Output Enertrek DIO4/2.
 
   Product(
     name: "RJ12-06",
-    price: 300000,
+    price: 82685,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -665,7 +665,7 @@ Cáp kết nối Enertrek BUS RJ12 dài 20m.
 
   Product(
     name: "Enertrek V10",
-    price: 1800000,
+    price: 6945506,
     image: "assets/images/products/thietbimoitruong/V10.png",
     categoryId: 4,
     description: """
@@ -741,7 +741,7 @@ Mô-đun đo lường Enertrek M40.
 
   Product(
     name: "CTO-100A",
-    price: 800000,
+    price: 2924473,
     image: "assets/images/products/thietbimoitruong/CTO-上连线.png",
     categoryId: 4,
     description: """

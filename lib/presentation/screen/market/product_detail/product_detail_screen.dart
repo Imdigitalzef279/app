@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../data/dto/cart/cart.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String name;
