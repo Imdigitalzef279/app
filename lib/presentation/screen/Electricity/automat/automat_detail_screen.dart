@@ -122,10 +122,12 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
       const Duration(seconds: 3),
           (_) async {
 
+            // await context.read<DeviceCubit>().loadBreakerLog(
+            //   widget.device.gatewayNumber ?? '',
+            // );
             await context.read<DeviceCubit>().loadBreakerLog(
-              widget.device.gatewayNumber ?? '',
+              widget.device.code ?? '',
             );
-
         if (mounted) {
           setState(() {});
         }
