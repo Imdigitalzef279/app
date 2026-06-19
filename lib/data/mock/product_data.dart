@@ -513,17 +513,153 @@ Máy cắt khối chống rò điện MTM5-EL125.
 """,
   ),
 
-  // 3. Cổng thông minh
-  Product(name: "Enertrek G30", price: 3500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "Enertrek C20", price: 2800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "Enertrek C30", price: 3200000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "Enertrek DIO4/2", price: 2600000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "RJ12-06", price: 300000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "RJ12-10", price: 400000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "RJ12-20", price: 500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "RJ12-50", price: 700000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "RJ12-100", price: 1000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
-  Product(name: "RJ12-200", price: 1500000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 3),
+// 3. Cổng thông minh
+
+  Product(
+    name: "Enertrek G30",
+    price: 3500000,
+    image: "assets/images/products/congthongminh/G30.png",
+    categoryId: 3,
+    description: """
+Cổng giao tiếp thông minh Enertrek G30.
+
+• Thu thập dữ liệu từ đồng hồ đo điện và các mô-đun Enertrek.
+• Hỗ trợ giao tiếp Modbus RTU và TCP/IP.
+• Đồng bộ dữ liệu thời gian thực lên hệ thống quản lý năng lượng.
+• Hỗ trợ giám sát tập trung nhiều thiết bị.
+• Thiết kế DIN Rail nhỏ gọn, dễ lắp đặt.
+""",
+  ),
+
+  Product(
+    name: "Enertrek C20",
+    price: 2800000,
+    image: "assets/images/products/congthongminh/AIO.png",
+    categoryId: 3,
+    description: """
+Mô-đun mở rộng tín hiệu Enertrek C20.
+
+• Thu thập tín hiệu đầu vào và đầu ra.
+• Hỗ trợ kết nối hệ thống Enertrek BUS.
+• Tăng khả năng mở rộng hệ thống giám sát.
+• Độ ổn định cao trong môi trường công nghiệp.
+""",
+  ),
+
+  Product(
+    name: "Enertrek C30",
+    price: 3200000,
+    image: "assets/images/products/congthongminh/AIO.png",
+    categoryId: 3,
+    description: """
+Mô-đun điều khiển và thu thập dữ liệu Enertrek C30.
+
+• Hỗ trợ quản lý thiết bị từ xa.
+• Kết nối với hệ thống EMS và IoT.
+• Mở rộng khả năng giám sát và điều khiển.
+• Phù hợp cho các ứng dụng công nghiệp thông minh.
+""",
+  ),
+
+  Product(
+    name: "Enertrek DIO4/2",
+    price: 2600000,
+    image: "assets/images/products/congthongminh/DIO.png",
+    categoryId: 3,
+    description: """
+Mô-đun Digital Input/Output Enertrek DIO4/2.
+
+• 4 ngõ vào số (DI).
+• 2 ngõ ra số (DO).
+• Thu thập trạng thái thiết bị hiện trường.
+• Điều khiển thiết bị từ xa.
+• Kết nối Enertrek BUS.
+""",
+  ),
+
+  Product(
+    name: "RJ12-06",
+    price: 300000,
+    image: "assets/images/products/congthongminh/G30.png",
+    categoryId: 3,
+    description: """
+Cáp kết nối Enertrek BUS RJ12 dài 0.6m.
+
+• Kết nối các mô-đun Enertrek.
+• Truyền dữ liệu và cấp nguồn.
+• Đảm bảo kết nối ổn định và tin cậy.
+""",
+  ),
+
+  Product(
+    name: "RJ12-10",
+    price: 400000,
+    image: "assets/images/products/congthongminh/G30.png",
+    categoryId: 3,
+    description: """
+Cáp kết nối Enertrek BUS RJ12 dài 1m.
+
+• Kết nối thiết bị trong hệ thống Enertrek.
+• Truyền dữ liệu tốc độ cao.
+• Chống nhiễu tốt.
+""",
+  ),
+
+  Product(
+    name: "RJ12-20",
+    price: 500000,
+    image: "assets/images/products/congthongminh/G30.png",
+    categoryId: 3,
+    description: """
+Cáp kết nối Enertrek BUS RJ12 dài 2m.
+
+• Kết nối giữa các mô-đun Enertrek.
+• Đảm bảo truyền thông ổn định.
+• Độ bền cao.
+""",
+  ),
+
+  Product(
+    name: "RJ12-50",
+    price: 700000,
+    image: "assets/images/products/congthongminh/G30.png",
+    categoryId: 3,
+    description: """
+Cáp kết nối Enertrek BUS RJ12 dài 5m.
+
+• Truyền dữ liệu và cấp nguồn.
+• Chống nhiễu công nghiệp.
+• Dễ dàng lắp đặt.
+""",
+  ),
+
+  Product(
+    name: "RJ12-100",
+    price: 1000000,
+    image: "assets/images/products/congthongminh/G30.png",
+    categoryId: 3,
+    description: """
+Cáp kết nối Enertrek BUS RJ12 dài 10m.
+
+• Kết nối thiết bị khoảng cách xa.
+• Đảm bảo độ ổn định truyền thông.
+• Chất lượng công nghiệp.
+""",
+  ),
+
+  Product(
+    name: "RJ12-200",
+    price: 1500000,
+    image: "assets/images/products/congthongminh/G30.png",
+    categoryId: 3,
+    description: """
+Cáp kết nối Enertrek BUS RJ12 dài 20m.
+
+• Kết nối hệ thống Enertrek quy mô lớn.
+• Truyền dữ liệu ổn định.
+• Hỗ trợ cấp nguồn cho mô-đun mở rộng.
+""",
+  ),
 
   // 4. Thiết bị môi trường
   Product(name: "Enertrek V10", price: 1800000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 4),

@@ -141,6 +141,7 @@ flutter:
     - assets/images/products/donghodoluong/
     - assets/images/products/caudaothongminh/
     - assets/images/products/bodongngat/
+    - assets/images/products/congthongminh/
     - env/
   fonts:
     - family: BeVietNamPro
