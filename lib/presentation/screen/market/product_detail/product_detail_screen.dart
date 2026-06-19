@@ -5,12 +5,13 @@ class ProductDetailScreen extends StatefulWidget {
   final String name;
   final int price;
   final String image;
-
+  final String description;
   const ProductDetailScreen({
     super.key,
     required this.name,
     required this.price,
     required this.image,
+    required this.description,
   });
 
   @override
@@ -82,31 +83,48 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   const SizedBox(height: 8),
 
-                  /// PRICE
-                  Row(
-                    children: [
-                      Text(
-                        formatPrice(priceInt),
-                        style: const TextStyle(
-                            fontSize: 22,
-                            color: Colors.orange,
-                            fontWeight: FontWeight.bold),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      "Liên hệ nhận báo giá",
+                      style: TextStyle(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        "20.490.000 đ",
-                        style: TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            color: Colors.grey),
-                      ),
-                    ],
+                    ),
                   ),
 
                   const SizedBox(height: 10),
 
                   const Text("Phiếu giảm giá 12%"),
-                  const Text("Mi Point tích lũy"),
+                  const Text("Điểm tích lũy"),
+                  const SizedBox(height: 20),
 
+                  const Text(
+                    "Thông tin sản phẩm",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Text(
+                    widget.description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      height: 1.6,
+                    ),
+                  ),
                   const SizedBox(height: 20),
 
                   /// QUANTITY
@@ -144,19 +162,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   const Divider(),
 
-                  /// TOTAL
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Tổng cộng",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(
-                        formatPrice(total),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
+                  // /// TOTAL
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     const Text("Tổng cộng",
+                  //         style: TextStyle(fontWeight: FontWeight.bold)),
+                  //     Text(
+                  //       formatPrice(total),
+                  //       style: const TextStyle(
+                  //           fontSize: 18, fontWeight: FontWeight.bold),
+                  //     )
+                  //   ],
+                  // ),
                 ],
               ),
             ),
@@ -216,35 +234,35 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         child: Row(
           children: [
-            Expanded(
-              child: Text(
-                formatPrice(total),
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
+            const Spacer(),
+
             SizedBox(
-              height: 45,
+              width: 160,
+              height: 48,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: const Color(0xFF00A99D),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () {
-                  final product = CartItem(
-                    name: widget.name,
-                    price: priceInt,
-                    image: widget.image,
-                  );
-
-                  Cart.add(product);
-
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Đã thêm vào giỏ hàng")),
+                    const SnackBar(
+                      content: Text("Vui lòng liên hệ KRA Power để nhận báo giá"),
+                    ),
                   );
                 },
-                child: const Text("Thêm vào giỏ hàng"),
+                child: const Text(
+                  "Nhận báo giá",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),

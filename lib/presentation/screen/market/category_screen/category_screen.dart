@@ -77,6 +77,7 @@ class CategoryScreen extends StatelessWidget {
                   name: item.name,
                   price: item.price,
                   image: item.image,
+                  description: item.description,
                 );
               },
             ),
@@ -91,11 +92,12 @@ class _ProductItem extends StatelessWidget {
   final String name;
   final int price;
   final String image;
-
+  final String description;
   const _ProductItem({
     required this.name,
     required this.price,
     required this.image,
+    required this.description,
   });
 
   @override
@@ -109,6 +111,7 @@ class _ProductItem extends StatelessWidget {
               name: name,
               price: price,
               image: image,
+              description: description,
             ),
           ),
         );
