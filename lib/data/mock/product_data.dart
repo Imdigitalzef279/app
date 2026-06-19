@@ -816,14 +816,34 @@ Mô-đun Digital Input/Output DIO4/2.
   ),
 
   // 5. KRA Smart Safety
-  Product(name: "AI Fall Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "PPE Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "Helmet Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "Safety Vest Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "Fire Detection", price: 18000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "Smoke Detection", price: 18000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "Restricted Area Detection", price: 20000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "Worker Counting", price: 12000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "Vehicle Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
-  Product(name: "Emergency Alert System", price: 25000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5),
+  Product(name: "AI Fall Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "PPE Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "Helmet Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "Safety Vest Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "Fire Detection", price: 18000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "Smoke Detection", price: 18000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "Restricted Area Detection", price: 20000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "Worker Counting", price: 12000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "Vehicle Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
+  Product(name: "Emergency Alert System", price: 25000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+1
+""",),
 ];

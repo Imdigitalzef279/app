@@ -138,6 +138,8 @@ flutter:
     - assets/images/backgrounds/
     - assets/icons/
     - assets/icons/icons_new/
+    - assets/images/
+    - assets/images/products/
     - assets/images/products/donghodoluong/
     - assets/images/products/caudaothongminh/
     - assets/images/products/bodongngat/

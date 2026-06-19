@@ -126,8 +126,16 @@ class _ProductItem extends StatelessWidget {
               child: Image.asset(
                 image,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) =>
-                const Icon(Icons.image, size: 50),
+                errorBuilder: (context, error, stackTrace) {
+                  debugPrint("ERROR IMAGE = $image");
+                  debugPrint(error.toString());
+
+                  return const Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    size: 50,
+                  );
+                },
               ),
             ),
             const SizedBox(height: 6),
