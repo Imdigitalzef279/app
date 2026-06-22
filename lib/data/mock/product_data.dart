@@ -6,6 +6,7 @@ final List<Product> allProducts = [
   Product(
     name: "Enertrek E10",
     price: 2642312,
+    discount: 0.15,
     image: "assets/images/products/donghodoluong/E10.png",
     categoryId: 0,
     description: """
@@ -28,6 +29,7 @@ Tối ưu hóa hiệu suất bảng điều khiển với hệ thống giám sá
   Product(
     name: "Enertrek E21",
     price: 4152204,
+    discount: 0.15,
     image: "assets/images/products/donghodoluong/E21.png",
     categoryId: 0,
     description: """
@@ -50,6 +52,7 @@ Tối ưu hóa hiệu suất bảng điều khiển với hệ thống giám sá
   Product(
     name: "Enertrek E31",
     price: 4378688,
+    discount: 0.15,
     image: "assets/images/products/donghodoluong/E31.png",
     categoryId: 0,
     description: """
@@ -71,7 +74,8 @@ Tối ưu hóa hiệu suất bảng điều khiển với hệ thống giám sá
 
   Product(
     name: "PEM3353-A",
-    price: 4200000,
+    price: 4907151,
+    discount: 0.15,
     image: "assets/images/products/donghodoluong/C32-1024x1024.jpg",
     categoryId: 0,
     description: """
@@ -97,7 +101,8 @@ Các tính năng của đồng hồ đo PEM:
 
   Product(
     name: "SEM2250",
-    price: 4500000,
+    price: 1132419,
+    discount: 0.15,
     image: "assets/images/products/donghodoluong/C32-1024x1024.jpg",
     categoryId: 0,
     description: """
@@ -112,7 +117,8 @@ Hiện đại hóa bảng điện của bạn với đồng hồ đo năng lư�
 
   Product(
     name: "SEM3250",
-    price: 4800000,
+    price: 2831049,
+    discount: 0.15,
     image: "assets/images/products/donghodoluong/C32-1024x1024.jpg",
     categoryId: 0,
     description: """
@@ -127,7 +133,8 @@ Hiện đại hóa bảng điện của bạn với đồng hồ đo năng lư�
 
   Product(
     name: "MPM4410-A",
-    price: 5000000,
+    price: 22176547,
+    discount: 0.15,
     image: "assets/images/products/donghodoluong/C32-1024x1024.jpg",
     categoryId: 0,
     description: """
@@ -146,7 +153,8 @@ Tối ưu hóa việc giám sát phân phối điện của bạn với công t�
 
   Product(
     name: "Enertrek M10",
-    price: 2200000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/donghodoluong/M10.png",
     categoryId: 0,
     description: """
@@ -167,7 +175,8 @@ Chức năng chính:
 
   Product(
     name: "Enertrek M20",
-    price: 2600000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/donghodoluong/M20.png",
     categoryId: 0,
     description: """
@@ -188,7 +197,8 @@ Chức năng chính:
 
   Product(
     name: "Enertrek M30",
-    price: 2900000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/donghodoluong/M40.png",
     categoryId: 0,
     description: """
@@ -211,7 +221,8 @@ Chức năng chính:
 
   Product(
     name: "MT61GP-WFSC25",
-    price: 4500000,
+    price: 16059000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP-2P.png",
     categoryId: 1,
     description: """
