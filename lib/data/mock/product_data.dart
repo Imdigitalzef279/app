@@ -596,7 +596,8 @@ Mô-đun điều khiển và thu thập dữ liệu Enertrek C30.
 
   Product(
     name: "Enertrek DIO4/2",
-    price: 2600000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/congthongminh/DIO.png",
     categoryId: 3,
     description: """
@@ -613,6 +614,7 @@ Mô-đun Digital Input/Output Enertrek DIO4/2.
   Product(
     name: "RJ12-06",
     price: 82685,
+    discount: 0.20,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -626,7 +628,8 @@ Cáp kết nối Enertrek BUS RJ12 dài 0.6m.
 
   Product(
     name: "RJ12-10",
-    price: 400000,
+    price: 103356,
+    discount: 0.20,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -640,7 +643,8 @@ Cáp kết nối Enertrek BUS RJ12 dài 1m.
 
   Product(
     name: "RJ12-20",
-    price: 500000,
+    price: 134362,
+    discount: 0.20,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -654,7 +658,8 @@ Cáp kết nối Enertrek BUS RJ12 dài 2m.
 
   Product(
     name: "RJ12-50",
-    price: 700000,
+    price: 155034,
+    discount: 0.20,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -668,7 +673,8 @@ Cáp kết nối Enertrek BUS RJ12 dài 5m.
 
   Product(
     name: "RJ12-100",
-    price: 1000000,
+    price: 206711,
+    discount: 0.20,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -682,7 +688,8 @@ Cáp kết nối Enertrek BUS RJ12 dài 10m.
 
   Product(
     name: "RJ12-200",
-    price: 1500000,
+    price: 361745,
+    discount: 0.20,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -699,6 +706,7 @@ Cáp kết nối Enertrek BUS RJ12 dài 20m.
   Product(
     name: "Enertrek V10",
     price: 6945506,
+    discount: 0.15,
     image: "assets/images/products/thietbimoitruong/V10.png",
     categoryId: 4,
     description: """
@@ -714,7 +722,8 @@ Mô-đun điện áp Enertrek V10.
 
   Product(
     name: "Enertrek M10",
-    price: 2200000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/thietbimoitruong/M10.png",
     categoryId: 4,
     description: """
@@ -729,7 +738,8 @@ Mô-đun đo lường Enertrek M10.
 
   Product(
     name: "Enertrek M20",
-    price: 2600000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/thietbimoitruong/M20.png",
     categoryId: 4,
     description: """
@@ -744,7 +754,8 @@ Mô-đun đo lường Enertrek M20.
 
   Product(
     name: "Enertrek M30",
-    price: 2900000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/thietbimoitruong/M40.png",
     categoryId: 4,
     description: """
@@ -759,7 +770,8 @@ Mô-đun đo lường Enertrek M30.
 
   Product(
     name: "Enertrek M40",
-    price: 3200000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/thietbimoitruong/M40.png",
     categoryId: 4,
     description: """
@@ -775,6 +787,7 @@ Mô-đun đo lường Enertrek M40.
   Product(
     name: "CTO-100A",
     price: 2924473,
+    discount: 0.15,
     image: "assets/images/products/thietbimoitruong/CTO-上连线.png",
     categoryId: 4,
     description: """
@@ -789,7 +802,8 @@ Biến dòng CTO-100A.
 
   Product(
     name: "CTO-200A",
-    price: 900000,
+    price: 2924473,
+    discount: 0.15,
     image: "assets/images/products/thietbimoitruong/CTO-高清图.png",
     categoryId: 4,
     description: """
@@ -804,7 +818,8 @@ Biến dòng CTO-200A.
 
   Product(
     name: "CTO-400A",
-    price: 1200000,
+    price: 4265446,
+    discount: 0.15,
     image: "assets/images/products/thietbimoitruong/CTOV-高清图.png",
     categoryId: 4,
     description: """
@@ -819,7 +834,8 @@ Biến dòng CTO-400A.
 
   Product(
     name: "CTO-600A",
-    price: 1500000,
+    price: 4265446,
+    discount: 0.15,
     image: "assets/images/products/thietbimoitruong/CTO压缩图.png",
     categoryId: 4,
     description: """
@@ -834,7 +850,8 @@ Biến dòng CTO-600A.
 
   Product(
     name: "DIO4/2",
-    price: 2500000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/thietbimoitruong/DIO.png",
     categoryId: 4,
     description: """
@@ -849,34 +866,34 @@ Mô-đun Digital Input/Output DIO4/2.
   ),
 
   // 5. KRA Smart Safety
-  Product(name: "AI Fall Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "AI Fall Detection", price: 15000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "PPE Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "PPE Detection", price: 15000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "Helmet Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "Helmet Detection", price: 15000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "Safety Vest Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "Safety Vest Detection", price: 15000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "Fire Detection", price: 18000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "Fire Detection", price: 18000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "Smoke Detection", price: 18000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "Smoke Detection", price: 18000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "Restricted Area Detection", price: 20000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "Restricted Area Detection", price: 20000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "Worker Counting", price: 12000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "Worker Counting", price: 12000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "Vehicle Detection", price: 15000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "Vehicle Detection", price: 15000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
-  Product(name: "Emergency Alert System", price: 25000000, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
+  Product(name: "Emergency Alert System", price: 25000000,  discount: 0, image: "assets/icons/icons_new/icon_energy_meter.png", categoryId: 5,description: """
 1
 """,),
 ];
