@@ -708,7 +708,7 @@ Cáp kết nối Enertrek BUS RJ12 dài 20m.
     price: 6945506,
     discount: 0.15,
     image: "assets/images/products/thietbimoitruong/V10.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Mô-đun điện áp Enertrek V10.
 
@@ -725,7 +725,7 @@ Mô-đun điện áp Enertrek V10.
     price: 0,
     discount: 0,
     image: "assets/images/products/thietbimoitruong/M10.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Mô-đun đo lường Enertrek M10.
 
@@ -741,7 +741,7 @@ Mô-đun đo lường Enertrek M10.
     price: 0,
     discount: 0,
     image: "assets/images/products/thietbimoitruong/M20.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Mô-đun đo lường Enertrek M20.
 
@@ -757,7 +757,7 @@ Mô-đun đo lường Enertrek M20.
     price: 0,
     discount: 0,
     image: "assets/images/products/thietbimoitruong/M40.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Mô-đun đo lường Enertrek M30.
 
@@ -773,7 +773,7 @@ Mô-đun đo lường Enertrek M30.
     price: 0,
     discount: 0,
     image: "assets/images/products/thietbimoitruong/M40.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Mô-đun đo lường Enertrek M40.
 
@@ -789,7 +789,7 @@ Mô-đun đo lường Enertrek M40.
     price: 2924473,
     discount: 0.15,
     image: "assets/images/products/thietbimoitruong/CTO-上连线.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Biến dòng CTO-100A.
 
@@ -805,7 +805,7 @@ Biến dòng CTO-100A.
     price: 2924473,
     discount: 0.15,
     image: "assets/images/products/thietbimoitruong/CTO-高清图.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Biến dòng CTO-200A.
 
@@ -821,7 +821,7 @@ Biến dòng CTO-200A.
     price: 4265446,
     discount: 0.15,
     image: "assets/images/products/thietbimoitruong/CTOV-高清图.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Biến dòng CTO-400A.
 
@@ -837,7 +837,7 @@ Biến dòng CTO-400A.
     price: 4265446,
     discount: 0.15,
     image: "assets/images/products/thietbimoitruong/CTO压缩图.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Biến dòng CTO-600A.
 
@@ -853,7 +853,7 @@ Biến dòng CTO-600A.
     price: 0,
     discount: 0,
     image: "assets/images/products/thietbimoitruong/DIO.png",
-    categoryId: 4,
+    categoryId: 0,
     description: """
 Mô-đun Digital Input/Output DIO4/2.
 
