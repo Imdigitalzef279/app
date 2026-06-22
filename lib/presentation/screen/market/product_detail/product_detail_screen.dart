@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 class ProductDetailScreen extends StatefulWidget {
   final String name;
   final int price;
   final String image;
   final String description;
+  final double discount;
+
   const ProductDetailScreen({
     super.key,
     required this.name,
     required this.price,
     required this.image,
     required this.description,
+    required this.discount,
   });
 
   @override
-  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+  State<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
@@ -23,17 +27,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int get priceInt => widget.price;
 
   String formatPrice(int value) {
-    return value
-        .toString()
-        .replaceAllMapped(RegExp(r'(\d{3})(?=(\d{3})+(?!\d))'),
-            (Match m) => "${m[1]}.") +
-        " đ";
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    return '${formatter.format(value).replaceAll(',', '.')} đ';
   }
 
   @override
   Widget build(BuildContext context) {
-    final total = priceInt * quantity;
-
+    final bool hasPrice = widget.price > 0;
+    final int discountPercent = (widget.discount * 100).toInt();
     return Scaffold(
       backgroundColor: Colors.grey[100],
 
@@ -88,13 +89,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.orange.shade50,
+                      color: hasPrice
+                          ? Colors.green.shade50
+                          : Colors.orange.shade50,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      "Liên hệ nhận báo giá",
+                    child: Text(
+                      hasPrice
+                          ? formatPrice(widget.price)
+                          : "Liên hệ nhận báo giá",
                       style: TextStyle(
-                        color: Colors.orange,
+                        color: hasPrice
+                            ? Colors.green
+                            : Colors.orange,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
@@ -103,7 +110,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   const SizedBox(height: 10),
 
-                  const Text("Phiếu giảm giá 12%"),
+                 Text(
+                    "Phiếu giảm giá $discountPercent%",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   const Text("Điểm tích lũy"),
                   const SizedBox(height: 20),
 
@@ -151,7 +163,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               onPressed: () {
                                 setState(() => quantity++);
                               },
-                              icon: const Icon(Icons.add),
+                              icon: const Icon(
+                                Icons.add_circle,
+                                size: 28,
+                                color: Color(0xFF00A99D),
+                              ),
                             ),
                           ],
                         ),
@@ -161,19 +177,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   const Divider(),
 
-                  // /// TOTAL
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     const Text("Tổng cộng",
-                  //         style: TextStyle(fontWeight: FontWeight.bold)),
-                  //     Text(
-                  //       formatPrice(total),
-                  //       style: const TextStyle(
-                  //           fontSize: 18, fontWeight: FontWeight.bold),
-                  //     )
-                  //   ],
-                  // ),
                 ],
               ),
             ),
@@ -254,9 +257,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   );
                 },
-                child: const Text(
-                  "Nhận báo giá",
-                  style: TextStyle(
+                child: Text(
+                  hasPrice
+                      ? formatPrice(widget.price)
+                      : "Nhận báo giá",
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                   ),
                 ),

@@ -78,6 +78,7 @@ class CategoryScreen extends StatelessWidget {
                   price: item.price,
                   image: item.image,
                   description: item.description,
+                  discount: item.discount,
                 );
               },
             ),
@@ -93,11 +94,13 @@ class _ProductItem extends StatelessWidget {
   final int price;
   final String image;
   final String description;
+  final double discount;
   const _ProductItem({
     required this.name,
     required this.price,
     required this.image,
     required this.description,
+    required this.discount,
   });
 
   @override
@@ -112,7 +115,8 @@ class _ProductItem extends StatelessWidget {
               price: price,
               image: image,
               description: description,
-            ),
+              discount: discount,
+            )
           ),
         );
       },
@@ -148,11 +152,30 @@ class _ProductItem extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
-            Text(
+            price > 0
+                ? Text(
               "${price.toString()} đ",
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.red,
+              ),
+            )
+                : Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1ABC9C),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                "Nhận báo giá",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
               ),
             ),
           ],
