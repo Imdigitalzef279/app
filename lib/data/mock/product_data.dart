@@ -238,7 +238,8 @@ Cầu dao thông minh MT61GP-WFSC25.
 
   Product(
     name: "MT61GP-WFSC32",
-    price: 4700000,
+    price: 16059000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP-2P.png",
     categoryId: 1,
     description: """
@@ -253,7 +254,8 @@ Cầu dao thông minh MT61GP-WFSC32.
 
   Product(
     name: "MT61GP-WFSC40",
-    price: 4900000,
+    price: 16108000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP-2P.png",
     categoryId: 1,
     description: """
@@ -268,7 +270,8 @@ Cầu dao thông minh MT61GP-WFSC40.
 
   Product(
     name: "MT61GP-WFSC50",
-    price: 5100000,
+    price: 16108000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP-2P.png",
     categoryId: 1,
     description: """
@@ -283,7 +286,8 @@ Cầu dao thông minh MT61GP-WFSC50.
 
   Product(
     name: "MT61GP-WFSC63",
-    price: 5300000,
+    price: 16108000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP-4P.png",
     categoryId: 1,
     description: """
@@ -298,7 +302,8 @@ Cầu dao thông minh MT61GP-WFSC63.
 
   Product(
     name: "MT61GP-WFSC80",
-    price: 5600000,
+    price: 16251000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP-4P.png",
     categoryId: 1,
     description: """
@@ -313,7 +318,8 @@ Cầu dao thông minh MT61GP-WFSC80.
 
   Product(
     name: "MT61GP-WFTC25",
-    price: 4500000,
+    price: 18442000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP.png",
     categoryId: 1,
     description: """
@@ -327,7 +333,8 @@ Thiết bị điều khiển tải thông minh MT61GP-WFTC25.
 
   Product(
     name: "MT61GP-WFTC32",
-    price: 4700000,
+    price: 18442000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP.png",
     categoryId: 1,
     description: """
@@ -341,7 +348,8 @@ Thiết bị điều khiển tải thông minh MT61GP-WFTC32.
 
   Product(
     name: "MT61GP-WFTC40",
-    price: 4900000,
+    price: 18537000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP.png",
     categoryId: 1,
     description: """
@@ -355,7 +363,8 @@ Thiết bị điều khiển tải thông minh MT61GP-WFTC40.
 
   Product(
     name: "MT61GP-WFTC50",
-    price: 5100000,
+    price: 18537000,
+    discount: 0.15,
     image: "assets/images/products/caudaothongminh/MT61GP.png",
     categoryId: 1,
     description: """
@@ -369,7 +378,8 @@ Thiết bị điều khiển tải thông minh MT61GP-WFTC50.
 
   Product(
     name: "MT88M-LM125",
-    price: 6500000,
+    price: 13642958,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MT88M_组合图.png",
     categoryId: 2,
     description: """
@@ -385,7 +395,8 @@ Bộ ngắt mạch không khí thông minh MT88M-LM125.
 
   Product(
     name: "MT88M-LM250",
-    price: 7200000,
+    price: 14469804,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MT88M_250_下面.png",
     categoryId: 2,
     description: """
@@ -401,7 +412,8 @@ Bộ ngắt mạch không khí thông minh MT88M-LM250.
 
   Product(
     name: "MT88M-LM400",
-    price: 8500000,
+    price: 23151686,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MT88M_400_下面.png",
     categoryId: 2,
     description: """
@@ -417,7 +429,8 @@ Bộ ngắt mạch không khí thông minh MT88M-LM400.
 
   Product(
     name: "MT88M-LM630",
-    price: 9800000,
+    price: 28526184,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MT88M_630_下面.png",
     categoryId: 2,
     description: """
@@ -433,7 +446,8 @@ Bộ ngắt mạch không khí thông minh MT88M-LM630.
 
   Product(
     name: "MT88M-LM800",
-    price: 11500000,
+    price: 45269814,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MT88M_组合图.png",
     categoryId: 2,
     description: """
@@ -449,7 +463,8 @@ Bộ ngắt mạch không khí thông minh MT88M-LM800.
 
   Product(
     name: "MTM5M-125",
-    price: 6200000,
+    price: 11130380,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MTM5M.png",
     categoryId: 2,
     description: """
@@ -465,7 +480,8 @@ Máy cắt khối MTM5M-125.
 
   Product(
     name: "MTM5M-250",
-    price: 7000000,
+    price: 12021306,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MTM5M.png",
     categoryId: 2,
     description: """
@@ -480,7 +496,8 @@ Máy cắt khối MTM5M-250.
 
   Product(
     name: "MTM5M-400",
-    price: 8200000,
+    price: 22260759,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MTM5M.png",
     categoryId: 2,
     description: """
@@ -495,7 +512,8 @@ Máy cắt khối MTM5M-400.
 
   Product(
     name: "MTM5M-630",
-    price: 9400000,
+    price: 30476507,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MTM5M.png",
     categoryId: 2,
     description: """
@@ -510,7 +528,8 @@ Máy cắt khối MTM5M-630.
 
   Product(
     name: "MTM5-EL125",
-    price: 6800000,
+    price: 8888594,
+    discount: 0.15,
     image: "assets/images/products/bodongngat/MTM5EL.png",
     categoryId: 2,
     description: """
@@ -529,6 +548,7 @@ Máy cắt khối chống rò điện MTM5-EL125.
   Product(
     name: "Enertrek G30",
     price: 12456613,
+    discount: 0.15,
     image: "assets/images/products/congthongminh/G30.png",
     categoryId: 3,
     description: """
@@ -544,7 +564,8 @@ Cổng giao tiếp thông minh Enertrek G30.
 
   Product(
     name: "Enertrek C20",
-    price: 2800000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/congthongminh/AIO.png",
     categoryId: 3,
     description: """
@@ -559,7 +580,8 @@ Mô-đun mở rộng tín hiệu Enertrek C20.
 
   Product(
     name: "Enertrek C30",
-    price: 3200000,
+    price: 0,
+    discount: 0,
     image: "assets/images/products/congthongminh/AIO.png",
     categoryId: 3,
     description: """
