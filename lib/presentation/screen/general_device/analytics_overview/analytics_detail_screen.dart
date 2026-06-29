@@ -230,14 +230,15 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
       child: Row(
         children: [
           _chartTypeButton(
-            title: "Bar",
-            active: !isLineChart,
-            onTap: () => setState(() => isLineChart = false),
-          ),
-          _chartTypeButton(
             title: "Line",
             active: isLineChart,
             onTap: () => setState(() => isLineChart = true),
+          ),
+
+          _chartTypeButton(
+            title: "Bar",
+            active: !isLineChart,
+            onTap: () => setState(() => isLineChart = false),
           ),
         ],
       ),
@@ -278,17 +279,34 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     );
   }
   Widget buildMCBCharts(List<BreakerChartResponse> data) {
-    final current = data.map<double>((e) => (e.ia ?? 0).toDouble()).toList();
-    final voltage = data.map<double>((e) => (e.ua ?? 0).toDouble()).toList();
-    final temperature = data
-        .map<double>((e) => (e.temp1 ?? 0).toDouble())
-        .toList();
-    final power = data.map<double>((e) => (e.p ?? 0).toDouble()).toList();
-    final leakage = data
-        .map<double>((e) => (e.lg ?? 0).toDouble())
-        .toList();
+    final current =
+    data.map<double>((e) => (e.ia ?? 0).toDouble()).toList();
+
+    final voltage =
+    data.map<double>((e) => (e.ua ?? 0).toDouble()).toList();
+
+    final temperature =
+    data.map<double>((e) => (e.temp1 ?? 0).toDouble()).toList();
+
+    final power =
+    data.map<double>((e) => (e.p ?? 0).toDouble()).toList();
+
+    final leakage =
+    data.map<double>((e) => (e.lg ?? 0).toDouble()).toList();
+
     return Column(
       children: [
+
+        Align(
+          alignment: Alignment.centerRight,
+          child: SizedBox(
+            width: 120,
+            child: buildChartTypeToggle(),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
         _chartBlock("Leakage Current", "mA", leakage),
         _chartBlock("Power", "kW", power),
         _chartBlock("Current", "A", current),
@@ -308,26 +326,102 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         .map((e) => e.value)
         .toList()
         : values;
+    final latest = values.isEmpty ? 0 : values.last;
     return Container(
 
       margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: Colors.black.withOpacity(.05),
+            blurRadius: 20,
+            offset: Offset(0,8),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
+
+
+      Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize:18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Text(
+                  "${latest.toStringAsFixed(2)} $unit",
+                  style: const TextStyle(
+                    color: Color(0xff15803D),
+                    fontWeight: FontWeight.bold,
+                      fontSize:30,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+        ],
+      ),
+
+          const SizedBox(height: 12),
+          Row(
+            children: [
+
+              Icon(
+                Icons.swap_vert,
+                size: 14,
+                color: Colors.grey,
+              ),
+
+              SizedBox(width: 4),
+
+              Text(
+                "Y : $unit",
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
+              ),
+
+              Spacer(),
+
+              Icon(
+                Icons.schedule,
+                size: 14,
+                color: Colors.grey,
+              ),
+
+              SizedBox(width: 4),
+
+              Text(
+                "X : Time",
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 12),
           SizedBox(
             height: 220,
 
@@ -363,11 +457,11 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                         if (value.toInt() % 2 != 0) return SizedBox();
 
                         return Text(
-                          value.toInt().toString(),
+                          "${value.toStringAsFixed(1)} $unit",
                           style: TextStyle(
                             fontSize: 10,
-                            color: Colors.grey.shade400,
-                            fontWeight: FontWeight.w400,
+                            color: Colors.grey.shade500,
+                            fontWeight: FontWeight.w500,
                           ),
                         );
                       },
@@ -380,7 +474,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                       reservedSize: 40,
                       getTitlesWidget: (value, meta) {
                         return Text(
-                          value.toInt().toString(),
+                          "${value.toStringAsFixed(1)} $unit",
                           style: TextStyle(fontSize: 10, color: Colors.grey),
                         );
                       },
@@ -2024,13 +2118,14 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
         ),
       ),
-    ]
-
+    ],
+                  if (selectedTab == 1) ...[
+                    buildMCBCharts(state.breakerData ?? []),
+                  ],
           ]
+
             ),
-                if (selectedTab == 1) ...[
-              buildMCBCharts(state.breakerData ?? []),
-            ],
+
             if (state.isLoading)
               Center(
                 child: SizedBox(
