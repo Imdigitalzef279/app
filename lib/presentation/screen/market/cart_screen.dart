@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../data/dto/cart/cart.dart';
 import 'checkout/checkout_screen.dart';
-
+import 'package:intl/intl.dart';
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -44,7 +44,10 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
-
+  String formatPrice(int value) {
+    final formatter = NumberFormat("#,###", "vi_VN");
+    return "${formatter.format(value).replaceAll(",", ".")}đ";
+  }
   /// ================= ITEM =================
   Widget _cartItem(item) {
     return Container(
@@ -96,7 +99,7 @@ class _CartScreenState extends State<CartScreen> {
                 const SizedBox(height: 6),
 
                 Text(
-                  "${item.price}đ",
+                  formatPrice(item.price),
                   style: const TextStyle(
                     color: Colors.red,
                     fontWeight: FontWeight.bold,
@@ -201,7 +204,7 @@ class _CartScreenState extends State<CartScreen> {
               ),
               const Spacer(),
               Text(
-                "${Cart.totalPrice}đ",
+                formatPrice(Cart.totalPrice),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

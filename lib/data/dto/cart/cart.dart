@@ -16,11 +16,12 @@ class Cart {
   static final List<CartItem> items = [];
 
   static void add(CartItem product) {
-    final index =
-    items.indexWhere((item) => item.name == product.name);
+    final index = items.indexWhere(
+          (item) => item.name == product.name,
+    );
 
     if (index != -1) {
-      items[index].quantity++;
+      items[index].quantity += product.quantity;
     } else {
       items.add(product);
     }

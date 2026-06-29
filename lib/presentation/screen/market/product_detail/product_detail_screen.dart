@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../../../data/dto/cart/cart.dart';
 class ProductDetailScreen extends StatefulWidget {
   final String name;
   final int price;
@@ -228,49 +230,76 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
 
       ///  BOTTOM BAR
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
-        ),
-        child: Row(
-          children: [
-            const Spacer(),
-
-            SizedBox(
-              width: 160,
-              height: 48,
-              child: ElevatedButton(
+        bottomNavigationBar: SafeArea(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton.icon(
+                icon: Icon(
+                  hasPrice
+                      ? Icons.shopping_cart_outlined
+                      : Icons.support_agent,
+                  size: 22,
+                ),
+                label: Text(
+                  hasPrice
+                      ? "Thêm vào giỏ hàng"
+                      : "Nhận báo giá",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00A99D),
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 onPressed: () {
+                  if (!hasPrice) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Vui lòng liên hệ KRA Power để nhận báo giá"),
+                      ),
+                    );
+                    return;
+                  }
+
+                  Cart.add(
+                    CartItem(
+                      name: widget.name,
+                      price: widget.price,
+                      image: widget.image,
+                      quantity: quantity,
+                    ),
+                  );
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text("Vui lòng liên hệ KRA Power để nhận báo giá"),
+                      content: Text("Đã thêm vào giỏ hàng"),
                     ),
                   );
                 },
-                child: Text(
-                  hasPrice
-                      ? formatPrice(widget.price)
-                      : "Nhận báo giá",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        )
+        );
   }
 
   /// REVIEW ITEM
