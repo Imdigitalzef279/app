@@ -35,7 +35,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
 
   int selectedChart = 0;
   int selectedTab = 0; // 0: Energy, 1: MCB
-  bool isLineChart = false;
+  bool isLineChart = true;
   @override
   void initState() {
     super.initState();
@@ -284,17 +284,24 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         .map<double>((e) => (e.temp1 ?? 0).toDouble())
         .toList();
     final power = data.map<double>((e) => (e.p ?? 0).toDouble()).toList();
-
+    final leakage = data
+        .map<double>((e) => (e.lg ?? 0).toDouble())
+        .toList();
     return Column(
       children: [
-        _chartBlock("Current (A)", current),
-        _chartBlock("Voltage (V)", voltage),
-        _chartBlock("Temperature (°C)", temperature),
-        _chartBlock("Power (kW)", power),
+        _chartBlock("Leakage Current", "mA", leakage),
+        _chartBlock("Power", "kW", power),
+        _chartBlock("Current", "A", current),
+        _chartBlock("Voltage", "V", voltage),
+        _chartBlock("Temperature", "°C", temperature),
       ],
     );
   }
-  Widget _chartBlock(String title, List<double> values) {
+  Widget _chartBlock(
+      String title,
+      String unit,
+      List<double> values,
+      ) {
     final sampledValues = values.length > 20
         ? values.asMap().entries
         .where((e) => e.key % 2 == 0)
@@ -1682,21 +1689,6 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
         ),
 
         SizedBox(height: 16),
-        Center(
-          child: Text(
-            selectedRange == ChartRange.day
-                ? "Ngày"
-                : selectedRange == ChartRange.month
-                ? "Tháng"
-                : "Năm",
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-        SizedBox(height: 8),
         Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -1706,7 +1698,7 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 BarChartData(
                   maxY: maxY * 1.2,
 
-                  alignment: BarChartAlignment.center,
+                  alignment: BarChartAlignment.spaceAround,
 
                   groupsSpace: 12,
 
@@ -1733,16 +1725,6 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                     ),
 
                     leftTitles: AxisTitles(
-                      axisNameWidget: Padding(
-                        padding: EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          "kWh",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 40,
@@ -1816,6 +1798,8 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
   Widget build(BuildContext context) {
     final state = context.watch<AnalyticsCubit>().state;
     final data = applyRange(state.data, selectedRange);
+    print("selectedTab = $selectedTab");
+    print("breakerData = ${state.breakerData?.length}");
     bool _saved = false;
     if (data.isNotEmpty && !_saved) {
       _saved = true;
@@ -2033,9 +2017,20 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     ],
     ),
     ),
-                          if (selectedTab == 1) ...[
-                            buildMCBCharts(state.breakerData ?? []),
-                          ],
+
+
+
+]
+
+        ),
+      ),
+    ]
+
+          ]
+            ),
+                if (selectedTab == 1) ...[
+              buildMCBCharts(state.breakerData ?? []),
+            ],
             if (state.isLoading)
               Center(
                 child: SizedBox(
@@ -2045,16 +2040,9 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                 ),
               ),
           ],
-
-        ),
-      ),
-    ]
-
-          ]
-
             )
-          ]
-      )
+
+
       )
     );
   }
