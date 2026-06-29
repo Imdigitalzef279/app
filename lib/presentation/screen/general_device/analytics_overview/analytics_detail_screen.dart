@@ -330,16 +330,25 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
     return Container(
 
       margin: EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white,
+            Color(0xffF8FAFC),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
+
           BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 20,
-            offset: Offset(0,8),
+            color: Colors.black.withOpacity(.08),
+            blurRadius: 25,
+            offset: Offset(0,12),
           ),
+
         ],
       ),
       child: Column(
@@ -356,22 +365,66 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize:18,
-                    fontWeight: FontWeight.w700,
-                  ),
+                Row(
+                  children: [
+
+                    Icon(
+                      Icons.bolt_rounded,
+                      color: Color(0xff16A34A),
+                      size: 22,
+                    ),
+
+                    SizedBox(width:8),
+
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize:20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal:10,
+                        vertical:5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Color(0xffDCFCE7),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Text(
+                        "LIVE",
+                        style: TextStyle(
+                          fontSize:11,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff15803D),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 4),
 
                 Text(
-                  "${latest.toStringAsFixed(2)} $unit",
+                  latest.toStringAsFixed(2),
                   style: const TextStyle(
+                    fontSize: 42,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -1,
                     color: Color(0xff15803D),
-                    fontWeight: FontWeight.bold,
-                      fontSize:30,
+                  ),
+                ),
+
+                Text(
+                  unit,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xff16A34A),
                   ),
                 ),
               ],
@@ -394,10 +447,11 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               SizedBox(width: 4),
 
               Text(
-                "Y : $unit",
+                "Giá trị ($unit)",
                 style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey,
+                  fontSize:13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xff64748B),
                 ),
               ),
 
@@ -412,10 +466,11 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
               SizedBox(width: 4),
 
               Text(
-                "X : Time",
+                "Thời gian",
                 style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey,
+                  fontSize:13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xff64748B),
                 ),
               ),
             ],
@@ -459,10 +514,10 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                         return Text(
                           "${value.toStringAsFixed(1)} $unit",
                           style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey.shade500,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xff475569),
+                        )
                         );
                       },
                     ),
@@ -577,14 +632,14 @@ class _AnalyticsDetailScreenState extends State<AnalyticsDetailScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 40,
+                        reservedSize: 50,
                         getTitlesWidget: (value, meta) {
                           return Text(
-                            value.toStringAsFixed(1),
+                            "${value.toStringAsFixed(1)} $unit",
                             style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey.shade400,
-                              fontWeight: FontWeight.w400,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xff475569),
                             ),
                           );
                         },
