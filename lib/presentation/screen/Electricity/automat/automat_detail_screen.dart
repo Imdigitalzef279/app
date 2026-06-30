@@ -97,7 +97,9 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     startRealtimeRefresh();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final device = widget.device;
-
+      await context.read<DeviceCubit>().loadBreakerLog(
+        device.code ?? "",
+      );
       await context.read<AutomatChartCubit>().loadChart(
         device.code ?? "",
         _selectedRange,

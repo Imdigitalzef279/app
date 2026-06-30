@@ -43,23 +43,23 @@ class DeviceCubit extends Cubit<DeviceState> {
     profile = profileResponse;
   }
   // Cập nhật trạng thái thiết bị ngay trên UI mà không cần chờ API trả về.
-  void updateLocalStatus(int deviceId, int newStatus) {
-
-    final currentDevices = state.resultDevices.data ?? [];
-
-    final updatedDevices = currentDevices.map((d) {
-      if (d.id == deviceId) {
-        return d.copyWith(status: newStatus);
-      }
-      return d;
-    }).toList();
-
-    emit(state.copyWith(
-      resultDevices: state.resultDevices.copyWith(
-        data: updatedDevices,
-      ),
-    ));
-  }
+  // void updateLocalStatus(int deviceId, int newStatus) {
+  //
+  //   final currentDevices = state.resultDevices.data ?? [];
+  //
+  //   final updatedDevices = currentDevices.map((d) {
+  //     if (d.id == deviceId) {
+  //       return d.copyWith(status: newStatus);
+  //     }
+  //     return d;
+  //   }).toList();
+  //
+  //   emit(state.copyWith(
+  //     resultDevices: state.resultDevices.copyWith(
+  //       data: updatedDevices,
+  //     ),
+  //   ));
+  // }
 
   // ============================================================
   // LOAD DEVICES THEO TYPE
@@ -340,36 +340,49 @@ class DeviceCubit extends Cubit<DeviceState> {
           device.id: true,
         },
       ));
+      // final success = await switchCbsWithForce(device, target, true);
+      // final targetInt = int.parse(target);
+      // updateLocalStatus(device.id, targetInt);
+      // _lastCommandTime[device.id] = DateTime.now();
+      // _removeSwitching(device.id);
+      //
+      // final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
+      //
+      // final oldLog = logs[device.code] ?? device.realtimeLog;
+      //
+      // if (oldLog != null) {
+      //   logs[device.code!] = oldLog.copyWith(
+      //     rlySta: int.parse(target),
+      //   );
+      // }
+      // emit(state.copyWith(
+      //   breakerLogs: logs,
+      // ));
       final success = await switchCbsWithForce(device, target, true);
-      final targetInt = int.parse(target);
-      updateLocalStatus(device.id, targetInt);
-      _lastCommandTime[device.id] = DateTime.now();
-      _removeSwitching(device.id);
 
-      final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
-
-      final oldLog = logs[device.code] ?? device.realtimeLog;
-
-      if (oldLog != null) {
-        logs[device.code!] = oldLog.copyWith(
-          rlySta: int.parse(target),
-        );
-      }
-      emit(state.copyWith(
-        breakerLogs: logs,
-      ));
       if (!success) {
         _removeSwitching(device.id);
         AppToast.showToastError(title: "Gửi lệnh thất bại");
         return;
       }
 
+      /// ghi thời điểm gửi lệnh
+      _lastCommandTime[device.id] = DateTime.now();
 
-
+      /// hiện countdown/loading
       startCountdown(device.id);
 
-      /// countdown
-      final expectedUi = int.parse(target);
+      /// chờ MQTT cập nhật
+      await waitBreakerState(
+        device.id,
+        device.code!,
+        int.parse(target),
+      );
+      if (!success) {
+        _removeSwitching(device.id);
+        AppToast.showToastError(title: "Gửi lệnh thất bại");
+        return;
+      }
 
 
     } catch (e) {
@@ -634,11 +647,12 @@ class DeviceCubit extends Cubit<DeviceState> {
       print(" ADDR: $addr");
       final authRepo = getIt<AuthRepository>() as AuthRepositoryImpl;
       final username = authRepo.currentProfile?.userName ?? "";
-      print("DEVICE CODE: ${device.code}");
-      print("GATEWAY: ${device.gatewayNumber}");
-      print("ADDR: $addr");
-      print("COMMAND: $commandValue");
-
+      print("========== SEND ==========");
+      print("ADDR = $rawAddr");
+      print("BREAKER = ${device.code}");
+      print("GATEWAY = ${device.gatewayNumber}");
+      print("COMMAND = $commandValue");
+      print("===========================");
       if (addr.isEmpty) {
         print("ADDR NULL → không gửi API");
         return false;
@@ -695,7 +709,10 @@ class DeviceCubit extends Cubit<DeviceState> {
               .compareTo(DateTime.parse(a.updatedAt!)));
 
       final log = logsList.first;
-
+      print("MQTT LOG");
+      print("rlySta = ${log.rlySta}");
+      print("addr = ${log.addr}");
+      print("updatedAt = ${log.updatedAt}");
       /// ===== DEVICE HIỆN TẠI =====
 
       final currentDevice = state.resultDevices.data
@@ -704,10 +721,10 @@ class DeviceCubit extends Cubit<DeviceState> {
       if (currentDevice != null) {
 
 
-        if (state.switchingDevices.containsKey(currentDevice.id)) {
-          print("⛔ đang switching → bỏ update từ backend");
-          return;
-        }
+        // if (state.switchingDevices.containsKey(currentDevice.id)) {
+        //   print("⛔ đang switching → bỏ update từ backend");
+        //   return;
+        // }
 
       }
 
@@ -734,15 +751,6 @@ class DeviceCubit extends Cubit<DeviceState> {
 
         if (d.code == breakerSn) {
 
-          final lastCmdTime = _lastCommandTime[d.id];
-
-          if (lastCmdTime != null) {
-            final diff = DateTime.now().difference(lastCmdTime);
-
-            if (diff.inSeconds < 5) {
-              return d;
-            }
-          }
 
           return d.copyWith(
             status: log.rlySta ?? d.status ?? 0,
@@ -771,31 +779,73 @@ class DeviceCubit extends Cubit<DeviceState> {
       int expectedState,
       ) async {
 
-    for (int i = 0; i < 5; i++) {
-      await Future.delayed(const Duration(milliseconds: 500));
+    int countdown = 20;
+
+    while (countdown > 0) {
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      countdown--;
+
+      final map = Map<int,int>.from(state.switchCountdowns);
+      map[deviceId] = countdown;
+      emit(state.copyWith(
+        switchCountdowns: map,
+      ));
+
       await loadBreakerLog(breakerSn);
 
       final log = state.breakerLogs[breakerSn];
-      if (log?.rlySta == expectedState) break;
+
+      if (log?.rlySta == expectedState) {
+
+        print("MQTT UPDATED");
+
+        break;
+      }
     }
 
     _removeSwitching(deviceId);
+
+    final map = Map<int,int>.from(state.switchCountdowns);
+    map.remove(deviceId);
+
+    emit(state.copyWith(
+      switchCountdowns: map,
+    ));
   }
   int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
 
 
-    if (state.switchingDevices.containsKey(device.id)) {
-      return device.status ?? 0;
-    }
+    // if (state.switchingDevices.containsKey(device.id)) {
+    //   return device.status ?? 0;
+    // }
 
-    final lastCmdTime = _lastCommandTime[device.id];
-    if (lastCmdTime != null) {
-      final diff = DateTime.now().difference(lastCmdTime);
-      if (diff.inSeconds < 3) {
-        return device.status ?? 0;
+    // final lastCmdTime = _lastCommandTime[device.id];
+    // if (lastCmdTime != null) {
+    //   final diff = DateTime.now().difference(lastCmdTime);
+    //   if (diff.inSeconds < 3) {
+    //     return device.status ?? 0;
+    //   }
+    // }
+    if (log != null) {
+
+      if (log.rlyRepSta == 1)
+        return 2;
+
+      if (log.state != null) {
+
+        final s = log.state!.toLowerCase();
+
+        if (!(s == "online" || s == "1" || s == "connected")) {
+          return -1;
+        }
       }
+
+      return log.rlySta ?? device.status ?? 0;
     }
 
+    return device.status ?? 0;
 
     if (log != null) {
 
