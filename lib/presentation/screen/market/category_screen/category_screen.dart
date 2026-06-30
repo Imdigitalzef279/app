@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../data/dto/product/product.dart';
 import '../../../../data/mock/product_data.dart';
 import '../product_detail/product_detail_screen.dart';
-
+import 'package:intl/intl.dart';
 class CategoryScreen extends StatelessWidget {
   final String title;
   final int type;
@@ -95,6 +95,10 @@ class _ProductItem extends StatelessWidget {
   final String image;
   final String description;
   final double discount;
+
+  static final NumberFormat currencyFormat =
+  NumberFormat("#,###", "en_US");
+
   const _ProductItem({
     required this.name,
     required this.price,
@@ -152,9 +156,11 @@ class _ProductItem extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
+
             price > 0
                 ? Text(
-              "${price.toString()} đ",
+
+              "${currencyFormat.format(price)} đ",
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.red,
