@@ -342,9 +342,20 @@ class DeviceCubit extends Cubit<DeviceState> {
       ));
 
       final success = await switchCbsWithForce(device, target, true);
+
+      if (!success) {
+        _removeSwitching(device.id);
+
+        AppToast.showToastError(
+          title: "Không gửi được lệnh",
+        );
+
+        return;
+      }
+
+      /// API đã nhận lệnh
       AppToast.showToastSuccess(
-        title: "Đã gửi lệnh thành công. Thiết bị sẽ mất vài giây để cập nhật trạng thái mới.",
-      );
+          title: "Đã gửi lệnh tới thiết bị");
       if (!success) {
         _removeSwitching(device.id);
         AppToast.showToastError(title: "Gửi lệnh thất bại");
@@ -781,10 +792,22 @@ class DeviceCubit extends Cubit<DeviceState> {
 
         print("MQTT UPDATED");
 
+        AppToast.showToastSuccess(
+          title: expectedState == 1
+              ? "Đóng thành công"
+              : "Cắt thành công",
+        );
+
         break;
       }
     }
+    if (countdown <= 0) {
 
+      AppToast.showToastError(
+        title: "Thiết bị không phản hồi",
+      );
+
+    }
     _removeSwitching(deviceId);
 
     final map = Map<int,int>.from(state.switchCountdowns);
