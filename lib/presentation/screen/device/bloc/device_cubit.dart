@@ -340,26 +340,11 @@ class DeviceCubit extends Cubit<DeviceState> {
           device.id: true,
         },
       ));
-      // final success = await switchCbsWithForce(device, target, true);
-      // final targetInt = int.parse(target);
-      // updateLocalStatus(device.id, targetInt);
-      // _lastCommandTime[device.id] = DateTime.now();
-      // _removeSwitching(device.id);
-      //
-      // final logs = Map<String, AtomatLogResponse>.from(state.breakerLogs);
-      //
-      // final oldLog = logs[device.code] ?? device.realtimeLog;
-      //
-      // if (oldLog != null) {
-      //   logs[device.code!] = oldLog.copyWith(
-      //     rlySta: int.parse(target),
-      //   );
-      // }
-      // emit(state.copyWith(
-      //   breakerLogs: logs,
-      // ));
-      final success = await switchCbsWithForce(device, target, true);
 
+      final success = await switchCbsWithForce(device, target, true);
+      AppToast.showToastSuccess(
+        title: "Đã gửi lệnh thành công. Thiết bị sẽ mất vài giây để cập nhật trạng thái mới.",
+      );
       if (!success) {
         _removeSwitching(device.id);
         AppToast.showToastError(title: "Gửi lệnh thất bại");
@@ -721,11 +706,6 @@ class DeviceCubit extends Cubit<DeviceState> {
       if (currentDevice != null) {
 
 
-        // if (state.switchingDevices.containsKey(currentDevice.id)) {
-        //   print("⛔ đang switching → bỏ update từ backend");
-        //   return;
-        // }
-
       }
 
 
@@ -816,43 +796,19 @@ class DeviceCubit extends Cubit<DeviceState> {
   }
   int getRealStatus(DeviceResponse device, AtomatLogResponse? log) {
 
-
-    // if (state.switchingDevices.containsKey(device.id)) {
-    //   return device.status ?? 0;
-    // }
-
-    // final lastCmdTime = _lastCommandTime[device.id];
-    // if (lastCmdTime != null) {
-    //   final diff = DateTime.now().difference(lastCmdTime);
-    //   if (diff.inSeconds < 3) {
-    //     return device.status ?? 0;
-    //   }
-    // }
-    if (log != null) {
-
-      if (log.rlyRepSta == 1)
-        return 2;
-
-      if (log.state != null) {
-
-        final s = log.state!.toLowerCase();
-
-        if (!(s == "online" || s == "1" || s == "connected")) {
-          return -1;
-        }
-      }
-
-      return log.rlySta ?? device.status ?? 0;
+    if (state.switchingDevices.containsKey(device.id)) {
+      return 99;
     }
 
-    return device.status ?? 0;
-
     if (log != null) {
 
-      if (log.rlyRepSta == 1) return 2;
+      if (log.rlyRepSta == 1) {
+        return 2;
+      }
 
       if (log.state != null) {
         final s = log.state!.toLowerCase();
+
         if (!(s == "online" || s == "1" || s == "connected")) {
           return -1;
         }

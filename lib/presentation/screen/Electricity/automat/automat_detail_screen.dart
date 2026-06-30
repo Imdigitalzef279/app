@@ -1480,7 +1480,14 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     List<Color> gradientColors;
 
     switch (realStatus) {
-
+      case 99:
+        statusText = "Đang cập nhật...";
+        icon = Icons.sync;
+        gradientColors = [
+          Color(0xFF2196F3),
+          Color(0xFF1976D2),
+        ];
+        break;
     /// OFFLINE
       case -1:
         statusText = "Ngoại tuyến";
@@ -1579,6 +1586,18 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                if (realStatus == 99)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6),
+                    child: Text(
+                      "Thiết bị sẽ mất vài giây để cập nhật trạng thái mới",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
