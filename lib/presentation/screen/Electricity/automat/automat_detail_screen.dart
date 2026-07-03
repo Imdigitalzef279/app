@@ -1471,8 +1471,6 @@ class _AutomatDetailScreenState extends State<AutomatDetailScreen> {
     final deviceCubit = context.watch<DeviceCubit>();
 
 
-    final isSwitching = deviceCubit.isDeviceSwitching(device.id);
-
     final realStatus = deviceCubit.getRealStatus(device, log);
 
     String statusText;
