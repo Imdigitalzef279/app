@@ -234,4 +234,7 @@ abstract class ApiClient {
   Future<dynamic> activateViaQr(
       @Body() Map<String, dynamic> body,
       );
+  // ================= EMAIL =================
+
+
 }

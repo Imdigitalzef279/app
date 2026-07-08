@@ -325,6 +325,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/noise.png
   AssetGenImage get noise => const AssetGenImage('assets/images/noise.png');
 
+  /// Directory path: assets/images/products
+  $AssetsImagesProductsGen get products => const $AssetsImagesProductsGen();
+
   /// File path: assets/images/rcbo_2p_4p.png
   AssetGenImage get rcbo2p4p =>
       const AssetGenImage('assets/images/rcbo_2p_4p.png');
@@ -517,6 +520,273 @@ class $AssetsImagesMatisGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [a1, a2, a4, a5, enertrekSystem, aNhBA];
+}
+
+class $AssetsImagesProductsGen {
+  const $AssetsImagesProductsGen();
+
+  /// Directory path: assets/images/products/bodongngat
+  $AssetsImagesProductsBodongngatGen get bodongngat =>
+      const $AssetsImagesProductsBodongngatGen();
+
+  /// Directory path: assets/images/products/caudaothongminh
+  $AssetsImagesProductsCaudaothongminhGen get caudaothongminh =>
+      const $AssetsImagesProductsCaudaothongminhGen();
+
+  /// Directory path: assets/images/products/congthongminh
+  $AssetsImagesProductsCongthongminhGen get congthongminh =>
+      const $AssetsImagesProductsCongthongminhGen();
+
+  /// Directory path: assets/images/products/donghodoluong
+  $AssetsImagesProductsDonghodoluongGen get donghodoluong =>
+      const $AssetsImagesProductsDonghodoluongGen();
+
+  /// Directory path: assets/images/products/thietbimoitruong
+  $AssetsImagesProductsThietbimoitruongGen get thietbimoitruong =>
+      const $AssetsImagesProductsThietbimoitruongGen();
+}
+
+class $AssetsImagesProductsBodongngatGen {
+  const $AssetsImagesProductsBodongngatGen();
+
+  /// File path: assets/images/products/bodongngat/MT88M_250_下面.png
+  AssetGenImage get mt88m250 =>
+      const AssetGenImage('assets/images/products/bodongngat/MT88M_250_下面.png');
+
+  /// File path: assets/images/products/bodongngat/MT88M_400_下面.png
+  AssetGenImage get mt88m400 =>
+      const AssetGenImage('assets/images/products/bodongngat/MT88M_400_下面.png');
+
+  /// File path: assets/images/products/bodongngat/MT88M_630_下面.png
+  AssetGenImage get mt88m630 =>
+      const AssetGenImage('assets/images/products/bodongngat/MT88M_630_下面.png');
+
+  /// File path: assets/images/products/bodongngat/MT88M_组合图.png
+  AssetGenImage get mt88m =>
+      const AssetGenImage('assets/images/products/bodongngat/MT88M_组合图.png');
+
+  /// File path: assets/images/products/bodongngat/MTM5EL.png
+  AssetGenImage get mtm5el =>
+      const AssetGenImage('assets/images/products/bodongngat/MTM5EL.png');
+
+  /// File path: assets/images/products/bodongngat/MTM5M-all.png
+  AssetGenImage get mTM5MAll =>
+      const AssetGenImage('assets/images/products/bodongngat/MTM5M-all.png');
+
+  /// File path: assets/images/products/bodongngat/MTM5M.png
+  AssetGenImage get mtm5m =>
+      const AssetGenImage('assets/images/products/bodongngat/MTM5M.png');
+
+  /// File path: assets/images/products/bodongngat/MTMO3-2.png
+  AssetGenImage get mtmo32 =>
+      const AssetGenImage('assets/images/products/bodongngat/MTMO3-2.png');
+
+  /// File path: assets/images/products/bodongngat/MTMO3.png
+  AssetGenImage get mtmo3 =>
+      const AssetGenImage('assets/images/products/bodongngat/MTMO3.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+    mt88m250,
+    mt88m400,
+    mt88m630,
+    mt88m,
+    mtm5el,
+    mTM5MAll,
+    mtm5m,
+    mtmo32,
+    mtmo3,
+  ];
+}
+
+class $AssetsImagesProductsCaudaothongminhGen {
+  const $AssetsImagesProductsCaudaothongminhGen();
+
+  /// File path: assets/images/products/caudaothongminh/MT61GP-2P&4P-侧视图.png
+  AssetGenImage get mt61gp2p4p => const AssetGenImage(
+    'assets/images/products/caudaothongminh/MT61GP-2P&4P-侧视图.png',
+  );
+
+  /// File path: assets/images/products/caudaothongminh/MT61GP-2P.png
+  AssetGenImage get mt61gp2p => const AssetGenImage(
+    'assets/images/products/caudaothongminh/MT61GP-2P.png',
+  );
+
+  /// File path: assets/images/products/caudaothongminh/MT61GP-4P-侧视图.png
+  AssetGenImage get mT61GP4PPng => const AssetGenImage(
+    'assets/images/products/caudaothongminh/MT61GP-4P-侧视图.png',
+  );
+
+  /// File path: assets/images/products/caudaothongminh/MT61GP-4P.png
+  AssetGenImage get mT61GP4PPng_ => const AssetGenImage(
+    'assets/images/products/caudaothongminh/MT61GP-4P.png',
+  );
+
+  /// File path: assets/images/products/caudaothongminh/MT61GP.png
+  AssetGenImage get mt61gp =>
+      const AssetGenImage('assets/images/products/caudaothongminh/MT61GP.png');
+
+  /// File path: assets/images/products/caudaothongminh/MT61GR-2P.png
+  AssetGenImage get mt61gr2p => const AssetGenImage(
+    'assets/images/products/caudaothongminh/MT61GR-2P.png',
+  );
+
+  /// File path: assets/images/products/caudaothongminh/MT61GR-4P-侧视图.png
+  AssetGenImage get mT61GR4PPng => const AssetGenImage(
+    'assets/images/products/caudaothongminh/MT61GR-4P-侧视图.png',
+  );
+
+  /// File path: assets/images/products/caudaothongminh/MT61GR-4P.png
+  AssetGenImage get mT61GR4PPng_ => const AssetGenImage(
+    'assets/images/products/caudaothongminh/MT61GR-4P.png',
+  );
+
+  /// File path: assets/images/products/caudaothongminh/MT61GR.png
+  AssetGenImage get mt61gr =>
+      const AssetGenImage('assets/images/products/caudaothongminh/MT61GR.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+    mt61gp2p4p,
+    mt61gp2p,
+    mT61GP4PPng,
+    mT61GP4PPng_,
+    mt61gp,
+    mt61gr2p,
+    mT61GR4PPng,
+    mT61GR4PPng_,
+    mt61gr,
+  ];
+}
+
+class $AssetsImagesProductsCongthongminhGen {
+  const $AssetsImagesProductsCongthongminhGen();
+
+  /// File path: assets/images/products/congthongminh/AIO.png
+  AssetGenImage get aio =>
+      const AssetGenImage('assets/images/products/congthongminh/AIO.png');
+
+  /// File path: assets/images/products/congthongminh/DIO.png
+  AssetGenImage get dio =>
+      const AssetGenImage('assets/images/products/congthongminh/DIO.png');
+
+  /// File path: assets/images/products/congthongminh/G30.png
+  AssetGenImage get g30 =>
+      const AssetGenImage('assets/images/products/congthongminh/G30.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [aio, dio, g30];
+}
+
+class $AssetsImagesProductsDonghodoluongGen {
+  const $AssetsImagesProductsDonghodoluongGen();
+
+  /// File path: assets/images/products/donghodoluong/C32-1024x1024.jpg
+  AssetGenImage get c321024x1024 => const AssetGenImage(
+    'assets/images/products/donghodoluong/C32-1024x1024.jpg',
+  );
+
+  /// File path: assets/images/products/donghodoluong/E10.png
+  AssetGenImage get e10 =>
+      const AssetGenImage('assets/images/products/donghodoluong/E10.png');
+
+  /// File path: assets/images/products/donghodoluong/E21.png
+  AssetGenImage get e21 =>
+      const AssetGenImage('assets/images/products/donghodoluong/E21.png');
+
+  /// File path: assets/images/products/donghodoluong/E31.png
+  AssetGenImage get e31 =>
+      const AssetGenImage('assets/images/products/donghodoluong/E31.png');
+
+  /// File path: assets/images/products/donghodoluong/G30-1-1024x1024.jpg
+  AssetGenImage get g3011024x1024 => const AssetGenImage(
+    'assets/images/products/donghodoluong/G30-1-1024x1024.jpg',
+  );
+
+  /// File path: assets/images/products/donghodoluong/G30.png
+  AssetGenImage get g30 =>
+      const AssetGenImage('assets/images/products/donghodoluong/G30.png');
+
+  /// File path: assets/images/products/donghodoluong/M10.png
+  AssetGenImage get m10 =>
+      const AssetGenImage('assets/images/products/donghodoluong/M10.png');
+
+  /// File path: assets/images/products/donghodoluong/M20.png
+  AssetGenImage get m20 =>
+      const AssetGenImage('assets/images/products/donghodoluong/M20.png');
+
+  /// File path: assets/images/products/donghodoluong/M40.png
+  AssetGenImage get m40 =>
+      const AssetGenImage('assets/images/products/donghodoluong/M40.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+    c321024x1024,
+    e10,
+    e21,
+    e31,
+    g3011024x1024,
+    g30,
+    m10,
+    m20,
+    m40,
+  ];
+}
+
+class $AssetsImagesProductsThietbimoitruongGen {
+  const $AssetsImagesProductsThietbimoitruongGen();
+
+  /// File path: assets/images/products/thietbimoitruong/CTO-上连线.png
+  AssetGenImage get cTOPng => const AssetGenImage(
+    'assets/images/products/thietbimoitruong/CTO-上连线.png',
+  );
+
+  /// File path: assets/images/products/thietbimoitruong/CTO-高清图.png
+  AssetGenImage get cTOPng_ => const AssetGenImage(
+    'assets/images/products/thietbimoitruong/CTO-高清图.png',
+  );
+
+  /// File path: assets/images/products/thietbimoitruong/CTO压缩图.png
+  AssetGenImage get cTOPng__ =>
+      const AssetGenImage('assets/images/products/thietbimoitruong/CTO压缩图.png');
+
+  /// File path: assets/images/products/thietbimoitruong/CTOV-高清图.png
+  AssetGenImage get ctov => const AssetGenImage(
+    'assets/images/products/thietbimoitruong/CTOV-高清图.png',
+  );
+
+  /// File path: assets/images/products/thietbimoitruong/DIO.png
+  AssetGenImage get dio =>
+      const AssetGenImage('assets/images/products/thietbimoitruong/DIO.png');
+
+  /// File path: assets/images/products/thietbimoitruong/M10.png
+  AssetGenImage get m10 =>
+      const AssetGenImage('assets/images/products/thietbimoitruong/M10.png');
+
+  /// File path: assets/images/products/thietbimoitruong/M20.png
+  AssetGenImage get m20 =>
+      const AssetGenImage('assets/images/products/thietbimoitruong/M20.png');
+
+  /// File path: assets/images/products/thietbimoitruong/M40.png
+  AssetGenImage get m40 =>
+      const AssetGenImage('assets/images/products/thietbimoitruong/M40.png');
+
+  /// File path: assets/images/products/thietbimoitruong/V10.png
+  AssetGenImage get v10 =>
+      const AssetGenImage('assets/images/products/thietbimoitruong/V10.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+    cTOPng,
+    cTOPng_,
+    cTOPng__,
+    ctov,
+    dio,
+    m10,
+    m20,
+    m40,
+    v10,
+  ];
 }
 
 class Assets {

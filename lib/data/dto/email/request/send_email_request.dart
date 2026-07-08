@@ -1,22 +1,22 @@
 class SendEmailRequest {
-  final String senderEmailAddress;
-  final String targetEmailAddress;
+  final String targetAddress;
   final String subject;
   final String body;
+  final bool isBodyHtml;
 
   SendEmailRequest({
-    required this.senderEmailAddress,
-    required this.targetEmailAddress,
+    required this.targetAddress,
     required this.subject,
     required this.body,
+    this.isBodyHtml = true,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      "senderEmailAddress": senderEmailAddress,
-      "targetEmailAddress": targetEmailAddress,
+      "targetAddress": targetAddress,
       "subject": subject,
       "body": body,
+      "isBodyHtml": isBodyHtml,
     };
   }
 }
