@@ -133,7 +133,7 @@ class ApiInterceptors extends InterceptorsWrapper {
           break;
 
         case 503:
-          AppToast.showToastNotify(
+          AppToast.showToastNotify( 
             title: LocalizationsUtils.localizations.serverUnavailable,
           );
           break;
